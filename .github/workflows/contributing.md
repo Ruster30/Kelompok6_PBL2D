@@ -1,218 +1,301 @@
-# 📘 CONTRIBUTING GUIDELINES
+# 📘 Panduan Kolaborasi Tim (GitHub Workflow)
 
-Terima kasih telah berkontribusi pada project ini! 🎉
+## 🎯 Tujuan
 
-Dokumen ini berisi aturan dan panduan kerja tim agar kolaborasi berjalan rapi, jelas, dan mudah dievaluasi.
+Dokumen ini dibuat untuk memastikan semua anggota tim bekerja secara terstruktur, rapi, dan mudah dipantau kontribusinya.
 
 ---
 
-# 🧩 1. STRUKTUR BRANCH
+# 🧩 Struktur Branch
 
-Project ini menggunakan struktur branch berikut:
-
-```
-main
-dev
-dev/nama-anggota
-feature/nama-fitur
-```
-
-### Penjelasan:
+## 🔹 Branch Utama
 
 * `main` → versi final (production)
 * `dev` → penggabungan semua fitur
-* `dev/nama` → branch pribadi untuk tracking kontribusi
-* `feature/...` → branch untuk pengerjaan fitur spesifik
+
+## 🔹 Branch Per Orang
+
+Setiap anggota memiliki branch masing-masing:
+
+* `rafi`
+* `hadaffi`
+* `salwa`
+* `restia`
+
+👉 Digunakan untuk tracking kontribusi individu.
+
+## 🔹 Branch Feature (Sementara)
+
+Digunakan untuk mengerjakan fitur tertentu:
+
+* `feature/login`
+* `feature/register`
+* `feature/dashboard`
+
+👉 Akan dihapus setelah selesai.
 
 ---
 
-# 👥 2. BRANCH PRIBADI
+# 🚀 Setup Awal (Sekali Saja)
 
-* Setiap anggota WAJIB memiliki branch pribadi
-* Format penamaan:
+## 1. Buat branch `dev`
 
-  ```
-  dev/nama
-  ```
-* Contoh:
+```bash
+git checkout main
+git pull
 
-  * `dev/andi`
-  * `dev/budi`
-
-Semua pekerjaan individu harus masuk ke branch ini terlebih dahulu.
-
----
-
-# 🌿 3. FEATURE BRANCH
-
-* Setiap fitur WAJIB dibuat dalam branch terpisah
-* Format:
-
-  ```
-  feature/nama-fitur
-  ```
-* Contoh:
-
-  * `feature/login`
-  * `feature/register`
-
-❌ Dilarang mengerjakan lebih dari satu fitur dalam satu branch
-
----
-
-# 🔄 4. WORKFLOW
-
-Alur kerja yang WAJIB diikuti:
-
-```
-dev → dev/nama → feature → dev/nama → dev → main
+git checkout -b dev
+git push origin dev
 ```
 
-### Langkah detail:
+## 2. Buat branch per orang
 
-1. Ambil update dari `dev`
-2. Checkout ke `dev/nama`
-3. Buat branch `feature/...`
-4. Kerjakan fitur
-5. Merge ke `dev/nama`
-6. Buat Pull Request ke `dev`
-7. Setelah stabil → merge `dev` ke `main`
-
----
-
-# 🔀 5. PULL REQUEST (PR)
-
-* Semua perubahan WAJIB melalui Pull Request
-* PR harus berisi:
-
-  * Deskripsi perubahan
-  * Referensi issue (jika ada)
-* Minimal 1 reviewer sebelum merge
-
-❌ Dilarang merge tanpa review
-
----
-
-# 📝 6. COMMIT MESSAGE
-
-Gunakan format commit yang jelas:
-
-```
-add login feature - andi
-fix bug register - budi
-```
-
-❌ Hindari commit seperti:
-
-```
-update
-fix
-coba
+```bash
+git checkout dev
+git checkout -b dev/nama
+git push origin dev/nama
 ```
 
 ---
 
-# 📌 7. ISSUE
+# 🪜 Alur Kerja Harian
 
-* Semua task harus dibuat dalam Issue
-* Wajib memiliki:
+## 1. Ambil update terbaru dari `dev`
 
-  * Judul yang jelas
-  * Deskripsi
-  * Assignee
-
----
-
-# 🚫 8. LARANGAN
-
-* ❌ Push langsung ke `main`
-* ❌ Merge tanpa PR
-* ❌ Bekerja tanpa branch `feature/...`
-* ❌ Menggabungkan banyak fitur dalam satu branch
-* ❌ Menghapus branch orang lain tanpa izin
-
----
-
-# 🎯 9. TUJUAN
-
-Aturan ini dibuat untuk:
-
-* Memastikan kontribusi tiap anggota terlihat jelas
-* Menjaga struktur project tetap rapi
-* Menghindari konflik dalam pengembangan
-* Mempermudah proses review dan penilaian
-
----
-
-# 💡 CATATAN
-
-* `dev/nama` = bukti kontribusi individu
-* `feature/...` = bukti pengerjaan fitur
-
-Gunakan kedua jenis branch ini dengan disiplin.
-
----
-
----
-
-# 📄 10. TEMPLATE ISSUE
-
-Gunakan template berikut saat membuat Issue:
-
+```bash
+git checkout dev
+git pull
 ```
-Title: [Feature] Nama Fitur
 
-Description:
-- Jelaskan fitur secara singkat
+## 2. Masuk ke branch pribadi
 
-Checklist:
-- [ ] UI
-- [ ] Logic
-- [ ] Testing
+```bash
+git checkout nama_branch
+git pull
+```
 
-Assignee: @nama
+## 3. Buat branch fitur
+
+```bash
+git checkout -b feature/nama-fitur
+```
+
+## 4. Kerjakan fitur
+
+```bash
+git add .
+git commit -m "deskripsi perubahan"
+git push origin feature/nama-fitur
 ```
 
 ---
 
-# 🔀 11. TEMPLATE PULL REQUEST
+# 🔗 Proses Pull Request (PR) & Merge
 
-Gunakan template berikut saat membuat PR:
+## 🎯 Tujuan
 
+PR digunakan untuk menggabungkan kode dengan aman melalui proses review.
+
+---
+
+## 🪜 Langkah Membuat Pull Request (PR)
+
+### 1. Push branch ke GitHub
+
+```bash
+git push origin nama-branch
 ```
-Title: Nama fitur
 
-Description:
-- Apa yang dikerjakan
-- Perubahan apa saja
+### 2. Buka GitHub
 
-Related Issue: #nomor
+* Masuk ke repository
+* Klik **Compare & pull request**
 
-Checklist:
-- [ ] Sudah dites
-- [ ] Tidak ada error
-- [ ] Siap direview
+### 3. Atur PR
+
+* **base**: tujuan merge
+* **compare**: branch kamu
+
+Contoh:
+
+* `feature/login` → `nama_branch`
+* `nama_branch` → `dev`
+* `dev` → `main`
+
+---
+
+## 🔄 Alur PR dalam Tim
+
+### 1. Feature → Dev Pribadi
+
+* base: `nama_branch`
+* compare: `feature/nama-fitur`
+
+### 2. Dev Pribadi → Dev
+
+* base: `dev`
+* compare: `nama_branch`
+
+### 3. Dev → Main
+
+* base: `main`
+* compare: `dev`
+
+---
+
+## ✅ Aturan Merge
+
+* PR harus direview minimal 1 orang
+* Pastikan tidak ada conflict
+* Pastikan fitur sudah berjalan dengan baik
+* Gunakan tombol **Merge Pull Request** di GitHub
+
+---
+
+## ⚠️ Jika Terjadi Conflict
+
+1. Checkout branch kamu
+
+```bash
+git checkout nama_branch
+```
+
+2. Ambil update terbaru
+
+```bash
+git pull origin dev
+```
+
+3. Perbaiki conflict di file
+
+4. Commit ulang
+
+```bash
+git add .
+git commit -m "fix conflict"
+git push
+```
+
+👉 PR akan otomatis ter-update
+
+---
+
+# 🔄 Update Setelah Merge
+
+```bash
+git checkout dev
+git pull
+
+git checkout nama_branch
+git merge dev
+git push
 ```
 
 ---
 
-# 🔒 12. BRANCH PROTECTION (WAJIB SETUP)
+# 🔧 Perbaikan & Perubahan Feature
 
-Atur di repository settings:
+## 🟢 Jika Feature BELUM di-merge
 
-## Untuk branch `main`:
+Gunakan branch feature yang sama (tidak perlu buat baru).
 
-* Require pull request before merging
-* Require approval (minimal 1 reviewer)
-* Block direct push
+```bash
+git checkout feature/nama-fitur
+# lakukan perbaikan
 
-## Untuk branch `dev`:
+git add .
+git commit -m "fix / update fitur"
+git push
+```
 
-* Require pull request
-* Optional: require status checks (CI/CD)
+👉 Pull Request (PR) akan otomatis ter-update.
 
 ---
 
-# 🎯 PENUTUP
+## 🟡 Jika SUDAH PR tapi diminta revisi
 
-Terima kasih dan selamat berkolaborasi! 🚀
+Tetap gunakan branch feature yang sama.
+
+```bash
+git checkout feature/nama-fitur
+# perbaiki sesuai review
+
+git add .
+git commit -m "revisi sesuai review"
+git push
+```
+
+👉 Tidak perlu buat PR baru.
+
+---
+
+## 🔴 Jika Feature SUDAH di-merge
+
+JANGAN gunakan branch lama.
+
+Buat branch baru dari `dev`:
+
+```bash
+git checkout dev
+git pull
+
+git checkout -b fix/nama-fitur
+```
+
+Lanjutkan:
+
+```bash
+git add .
+git commit -m "fix bug fitur"
+git push origin fix/nama-fitur
+```
+
+---
+
+## 📌 Aturan Penting
+
+* Gunakan branch yang sama jika feature belum selesai
+* Buat branch baru jika sudah di-merge
+* Jangan edit langsung di `dev` atau `main`
+
+---
+
+# 📜 Aturan Wajib
+
+## ❌ Dilarang
+
+* Push langsung ke `main`
+* Merge tanpa Pull Request
+* Mengubah branch orang lain
+* Lompat merge (feature → main)
+
+## ✅ Wajib
+
+* Semua kerja dari `dev`
+* Gunakan branch `feature/...`
+* Gunakan Pull Request untuk merge
+* Commit dengan pesan jelas
+
+---
+
+# 🎯 Alur Singkat
+
+```
+main
+ ↑
+dev
+ ↑
+nama_branch
+ ↑
+feature/nama-fitur
+```
+
+---
+
+# 📌 Penutup
+
+Dengan mengikuti aturan ini:
+
+* Kolaborasi tim menjadi lebih rapi
+* Konflik kode dapat diminimalisir
+* Kontribusi tiap anggota dapat terlihat jelas
