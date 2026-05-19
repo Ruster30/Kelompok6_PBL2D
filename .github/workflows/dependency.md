@@ -1,4 +1,3 @@
-# Dependency / Package Laravel
 # Dependency / Package Laravel  
 ## Project Website Event Organizer (EO)
 
