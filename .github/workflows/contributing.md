@@ -292,6 +292,102 @@ feature/nama-fitur
 
 ---
 
+# Struktur Folder
+project-eo/
+│
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── LandingController.php
+│   │   │   ├── Auth/
+│   │   │   ├── Admin/
+│   │   │   ├── Client/
+│   │   │   ├── Vendor/
+│   │   │   └── Event/
+│   │   │
+│   │   └── Requests/
+│   │
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Event.php
+│   │   ├── Vendor.php
+│   │   ├── Client.php
+│   │   ├── Negotiation.php
+│   │   └── OfferLetter.php
+│   │
+│   └── Services/
+│
+│
+├── public/
+│   ├── images/
+│   │   ├── landing/
+│   │   ├── portfolio/
+│   │   ├── team/
+│   │   └── icons/
+│   │
+│   ├── css/
+│   │   └── landing.css
+│   │
+│   └── js/
+│
+│
+├── resources/
+│   ├── views/
+│   │
+│   │   ├── layouts/
+│   │   │   ├── app.blade.php
+│   │   │   ├── admin.blade.php
+│   │   │   └── client.blade.php
+│   │   │
+│   │   ├── components/
+│   │   │   ├── navbar.blade.php
+│   │   │   ├── footer.blade.php
+│   │   │   ├── hero.blade.php
+│   │   │   ├── service-card.blade.php
+│   │   │   └── contact-form.blade.php
+│   │   │
+│   │   ├── landing/
+│   │   │   ├── index.blade.php
+│   │   │   ├── about.blade.php
+│   │   │   ├── services.blade.php
+│   │   │   ├── portfolio.blade.php
+│   │   │   ├── team.blade.php
+│   │   │   └── contact.blade.php
+│   │   │
+│   │   ├── auth/
+│   │   │   ├── login.blade.php
+│   │   │   └── register.blade.php
+│   │   │
+│   │   ├── admin/
+│   │   │   ├── dashboard.blade.php
+│   │   │   ├── event/
+│   │   │   ├── vendor/
+│   │   │   └── negotiation/
+│   │   │
+│   │   ├── client/
+│   │   │   ├── dashboard.blade.php
+│   │   │   ├── timeline.blade.php
+│   │   │   └── offer-letter.blade.php
+│   │   │
+│   │   └── vendor/
+│   │
+│   └── css/
+│
+│
+├── routes/
+│   ├── web.php
+│   ├── admin.php
+│   ├── client.php
+│   └── auth.php
+│
+│
+├── database/
+│   ├── migrations/
+│   └── seeders/
+│
+│
+└── tests/
+
 # 📌 Penutup
 
 Dengan mengikuti aturan ini:
