@@ -1,0 +1,175 @@
+:root{
+    --teal:#12b8a6;
+    --nav-text:#44556d;
+    --white:#ffffff;
+}
+
+/* font */
+body{
+    font-family: Inter, Arial, sans-serif;
+}
+
+/* navbar */
+.navbar-alpha{
+    background:#fff;
+    height:88px;
+    border-bottom:1px solid #eef1f5;
+    z-index:999;
+}
+
+/* logo */
+.logo-alpha{
+    height:34px;
+    width:auto;
+}
+
+/* tengah */
+.nav-center{
+    gap:46px;
+}
+
+/* menu */
+.nav-alpha-link{
+    font-size:18px;
+    font-weight:600;
+    color:var(--nav-text)!important;
+    padding:0;
+    transition:.2s;
+}
+
+.nav-alpha-link:hover{
+    color:var(--teal)!important;
+}
+
+/* kanan */
+.nav-right{
+    gap:26px;
+}
+
+/* masuk */
+.login-alpha{
+    text-decoration:none;
+    color:var(--nav-text);
+    font-size:18px;
+    font-weight:600;
+}
+
+.login-alpha:hover{
+    color:var(--teal);
+}
+
+/* button */
+.btn-alpha-navbar{
+    background:var(--teal);
+    color:white;
+    border:none;
+    border-radius:14px;
+    padding:14px 28px;
+    font-size:18px;
+    font-weight:600;
+    transition:.2s;
+}
+
+.btn-alpha-navbar:hover{
+    background:#0da394;
+    color:white;
+}
+
+/* hero offset */
+.hero-section{
+    padding-top:88px;
+}
+
+/* mobile */
+@media (max-width:991px){
+
+    .navbar-alpha{
+        height:auto;
+        padding:18px 0;
+    }
+
+    .nav-center{
+        gap:18px;
+        margin-top:20px;
+    }
+
+    .nav-right{
+        flex-direction:column;
+        margin-top:20px;
+        gap:16px;
+    }
+
+    .btn-alpha-navbar{
+        width:100%;
+        text-align:center;
+    }
+}
+
+:root{
+    --teal:#11b8a8;
+    --nav-text:#3f4d63;
+    --navy:#06142d;
+}
+
+body{
+    font-family: Inter, Arial, sans-serif;
+}
+
+.text-teal{
+    color:var(--teal);
+}
+
+.hero-section{
+    min-height: 90vh;
+    background:
+        radial-gradient(circle at center,
+        rgba(17,184,168,.25),
+        transparent 35%),
+        #06142d;
+}
+
+.hero-title{
+    font-size:72px;
+    font-weight:800;
+    line-height:1.1;
+}
+
+.hero-subtitle{
+    font-size:22px;
+    color:#d0d8e2;
+    max-width:850px;
+}
+
+.btn-alpha{
+    background:var(--teal);
+    color:#fff;
+    border:none;
+    border-radius:14px;
+    font-size:20px;
+    font-weight:600;
+}
+
+.btn-alpha:hover{
+    background:#0d998d;
+    color:white;
+}
+
+.btn-dark-custom{
+    background:rgba(255,255,255,.08);
+    color:white;
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:14px;
+    font-size:20px;
+    font-weight:600;
+}
+
+.btn-dark-custom:hover{
+    color:white;
+}
+
+.logo-alpha{
+    height:34px;
+    width:auto;
+    display:block;
+    object-fit:contain;
+}
