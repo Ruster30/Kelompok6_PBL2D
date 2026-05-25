@@ -21,9 +21,13 @@
 
     @include('components.navbar')
 
-    <main>
-        @yield('content')
-    </main>
+    @section('content')
+
+        @include('landing.hero')
+        @include('landing.about')
+
+
+    @endsection
 
     @include('components.footer')
 
