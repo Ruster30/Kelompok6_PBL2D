@@ -4,16 +4,23 @@
         <div class="row align-items-center g-5">
             <!-- Left: Text -->
             <div class="col-lg-6" data-aos="fade-right">
-                <p class="text-accent small fw-semibold text-uppercase tracking-wide mb-2">Tentang Kami</p>
+                <p class="text-accent small fw-semibold text-uppercase tracking-wide mb-2">Siapa Kami</p>
                 <h2 class="display-5 fw-bold text-white mb-4">
                     Kami Tidak Hanya Merencanakan Event, Kami Menciptakan
                     <span class="text-accent font-playfair fst-italic"> Warisan</span>
                 </h2>
                 <p class="text-light-muted mb-4">
-                    Dengan pengalaman lebih dari 12 tahun di industri event organizer, kami telah membantu ratusan klien mewujudkan impian mereka. Dari acara korporat berskala besar hingga pernikahan mewah yang intim, ALPHA.COM hadir memastikan setiap detail berjalan sempurna.
+                    Didirikan dengan prinsip presisi, kreativitas, dan eksekusi tanpa
+                    cacat, ALPHA.CORP telah berkembang menjadi agensi
+                    manajemen event terkemuka. Kami percaya setiap event
+                    menceritakan sebuah kisah, dan kami adalah pencerita
+                    utamanya.
                 </p>
                 <p class="text-light-muted mb-5">
-                    Tim kami yang berpengalaman dan berdedikasi siap memberikan solusi kreatif dan eksekusi tanpa cela untuk setiap event yang Anda percayakan.
+                    Dari retret perusahaan yang intim hingga festival musik berskala
+                    besar, tim kami yang berdedikasi menangani setiap detail dengan
+                    kualitas tanpa kompromi, memastikan visi Anda terwujud persis
+                    seperti yang dibayangkan.
                 </p>
 
                 <!-- Stats -->
@@ -27,7 +34,7 @@
                     <div class="col-6 col-sm-3">
                         <div class="stat-card text-center p-3 rounded-3">
                             <h3 class="fw-bold text-white mb-1 fs-2">98%</h3>
-                            <p class="text-accent small mb-0">Klien Puas</p>
+                            <p class="text-accent small mb-0">Klien <br> Puas</p>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
@@ -48,15 +55,13 @@
             <!-- Right: Image + floating card -->
             <div class="col-lg-6 position-relative" data-aos="fade-left">
                 <div class="about-img-wrap">
-                    <img src="{{ asset('images/about-event.jpg') }}" alt="Event ALPHA.COM"
+                    <img src="{{ asset('images/landing/aboutimage.png') }}" alt="Event ALPHA.COM"
                          class="img-fluid rounded-4 about-main-img w-100" style="object-fit:cover; height:480px;">
                     <!-- Floating card -->
                     <div class="about-float-card rounded-3 p-3">
                         <div class="d-flex align-items-center gap-2 mb-2">
-                            <div class="float-avatar-stack d-flex">
-                                <img src="{{ asset('images/team1.jpg') }}" class="float-avatar rounded-circle" alt="">
-                                <img src="{{ asset('images/team2.jpg') }}" class="float-avatar rounded-circle" alt="">
-                                <img src="{{ asset('images/team3.jpg') }}" class="float-avatar rounded-circle" alt="">
+                            <div class="award-icon">
+                                <i class="bi bi-award"></i>
                             </div>
                             <span class="text-white small fw-semibold">Tim Profesional Kami</span>
                         </div>

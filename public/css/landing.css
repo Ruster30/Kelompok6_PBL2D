@@ -31,6 +31,7 @@ body {
     overflow-x: hidden;
 }
 
+.font-plusjakartasans { font-family: var(--font-body);}
 .font-playfair { font-family: var(--font-display); }
 .text-accent   { color: var(--accent) !important; }
 .text-light-muted { color: var(--text-muted) !important; }
@@ -118,6 +119,16 @@ body {
     border-radius: 2px;
     animation: scrollBounce 1.6s infinite;
 }
+
+.hero-section h1{
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.hero-section h1 span:first-child{
+    white-space: nowrap;
+}
 @keyframes scrollBounce {
     0%,100% { transform: translateY(0); opacity:1; }
     50%      { transform: translateY(10px); opacity:.4; }
@@ -128,12 +139,17 @@ body {
    ============================================ */
 .about-section { background: var(--bg-dark); }
 
-.about-img-wrap { position: relative; }
+.about-img-wrap { 
+    position: relative;
+    margin-top: 60px;
+
+}
 .about-main-img { box-shadow: 0 24px 64px rgba(0,0,0,.5); }
 
 .about-float-card {
     position: absolute;
     bottom: -1.5rem; left: -1.5rem;
+    left: 3px;
     background: var(--bg-card);
     border: 1px solid var(--bg-card-border);
     width: 260px;
@@ -143,6 +159,31 @@ body {
     width: 28px; height: 28px;
     border: 2px solid var(--bg-card);
     object-fit: cover;
+}
+.award-icon i{
+    color: var(--accent);
+    font-size: 20px;
+}
+
+.award-title{
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.award-subtitle{
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.award-desc{
+    font-size: 15px;
+    line-height: 1.6;
+    color: #4b5563;
+    margin: 0;
 }
 .float-avatar + .float-avatar { margin-left: -8px; }
 .progress-bar.bg-accent { background-color: var(--accent) !important; }
