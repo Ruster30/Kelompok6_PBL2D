@@ -8,4 +8,5 @@
     @include('landing.about')
     @include('landing.visi-misi')
     @include('landing.why-us')
+    @include('landing.services')
 @endsection

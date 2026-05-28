@@ -304,36 +304,60 @@ body {
 /* ============================================
    SERVICES
    ============================================ */
-.services-section { background: var(--bg-dark); }
-
-.service-card {
-    background: var(--bg-card);
-    border: 1px solid var(--bg-card-border);
-    transition: all .3s;
+.services-section {
+    background: #f0f4f8;
+}
+ 
+.services-label-line {
+    display: inline-block;
+    width: 36px; height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+.services-label-text {
+    color: var(--accent);
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+.services-title  { font-size: 2.4rem; color: #1a2540; }
+.services-subtitle { color: #6b7a99; font-size: .97rem; line-height: 1.7; max-width: 600px; }
+ 
+.svc-card {
+    background: #ffffff;
+    border: 1px solid #e4eaf3;
+    border-radius: 16px;
+    transition: all .3s ease;
     position: relative;
     overflow: hidden;
 }
-.service-card::before {
+.svc-card::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--accent);
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-dark));
     transform: scaleX(0);
-    transition: transform .3s;
+    transform-origin: left;
+    transition: transform .35s ease;
 }
-.service-card:hover::before { transform: scaleX(1); }
-.service-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(45,212,191,.12);
-}
-.service-icon-wrap {
-    width: 52px; height: 52px;
-    background: rgba(45,212,191,.08);
+.svc-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(45,212,191,.14); border-color: rgba(45,212,191,.3); }
+.svc-card:hover::after { transform: scaleX(1); }
+ 
+.svc-icon-wrap {
+    width: 56px; height: 56px;
+    background: rgba(45,212,191,.10);
     border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
+    transition: background .3s;
 }
+.svc-icon-wrap i { font-size: 1.5rem; color: var(--accent); transition: transform .3s; }
+.svc-card:hover .svc-icon-wrap { background: rgba(45,212,191,.18); }
+.svc-card:hover .svc-icon-wrap i { transform: scale(1.15); }
+ 
+.svc-title { font-size: 1.15rem; color: #1a2540; }
+.svc-desc  { color: #6b7a99; font-size: .9rem; line-height: 1.7; }
 
 /* ============================================
    TEAM
