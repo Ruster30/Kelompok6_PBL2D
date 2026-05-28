@@ -195,21 +195,85 @@ body {
 }
 .stat-card:hover { border-color: var(--accent); }
 
-.mission-card {
-    background: var(--bg-card);
-    border: 1px solid var(--bg-card-border);
-    transition: all .3s;
+/* ============================================
+   VISI & MISI SECTION
+   ============================================ */
+.visi-misi-section {
+    background: #f0f4f8;  /* light grey-blue bg seperti screenshot */
 }
-.mission-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 32px rgba(45,212,191,.1);
+ 
+/* ---- Card Visi (kiri — gradient teal) ---- */
+.visi-card {
+    background: linear-gradient(145deg, #2ccdc0 0%, #1a9e94 55%, #127f78 100%);
+    box-shadow: 0 20px 60px rgba(45, 212, 191, .30);
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
-.mission-icon {
-    width: 44px; height: 44px;
-    background: rgba(45,212,191,.08);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
+ 
+.visi-icon-wrap {
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, .18);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    backdrop-filter: blur(4px);
+}
+ 
+.visi-text {
+    color: rgba(255, 255, 255, .88);
+    font-size: 1rem;
+    line-height: 1.75;
+    font-style: italic;
+}
+ 
+/* ---- Ikon judul Misi ---- */
+.misi-title-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(45, 212, 191, .12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2ccdc0;
+    border: 1.5px solid rgba(45, 212, 191, .25);
+}
+ 
+/* ---- Icon tiap item misi ---- */
+.misi-item-icon {
+    width: 38px;
+    height: 38px;
+    background: rgba(45, 212, 191, .10);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2ccdc0;
+    margin-top: 2px;
+    flex-shrink: 0;
+    transition: background .2s, transform .2s;
+}
+.misi-item:hover .misi-item-icon {
+    background: rgba(45, 212, 191, .22);
+    transform: scale(1.1);
+}
+ 
+/* ---- Garis pemisah antar item ---- */
+.misi-divider {
+    height: 1px;
+    background: rgba(26, 37, 64, .08);
+    margin-left: 0;
+}
+ 
+/* Responsive */
+@media (max-width: 767px) {
+    .visi-misi-section { background: #f0f4f8; }
+    .visi-card { min-height: auto; }
 }
 
 /* ============================================

@@ -6,5 +6,6 @@
 @section('content')
     @include('landing.hero')
     @include('landing.about')
+    @include('landing.visi-misi')
     @include('landing.why-us')
 @endsection
