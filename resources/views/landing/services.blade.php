@@ -5,9 +5,9 @@
         {{-- Header --}}
         <div class="text-center mb-5" data-aos="fade-up">
             <div class="services-label d-flex align-items-center justify-content-center gap-2 mb-2">
-                <span class="services-label-line"></span>
+                <span class="label-line"></span>
                 <span class="services-label-text">Keahlian Kami</span>
-                <span class="services-label-line"></span>
+                <span class="label-line"></span>
             </div>
             <h2 class="services-title fw-bold mb-3">Layanan Kami</h2>
             <p class="services-subtitle mx-auto">

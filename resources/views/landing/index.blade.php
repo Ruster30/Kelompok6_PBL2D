@@ -9,4 +9,5 @@
     @include('landing.visi-misi')
     @include('landing.why-us')
     @include('landing.services')
+    @include('landing.team')
 @endsection

@@ -38,6 +38,12 @@ body {
 .tracking-wide { letter-spacing: .12em; }
 .py-6 { padding-top: 5rem; padding-bottom: 5rem; }
 .z-1 { z-index: 1; }
+.label-line {
+    display: inline-block;
+    width: 36px; height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
 
 /* ============================================
    NAVBAR
@@ -308,12 +314,6 @@ body {
     background: #f0f4f8;
 }
  
-.services-label-line {
-    display: inline-block;
-    width: 36px; height: 2px;
-    background: var(--accent);
-    border-radius: 2px;
-}
 .services-label-text {
     color: var(--accent);
     font-size: .8rem;
