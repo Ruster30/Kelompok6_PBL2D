@@ -10,4 +10,5 @@
     @include('landing.why-us')
     @include('landing.services')
     @include('landing.team')
+    @include('landing.portofolio')
 @endsection

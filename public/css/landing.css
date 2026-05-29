@@ -403,41 +403,127 @@ body {
 /* ============================================
    PORTFOLIO
    ============================================ */
-.portfolio-section { background: var(--bg-dark); }
-
-.btn-filter {
-    background: var(--bg-card);
-    border: 1px solid var(--bg-card-border);
-    color: var(--text-muted);
-    transition: all .2s;
-}
-.btn-filter:hover,
-.btn-filter.active {
+.portfolio-section { background: #ffffff; }
+ 
+/* Header label */
+.pf-label-line {
+    display: inline-block;
+    width: 28px; height: 2px;
     background: var(--accent);
-    color: var(--bg-dark);
-    border-color: var(--accent);
+    border-radius: 2px;
 }
-
-.portfolio-card { cursor: pointer; }
-.portfolio-img { transition: transform .4s; }
-.portfolio-card:hover .portfolio-img { transform: scale(1.05); }
-.portfolio-overlay {
+.pf-label-text {
+    color: var(--accent);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+.pf-title {
+    font-size: 2.2rem;
+    color: #1a2540;
+}
+ 
+/* Filter pills */
+.pf-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: .45rem 1.1rem;
+    border-radius: 999px;
+    border: 1.5px solid #d1dae8;
+    background: transparent;
+    color: #4a5568;
+    font-size: .85rem;
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all .22s ease;
+    white-space: nowrap;
+}
+.pf-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.pf-btn.active {
+    background: #1a2540;
+    border-color: #1a2540;
+    color: #ffffff;
+    font-weight: 600;
+}
+ 
+/* Cards */
+.pf-card {
+    cursor: pointer;
+    background: #eee;
+}
+.pf-img {
+    transition: transform .45s ease;
+}
+.pf-card:hover .pf-img {
+    transform: scale(1.06);
+}
+ 
+/* Gradient overlay on hover */
+.pf-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(10,14,26,.9) 0%, transparent 60%);
-    display: flex; flex-direction: column;
+    background: linear-gradient(to top, rgba(10,14,26,.85) 0%, rgba(10,14,26,.15) 55%, transparent 100%);
+    display: flex;
+    flex-direction: column;
     justify-content: flex-end;
     padding: 1.25rem;
     opacity: 0;
-    transition: opacity .3s;
+    transition: opacity .3s ease;
 }
-.portfolio-card:hover .portfolio-overlay { opacity: 1; }
-.bg-accent { background-color: var(--accent) !important; color: var(--bg-dark) !important; }
-
-/* Portfolio filter animation */
-.portfolio-item { transition: all .35s; }
-.portfolio-item.hidden { opacity: 0; transform: scale(.95); pointer-events: none; display: none; }
-
+.pf-card:hover .pf-overlay { opacity: 1; }
+ 
+.pf-badge {
+    display: inline-block;
+    padding: .25rem .75rem;
+    background: var(--accent);
+    color: #0a0e1a;
+    font-size: .72rem;
+    font-weight: 700;
+    border-radius: 999px;
+    margin-bottom: .5rem;
+    width: fit-content;
+}
+.pf-overlay-title {
+    color: #fff;
+    font-size: .95rem;
+    font-weight: 600;
+    margin: 0;
+}
+ 
+/* Filter hide/show */
+.pf-item {
+    transition: opacity .3s ease, transform .3s ease;
+}
+.pf-item.pf-hidden {
+    opacity: 0;
+    transform: scale(.96);
+    pointer-events: none;
+    display: none !important;
+}
+ 
+/* CTA Button */
+.pf-cta-btn {
+    display: inline-block;
+    padding: .75rem 2.2rem;
+    border: 1.5px solid #1a2540;
+    color: #1a2540;
+    background: transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: .95rem;
+    text-decoration: none;
+    transition: all .22s;
+    font-family: var(--font-body);
+}
+.pf-cta-btn:hover {
+    background: #1a2540;
+    color: #fff;
+}
 /* ============================================
    CLIENTS
    ============================================ */
