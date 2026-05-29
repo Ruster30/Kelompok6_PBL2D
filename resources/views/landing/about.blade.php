@@ -74,36 +74,5 @@
                 </div>
             </div>
         </div>
-
-        <!-- Mission, Quality, Solution Row -->
-        <div class="row g-4 mt-5">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
-                <div class="mission-card p-4 rounded-3 h-100">
-                    <div class="mission-icon mb-3">
-                        <i class="bi bi-bullseye fs-4 text-accent"></i>
-                    </div>
-                    <h5 class="text-white fw-bold mb-2">Misi Kami</h5>
-                    <p class="text-light-muted small mb-0">Menjadi penyedia layanan event organizer terdepan di tingkat global yang selalu mengutamakan inovasi dan kepuasan klien dalam menjalankan setiap momen.</p>
-                </div>
-            </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="mission-card p-4 rounded-3 h-100">
-                    <div class="mission-icon mb-3">
-                        <i class="bi bi-shield-check fs-4 text-accent"></i>
-                    </div>
-                    <h5 class="text-white fw-bold mb-2">Kualitas Tanpa Kompromi</h5>
-                    <p class="text-light-muted small mb-0">Setiap event yang kami tangani melewati proses seleksi ketat, mulai dari vendor hingga dekorasi untuk memastikan standar terbaik.</p>
-                </div>
-            </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="mission-card p-4 rounded-3 h-100">
-                    <div class="mission-icon mb-3">
-                        <i class="bi bi-star fs-4 text-accent"></i>
-                    </div>
-                    <h5 class="text-white fw-bold mb-2">Kepuasan Klien Prioritas</h5>
-                    <p class="text-light-muted small mb-0">Kami menempatkan kepuasan klien sebagai prioritas utama dalam setiap langkah pelaksanaan event, dari konsultasi hingga eksekusi.</p>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
