@@ -11,4 +11,5 @@
     @include('landing.services')
     @include('landing.team')
     @include('landing.portofolio')
+    @include('landing.clients')
 @endsection

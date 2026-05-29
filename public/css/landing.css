@@ -532,7 +532,6 @@ body {
     border-bottom: 1px solid var(--bg-card-border);
     background: var(--bg-card);
 }
-.clients-track-wrap { position: relative; }
 .clients-track-wrap::before,
 .clients-track-wrap::after {
     content: '';
@@ -559,13 +558,17 @@ body {
 }
 .client-logo-img {
     opacity: .5;
+    filter: grayscale(100%) brightness(2); 
     transition: opacity .2s, filter .2s;
 }
 .client-logo-img:hover {
     opacity: 1;
-    filter: brightness(0) invert(1) !important;
+    filter: none;  
+    transform: scale(1.1);
 }
-
+.clients-track-wrap:hover .clients-track {
+    animation-play-state: paused;
+}   
 /* ============================================
    CONTACT
    ============================================ */
