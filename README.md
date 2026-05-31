@@ -1,59 +1,228 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎉 Sistem Informasi Manajemen Event Alpha.corp
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 📖 Deskripsi Proyek
 
-## About Laravel
+Sistem Informasi Manajemen Event Alpha.corp merupakan aplikasi berbasis web yang dirancang untuk membantu proses pengelolaan layanan event secara terintegrasi antara klien, admin, dan vendor.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Sistem ini mempermudah pengelolaan kebutuhan event mulai dari pengajuan kebutuhan oleh klien, penyusunan proposal dan RAB, proses negosiasi, pengelolaan vendor, pembayaran, hingga pembuatan laporan akhir event.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Tujuan Aplikasi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* Mempermudah pengelolaan layanan event secara digital.
+* Mempercepat komunikasi antara klien, admin, dan vendor.
+* Meningkatkan efisiensi proses penyusunan proposal dan RAB.
+* Memudahkan monitoring pelaksanaan event secara real-time.
 
-## Learning Laravel
+### Masalah yang Diselesaikan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+* Proses pengelolaan event yang masih manual.
+* Sulitnya memantau progres event.
+* Dokumentasi event yang tidak terpusat.
+* Komunikasi antara pihak terkait yang kurang efektif.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Target Pengguna
 
-## Laravel Sponsors
+* Admin Event Organizer
+* Klien / Customer
+* Vendor / Mitra Event
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+# ✨ Features
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Client Features
 
-## Contributing
+* Registrasi dan Login
+* Mengirim kebutuhan event
+* Melihat proposal dan RAB
+* Menyetujui proposal
+* Melakukan negosiasi
+* Upload bukti pembayaran
+* Melihat progres event
+* Melihat dokumentasi event
+* Menerima laporan akhir event
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Admin Features
 
-## Code of Conduct
+* Login dan Manajemen Akun
+* Kelola Data Klien
+* Kelola Layanan Event
+* Menyusun Proposal
+* Menyusun RAB
+* Mengelola Negosiasi
+* Mengelola Timeline Event
+* Mengelola Dokumentasi Event
+* Mengelola Vendor
+* Verifikasi Pembayaran
+* Generate Kontrak dan Invoice
+* Menyusun Laporan Akhir Event
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Vendor Features
 
-## Security Vulnerabilities
+* Login Vendor
+* Menerima Notifikasi Event
+* Melihat Timeline Event
+* Melaksanakan Tugas Event
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+# 🛠 Tech Stack
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Backend
+
+* Laravel 12
+* PHP
+
+### Frontend
+
+* Blade Template
+* Bootstrap 5
+* HTML5
+* CSS
+* JavaScript
+
+### Database
+
+* MySQL
+
+### Development Tools
+
+* Composer
+* Node.js
+* NPM
+* Git
+* GitHub
+
+---
+
+# 🚀 Instalasi Project
+
+## Clone Repository
+
+```bash
+git clone https://github.com/username/alpha-corp.git
+```
+
+## Masuk ke Folder Project
+
+```bash
+cd Kelompok6_PBL2D
+```
+
+## Install Dependency PHP
+
+```bash
+composer install
+```
+
+## Install Dependency Frontend
+
+```bash
+npm install
+```
+
+## Copy Environment
+
+```bash
+cp .env.example .env
+```
+
+## Generate Application Key
+
+```bash
+php artisan key:generate
+```
+
+## Konfigurasi Database
+
+Edit file `.env`
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=alpha_corp
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+## Jalankan Migration
+
+```bash
+php artisan migrate
+```
+
+## Jalankan Server
+
+```bash
+php artisan serve
+```
+
+## Jalankan Vite
+
+```bash
+npm run dev
+```
+
+---
+
+# 📸 Screenshot Proyek
+
+## Login Page
+
+Tambahkan screenshot halaman login di sini.
+
+```text
+docs/screenshots/login.png
+```
+
+## Dashboard Admin
+
+Tambahkan screenshot dashboard admin di sini.
+
+```text
+docs/screenshots/dashboard-admin.png
+```
+
+## Kelola Event
+
+Tambahkan screenshot fitur pengelolaan event.
+
+```text
+docs/screenshots/event-management.png
+```
+
+## Proposal dan RAB
+
+Tambahkan screenshot proposal dan RAB.
+
+```text
+docs/screenshots/proposal-rab.png
+```
+
+## Pembayaran
+
+Tambahkan screenshot fitur pembayaran.
+
+```text
+docs/screenshots/payment.png
+```
+
+---
+
+# 👥 Tim Pengembang
+
+Ahmad Ridho Hadaffi  : Project Manager
+Salwa Febriani       : System Analyst
+Muhammad Rafi        : Lead Programmer
+Restia               : QA Tester
+
+---
+
+# 📌 Status Project
+
+🚧 On Development
+
+Project ini sedang dikembangkan sebagai bagian dari tugas/proyek Sistem Informasi Manajemen Event Alpha.corp.
+
+---
