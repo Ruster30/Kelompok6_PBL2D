@@ -212,10 +212,10 @@ docs/screenshots/payment.png
 
 # 👥 Tim Pengembang
 
-Ahmad Ridho Hadaffi  : Project Manager
-Salwa Febriani       : System Analyst
-Muhammad Rafi        : Lead Programmer
-Restia               : QA Tester
+* Ahmad Ridho Hadaffi  : Project Manager
+* Salwa Febriani       : System Analyst
+* Muhammad Rafi        : Lead Programmer
+* Restia               : QA Tester
 
 ---
 
