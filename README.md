@@ -215,7 +215,7 @@ docs/screenshots/payment.png
 * Ahmad Ridho Hadaffi  : Project Manager
 * Salwa Febriani       : System Analyst
 * Muhammad Rafi        : Lead Programmer
-* Restia               : QA Tester
+* Restia Amelia        : QA Tester
 
 ---
 
