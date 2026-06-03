@@ -1,5 +1,5 @@
 {{-- resources/views/landing/index.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.landing')
 
 @section('title', 'ALPHA.COM - Menciptakan Event yang Sempurna')
 
