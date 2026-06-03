@@ -28,7 +28,7 @@ Sistem ini mempermudah pengelolaan kebutuhan event mulai dari pengajuan kebutuha
 
 ---
 
-# ✨ Features
+# Features
 
 ## Client Features
 
@@ -66,7 +66,7 @@ Sistem ini mempermudah pengelolaan kebutuhan event mulai dari pengajuan kebutuha
 
 ---
 
-# 🛠 Tech Stack
+# Tech Stack
 
 ### Backend
 
@@ -95,7 +95,7 @@ Sistem ini mempermudah pengelolaan kebutuhan event mulai dari pengajuan kebutuha
 
 ---
 
-# 🚀 Instalasi Project
+# Instalasi Project
 
 ## Clone Repository
 
@@ -166,7 +166,7 @@ npm run dev
 
 ---
 
-# 📸 Screenshot Proyek
+# Screenshot Proyek
 
 ## Login Page
 
@@ -210,7 +210,7 @@ docs/screenshots/payment.png
 
 ---
 
-# 👥 Tim Pengembang
+# Tim Pengembang
 
 * Ahmad Ridho Hadaffi  : Project Manager
 * Salwa Febriani       : System Analyst
@@ -219,9 +219,9 @@ docs/screenshots/payment.png
 
 ---
 
-# 📌 Status Project
+# Status Project
 
-🚧 On Development
+- On Development
 
 Project ini sedang dikembangkan sebagai bagian dari tugas/proyek Sistem Informasi Manajemen Event Alpha.corp.
 
