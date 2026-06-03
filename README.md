@@ -1,6 +1,6 @@
-# 🎉 Sistem Informasi Manajemen Event Alpha.corp
+# Sistem Informasi Manajemen Event Alpha.corp
 
-## 📖 Deskripsi Proyek
+## Deskripsi Proyek
 
 Sistem Informasi Manajemen Event Alpha.corp merupakan aplikasi berbasis web yang dirancang untuk membantu proses pengelolaan layanan event secara terintegrasi antara klien, admin, dan vendor.
 
