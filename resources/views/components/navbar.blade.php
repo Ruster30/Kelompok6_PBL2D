@@ -29,7 +29,7 @@
             </ul>
 
             <div class="d-flex gap-2 mt-3 mt-lg-0">
-                <a href="#" class="btn btn-outline-light btn-sm px-3">Masuk</a>
+                <a href="{{ route('login') }}" class="btn btn-outline-light btn-sm px-3">Masuk</a>
                 <a href="#kontak" class="btn btn-accent btn-sm px-3">Hubungi Kami</a>
             </div>
         </div>
