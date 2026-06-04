@@ -655,16 +655,159 @@ select.form-control-dark option { background: var(--bg-card); color: var(--white
 }
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE — Tablet & Mobile
    ============================================ */
+ 
+/* ── Global fix: cegah overflow horizontal ── */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+*, *::before, *::after {
+    max-width: 100%;
+}
+ 
+/* ── Tablet (≤ 991px) ── */
 @media (max-width: 991px) {
     .py-6 { padding-top: 3.5rem; padding-bottom: 3.5rem; }
-    .about-float-card { left: 0; bottom: -1rem; width: 220px; }
-    h1.display-3 { font-size: 2.5rem; }
+ 
+    /* Hero */
+    h1.display-3 { font-size: 2.4rem; }
+    .hero-section { min-height: 100svh; }
+ 
+    /* About */
+    .about-float-card { left: 0; bottom: -1rem; width: 200px; }
+ 
+    /* Visi Misi */
+    .visi-misi-section .col-lg-5,
+    .visi-misi-section .col-lg-7 { width: 100%; }
+    .visi-card { min-height: auto; }
+ 
+    /* Services */
+    .services-title { font-size: 2rem; }
+ 
+    /* Portfolio header: stack vertikal */
+    .pf-header { flex-direction: column; align-items: flex-start !important; }
+    .pf-filters { justify-content: flex-start; }
+ 
+    /* Contact */
+    .contact-form-card { padding: 2rem !important; }
 }
-@media (max-width: 575px) {
-    h1.display-3 { font-size: 2rem; }
-    .display-5 { font-size: 1.75rem; }
+ 
+/* ── Mobile (≤ 767px) ── */
+@media (max-width: 767px) {
+    /* Navbar */
+    #mainNavbar { padding: .7rem 0; }
+    #mainNavbar .navbar-collapse {
+        background: rgba(10,14,26,.97);
+        border-top: 1px solid #1e2d40;
+        padding: 1rem;
+        margin-top: .5rem;
+        border-radius: 0 0 12px 12px;
+    }
+ 
+    /* Hero — kunci utama fix overflow */
+    .hero-section {
+        min-height: 100svh;
+        padding-top: 80px;
+        text-align: center;
+    }
+    .hero-section .col-lg-7 { width: 100%; padding: 0 !important; }
+    h1.display-3 {
+        font-size: 2rem;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+    }
+    .hero-section p.fs-5 { font-size: 1rem !important; }
+    .hero-section .d-flex.gap-3 {
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+    .hero-section .btn { width: 100%; max-width: 280px; }
+ 
+    /* Scroll indicator disembunyikan di mobile kecil */
+    .scroll-indicator { display: none; }
+ 
+    /* About */
     .about-float-card { display: none; }
-    .contact-form-card { padding: 1.5rem !important; }
+    .stat-card { padding: .75rem .5rem !important; }
+    .stat-card h3 { font-size: 1.5rem !important; }
+ 
+    /* Visi Misi */
+    .visi-misi-section { background: #f0f4f8; }
+    .visi-card { min-height: auto; border-radius: 12px; }
+    .misi-cell { padding-left: 0 !important; padding-top: 1.5rem; }
+ 
+    /* Services */
+    .services-title { font-size: 1.75rem; }
+    .svc-card { padding: 1.25rem !important; }
+ 
+    /* Team */
+    .team-img { height: 200px !important; }
+ 
+    /* Portfolio */
+    .pf-title { font-size: 1.75rem; }
+    .pf-filters { gap: .4rem !important; }
+    .pf-btn { font-size: .78rem; padding: .35rem .85rem; }
+    .pf-item .pf-img { height: 200px !important; }
+ 
+    /* Clients marquee lebih lambat */
+    .clients-track { animation-duration: 18s; }
+ 
+    /* Contact */
+    .contact-form-card { padding: 1.25rem !important; }
+ 
+    /* Footer */
+    .footer-cta-band { padding: 2rem 1.25rem !important; }
+    .footer-cta-band h2 { font-size: 1.5rem; }
+}
+ 
+/* ── Small Mobile (≤ 575px) ── */
+@media (max-width: 575px) {
+    /* Spacing */
+    .py-6 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+    .container { padding-left: 1rem; padding-right: 1rem; }
+ 
+    /* Hero */
+    h1.display-3 { font-size: 1.8rem; line-height: 1.2; }
+    .hero-section p { font-size: .95rem !important; }
+ 
+    /* Headings */
+    .display-5 { font-size: 1.6rem !important; }
+    .services-title { font-size: 1.6rem; }
+    .pf-title { font-size: 1.6rem; }
+ 
+    /* Stats — 2 kolom */
+    .stat-card { min-width: 0; }
+ 
+    /* About image */
+    .about-main-img { height: 260px !important; }
+ 
+    /* Visi Misi */
+    .visi-card { padding: 1.5rem !important; }
+ 
+    /* Service cards */
+    .svc-card { padding: 1rem !important; }
+    .svc-icon-wrap { width: 44px; height: 44px; }
+    .svc-title { font-size: 1rem; }
+ 
+    /* Team: 2 kolom */
+    .team-section .col-6 { width: 50% !important; }
+    .team-img { height: 160px !important; }
+ 
+    /* Portfolio: 1 kolom di mobile kecil */
+    .portfolio-section .col-md-6,
+    .portfolio-section .col-lg-4 { width: 100% !important; }
+    .pf-item .pf-img { height: 220px !important; }
+ 
+    /* Contact form */
+    .contact-form-card { padding: 1rem !important; }
+    .contact-form-card .row > div { width: 100% !important; }
+ 
+    /* Footer */
+    .footer-cta-band .d-flex { flex-direction: column; }
+    .footer-cta-band .btn { width: 100%; }
+    .footer-main .col-6 { width: 50% !important; }
 }
