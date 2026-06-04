@@ -89,6 +89,53 @@ git push origin feature/nama-fitur -> mengirim hasil kerjaan ke git
 ```
 
 ---
+## ⚠️ Aturan Penting
+
+## ✅ Aturan Pesan Commit
+
+Setiap anggota wajib menggunakan format pesan commit yang jelas dan konsisten.
+
+### Format Commit
+
+```bash
+kategori: deskripsi perubahan
+```
+
+### Kategori Commit
+
+| Kategori | Indikasi Pesan Commit / Dampak |
+|-----------|--------------------------------|
+| feat | Penambahan fitur baru |
+| fix | Perbaikan bug |
+| refactor | Perubahan struktur tanpa mengubah fungsi |
+| docs | Perubahan dokumentasi |
+| test | Penambahan/modifikasi testing |
+| chore | Pembaruan minor (config, database, dependency, dll.) |
+
+### Contoh Commit
+
+```bash
+feat: membuat halaman login
+fix: memperbaiki error pada view dashboard
+refactor: memisahkan controller admin
+docs: memperbarui dokumentasi project
+test: menambahkan unit test login
+chore: update konfigurasi github actions
+```
+
+### Commit yang Tidak Disarankan
+
+```bash
+update
+perbaikan
+revisi
+tugas pbl
+commit terbaru
+```
+
+Karena tidak menjelaskan perubahan yang dilakukan dan menyulitkan proses tracking kontribusi anggota tim.
+
+---
 
 # 🔗 Proses Pull Request (PR) & Merge
 
