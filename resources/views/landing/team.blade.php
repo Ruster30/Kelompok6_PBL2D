@@ -45,6 +45,20 @@
                     'instagram' => '',
                     'linkedin' => '',
                 ],
+                [
+                    'name' => 'Elena Rodriguez',
+                    'role' => 'Event Manager',
+                    'img' => 'team/team4.png',
+                    'instagram' => '',
+                    'linkedin' => '',
+                ],
+                [
+                    'name' => 'Elena Rodriguez',
+                    'role' => 'Event Manager',
+                    'img' => 'team/team4.png',
+                    'instagram' => '',
+                    'linkedin' => '',
+                ],
             ];
             @endphp
 
