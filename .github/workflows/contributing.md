@@ -70,14 +70,14 @@ git pull -> mengambil update terbaru dari git ke lokal
 ## 2. Masuk ke branch pribadi
 
 ```bash
-git checkout nama_branch
-git pull
+git checkout nama_branch -> mengganti branch ke branch pribadi
+git pull -> mengambil update dari branch pribadi di git ke lokal
 ```
 
 ## 3. Buat branch fitur
 
 ```bash
-git checkout -b feature/nama-fitur
+git checkout -b feature/nama-fitur -> bikin branch fitur yang akan dibuat ini udah langsung ke ganti
 ```
 
 ## 4. Kerjakan fitur
