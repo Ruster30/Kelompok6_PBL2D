@@ -41,10 +41,10 @@ Digunakan untuk mengerjakan fitur tertentu:
 ## 1. Buat branch `dev`
 
 ```bash
-git checkout main
+git checkout main -> mengganti branch ke main
 git pull
 
-git checkout -b dev
+git checkout -b dev -> membikin branch dev
 git push origin dev
 ```
 
@@ -63,8 +63,8 @@ git push origin dev/nama
 ## 1. Ambil update terbaru dari `dev`
 
 ```bash
-git checkout dev
-git pull
+git checkout dev -> mengganti branch ke dev
+git pull -> mengambil update terbaru dari git ke lokal
 ```
 
 ## 2. Masuk ke branch pribadi
@@ -83,9 +83,9 @@ git checkout -b feature/nama-fitur
 ## 4. Kerjakan fitur
 
 ```bash
-git add .
-git commit -m "deskripsi perubahan"
-git push origin feature/nama-fitur
+git add . -> add file 
+git commit -m "deskripsi perubahan" -> pesan commit ke git
+git push origin feature/nama-fitur -> mengirim hasil kerjaan ke git
 ```
 
 ---
