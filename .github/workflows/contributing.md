@@ -296,16 +296,55 @@ feature/nama-fitur
 project-eo/
 │
 ├── app/
+│   │
 │   ├── Http/
+│   │   │
 │   │   ├── Controllers/
+│   │   │   │
 │   │   │   ├── LandingController.php
-│   │   │   ├── Auth/
+│   │   │   │
+│   │   │   ├── Auth/                    # Laravel Breeze
+│   │   │   │   ├── AuthenticatedSessionController.php
+│   │   │   │   ├── ConfirmablePasswordController.php
+│   │   │   │   ├── EmailVerificationNotificationController.php
+│   │   │   │   ├── EmailVerificationPromptController.php
+│   │   │   │   ├── NewPasswordController.php
+│   │   │   │   ├── PasswordController.php
+│   │   │   │   ├── PasswordResetLinkController.php
+│   │   │   │   ├── RegisteredUserController.php
+│   │   │   │   └── VerifyEmailController.php
+│   │   │   │
 │   │   │   ├── Admin/
+│   │   │   │   ├── DashboardController.php
+│   │   │   │   ├── EventController.php
+│   │   │   │   ├── VendorController.php
+│   │   │   │   ├── ClientController.php
+│   │   │   │   └── NegotiationController.php
+│   │   │   │
 │   │   │   ├── Client/
+│   │   │   │   ├── DashboardController.php
+│   │   │   │   ├── TimelineController.php
+│   │   │   │   ├── OfferLetterController.php
+│   │   │   │   └── EventController.php
+│   │   │   │
 │   │   │   ├── Vendor/
+│   │   │   │   ├── DashboardController.php
+│   │   │   │   ├── ServiceController.php
+│   │   │   │   ├── PortfolioController.php
+│   │   │   │   └── NegotiationController.php
+│   │   │   │
 │   │   │   └── Event/
+│   │   │       └── EventController.php
+│   │   │
+│   │   ├── Middleware/
+│   │   │   ├── AdminMiddleware.php
+│   │   │   ├── ClientMiddleware.php
+│   │   │   └── VendorMiddleware.php
 │   │   │
 │   │   └── Requests/
+│   │       ├── EventRequest.php
+│   │       ├── VendorRequest.php
+│   │       └── ClientRequest.php
 │   │
 │   ├── Models/
 │   │   ├── User.php
@@ -313,38 +352,77 @@ project-eo/
 │   │   ├── Vendor.php
 │   │   ├── Client.php
 │   │   ├── Negotiation.php
-│   │   └── OfferLetter.php
+│   │   ├── OfferLetter.php
+│   │   └── Role.php
 │   │
 │   └── Services/
+│       ├── EventService.php
+│       ├── NegotiationService.php
+│       └── OfferLetterService.php
+│
+│
+├── bootstrap/
+│
+├── config/
+│
+├── database/
+│   │
+│   ├── migrations/
+│   │   ├── create_users_table.php
+│   │   ├── create_events_table.php
+│   │   ├── create_vendors_table.php
+│   │   ├── create_clients_table.php
+│   │   ├── create_negotiations_table.php
+│   │   ├── create_offer_letters_table.php
+│   │   └── add_role_to_users_table.php
+│   │
+│   ├── seeders/
+│   │   ├── DatabaseSeeder.php
+│   │   ├── UserSeeder.php
+│   │   ├── AdminSeeder.php
+│   │   └── RoleSeeder.php
+│   │
+│   └── factories/
 │
 │
 ├── public/
+│   │
 │   ├── images/
 │   │   ├── landing/
 │   │   ├── portfolio/
+│   │   ├── vendor/
 │   │   ├── team/
 │   │   └── icons/
 │   │
 │   ├── css/
 │   │   └── landing.css
 │   │
-│   └── js/
+│   ├── js/
+│   │
+│   └── uploads/
+│       ├── profile/
+│       ├── offer-letter/
+│       └── event/
 │
 │
 ├── resources/
-│   ├── views/
 │   │
+│   ├── views/
+│   │   │
 │   │   ├── layouts/
 │   │   │   ├── app.blade.php
+│   │   │   ├── guest.blade.php          # Breeze
 │   │   │   ├── admin.blade.php
-│   │   │   └── client.blade.php
+│   │   │   ├── client.blade.php
+│   │   │   └── vendor.blade.php
 │   │   │
 │   │   ├── components/
 │   │   │   ├── navbar.blade.php
 │   │   │   ├── footer.blade.php
 │   │   │   ├── hero.blade.php
 │   │   │   ├── service-card.blade.php
-│   │   │   └── contact-form.blade.php
+│   │   │   ├── contact-form.blade.php
+│   │   │   └── alert.blade.php
 │   │   │
 │   │   ├── landing/
 │   │   │   ├── index.blade.php
@@ -354,14 +432,23 @@ project-eo/
 │   │   │   ├── team.blade.php
 │   │   │   └── contact.blade.php
 │   │   │
-│   │   ├── auth/
+│   │   ├── auth/                        # Breeze
 │   │   │   ├── login.blade.php
-│   │   │   └── register.blade.php
+│   │   │   ├── register.blade.php
+│   │   │   ├── forgot-password.blade.php
+│   │   │   ├── reset-password.blade.php
+│   │   │   ├── verify-email.blade.php
+│   │   │   └── confirm-password.blade.php
+│   │   │
+│   │   ├── profile/                     # Breeze
+│   │   │   ├── edit.blade.php
+│   │   │   └── partials/
 │   │   │
 │   │   ├── admin/
 │   │   │   ├── dashboard.blade.php
 │   │   │   ├── event/
 │   │   │   ├── vendor/
+│   │   │   ├── client/
 │   │   │   └── negotiation/
 │   │   │
 │   │   ├── client/
@@ -370,23 +457,41 @@ project-eo/
 │   │   │   └── offer-letter.blade.php
 │   │   │
 │   │   └── vendor/
+│   │       ├── dashboard.blade.php
+│   │       ├── portfolio.blade.php
+│   │       ├── service.blade.php
+│   │       └── negotiation.blade.php
 │   │
-│   └── css/
+│   ├── css/
+│   └── js/
 │
 │
 ├── routes/
+│   │
 │   ├── web.php
+│   ├── auth.php             # Breeze
 │   ├── admin.php
 │   ├── client.php
-│   └── auth.php
+│   └── vendor.php
 │
 │
-├── database/
-│   ├── migrations/
-│   └── seeders/
+├── storage/
+│
+├── tests/
+│   ├── Feature/
+│   │   ├── Auth/
+│   │   ├── Admin/
+│   │   ├── Client/
+│   │   └── Vendor/
+│   │
+│   └── Unit/
 │
 │
-└── tests/
+├── composer.json
+├── package.json
+├── vite.config.js
+├── tailwind.config.js
+└── .env
 
 # 📌 Penutup
 
