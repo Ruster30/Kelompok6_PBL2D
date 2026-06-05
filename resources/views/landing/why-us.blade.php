@@ -9,7 +9,7 @@
             </p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             @php
             $features = [
                 [
