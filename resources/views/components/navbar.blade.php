@@ -1,8 +1,10 @@
 {{-- resources/views/components/navbar.blade.php --}}
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
     <div class="container">
-        <a class="navbar-brand fw-bold fs-4" href="#">
-            <span class="text-white">ALPHA</span><span class="text-accent">.</span><span class="text-white">COM</span>
+        <a class="navbar-brand" href="#">
+            <img src="{{ asset('images/landing/logo.png') }}"
+                alt="Alpha Organizer"
+                class="navbar-logo">
         </a>
 
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

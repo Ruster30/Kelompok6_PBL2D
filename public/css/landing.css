@@ -91,6 +91,17 @@ body {
     color: var(--bg-dark) !important;
 }
 
+.navbar-logo{
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    transition: .3s;
+}
+
+.navbar-logo:hover{
+    transform: scale(1.05);
+}
+
 /* ============================================
    HERO
    ============================================ */
