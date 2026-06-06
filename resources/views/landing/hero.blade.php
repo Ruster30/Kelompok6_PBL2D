@@ -10,7 +10,7 @@
                     <span class="text-accent font-playfair fst-italic"> Sempurna</span>
                 </h1>
                 <p class="text-light-muted fs-5 mb-4 pe-lg-4 text-center" data-aos="fade-up" data-aos-delay="200">
-                    Tingkatkan acara korporat, pernikahan, dan festival Anda bersama ALPHA.COM, kami mengubah visi menjadi pengalaman yang sempurna.
+                    Tingkatkan acara korporat, pernikahan, dan festival Anda bersama ALPHA.CORP, kami mengubah visi menjadi pengalaman yang sempurna.
                 </p>
                 <div class="d-flex gap-3 flex-wrap justify-content-center mt-5" data-aos="fade-up" data-aos-delay="300">
                     <a href="#kontak" class="btn btn-accent btn-lg px-4 fw-semibold">

@@ -91,6 +91,17 @@ body {
     color: var(--bg-dark) !important;
 }
 
+.navbar-logo{
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    transition: .3s;
+}
+
+.navbar-logo:hover{
+    transform: scale(1.05);
+}
+
 /* ============================================
    HERO
    ============================================ */
@@ -549,7 +560,7 @@ body {
     background: linear-gradient(to left, var(--bg-card), transparent);
 }
 .clients-track {
-    animation: marquee 24s linear infinite;
+    animation: marquee 50s linear infinite;
     width: max-content;
 }
 @keyframes marquee {

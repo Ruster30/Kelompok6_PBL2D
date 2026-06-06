@@ -9,15 +9,39 @@
             </p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             @php
             $features = [
-                ['icon' => 'bi-people-fill',        'title' => 'Tim Profesional',        'desc' => 'Tenaga ahli yang telah berpengalaman lebih dari 12 tahun di industri event organizer profesional.'],
-                ['icon' => 'bi-calendar-check-fill','title' => 'Pengalaman Luas',         'desc' => 'Tidak terhitung ratusan event sukses yang telah kami tangani di berbagai kota di seluruh Indonesia.'],
-                ['icon' => 'bi-bar-chart-fill',     'title' => 'Transparansi Anggaran',   'desc' => 'Setiap pengeluaran anggaran dikelola secara transparan dan akuntabel sesuai kebutuhan klien.'],
-                ['icon' => 'bi-cpu-fill',            'title' => 'Teknologi Modern',        'desc' => 'Menggunakan platform dan perangkat manajemen event terkini untuk efisiensi dan hasil terbaik.'],
-                ['icon' => 'bi-globe',               'title' => 'Jaringan Investor Luas',  'desc' => 'Memiliki relasi yang kuat dengan ratusan vendor dan sponsor terpercaya di seluruh nusantara.'],
-                ['icon' => 'bi-emoji-smile-fill',    'title' => 'Kepuasan Klien',          'desc' => 'Tingkat kepuasan klien yang konsisten tinggi dengan testimoni nyata yang bisa Anda buktikan sendiri.'],
+                [
+                    'icon'  => 'bi-award-fill',
+                    'title' => 'Keahlian dan Pengalaman',
+                    'desc'  => 'Tim kami terdiri dari para profesional yang memiliki pengalaman dan keahlian dalam mengelola berbagai jenis event dengan kualitas terbaik.'
+                ],
+                [
+                    'icon'  => 'bi-diagram-3-fill',
+                    'title' => 'Komprehensif dan Terintegrasi',
+                    'desc'  => 'Menyediakan layanan event organizer yang lengkap dan terintegrasi untuk memenuhi berbagai kebutuhan klien dalam satu solusi.'
+                ],
+                [
+                    'icon'  => 'bi-lightbulb-fill',
+                    'title' => 'Kreativitas dan Inovasi',
+                    'desc'  => 'Selalu menghadirkan ide-ide baru, konsep kreatif, dan mengikuti tren terkini untuk menciptakan pengalaman event yang berkesan.'
+                ],
+                [
+                    'icon'  => 'bi-shield-check',
+                    'title' => 'Integritas dan Etika',
+                    'desc'  => 'Menjaga transparansi, kejujuran, dan profesionalisme dalam setiap kerja sama demi membangun kepercayaan klien.'
+                ],
+                [
+                    'icon'  => 'bi-stars',
+                    'title' => 'Kualitas Tanpa Kompromi',
+                    'desc'  => 'Mengutamakan standar pelayanan tinggi dan perhatian terhadap setiap detail pelaksanaan acara.'
+                ],
+                [
+                    'icon'  => 'bi-emoji-smile-fill',
+                    'title' => 'Kepuasan Klien Prioritas',
+                    'desc'  => 'Berkomitmen memberikan pelayanan terbaik dan membangun hubungan jangka panjang dengan setiap klien.'
+                ],
             ];
             @endphp
 

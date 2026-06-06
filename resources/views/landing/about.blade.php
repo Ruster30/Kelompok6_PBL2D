@@ -10,24 +10,24 @@
                     <span class="text-accent font-playfair fst-italic"> Warisan</span>
                 </h2>
                 <p class="text-light-muted mb-4">
-                    Didirikan dengan prinsip presisi, kreativitas, dan eksekusi tanpa
-                    cacat, ALPHA.CORP telah berkembang menjadi agensi
-                    manajemen event terkemuka. Kami percaya setiap event
-                    menceritakan sebuah kisah, dan kami adalah pencerita
-                    utamanya.
+                    Alpha Organizer adalah perusahaan Event Organizer profesional yang bergerak 
+                    di bidang Event Organizer, Exhibition, Convention, dan Musical Entertainment. 
+                    Sejak berdiri, kami telah dipercaya menangani berbagai acara dengan standar 
+                    kualitas tinggi dan reputasi yang kuat di industri event.
                 </p>
                 <p class="text-light-muted mb-5">
-                    Dari retret perusahaan yang intim hingga festival musik berskala
-                    besar, tim kami yang berdedikasi menangani setiap detail dengan
-                    kualitas tanpa kompromi, memastikan visi Anda terwujud persis
-                    seperti yang dibayangkan.
+                    Didukung oleh tim yang berpengalaman, kreatif, dan berdedikasi, kami 
+                    berkomitmen menghadirkan solusi terbaik untuk setiap kebutuhan klien. 
+                    Dengan mengedepankan profesionalisme, inovasi, dan integritas, kami 
+                    menciptakan pengalaman yang berkesan serta memastikan setiap acara 
+                    berjalan sukses sesuai harapan.
                 </p>
 
                 <!-- Stats -->
                 <div class="row g-4">
                     <div class="col-6 col-sm-3">
                         <div class="stat-card text-center p-3 rounded-3">
-                            <h3 class="fw-bold text-white mb-1 fs-2">500+</h3>
+                            <h3 class="fw-bold text-white mb-1 fs-2">50+</h3>
                             <p class="text-accent small mb-0">Event Terselesaikan</p>
                         </div>
                     </div>
@@ -39,14 +39,14 @@
                     </div>
                     <div class="col-6 col-sm-3">
                         <div class="stat-card text-center p-3 rounded-3">
-                            <h3 class="fw-bold text-white mb-1 fs-2">12+</h3>
+                            <h3 class="fw-bold text-white mb-1 fs-2">3+</h3>
                             <p class="text-accent small mb-0">Tahun Pengalaman</p>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
                         <div class="stat-card text-center p-3 rounded-3">
-                            <h3 class="fw-bold text-white mb-1 fs-2">24</h3>
-                            <p class="text-accent small mb-0">Kota Terjangkau</p>
+                            <h3 class="fw-bold text-white mb-1 fs-2">1</h3>
+                            <p class="text-accent small mb-0">Kota Operasional</p>
                         </div>
                     </div>
                 </div>

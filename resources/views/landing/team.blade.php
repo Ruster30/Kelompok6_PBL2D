@@ -18,30 +18,44 @@
             @php
             $team = [
                 [
-                    'name' => 'Safira',
-                    'role' => 'CEO & Founder',
-                    'img' => 'team/safira.jpeg',
-                    'instagram' => 'https://www.instagram.com/sfrakrns?igsh=MWl3aHRiMnB3amxsaQ==',
+                    'name' => 'Fajar Villiano',
+                    'role' => 'Founder',
+                    'img' => 'team/team1.png',
+                    'instagram' => '',
                     'linkedin' => '',
                 ],
                 [
-                    'name' => 'Hadaffi',
-                    'role' => 'Creative Director',
-                    'img' => 'team/hadaffi.jpeg',
-                    'instagram' => 'https://www.instagram.com/ahmrdhdfi?igsh=N3Y5ZzFidDBqM2Fi',
+                    'name' => 'Valdy Dwi Wahyu',
+                    'role' => 'CO Founder',
+                    'img' => 'team/team2.png',
+                    'instagram' => '',
                     'linkedin' => '',
                 ],
                 [
-                    'name' => 'Michael Chen',
-                    'role' => 'Technical Director',
+                    'name' => 'Intan Prasywi',
+                    'role' => 'Finance Manager',
                     'img' => 'team/team3.png',
                     'instagram' => '',
                     'linkedin' => '',
                 ],
                 [
-                    'name' => 'Elena Rodriguez',
-                    'role' => 'Event Manager',
+                    'name' => 'Muhammad Pinda Rahmadan',
+                    'role' => 'Creative Director',
                     'img' => 'team/team4.png',
+                    'instagram' => '',
+                    'linkedin' => '',
+                ],
+                [
+                    'name' => 'Baghaztra',
+                    'role' => 'IT Support',
+                    'img' => 'team/team5.png',
+                    'instagram' => '',
+                    'linkedin' => '',
+                ],
+                [
+                    'name' => 'Fadil Febrianto',
+                    'role' => 'Graphic Designer',
+                    'img' => 'team/team6.png',
                     'instagram' => '',
                     'linkedin' => '',
                 ],
@@ -55,7 +69,7 @@
                         <img src="{{ asset('images/landing/' . $member['img']) }}"
                              alt="{{ $member['name'] }}"
                              class="img-fluid w-100 team-img"
-                             style="height:280px; object-fit:cover;">
+                             style="height:280px; object-fit:cover; object-position: center top;">
                         <div class="team-overlay d-flex align-items-center justify-content-center gap-2">
                             <a href="{{ $member['linkedin'] }}" target="_blank" class="team-social-btn"><i class="bi bi-linkedin"></i></a>
                             <a href="{{ $member['instagram'] }}" target="_blank" class="team-social-btn"><i class="bi bi-instagram"></i></a>
