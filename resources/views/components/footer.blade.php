@@ -89,7 +89,7 @@
         <hr class="footer-divider mb-3">
 
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <p class="text-light-muted small mb-0">&copy; {{ date('Y') }} ALPHA.COM. Semua hak dilindungi undang-undang.</p>
+            <p class="text-light-muted small mb-0">&copy; {{ date('Y') }} ALPHA.CORP. Semua hak dilindungi undang-undang.</p>
             <div class="d-flex gap-3">
                 <a href="#" class="text-light-muted small text-decoration-none">Kebijakan Privasi</a>
                 <a href="#" class="text-light-muted small text-decoration-none">Syarat & Ketentuan</a>
