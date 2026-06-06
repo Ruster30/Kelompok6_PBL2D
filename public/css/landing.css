@@ -549,7 +549,7 @@ body {
     background: linear-gradient(to left, var(--bg-card), transparent);
 }
 .clients-track {
-    animation: marquee 24s linear infinite;
+    animation: marquee 50s linear infinite;
     width: max-content;
 }
 @keyframes marquee {
