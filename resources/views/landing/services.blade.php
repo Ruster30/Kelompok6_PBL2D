@@ -20,39 +20,34 @@
         @php
         $services = [
             [
-                'icon'  => 'bi-briefcase',
-                'title' => 'Acara Korporat',
-                'desc'  => 'Konferensi, seminar, dan retret perusahaan yang dirancang untuk menginspirasi dan menghubungkan tim Anda.',
+                'icon' => 'bi-people-fill',
+                'title' => 'M.I.C.E',
+                'desc' => 'Meeting, Incentive, Convention, dan Exhibition yang dirancang profesional untuk kebutuhan perusahaan dan organisasi.'
             ],
             [
-                'icon'  => 'bi-heart',
-                'title' => 'Pernikahan',
-                'desc'  => 'Perencanaan pernikahan khusus yang mewujudkan hari impian Anda dengan keanggunan dan eksekusi sempurna.',
+                'icon' => 'bi-camera-video-fill',
+                'title' => 'Production',
+                'desc' => 'Layanan produksi event mulai dari desain grafis, aplikasi pendukung, maintenance service hingga LED Videotron.'
             ],
             [
-                'icon'  => 'bi-mic',
-                'title' => 'Konferensi',
-                'desc'  => 'Konferensi industri berskala besar dengan manajemen pendaftaran, panggung, dan pembicara yang mulus.',
+                'icon' => 'bi-megaphone-fill',
+                'title' => 'Marketing',
+                'desc' => 'Grand Opening, Activation, Selling Program, dan Branding untuk meningkatkan citra serta jangkauan bisnis Anda.'
             ],
             [
-                'icon'  => 'bi-send',
-                'title' => 'Peluncuran Produk',
-                'desc'  => 'Acara peluncuran berdampak tinggi yang menciptakan kehebohan dan meninggalkan kesan mendalam pada audiens Anda.',
+                'icon' => 'bi-stars',
+                'title' => 'Special Event',
+                'desc' => 'Pengelolaan expo, fashion show, kompetisi, acara virtual, hingga berbagai event spesial lainnya.'
             ],
             [
-                'icon'  => 'bi-scissors',
-                'title' => 'Gala Dinner',
-                'desc'  => 'Acara malam yang canggih, upacara penghargaan, dan gala amal dengan katering premium.',
-            ],
-            [
-                'icon'  => 'bi-music-note-list',
-                'title' => 'Festival & Konser',
-                'desc'  => 'Manajemen ujung ke ujung untuk acara publik besar, mulai dari pemesanan artis hingga pengendalian massa.',
+                'icon' => 'bi-briefcase-fill',
+                'title' => 'Corporate Event',
+                'desc' => 'Product Launching, Conference Gathering, dan Corporate Meeting dengan konsep profesional dan terstruktur.'
             ],
         ];
         @endphp
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             @foreach($services as $i => $service)
             <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ $i * 70 }}">
                 <div class="svc-card h-100 p-4 p-md-5">

@@ -18,7 +18,11 @@
                     <h3 class="fw-bold text-white mb-4">Visi Kami</h3>
 
                     <p class="visi-text mb-0">
-                        "Menjadi perusahaan event organizer terdepan di tingkat global yang selalu menghadirkan pengalaman tak terlupakan dan menetapkan standar baru dalam industri manajemen acara."
+                        "Menjadi perusahaan terkemuka yang memberikan solusi dan layanan terbaik
+                        dalam bidang Jasa Event Organizer, Exhibition, Convention dan Musical
+                        Entertainment.
+                        Kami bertujuan untuk menjadi mitra yang terpercaya dan bisa diandalkan
+                        dalam mencapai kesuksesan dan perkembangan bisnis klien kami."
                     </p>
                 </div>
             </div>
@@ -42,9 +46,9 @@
                             <i class="bi bi-stars fs-6"></i>
                         </div>
                         <div>
-                            <h6 class="fw-bold mb-1" style="color:#1a2540;">Kualitas Tanpa Kompromi</h6>
+                            <h6 class="fw-bold mb-1" style="color:#1a2540;">Solusi Kreatif</h6>
                             <p class="mb-0" style="color:#6b7a99; font-size:.9rem; line-height:1.65;">
-                                Memberikan standar layanan tertinggi dalam setiap detail pelaksanaan event.
+                                Memberikan solusi yang inovatif dan kreatif.
                             </p>
                         </div>
                     </div>
@@ -58,9 +62,9 @@
                             <i class="bi bi-lightning-charge fs-6"></i>
                         </div>
                         <div>
-                            <h6 class="fw-bold mb-1" style="color:#1a2540;">Inovasi Berkelanjutan</h6>
+                            <h6 class="fw-bold mb-1" style="color:#1a2540;">Layanan Berkualitas</h6>
                             <p class="mb-0" style="color:#6b7a99; font-size:.9rem; line-height:1.65;">
-                                Terus menghadirkan konsep segar dan teknologi terbaru dalam industri event.
+                                Memberikan layanan berkualitas tinggi yang memenuhi kebutuhan dan harapan klien.
                             </p>
                         </div>
                     </div>
@@ -74,9 +78,24 @@
                             <i class="bi bi-heart fs-6"></i>
                         </div>
                         <div>
-                            <h6 class="fw-bold mb-1" style="color:#1a2540;">Kepuasan Klien Prioritas</h6>
+                            <h6 class="fw-bold mb-1" style="color:#1a2540;">Pengalaman Tak Terlupakan</h6>
                             <p class="mb-0" style="color:#6b7a99; font-size:.9rem; line-height:1.65;">
-                                Membangun hubungan jangka panjang melalui transparansi dan kepercayaan.
+                                Menciptakan pengalaman yang berkesan bagi setiap klien.
+                            </p>
+                        </div>
+                    </div>
+                    {{-- Divider --}}
+                    <div class="misi-divider"></div>
+
+                    {{-- Item 4 --}}
+                    <div class="misi-item d-flex align-items-start gap-3" data-aos="fade-up" data-aos-delay="300">
+                        <div class="misi-item-icon flex-shrink-0">
+                            <i class="bi bi-heart fs-6"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1" style="color:#1a2540;">Standar Profesional</h6>
+                            <p class="mb-0" style="color:#6b7a99; font-size:.9rem; line-height:1.65;">
+                                Menyediakan produk dan layanan berkualitas terbaik.
                             </p>
                         </div>
                     </div>
