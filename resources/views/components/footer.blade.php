@@ -30,7 +30,7 @@
                 </a>
                 <p class="text-light-muted small mb-3">Kami adalah perusahaan event organizer profesional yang berdedikasi menghadirkan pengalaman tak terlupakan untuk setiap momen spesial Anda.</p>
                 <div class="d-flex gap-2">
-                    <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+                    <a href="https://www.instagram.com/alphaorganizer.co?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="social-icon"><i class="bi bi-instagram"></i></a>
                     <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
                     <a href="#" class="social-icon"><i class="bi bi-twitter-x"></i></a>
                     <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
