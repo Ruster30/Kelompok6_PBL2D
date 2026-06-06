@@ -40,12 +40,11 @@
             <div class="col-lg-2 col-md-6 col-6">
                 <h6 class="text-white fw-semibold mb-3">Layanan</h6>
                 <ul class="list-unstyled footer-links">
-                    <li><a href="#">Acara Korporat</a></li>
-                    <li><a href="#">Pernikahan</a></li>
-                    <li><a href="#">Konferensi</a></li>
-                    <li><a href="#">Festival & Konser</a></li>
-                    <li><a href="#">Gala Dinner</a></li>
-                    <li><a href="#">Peluncuran Produk</a></li>
+                    <li><a href="#">M.I.C.E</a></li>
+                    <li><a href="#">Production</a></li>
+                    <li><a href="#">Marketing</a></li>
+                    <li><a href="#">Special Event</a></li>
+                    <li><a href="#">Corporat event</a></li>
                 </ul>
             </div>
 
@@ -65,15 +64,23 @@
                 <ul class="list-unstyled footer-contact">
                     <li>
                         <i class="bi bi-geo-alt-fill text-accent me-2"></i>
-                        <span class="text-light-muted small">Jl. Sudirman No. 123, Jakarta Selatan 10910</span>
+                        <span class="text-light-muted small">Jl.Kenangan Air Dingin No.25, Kec Koto Tangah, Kota Padang</span>
                     </li>
                     <li>
                         <i class="bi bi-telephone-fill text-accent me-2"></i>
-                        <span class="text-light-muted small">+62 812 3456 7890</span>
+                        <span class="text-light-muted small">+62 822 3318 1883</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-telephone-fill text-accent me-2"></i>
+                        <span class="text-light-muted small">+62 895 4013 000 22</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-telephone-fill text-accent me-2"></i>
+                        <span class="text-light-muted small">+62 852 6334 6575</span>
                     </li>
                     <li>
                         <i class="bi bi-envelope-fill text-accent me-2"></i>
-                        <span class="text-light-muted small">hello@alphacom.id</span>
+                        <span class="text-light-muted small">alphaorganizer1209@gmail.com </span>
                     </li>
                 </ul>
             </div>
