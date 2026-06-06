@@ -1,19 +1,19 @@
-# 📘 Panduan Kolaborasi Tim (GitHub Workflow)
+#  Panduan Kolaborasi Tim (GitHub Workflow)
 
-## 🎯 Tujuan
+##  Tujuan
 
 Dokumen ini dibuat untuk memastikan semua anggota tim bekerja secara terstruktur, rapi, dan mudah dipantau kontribusinya.
 
 ---
 
-# 🧩 Struktur Branch
+#  Struktur Branch
 
-## 🔹 Branch Utama
+## - Branch Utama
 
 * `main` → versi final (production)
 * `dev` → penggabungan semua fitur
 
-## 🔹 Branch Per Orang
+## - Branch Per Orang
 
 Setiap anggota memiliki branch masing-masing:
 
@@ -24,7 +24,7 @@ Setiap anggota memiliki branch masing-masing:
 
 👉 Digunakan untuk tracking kontribusi individu.
 
-## 🔹 Branch Feature (Sementara)
+## - Branch Feature (Sementara)
 
 Digunakan untuk mengerjakan fitur tertentu:
 
@@ -36,7 +36,7 @@ Digunakan untuk mengerjakan fitur tertentu:
 
 ---
 
-# 🚀 Setup Awal (Sekali Saja)
+#  Setup Awal (Sekali Saja)
 
 ## 1. Buat branch `dev`
 
@@ -58,7 +58,7 @@ git push origin dev/nama
 
 ---
 
-# 🪜 Alur Kerja Harian
+#  Alur Kerja Harian
 
 ## 1. Ambil update terbaru dari `dev`
 
@@ -89,9 +89,9 @@ git push origin feature/nama-fitur -> mengirim hasil kerjaan ke git
 ```
 
 ---
-## ⚠️ Aturan Penting
+##  Aturan Penting
 
-## ✅ Aturan Pesan Commit
+##  Aturan Pesan Commit
 
 Setiap anggota wajib menggunakan format pesan commit yang jelas dan konsisten.
 
@@ -137,15 +137,15 @@ Karena tidak menjelaskan perubahan yang dilakukan dan menyulitkan proses trackin
 
 ---
 
-# 🔗 Proses Pull Request (PR) & Merge
+#  Proses Pull Request (PR) & Merge
 
-## 🎯 Tujuan
+##  Tujuan
 
 PR digunakan untuk menggabungkan kode dengan aman melalui proses review.
 
 ---
 
-## 🪜 Langkah Membuat Pull Request (PR)
+##  Langkah Membuat Pull Request (PR)
 
 ### 1. Push branch ke GitHub
 
@@ -171,7 +171,7 @@ Contoh:
 
 ---
 
-## 🔄 Alur PR dalam Tim
+##  Alur PR dalam Tim
 
 ### 1. Feature → Dev Pribadi
 
@@ -190,7 +190,7 @@ Contoh:
 
 ---
 
-## ✅ Aturan Merge
+##  Aturan Merge
 
 * PR harus direview minimal 1 orang
 * Pastikan tidak ada conflict
@@ -199,7 +199,7 @@ Contoh:
 
 ---
 
-## ⚠️ Jika Terjadi Conflict
+##  Jika Terjadi Conflict
 
 1. Checkout branch kamu
 
@@ -227,7 +227,7 @@ git push
 
 ---
 
-# 🔄 Update Setelah Merge
+#  Update Setelah Merge
 
 ```bash
 git checkout dev
@@ -240,9 +240,9 @@ git push
 
 ---
 
-# 🔧 Perbaikan & Perubahan Feature
+#  Perbaikan & Perubahan Feature
 
-## 🟢 Jika Feature BELUM di-merge
+## * Jika Feature BELUM di-merge
 
 Gunakan branch feature yang sama (tidak perlu buat baru).
 
@@ -259,7 +259,7 @@ git push
 
 ---
 
-## 🟡 Jika SUDAH PR tapi diminta revisi
+## * Jika SUDAH PR tapi diminta revisi
 
 Tetap gunakan branch feature yang sama.
 
@@ -276,7 +276,7 @@ git push
 
 ---
 
-## 🔴 Jika Feature SUDAH di-merge
+## * Jika Feature SUDAH di-merge
 
 JANGAN gunakan branch lama.
 
@@ -299,7 +299,7 @@ git push origin fix/nama-fitur
 
 ---
 
-## 📌 Aturan Penting
+##  Aturan Penting
 
 * Gunakan branch yang sama jika feature belum selesai
 * Buat branch baru jika sudah di-merge
@@ -307,16 +307,16 @@ git push origin fix/nama-fitur
 
 ---
 
-# 📜 Aturan Wajib
+#  Aturan Wajib
 
-## ❌ Dilarang
+##  Dilarang
 
 * Push langsung ke `main`
 * Merge tanpa Pull Request
 * Mengubah branch orang lain
 * Lompat merge (feature → main)
 
-## ✅ Wajib
+##  Wajib
 
 * Semua kerja dari `dev`
 * Gunakan branch `feature/...`
@@ -325,7 +325,7 @@ git push origin fix/nama-fitur
 
 ---
 
-# 🎯 Alur Singkat
+#  Alur Singkat
 
 ```
 main
@@ -434,11 +434,3 @@ project-eo/
 │
 │
 └── tests/
-
-# 📌 Penutup
-
-Dengan mengikuti aturan ini:
-
-* Kolaborasi tim menjadi lebih rapi
-* Konflik kode dapat diminimalisir
-* Kontribusi tiap anggota dapat terlihat jelas
