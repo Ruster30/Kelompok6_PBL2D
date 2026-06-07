@@ -1,5 +1,5 @@
 {{-- resources/views/client/events.blade.php --}}
-@extends('client.layouts.app')
+@extends('layouts.client')
 @section('title', 'Event Terdaftar')
 @section('page-title', 'Event Terdaftar')
 

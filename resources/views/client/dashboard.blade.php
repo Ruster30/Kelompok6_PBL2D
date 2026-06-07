@@ -1,5 +1,5 @@
 {{-- resources/views/client/dashboard.blade.php --}}
-@extends('client.layouts.app')
+@extends('layouts.client')
 @section('title', 'Ringkasan Saya')
 @section('page-title', 'Ringkasan Saya')
 

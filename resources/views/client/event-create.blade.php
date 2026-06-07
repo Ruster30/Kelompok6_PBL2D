@@ -1,5 +1,5 @@
 {{-- resources/views/client/event-create.blade.php --}}
-@extends('client.layouts.app')
+@extends('layouts.client')
 @section('title', 'Ajukan Event Baru')
 @section('page-title', 'Ajukan Event Baru')
 
