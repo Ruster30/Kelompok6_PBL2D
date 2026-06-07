@@ -16,7 +16,7 @@ Route::get('/', function () {
     return view('landing.index');
 });
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return redirect()->route('client.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -41,8 +41,24 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
  
     // Event Terdaftar
     Route::get('/events', function () {
-        return view('client.events');
-    })->name('events');
+
+    $events = collect([
+        (object)[
+            'id' => 1,
+            'name' => 'Konser Feast',
+            'status' => 'Mendatang',
+            'event_date' => now(),
+            'event_end_date' => now()->addDays(1),
+            'location' => 'Basko',
+            'guest_count' => 500,
+            'progress' => 45,
+            'cover_image' => null,
+        ]
+    ]);
+
+    return view('client.events', compact('events'));
+
+})->name('events');
  
     // Timeline Event
     Route::get('/timeline', function () {

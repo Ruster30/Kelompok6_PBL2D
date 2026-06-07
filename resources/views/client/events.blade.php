@@ -59,7 +59,7 @@
                     <span class="progress-pct">{{ $event->progress }}%</span>
                 </div>
                 <div class="progress-bar-wrap mt-2">
-                    <<div class="progress-bar-fill"
+                    <div class="progress-bar-fill"
                         data-width="{{ $event->progress }}">
                     </div>
                 </div>
