@@ -21,7 +21,12 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
+        'role',
+        'google_id',
+        'avatar',
+        'email_verified_at',
     ];
 
     /**
@@ -45,5 +50,42 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // ─── Relasi ──────────────────────────────────────────────
+
+    /** Events milik client ini */
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'client_id');
+    }
+
+    /** Events yang di-handle admin ini sebagai PIC */
+    public function handledEvents()
+    {
+        return $this->hasMany(Event::class, 'pic_admin_id');
+    }
+
+    /** Vendor profile milik user ini (jika role = vendor) */
+    public function vendor()
+    {
+        return $this->hasOne(Vendor::class, 'user_id');
+    }
+
+    // ─── Helper Role ─────────────────────────────────────────
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isClient(): bool
+    {
+        return $this->role === 'client';
+    }
+
+    public function isVendor(): bool
+    {
+        return $this->role === 'vendor';
     }
 }
