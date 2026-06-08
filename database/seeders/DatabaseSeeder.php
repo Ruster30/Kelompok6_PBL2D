@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,9 +18,37 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Admin
+        if (!User::where('email', 'admin@alphacorp.com')->exists()) {
+
+            User::create([
+                'name' => 'Administrator',
+                'email' => 'admin@alphacorp.com',
+                'password' => Hash::make('Adminalpha123'),
+                'role' => 'admin',
+            ]);
+        }
+
+        // Vendor
+        if (!User::where('email', 'vendor@alphacorp.com')->exists()) {
+
+            User::create([
+                'name' => 'Vendor Demo',
+                'email' => 'vendor@alphacorp.com',
+                'password' => Hash::make('Vendor123'),
+                'role' => 'vendor',
+            ]);
+        }
+
+        // Client
+        if (!User::where('email', 'client@alphacorp.com')->exists()) {
+
+            User::create([
+                'name' => 'Client Demo',
+                'email' => 'client@alphacorp.com',
+                'password' => Hash::make('Client123!'),
+                'role' => 'client',
+            ]);
+        }
     }
 }
