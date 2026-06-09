@@ -86,4 +86,51 @@ class Event extends Model
     {
         return $this->hasMany(Report::class, 'event_id');
     }
+ 
+    // Computed: progress dari timeline
+    public function getProgressAttribute(): int
+    {
+        $total = $this->timelines()->count();
+        if ($total === 0) return 0;
+        $done = $this->timelines()->where('status_kegiatan','selesai')->count();
+        return (int) round($done / $total * 100);
+    }
+ 
+    // Computed: total sudah dibayar (diverifikasi)
+    public function getTotalDibayarAttribute(): float
+    {
+        return (float) $this->payments()->where('status_pembayaran','diverifikasi')->sum('nominal');
+    }
+ 
+    // Computed: total invoice
+    public function getTotalInvoiceAttribute(): float
+    {
+        return (float) $this->invoices()->sum('total_invoice');
+    }
+ 
+    // Helper: badge CSS class
+    public function getBadgeClassAttribute(): string
+    {
+        return match($this->status_event) {
+            'berjalan'   => 'badge-aktif',
+            'diproses'   => 'badge-mendatang',
+            'menunggu'   => 'badge-pending',
+            'selesai'    => 'badge-selesai',
+            'dibatalkan' => 'badge-ditolak',
+            default      => 'badge-pending',
+        };
+    }
+ 
+    // Helper: label Indonesia
+    public function getStatusLabelAttribute(): string
+    {
+        return match($this->status_event) {
+            'menunggu'   => 'Menunggu',
+            'diproses'   => 'Diproses',
+            'berjalan'   => 'Berjalan',
+            'selesai'    => 'Selesai',
+            'dibatalkan' => 'Dibatalkan',
+            default      => ucfirst($this->status_event),
+        };
+    }
 }
