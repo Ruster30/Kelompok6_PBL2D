@@ -1,13 +1,11 @@
-{{-- resources/views/client/events.blade.php --}}
 @extends('layouts.client')
-@section('title', 'Event Terdaftar')
-@section('page-title', 'Event Terdaftar')
+@section('title','Event Terdaftar')
+@section('page-title','Event Terdaftar')
 
 @section('content')
-<div class="page-header d-flex align-center justify-between">
-    <div>
-        <h1>Event Terdaftar</h1>
-    </div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+    <h1 style="font-size:26px;font-weight:800;color:var(--dark);">Event Terdaftar</h1>
     <a href="{{ route('client.event.create') }}" class="btn btn-accent">
         <i class="bi bi-plus-lg"></i> Ajukan Event Baru
     </a>
@@ -18,39 +16,33 @@
     <div class="empty-state">
         <i class="bi bi-calendar-x"></i>
         <h4>Belum Ada Event</h4>
-        <p>Anda belum memiliki event yang terdaftar. Mulai dengan mengajukan event baru.</p>
-        <a href="{{ route('client.event.create') }}" class="btn btn-accent mt-3">
-            <i class="bi bi-plus-lg"></i> Ajukan Event Baru
-        </a>
+        <p>Anda belum memiliki event yang terdaftar.</p>
     </div>
 </div>
 @else
 <div class="events-grid">
     @foreach($events as $event)
     <div class="event-card">
+        {{-- Gambar / Header --}}
         <div class="event-card-img">
-            <img src="{{ $event->cover_image ? asset('images/'.$event->cover_image) : asset('images/event-placeholder.jpg') }}"
-                 alt="{{ $event->name }}">
+            <img src="{{ asset('images/event-placeholder.jpg') }}" alt="{{ $event->nama_event }}">
             <div class="event-card-badge">
-                <span class="badge badge-{{ strtolower($event->status) }}">{{ ucfirst($event->status) }}</span>
+                <span class="badge {{ $event->badge_class }}">{{ $event->status_label }}</span>
             </div>
-            <div class="event-card-title">{{ $event->name }}</div>
+            <div class="event-card-title">{{ $event->nama_event }}</div>
         </div>
+
+        {{-- Body --}}
         <div class="event-card-body">
             <div class="event-card-meta">
                 <i class="bi bi-calendar3"></i>
-                {{ $event->event_date?->format('j M Y') }}
-                @if($event->event_end_date)
-                – {{ $event->event_end_date->format('j M Y') }}
-                @endif
+                {{ $event->tanggal_event->isoFormat('D MMM Y') }}
             </div>
             <div class="event-card-meta">
-                <i class="bi bi-geo-alt-fill"></i>
-                {{ $event->location }}
+                <i class="bi bi-geo-alt-fill"></i> {{ $event->lokasi_event }}
             </div>
             <div class="event-card-meta">
-                <i class="bi bi-people-fill"></i>
-                {{ number_format($event->guest_count) }} Tamu
+                <i class="bi bi-people-fill"></i> {{ number_format($event->jumlah_tamu) }} Tamu
             </div>
 
             <div class="event-card-footer">
@@ -58,12 +50,11 @@
                     <span class="progress-label">Progres Perencanaan</span>
                     <span class="progress-pct">{{ $event->progress }}%</span>
                 </div>
-                <div class="progress-bar-wrap mt-2">
-                    <div class="progress-bar-fill"
-                        data-width="{{ $event->progress }}">
-                    </div>
+                <div class="progress-bar-wrap" style="margin-top:8px;">
+                    <div class="progress-bar-fill" style="width:{{ $event->progress }}%"></div>
                 </div>
-                <a href="{{ route('client.timeline', $event->id) }}" class="btn btn-outline mt-3" style="width:100%; justify-content:center;">
+                <a href="{{ route('client.timeline.show', $event->id) }}"
+                   class="btn btn-outline" style="width:100%;justify-content:center;margin-top:14px;">
                     Lihat Timeline <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
@@ -72,10 +63,5 @@
     @endforeach
 </div>
 @endif
-@endsection
 
-<script>
-document.querySelectorAll('.progress-bar-fill').forEach(bar => {
-    bar.style.width = bar.dataset.width + '%';
-});
-</script>
+@endsection
