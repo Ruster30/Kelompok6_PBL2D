@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Client\ClientController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/d', function () {
@@ -27,108 +28,57 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-// ═══════════════════════════════════════════════════
-//  CLIENT DASHBOARD  (middleware auth)
-//  Saat ini: langsung return view (statis, tanpa controller)
-//  Nanti:    ganti closure dengan [ClientController::class, 'method']
-// ═══════════════════════════════════════════════════
+/*
+|─────────────────────────────────────────────────────────
+|  CLIENT DASHBOARD ROUTES
+|  Semua dilindungi middleware 'auth'
+|  Prefix URL  : /client/...
+|  Prefix name : client....
+|─────────────────────────────────────────────────────────
+*/
 Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
  
-    // Ringkasan Saya
-    Route::get('/', function () {
-        return view('client.dashboard');
-    })->name('dashboard');
+    // ── Ringkasan / Dashboard ────────────────────────
+    Route::get('/',                         [ClientController::class, 'dashboard'])
+         ->name('dashboard');
  
-    // Event Terdaftar
-    Route::get('/events', function () {
-
-    $events = collect([
-        (object)[
-            'id' => 1,
-            'name' => 'Konser Feast',
-            'status' => 'Mendatang',
-            'event_date' => now(),
-            'event_end_date' => now()->addDays(1),
-            'location' => 'Basko',
-            'guest_count' => 500,
-            'progress' => 45,
-            'cover_image' => null,
-        ]
-    ]);
-
-    return view('client.events', compact('events'));
-
-})->name('events');
+    // ── Event Terdaftar ──────────────────────────────
+    Route::get('/events',                   [ClientController::class, 'events'])
+         ->name('events');
  
-    // Timeline Event
-    Route::get('/timeline', function () {
-        return view('client.timeline');
-    })->name('timeline');
-    Route::get('/timeline/{id}', function ($id) {
-        return view('client.timeline');
-    })->name('timeline.show');
+    // ── Ajukan Event Baru ────────────────────────────
+    Route::get('/event/create',             [ClientController::class, 'eventCreate'])
+         ->name('event.create');
+    Route::post('/event',                   [ClientController::class, 'eventStore'])
+         ->name('event.store');
  
-    // Anggaran & Faktur
-    Route::get('/invoices', function () {
-        return view('client.invoices');
-    })->name('invoices');
-    Route::get('/invoices/{id}', function ($id) {
-        return view('client.invoices');
-    })->name('invoices.show');
-    Route::post('/invoices/{id}/pay', function ($id) {
-        return back()->with('success', 'Pembayaran sedang diproses.');
-    })->name('invoices.pay');
+    // ── Timeline ─────────────────────────────────────
+    Route::get('/timeline',                 [ClientController::class, 'timeline'])
+         ->name('timeline');
+    Route::get('/timeline/{id}',            [ClientController::class, 'timeline'])
+         ->name('timeline.show');
  
-    // Surat Penawaran
-    Route::get('/proposals', function () {
-        return view('client.proposals');
-    })->name('proposals');
-    Route::get('/proposals/{id}', function ($id) {
-        return view('client.proposals');
-    })->name('proposals.show');
+    // ── Anggaran & Faktur ────────────────────────────
+    Route::get('/invoices',                 [ClientController::class, 'invoices'])
+         ->name('invoices');
+    Route::post('/invoices/{id}/bayar',     [ClientController::class, 'bayar'])
+         ->name('invoices.bayar');
  
-    // Ajukan Event Baru
-    Route::get('/event/create', function () {
-        return view('client.event-create');
-    })->name('event.create');
-    Route::post('/event', function (\Illuminate\Http\Request $request) {
-        $request->validate([
-            'name'       => 'required|string|max:200',
-            'event_type' => 'required|string',
-            'event_date' => 'required|date',
-        ]);
-        return redirect()->route('client.dashboard')
-                         ->with('success', 'Pengajuan event berhasil dikirim! Tim kami akan menghubungi Anda dalam 24 jam.');
-    })->name('event.store');
+    // ── Surat Penawaran ──────────────────────────────
+    Route::get('/proposals',                [ClientController::class, 'proposals'])
+         ->name('proposals');
+    Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
+         ->name('proposals.show');
  
-    // Pengaturan Akun
-    Route::get('/settings', function () {
-        return view('client.settings');
-    })->name('settings');
-    Route::put('/settings/profile', function (\Illuminate\Http\Request $request) {
-        $request->validate([
-            'name'  => 'required|string|max:100',
-            'email' => 'required|email',
-        ]);
-        return back()->with('success', 'Profil berhasil diperbarui.');
-    })->name('settings.update');
-    Route::put('/settings/password', function (\Illuminate\Http\Request $request) {
-        $request->validate([
-            'current_password' => 'required',
-            'password'         => 'required|min:8|confirmed',
-        ]);
-        return back()->with('success', 'Password berhasil diubah.');
-    })->name('settings.password');
-    Route::put('/settings/notifications', function () {
-        return back()->with('success', 'Preferensi notifikasi disimpan.');
-    })->name('settings.notifications');
+    // ── Pengaturan Akun ──────────────────────────────
+    Route::get('/settings',                 [ClientController::class, 'settings'])
+         ->name('settings');
+    Route::put('/settings/profile',         [ClientController::class, 'settingsProfile'])
+         ->name('settings.profile');
+    Route::put('/settings/password',        [ClientController::class, 'settingsPassword'])
+         ->name('settings.password');
  
+    // ── Notifikasi ───────────────────────────────────
+    Route::post('/notifications/read',      [ClientController::class, 'notifRead'])
+         ->name('notif.read');
 });
- 
-// ═══════════════════════════════════════════════════
-//  CATATAN MIGRASI KE CONTROLLER
-//  Ketika siap pakai controller, ganti tiap closure
-//  dengan: [ClientController::class, 'namaMethod']
-//  Contoh:
-//    Route::get('/', [ClientController::class, 'dashboard'])->name('dashboard');
-// ═══════════════════════════════════════════════════
