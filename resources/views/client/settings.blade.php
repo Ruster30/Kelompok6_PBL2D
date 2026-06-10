@@ -1,47 +1,64 @@
-{{-- resources/views/client/settings.blade.php --}}
 @extends('layouts.client')
-@section('title', 'Pengaturan Akun')
-@section('page-title', 'Pengaturan Akun')
+@section('title','Pengaturan Akun')
+@section('page-title','Pengaturan Akun')
 
 @section('content')
 
 <div class="page-header">
-    <h1 style="font-size:26px; font-weight:800; color:var(--dark);">Pengaturan Akun</h1>
+    <h1 style="font-size:26px;font-weight:800;color:var(--dark);">Pengaturan Akun</h1>
 </div>
 
-<div style="max-width:860px;">
+<div style="max-width:720px;">
 
-    {{-- Profil Perusahaan --}}
+    {{-- Profil --}}
     <div class="settings-card">
-        <div class="settings-card-title">Profil Perusahaan</div>
-        <div class="settings-card-desc">Perbarui detail perusahaan dan informasi kontak utama Anda.</div>
+        <div class="settings-card-title">Profil Saya</div>
+        <div class="settings-card-desc">Perbarui informasi kontak dan profil akun Anda.</div>
 
-        <form action="{{ route('client.settings.update') }}" method="POST">
+        <form action="{{ route('client.settings.profile') }}" method="POST">
             @csrf @method('PUT')
 
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+                <div style="width:56px;height:56px;border-radius:50%;background:var(--dark);
+                            color:#fff;font-size:20px;font-weight:700;
+                            display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    {{ $user->initials }}
+                </div>
+                <div>
+                    <div style="font-size:15px;font-weight:700;color:var(--dark);">
+                        {{ $user->name }}
+                    </div>
+                    <div style="font-size:13px;color:var(--text-muted);">{{ $user->email }}</div>
+                </div>
+            </div>
+
             <div class="form-group">
-                <label class="form-label">Nama Perusahaan</label>
-                <input type="text" name="company_name" class="form-control"
-                       value="{{ old('company_name', Auth::user()->company_name ?? '') }}"
-                       placeholder="Nama perusahaan Anda">
+                <label class="form-label">Nama Lengkap <span style="color:#dc2626;">*</span></label>
+                <input type="text" name="name" class="form-control"
+                       value="{{ old('name', $user->name) }}" required>
+                @error('name')
+                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Nama Kontak Utama</label>
-                    <input type="text" name="name" class="form-control"
-                           value="{{ old('name', Auth::user()->name ?? '') }}"
-                           placeholder="Nama lengkap" required>
+                    <label class="form-label">Email <span style="color:#dc2626;">*</span></label>
+                    <input type="email" name="email" class="form-control"
+                           value="{{ old('email', $user->email) }}" required>
+                    @error('email')
+                    <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">{{ $message }}</span>
+                    @enderror
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Email Kontak</label>
-                    <input type="email" name="email" class="form-control"
-                           value="{{ old('email', Auth::user()->email ?? '') }}"
-                           placeholder="email@perusahaan.com" required>
+                    <label class="form-label">Nomor Telepon</label>
+                    <input type="tel" name="phone" class="form-control"
+                           value="{{ old('phone', $user->phone) }}"
+                           placeholder="+62 xxx xxxx xxxx">
                 </div>
             </div>
 
-            <div class="form-footer">
+            <div style="display:flex;justify-content:flex-end;margin-top:8px;">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-floppy"></i> Simpan Perubahan
                 </button>
@@ -49,10 +66,10 @@
         </form>
     </div>
 
-    {{-- Keamanan Akun --}}
+    {{-- Keamanan --}}
     <div class="settings-card">
         <div class="settings-card-title">Keamanan Akun</div>
-        <div class="settings-card-desc">Perbarui kata sandi akun Anda secara berkala untuk keamanan.</div>
+        <div class="settings-card-desc">Perbarui kata sandi Anda secara berkala.</div>
 
         <form action="{{ route('client.settings.password') }}" method="POST">
             @csrf @method('PUT')
@@ -60,9 +77,9 @@
             <div class="form-group">
                 <label class="form-label">Password Saat Ini</label>
                 <input type="password" name="current_password" class="form-control"
-                       placeholder="Masukkan password saat ini">
+                       placeholder="Masukkan password saat ini" required>
                 @error('current_password')
-                    <span style="color:#dc2626; font-size:12px; display:block; margin-top:4px;">{{ $message }}</span>
+                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">{{ $message }}</span>
                 @enderror
             </div>
 
@@ -70,19 +87,19 @@
                 <div class="form-group">
                     <label class="form-label">Password Baru</label>
                     <input type="password" name="password" class="form-control"
-                           placeholder="Min. 8 karakter">
+                           placeholder="Min. 8 karakter" required>
                     @error('password')
-                        <span style="color:#dc2626; font-size:12px; display:block; margin-top:4px;">{{ $message }}</span>
+                    <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label">Konfirmasi Password Baru</label>
                     <input type="password" name="password_confirmation" class="form-control"
-                           placeholder="Ulangi password baru">
+                           placeholder="Ulangi password baru" required>
                 </div>
             </div>
 
-            <div class="form-footer">
+            <div style="display:flex;justify-content:flex-end;margin-top:8px;">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-shield-lock"></i> Ubah Password
                 </button>
@@ -90,58 +107,38 @@
         </form>
     </div>
 
+    {{-- Info Akun --}}
+    <div class="settings-card">
+        <div class="settings-card-title">Informasi Akun</div>
+        <div class="settings-card-desc">Detail akun Anda di sistem ALPHA.COM.</div>
+
+        <div style="display:grid;gap:12px;">
+            <div style="display:flex;justify-content:space-between;padding:10px 0;
+                        border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text-muted);">Role</span>
+                <span class="badge badge-mendatang" style="font-size:11px;">
+                    {{ ucfirst($user->role) }}
+                </span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;
+                        border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text-muted);">Bergabung</span>
+                <span style="font-size:13px;font-weight:600;color:var(--dark);">
+                    {{ $user->created_at->isoFormat('D MMMM Y') }}
+                </span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;">
+                <span style="font-size:13px;color:var(--text-muted);">Email Terverifikasi</span>
+                @if($user->email_verified_at)
+                <span class="badge badge-aktif" style="font-size:11px;">
+                    <i class="bi bi-check-circle-fill" style="margin-right:3px;"></i> Terverifikasi
+                </span>
+                @else
+                <span class="badge badge-pending" style="font-size:11px;">Belum Terverifikasi</span>
+                @endif
+            </div>
+        </div>
+    </div>
 
 </div>
 @endsection
-
-@push('styles')
-<style>
-.toggle-ui {
-    width: 40px; height: 22px;
-    background: var(--border);
-    border-radius: 999px;
-    display: inline-block;
-    position: relative;
-    transition: background .2s;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-.toggle-ui::after {
-    content: '';
-    position: absolute;
-    width: 16px; height: 16px;
-    background: #fff;
-    border-radius: 50%;
-    top: 3px; left: 3px;
-    transition: transform .2s;
-    box-shadow: 0 1px 4px rgba(0,0,0,.2);
-}
-.toggle-cb:checked ~ .toggle-ui,
-.toggle-cb:checked + .toggle-ui { background: var(--accent); }
-.toggle-cb:checked ~ .toggle-ui::after,
-.toggle-cb:checked + .toggle-ui::after { transform: translateX(18px); }
-.toggle-cb { display: none; }
-</style>
-@endpush
-
-@push('scripts')
-<script>
-document.querySelectorAll('.toggle-ui').forEach(ui => {
-    ui.addEventListener('click', function () {
-        const cb = document.getElementById(this.dataset.for);
-        if (cb) {
-            cb.checked = !cb.checked;
-            this.style.background = cb.checked ? 'var(--accent)' : 'var(--border)';
-            this.querySelector ? null : null;
-            // trigger CSS
-            cb.dispatchEvent(new Event('change'));
-        }
-    });
-});
-// Init toggle visuals on load
-document.querySelectorAll('.toggle-cb').forEach(cb => {
-    const ui = document.querySelector(`.toggle-ui[data-for="${cb.id}"]`);
-    if (ui) ui.style.background = cb.checked ? 'var(--accent)' : 'var(--border)';
-});
-</script>
-@endpush
