@@ -1,21 +1,17 @@
-{{-- resources/views/client/event-create.blade.php --}}
 @extends('layouts.client')
-@section('title', 'Ajukan Event Baru')
-@section('page-title', 'Ajukan Event Baru')
-
-@push('styles')
-<style>
-/* Sembunyikan topbar title di halaman ini, pakai heading sendiri */
-.topbar .topbar-title { display: none; }
-</style>
-@endpush
+@section('title','Ajukan Event Baru')
+@section('page-title','Ajukan Event Baru')
 
 @section('content')
+<div style="max-width:680px;margin:0 auto;">
 
-<div style="max-width:680px; margin:0 auto;">
     <div class="page-header">
-        <h1 style="font-size:26px; font-weight:800; color:var(--dark); margin-bottom:6px;">Ajukan Event Baru</h1>
-        <p style="color:var(--text-muted);">Isi formulir di bawah untuk mulai merencanakan event Anda bersama kami.</p>
+        <h1 style="font-size:26px;font-weight:800;color:var(--dark);margin-bottom:6px;">
+            Ajukan Event Baru
+        </h1>
+        <p style="color:var(--text-muted);">
+            Isi formulir di bawah untuk mulai merencanakan event Anda bersama kami.
+        </p>
     </div>
 
     <form action="{{ route('client.event.store') }}" method="POST">
@@ -26,108 +22,115 @@
             <div class="form-section-title">1. Detail Event</div>
 
             <div class="form-group">
-                <label class="form-label">Nama Event</label>
-                <input type="text" name="name" class="form-control"
+                <label class="form-label">
+                    Nama Event <span style="color:#dc2626;">*</span>
+                </label>
+                <input type="text" name="nama_event" class="form-control"
                        placeholder="mis. Konferensi Teknologi Tahunan 2026"
-                       value="{{ old('name') }}" required>
-                @error('name')
-                    <span style="color:#dc2626; font-size:12px; margin-top:4px; display:block;">{{ $message }}</span>
+                       value="{{ old('nama_event') }}" required>
+                @error('nama_event')
+                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">
+                    {{ $message }}
+                </span>
                 @enderror
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Jenis Event</label>
-                    <select name="event_type" class="form-control">
+                    <label class="form-label">
+                        Jenis Event <span style="color:#dc2626;">*</span>
+                    </label>
+                    <select name="jenis_event" class="form-control" required>
                         <option value="">Pilih jenis event</option>
-                        <option value="Acara Korporat"    {{ old('event_type')=='Acara Korporat'    ? 'selected':'' }}>Acara Korporat</option>
-                        <option value="Pernikahan"        {{ old('event_type')=='Pernikahan'        ? 'selected':'' }}>Pernikahan</option>
-                        <option value="Konferensi"        {{ old('event_type')=='Konferensi'        ? 'selected':'' }}>Konferensi</option>
-                        <option value="Peluncuran Produk" {{ old('event_type')=='Peluncuran Produk' ? 'selected':'' }}>Peluncuran Produk</option>
-                        <option value="Gala Dinner"       {{ old('event_type')=='Gala Dinner'       ? 'selected':'' }}>Gala Dinner</option>
-                        <option value="Festival & Konser" {{ old('event_type')=='Festival & Konser' ? 'selected':'' }}>Festival & Konser</option>
+                        @foreach([
+                            'Acara Korporat','Pernikahan','Konferensi',
+                            'Peluncuran Produk','Gala Dinner','Festival & Konser'
+                        ] as $jenis)
+                        <option value="{{ $jenis }}"
+                                {{ old('jenis_event') === $jenis ? 'selected' : '' }}>
+                            {{ $jenis }}
+                        </option>
+                        @endforeach
                     </select>
+                    @error('jenis_event')
+                    <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">
+                        {{ $message }}
+                    </span>
+                    @enderror
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Jumlah Tamu</label>
-                    <input type="number" name="guest_count" class="form-control"
-                           placeholder="mis. 250" value="{{ old('guest_count') }}">
+                    <label class="form-label">
+                        Jumlah Tamu <span style="color:#dc2626;">*</span>
+                    </label>
+                    <input type="number" name="jumlah_tamu" class="form-control"
+                           placeholder="mis. 250"
+                           value="{{ old('jumlah_tamu') }}" min="1" required>
+                    @error('jumlah_tamu')
+                    <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">
+                        {{ $message }}
+                    </span>
+                    @enderror
                 </div>
             </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Tanggal Mulai</label>
-                    <input type="date" name="event_date" class="form-control"
-                           value="{{ old('event_date') }}" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Tanggal Selesai</label>
-                    <input type="date" name="event_end_date" class="form-control"
-                           value="{{ old('event_end_date') }}">
-                </div>
-            </div>
-
-            <hr style="border:none; border-top:1px solid var(--border); margin:8px 0 24px;">
-
-            {{-- 2. Lokasi & Anggaran --}}
-            <div class="form-section-title">2. Lokasi & Anggaran</div>
 
             <div class="form-group">
-                <label class="form-label">Preferensi Lokasi</label>
-                <input type="text" name="location" class="form-control"
-                       placeholder="mis. Pusat Kota Jakarta, atau nama venue spesifik"
-                       value="{{ old('location') }}">
+                <label class="form-label">
+                    Tanggal Event <span style="color:#dc2626;">*</span>
+                </label>
+                <input type="date" name="tanggal_event" class="form-control"
+                       value="{{ old('tanggal_event') }}"
+                       min="{{ date('Y-m-d', strtotime('+1 day')) }}" required>
+                @error('tanggal_event')
+                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">
+                    {{ $message }}
+                </span>
+                @enderror
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Tipe Venue</label>
-                    <div class="radio-group">
-                        <label class="radio-item">
-                            <input type="radio" name="venue_type" value="Indoor"
-                                   {{ old('venue_type', 'Indoor') == 'Indoor' ? 'checked' : '' }}>
-                            Indoor
-                        </label>
-                        <label class="radio-item">
-                            <input type="radio" name="venue_type" value="Outdoor"
-                                   {{ old('venue_type') == 'Outdoor' ? 'checked' : '' }}>
-                            Outdoor
-                        </label>
-                        <label class="radio-item">
-                            <input type="radio" name="venue_type" value="Keduanya"
-                                   {{ old('venue_type') == 'Keduanya' ? 'checked' : '' }}>
-                            Keduanya
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Estimasi Anggaran (Rp)</label>
-                    <input type="text" name="budget" class="form-control"
-                           placeholder="mis. 50.000.000" value="{{ old('budget') }}">
-                </div>
+            <hr style="border:none;border-top:1px solid var(--border);margin:8px 0 24px;">
+
+            {{-- 2. Lokasi --}}
+            <div class="form-section-title">2. Lokasi Event</div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    Lokasi Event <span style="color:#dc2626;">*</span>
+                </label>
+                <input type="text" name="lokasi_event" class="form-control"
+                       placeholder="mis. Basko Grand Mall, Padang"
+                       value="{{ old('lokasi_event') }}" required>
+                @error('lokasi_event')
+                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">
+                    {{ $message }}
+                </span>
+                @enderror
             </div>
 
-            <hr style="border:none; border-top:1px solid var(--border); margin:8px 0 24px;">
+            <hr style="border:none;border-top:1px solid var(--border);margin:8px 0 24px;">
 
             {{-- 3. Informasi Tambahan --}}
             <div class="form-section-title">3. Informasi Tambahan</div>
 
             <div class="form-group">
-                <label class="form-label">Deskripsi Event & Kebutuhan Khusus</label>
-                <textarea name="description" class="form-control" rows="5"
-                    placeholder="Ceritakan tentang tujuan event ini, tema spesifik, atau kebutuhan khusus yang perlu kami ketahui...">{{ old('description') }}</textarea>
+                <label class="form-label">Detail Kebutuhan & Catatan Khusus</label>
+                <textarea name="detail_kebutuhan" class="form-control" rows="5"
+                    placeholder="Ceritakan tentang konsep, tema, kebutuhan teknis, atau catatan khusus yang perlu kami ketahui...">{{ old('detail_kebutuhan') }}</textarea>
             </div>
 
             {{-- Info box --}}
             <div class="form-info-box">
                 <i class="bi bi-info-circle-fill"></i>
-                <span>Setelah mengirimkan permintaan ini, tim kami akan meninjau detailnya dan menghubungi Anda dalam waktu 24 jam dengan proposal awal dan jadwal panggilan konsultasi.</span>
+                <span>
+                    Setelah mengirimkan permintaan ini, tim kami akan meninjau detailnya dan
+                    menghubungi Anda dalam waktu <strong>24 jam</strong> dengan proposal awal
+                    dan jadwal konsultasi.
+                </span>
             </div>
 
             {{-- Footer --}}
             <div class="form-footer">
-                <a href="{{ route('client.dashboard') }}" class="btn btn-outline" style="margin-right:8px;">Batal</a>
+                <a href="{{ route('client.dashboard') }}" class="btn btn-outline"
+                   style="margin-right:8px;">Batal</a>
                 <button type="submit" class="btn btn-accent btn-lg">
                     Kirim Permintaan <i class="bi bi-send-fill"></i>
                 </button>
