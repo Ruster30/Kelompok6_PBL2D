@@ -25,4 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+
+use App\Http\Controllers\vendor\DashboardController;
+
+Route::get('/vendor', [DashboardController::class, 'index']);
+
 require __DIR__.'/auth.php';
