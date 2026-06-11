@@ -23,8 +23,18 @@ class Report extends Model
         ];
     }
 
+    // ─── Relasi ──────────────────────────────────────────────
+
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    // ─── Accessors ───────────────────────────────────────────
+
+    /** URL file laporan */
+    public function getFileUrlAttribute(): string
+    {
+        return asset('storage/' . $this->file_laporan);
     }
 }
