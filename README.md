@@ -1,79 +1,228 @@
-# Installation Guide
+# Sistem Informasi Manajemen Event Alpha.corp
 
-## Persyaratan Sistem
+## Deskripsi Proyek
 
-* PHP 8.3+
-* Composer
-* Node.js
-* NPM
-* MySQL
-* Git
+Sistem Informasi Manajemen Event Alpha.corp merupakan aplikasi berbasis web yang dirancang untuk membantu proses pengelolaan layanan event secara terintegrasi antara klien, admin, dan vendor.
+
+Sistem ini mempermudah pengelolaan kebutuhan event mulai dari pengajuan kebutuhan oleh klien, penyusunan proposal dan RAB, proses negosiasi, pengelolaan vendor, pembayaran, hingga pembuatan laporan akhir event.
+
+### Tujuan Aplikasi
+
+* Mempermudah pengelolaan layanan event secara digital.
+* Mempercepat komunikasi antara klien, admin, dan vendor.
+* Meningkatkan efisiensi proses penyusunan proposal dan RAB.
+* Memudahkan monitoring pelaksanaan event secara real-time.
+
+### Masalah yang Diselesaikan
+
+* Proses pengelolaan event yang masih manual.
+* Sulitnya memantau progres event.
+* Dokumentasi event yang tidak terpusat.
+* Komunikasi antara pihak terkait yang kurang efektif.
+
+### Target Pengguna
+
+* Admin Event Organizer
+* Klien / Customer
+* Vendor / Mitra Event
 
 ---
 
-## Langkah Instalasi
+# Features
 
-### 1. Clone Repository
+## Client Features
+
+* Registrasi dan Login
+* Mengirim kebutuhan event
+* Melihat proposal dan RAB
+* Menyetujui proposal
+* Melakukan negosiasi
+* Upload bukti pembayaran
+* Melihat progres event
+* Melihat dokumentasi event
+* Menerima laporan akhir event
+
+## Admin Features
+
+* Login dan Manajemen Akun
+* Kelola Data Klien
+* Kelola Layanan Event
+* Menyusun Proposal
+* Menyusun RAB
+* Mengelola Negosiasi
+* Mengelola Timeline Event
+* Mengelola Dokumentasi Event
+* Mengelola Vendor
+* Verifikasi Pembayaran
+* Generate Kontrak dan Invoice
+* Menyusun Laporan Akhir Event
+
+## Vendor Features
+
+* Login Vendor
+* Menerima Notifikasi Event
+* Melihat Timeline Event
+* Melaksanakan Tugas Event
+
+---
+
+# Tech Stack
+
+### Backend
+
+* Laravel 12
+* PHP
+
+### Frontend
+
+* Blade Template
+* Bootstrap 5
+* HTML5
+* CSS
+* JavaScript
+
+### Database
+
+* MySQL
+
+### Development Tools
+
+* Composer
+* Node.js
+* NPM
+* Git
+* GitHub
+
+---
+
+# Instalasi Project
+
+## Clone Repository
 
 ```bash
-https://github.com/Ruster30/Kelompok6_PBL2D.git
+git clone https://github.com/username/alpha-corp.git
+```
+
+## Masuk ke Folder Project
+
+```bash
 cd Kelompok6_PBL2D
 ```
 
-### 2. Install Dependency Backend
+## Install Dependency PHP
 
 ```bash
 composer install
 ```
 
-### 3. Install Dependency Frontend
+## Install Dependency Frontend
 
 ```bash
 npm install
 ```
 
-### 4. Setup Environment
+## Copy Environment
 
 ```bash
 cp .env.example .env
+```
+
+## Generate Application Key
+
+```bash
 php artisan key:generate
 ```
 
-### 5. Konfigurasi Database
+## Konfigurasi Database
 
-Edit file .env
+Edit file `.env`
 
 ```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
 DB_DATABASE=alpha_corp
 DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-### 6. Jalankan Migration
+## Jalankan Migration
 
 ```bash
 php artisan migrate
 ```
 
-### 7. Jalankan Aplikasi
+## Jalankan Server
 
 ```bash
 php artisan serve
+```
+
+## Jalankan Vite
+
+```bash
 npm run dev
 ```
 
 ---
 
-## Troubleshooting
+# Screenshot Proyek
 
-Jika terjadi error permission:
+## Login Page
 
-```bash
-chmod -R 775 storage bootstrap/cache
+Tambahkan screenshot halaman login di sini.
+
+```text
+docs/screenshots/login.png
 ```
 
-Jika cache bermasalah:
+## Dashboard Admin
 
-```bash
-php artisan optimize:clear
+Tambahkan screenshot dashboard admin di sini.
+
+```text
+docs/screenshots/dashboard-admin.png
 ```
+
+## Kelola Event
+
+Tambahkan screenshot fitur pengelolaan event.
+
+```text
+docs/screenshots/event-management.png
+```
+
+## Proposal dan RAB
+
+Tambahkan screenshot proposal dan RAB.
+
+```text
+docs/screenshots/proposal-rab.png
+```
+
+## Pembayaran
+
+Tambahkan screenshot fitur pembayaran.
+
+```text
+docs/screenshots/payment.png
+```
+
+---
+
+# Tim Pengembang
+
+* Ahmad Ridho Hadaffi  : Project Manager
+* Salwa Febriani       : System Analyst
+* Muhammad Rafi        : Lead Programmer
+* Restia Amelia        : QA Tester
+
+---
+
+# Status Project
+
+- On Development
+
+Project ini sedang dikembangkan sebagai bagian dari tugas/proyek Sistem Informasi Manajemen Event Alpha.corp.
+
+---
