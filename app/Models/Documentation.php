@@ -14,6 +14,7 @@ class Documentation extends Model
         'judul',
         'deskripsi',
         'tanggal_upload',
+        'file_dokumentasi',  // opsional: untuk single-file documentation
     ];
 
     protected function casts(): array
@@ -22,6 +23,8 @@ class Documentation extends Model
             'tanggal_upload' => 'date',
         ];
     }
+
+    // ─── Relasi ──────────────────────────────────────────────
 
     public function event()
     {
@@ -32,5 +35,16 @@ class Documentation extends Model
     public function files()
     {
         return $this->hasMany(DocumentationFile::class, 'documentation_id');
+    }
+
+    // ─── Accessors ───────────────────────────────────────────
+
+    /**
+     * URL file dokumentasi tunggal.
+     * Null jika menggunakan relasi files() (multiple files).
+     */
+    public function getFileUrlAttribute(): ?string
+    {
+        return $this->file_dokumentasi ? asset('storage/' . $this->file_dokumentasi) : null;
     }
 }
