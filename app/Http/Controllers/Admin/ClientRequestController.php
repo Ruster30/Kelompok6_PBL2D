@@ -3,23 +3,24 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ClientRequest;
+use App\Models\Event;
 use Illuminate\Http\Request;
 
 class ClientRequestController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ClientRequest::latest();
+        $query = Event::with('client')->latest();
 
         if ($request->search) {
             $query->where(function ($q) use ($request) {
-                $q->where('client_name', 'like', '%' . $request->search . '%')
-                  ->orWhere('event_name', 'like', '%' . $request->search . '%');
+                $q->whereHas('client', function($q2) use ($request) {
+                    $q2->where('name', 'like', '%' . $request->search . '%');
+                })->orWhere('nama_event', 'like', '%' . $request->search . '%');
             });
         }
         if ($request->status) {
-            $query->where('status', $request->status);
+            $query->where('status_event', $request->status);
         }
 
         return view('admin.requests.index', [
@@ -27,20 +28,20 @@ class ClientRequestController extends Controller
         ]);
     }
 
-    public function show(ClientRequest $clientRequest)
+    public function show(Event $clientRequest)
     {
         return view('admin.requests.show', ['request' => $clientRequest]);
     }
 
-    public function approve(ClientRequest $clientRequest)
+    public function approve(Event $clientRequest)
     {
-        $clientRequest->update(['status' => 'disetujui']);
+        $clientRequest->update(['status_event' => 'diproses']);
         return back()->with('success', 'Request berhasil disetujui.');
     }
 
-    public function reject(ClientRequest $clientRequest)
+    public function reject(Event $clientRequest)
     {
-        $clientRequest->update(['status' => 'ditolak']);
+        $clientRequest->update(['status_event' => 'dibatalkan']);
         return back()->with('success', 'Request ditolak.');
     }
 }

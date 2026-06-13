@@ -4,23 +4,23 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\RabItem;
+use App\Models\Rab;
 use Illuminate\Http\Request;
 
 class RabController extends Controller
 {
     public function index(Request $request)
     {
-        $events        = Event::orderBy('name')->get();
+        $events        = Event::orderBy('nama_event')->get();
         $selectedEvent = null;
         $rabItems      = collect();
 
         if ($request->event_id) {
             $selectedEvent = Event::findOrFail($request->event_id);
-            $rabItems      = RabItem::where('event_id', $request->event_id)->get();
+            $rabItems      = Rab::where('event_id', $request->event_id)->get();
         } elseif ($events->isNotEmpty()) {
             $selectedEvent = $events->first();
-            $rabItems      = RabItem::where('event_id', $selectedEvent->id)->get();
+            $rabItems      = Rab::where('event_id', $selectedEvent->id)->get();
         }
 
         return view('admin.rab.index', compact('events', 'selectedEvent', 'rabItems'));
@@ -38,14 +38,20 @@ class RabController extends Controller
             'notes'      => 'nullable|string',
         ]);
 
-        $data['total_price'] = $data['qty'] * $data['unit_price'];
-        RabItem::create($data);
+        Rab::create([
+            'event_id' => $data['event_id'],
+            'nama_biaya' => $data['item_name'],
+            'kategori_biaya' => $data['category'] ?? 'Umum',
+            'jumlah_item' => $data['qty'],
+            'harga_satuan' => $data['unit_price'],
+            'subtotal_biaya' => $data['qty'] * $data['unit_price'],
+        ]);
 
         return redirect()->route('admin.rab.index', ['event_id' => $data['event_id']])
                          ->with('success', 'Item RAB berhasil ditambahkan.');
     }
 
-    public function destroy(RabItem $rabItem)
+    public function destroy(Rab $rabItem)
     {
         $eventId = $rabItem->event_id;
         $rabItem->delete();

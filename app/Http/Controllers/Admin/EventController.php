@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\Client;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -14,10 +14,10 @@ class EventController extends Controller
         $query = Event::with('client')->latest();
 
         if ($request->search) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('nama_event', 'like', '%' . $request->search . '%');
         }
         if ($request->status) {
-            $query->where('status', $request->status);
+            $query->where('status_event', $request->status);
         }
 
         return view('admin.events.index', [
@@ -27,20 +27,21 @@ class EventController extends Controller
 
     public function create()
     {
-        return view('admin.events.form', ['clients' => Client::orderBy('name')->get()]);
+        $clients = User::where('role', 'client')->orderBy('name')->get();
+        return view('admin.events.form', ['clients' => $clients]);
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'        => 'required|string|max:255',
-            'client_id'   => 'nullable|exists:clients,id',
-            'type'        => 'nullable|string',
-            'event_date'  => 'required|date',
-            'location'    => 'nullable|string',
-            'budget'      => 'nullable|numeric|min:0',
-            'status'      => 'required|in:pending,aktif,selesai,batal',
-            'description' => 'nullable|string',
+            'nama_event'       => 'required|string|max:255',
+            'client_id'        => 'nullable|exists:users,id',
+            'jenis_event'      => 'nullable|string|max:100',
+            'tanggal_event'    => 'required|date',
+            'lokasi_event'     => 'nullable|string|max:255',
+            'jumlah_tamu'      => 'nullable|integer|min:0',
+            'detail_kebutuhan' => 'nullable|string',
+            'status_event'     => 'required|in:pending,mendatang,aktif,selesai,batal',
         ]);
 
         Event::create($data);
@@ -54,23 +55,24 @@ class EventController extends Controller
 
     public function edit(Event $event)
     {
+        $clients = User::where('role', 'client')->orderBy('name')->get();
         return view('admin.events.form', [
             'event'   => $event,
-            'clients' => Client::orderBy('name')->get(),
+            'clients' => $clients,
         ]);
     }
 
     public function update(Request $request, Event $event)
     {
         $data = $request->validate([
-            'name'        => 'required|string|max:255',
-            'client_id'   => 'nullable|exists:clients,id',
-            'type'        => 'nullable|string',
-            'event_date'  => 'required|date',
-            'location'    => 'nullable|string',
-            'budget'      => 'nullable|numeric|min:0',
-            'status'      => 'required|in:pending,aktif,selesai,batal',
-            'description' => 'nullable|string',
+            'nama_event'       => 'required|string|max:255',
+            'client_id'        => 'nullable|exists:users,id',
+            'jenis_event'      => 'nullable|string|max:100',
+            'tanggal_event'    => 'required|date',
+            'lokasi_event'     => 'nullable|string|max:255',
+            'jumlah_tamu'      => 'nullable|integer|min:0',
+            'detail_kebutuhan' => 'nullable|string',
+            'status_event'     => 'required|in:pending,mendatang,aktif,selesai,batal',
         ]);
 
         $event->update($data);

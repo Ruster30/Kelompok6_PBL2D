@@ -82,6 +82,11 @@
         .stat-value { font-size: 26px; font-weight: 700; color: #0f172a; }
         .stat-label { font-size: 13px; color: #64748b; }
 
+        /* Plain stat card (no icon, used in Vendor & Klien) */
+        .plain-stat { background: white; border-radius: 12px; padding: 20px 22px; border: 1px solid #e2e8f0; }
+        .plain-stat-label { font-size: 13px; color: #64748b; margin-bottom: 6px; }
+        .plain-stat-value { font-size: 24px; font-weight: 700; color: #0f172a; }
+
         /* Table */
         .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
         .card-header {
@@ -112,6 +117,7 @@
         .badge-active { background: #dcfce7; color: #166534; }
         .badge-done { background: #dbeafe; color: #1e40af; }
         .badge-cancel { background: #fee2e2; color: #991b1b; }
+        .badge-gray { background: #f1f5f9; color: #64748b; }
 
         /* Buttons */
         .btn {
@@ -121,6 +127,7 @@
         }
         .btn-primary { background: #14b8a6; color: white; }
         .btn-primary:hover { background: #0f9488; }
+        .btn-primary:disabled { background: #99e6da; cursor: not-allowed; }
         .btn-sm { padding: 6px 12px; font-size: 13px; }
         .btn-outline { background: white; color: #334155; border: 1px solid #e2e8f0; }
         .btn-outline:hover { background: #f8fafc; }
@@ -160,7 +167,7 @@
         .qa-title { font-size: 14px; font-weight: 600; color: #0f172a; }
         .qa-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
 
-        /* RAB empty state */
+        /* Empty state */
         .empty-state {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             padding: 60px 20px; text-align: center; gap: 12px;
@@ -179,9 +186,105 @@
         .action-btn:hover { border-color: #14b8a6; color: #14b8a6; }
         .action-btn.danger:hover { border-color: #f43f5e; color: #f43f5e; }
 
+        /* Alert banner */
+        .alert-banner {
+            display: flex; align-items: center; gap: 10px; background: #fef9c3; color: #854d0e;
+            padding: 12px 18px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; border: 1px solid #fde68a;
+        }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 0; border-bottom: 1px solid #e2e8f0; background: white; border-radius: 12px 12px 0 0; padding: 0 8px; }
+        .tab-link {
+            padding: 16px 20px; font-size: 14px; font-weight: 500; color: #64748b; text-decoration: none;
+            border-bottom: 2px solid transparent; transition: all 0.2s;
+        }
+        .tab-link:hover { color: #0f172a; }
+        .tab-link.active { color: #0f9488; border-bottom-color: #14b8a6; font-weight: 600; }
+        .tab-content { background: white; border-radius: 0 0 12px 12px; padding: 24px; border: 1px solid #e2e8f0; border-top: none; }
+
+        /* Grid cards (CMS) */
+        .cms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .cms-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; position: relative; }
+        .cms-card-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; }
+        .cms-icon-circle {
+            width: 44px; height: 44px; border-radius: 10px; background: #f0fdf9; color: #14b8a6;
+            display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px;
+        }
+        .cms-card h3 { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 6px; }
+        .cms-card p { font-size: 13px; color: #64748b; line-height: 1.5; }
+
+        .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .portfolio-card { border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+        .portfolio-img { width: 100%; height: 180px; object-fit: cover; display: block; background: #e2e8f0; }
+        .portfolio-img-wrap { position: relative; }
+        .portfolio-img-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; }
+        .portfolio-body { padding: 14px; }
+        .portfolio-category { font-size: 11px; font-weight: 600; color: #14b8a6; text-transform: uppercase; letter-spacing: 0.5px; }
+        .portfolio-title { font-size: 14px; font-weight: 600; color: #0f172a; margin-top: 4px; }
+
+        .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+        .team-card { border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+        .team-photo-wrap { position: relative; }
+        .team-photo { width: 100%; height: 180px; object-fit: cover; display: block; background: #e2e8f0; }
+        .team-photo-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; }
+        .team-body { padding: 14px; }
+        .team-name { font-size: 15px; font-weight: 600; color: #0f172a; }
+        .team-role { font-size: 13px; color: #14b8a6; font-weight: 500; margin: 2px 0 8px; }
+        .team-desc { font-size: 12px; color: #64748b; line-height: 1.5; }
+
+        .logo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+        .logo-card {
+            border: 1px solid #e2e8f0; border-radius: 10px; padding: 24px;
+            display: flex; flex-direction: column; align-items: center; gap: 12px; position: relative;
+        }
+        .logo-card img { max-height: 50px; max-width: 100%; object-fit: contain; }
+        .logo-card-name { font-size: 13px; color: #475569; font-weight: 500; }
+        .logo-card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; }
+
+        /* File upload */
+        .upload-zone {
+            border: 2px dashed #cbd5e1; border-radius: 10px; padding: 40px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+            transition: all 0.2s; text-align: center;
+        }
+        .upload-zone:hover { border-color: #14b8a6; background: #f0fdf980; }
+        .upload-zone i { font-size: 32px; color: #14b8a6; }
+        .upload-zone h3 { font-size: 15px; font-weight: 600; color: #334155; }
+        .upload-zone p { font-size: 12px; color: #94a3b8; }
+
+        /* Form */
+        .form-group { display:flex; flex-direction:column; gap:6px; }
+        .form-label { font-size:13px; font-weight:600; color:#374151; }
+        .form-input {
+            padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px; font-size:14px;
+            color:#334155; outline:none; font-family:inherit; background:white; width:100%;
+        }
+        .form-input:focus { border-color:#14b8a6; box-shadow:0 0 0 3px #ccfbf180; }
+        .form-input.error { border-color:#f43f5e; }
+        .form-error { font-size:12px; color:#f43f5e; }
+        .form-check { display:flex; align-items:center; gap:10px; padding:8px 0; font-size:14px; color:#334155; }
+        .form-check input { width:16px; height:16px; accent-color:#14b8a6; }
+
+        /* Modal */
+        .modal-overlay {
+            display:none; position:fixed; inset:0; background:#00000060; z-index:200;
+            align-items:center; justify-content:center;
+        }
+        .modal-overlay.show { display:flex; }
+        .modal-box { background:white; border-radius:12px; width:560px; max-width:95vw; max-height:90vh; overflow-y:auto; }
+        .modal-header {
+            padding:20px 24px; border-bottom:1px solid #e2e8f0; display:flex;
+            justify-content:space-between; align-items:center; position:sticky; top:0; background:white;
+        }
+        .modal-header span { font-size:16px; font-weight:600; }
+        .modal-close { background:none; border:none; cursor:pointer; color:#64748b; font-size:18px; }
+        .modal-body { padding:24px; display:grid; gap:16px; }
+        .modal-footer { padding:16px 24px; border-top:1px solid #e2e8f0; display:flex; gap:10px; justify-content:flex-end; }
+
         @media (max-width: 1024px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .dashboard-bottom { grid-template-columns: 1fr; }
+            .cms-grid, .portfolio-grid, .team-grid, .logo-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
     @stack('styles')
@@ -196,8 +299,8 @@
     </div>
 
     <nav class="sidebar-nav">
-        <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <i class="fas fa-th-large"></i> Ringkasan Dashboard
+        <a href="{{ route('admin.dashboard') }}"  class="nav-item {{ request()->routeIs('admin.dashboard.*') ? 'active' : '' }}">
+            <i class="fas fa-home"></i> Ringkasan Dashboard
         </a>
         <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
             <i class="fas fa-calendar-alt"></i> Kelola Event
@@ -211,26 +314,32 @@
         <a href="{{ route('admin.payments.index') }}" class="nav-item {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
             <i class="fas fa-check-square"></i> Pembayaran
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('admin.timeline.index') }}" class="nav-item {{ request()->routeIs('admin.timeline.*') ? 'active' : '' }}">
             <i class="fas fa-calendar"></i> Timeline
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('admin.tasks.index') }}" class="nav-item {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
             <i class="fas fa-tasks"></i> Tugas &amp; Tim
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
             <i class="fas fa-users"></i> Vendor &amp; Klien
         </a>
-        <a href="#" class="nav-item">
-            <i class="fas fa-globe"></i> Landing Page CMS
+        <a href="{{ route('admin.cms.index') }}" class="nav-item {{ request()->routeIs('admin.cms.*') ? 'active' : '' }}">
+            <i class="fas fa-palette"></i> Landing Page CMS
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('admin.proposal_dokumen.index') }}" class="nav-item {{ request()->routeIs('admin.proposal_dokumen.*') ? 'active' : '' }}">
             <i class="fas fa-file-alt"></i> Proposal &amp; Dokumen
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
+            <i class="fas fa-folder-open"></i> Pusat Dokumentasi
+        </a>
+        <a href="{{ route('admin.analytics.index') }}" class="nav-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
             <i class="fas fa-chart-bar"></i> Analitik
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('admin.notifications.index') }}" class="nav-item {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
             <i class="fas fa-bell"></i> Notifikasi
+        </a>
+        <a href="{{ route('admin.settings.index') }}" class="nav-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+            <i class="fas fa-cog"></i> Pengaturan
         </a>
     </nav>
 
@@ -249,10 +358,10 @@
     <header class="topbar">
         <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
         <div class="topbar-right">
-            <div class="topbar-notif">
+            <a href="{{ route('admin.notifications.index') }}" class="topbar-notif">
                 <i class="fas fa-bell" style="color:#64748b; font-size:17px;"></i>
                 <span class="notif-badge"></span>
-            </div>
+            </a>
             <div class="topbar-user">
                 <span>{{ auth()->user()->name ?? 'admin' }}</span>
                 <div class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'AD', 0, 2)) }}</div>
