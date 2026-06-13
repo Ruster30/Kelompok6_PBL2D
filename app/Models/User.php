@@ -48,7 +48,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
@@ -72,6 +72,12 @@ class User extends Authenticatable
         return $this->hasOne(Vendor::class, 'user_id');
     }
 
+    /** Notifikasi milik user ini */
+    public function notifikasi()
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
+
     // ─── Helper Role ─────────────────────────────────────────
 
     public function isAdmin(): bool
@@ -87,5 +93,34 @@ class User extends Authenticatable
     public function isVendor(): bool
     {
         return $this->role === 'vendor';
+    }
+
+    // ─── Accessors ───────────────────────────────────────────
+
+    /** Inisial nama untuk avatar teks (misal "Ahmad Rizki" → "AR") */
+    public function getInitialsAttribute(): string
+    {
+        $words = explode(' ', trim($this->name));
+        if (count($words) >= 2) {
+            return strtoupper($words[0][0] . $words[1][0]);
+        }
+        return strtoupper(substr($this->name, 0, 2));
+    }
+
+    /**
+     * URL avatar: pakai file upload jika ada,
+     * fallback ke ui-avatars.com dengan warna brand.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar
+            ? asset('storage/' . $this->avatar)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=2DD4BF&color=fff&bold=true';
+    }
+
+    /** Jumlah notifikasi yang belum dibaca */
+    public function getUnreadNotifCountAttribute(): int
+    {
+        return $this->notifikasi()->where('dibaca', false)->count();
     }
 }

@@ -24,18 +24,35 @@ class Rab extends Model
     protected function casts(): array
     {
         return [
-            'harga_satuan'    => 'decimal:2',
-            'subtotal_biaya'  => 'decimal:2',
+            'harga_satuan'   => 'decimal:2',
+            'subtotal_biaya' => 'decimal:2',
         ];
     }
+
+    // ─── Relasi ──────────────────────────────────────────────
 
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id');
     }
 
+    /** Vendor terkait item RAB ini (opsional) */
     public function vendor()
     {
         return $this->belongsTo(Vendor::class, 'vendor_id');
+    }
+
+    // ─── Accessors ───────────────────────────────────────────
+
+    /** Harga satuan diformat sebagai currency Rupiah */
+    public function getFormattedHargaAttribute(): string
+    {
+        return 'Rp ' . number_format($this->harga_satuan, 0, ',', '.');
+    }
+
+    /** Subtotal diformat sebagai currency Rupiah */
+    public function getFormattedSubtotalAttribute(): string
+    {
+        return 'Rp ' . number_format($this->subtotal_biaya, 0, ',', '.');
     }
 }
