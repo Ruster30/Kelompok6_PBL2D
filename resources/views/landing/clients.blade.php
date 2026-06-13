@@ -8,39 +8,44 @@
 
         <div class="clients-track-wrap overflow-hidden" data-aos="fade-up">
             <div class="clients-track d-flex align-items-center gap-5">
-                @php
-                $clients = [
-                    ['logo' => 'colony', 'name' => 'Colony'],
-                    ['logo' => 'citilink', 'name' => 'Citilink'],
-                    ['logo' => 'yamaha', 'name' => 'Yamaha'],
-                    ['logo' => 'lenovo', 'name' => 'Lenovo'],
-                    ['logo' => 'pos-indonesia', 'name' => 'Pos Indonesia'],
-                    ['logo' => 'bri', 'name' => 'Bank BRI'],
-                    ['logo' => 'hyundai', 'name' => 'Hyundai'],
-                    ['logo' => 'honda', 'name' => 'Honda'],
-                    ['logo' => 'nissan', 'name' => 'Nissan'],
-                    ['logo' => 'rexvin', 'name' => 'Rexvin'],
-                    ['logo' => 'dofla-jaya-properti', 'name' => 'Dofla Jaya Properti'],
-                    ['logo' => 'motul', 'name' => 'Motul'],
-                    ['logo' => 'iqos', 'name' => 'IQOS'],
-                    ['logo' => 'toyota', 'name' => 'Toyota'],
-                    ['logo' => 'mandiri', 'name' => 'Bank Mandiri'],
-                    ['logo' => 'telkomsel', 'name' => 'Telkomsel'],
-                    ['logo' => 'xxi', 'name' => 'Cinema XXI'],
-                    ['logo' => 'hokben', 'name' => 'HokBen'],
-                    ['logo' => 'tri', 'name' => 'Tri'],
-                    ['logo' => 'makeover', 'name' => 'Make Over'],
-                    ['logo' => 'red-modani', 'name' => 'Red Modani'],
-                    ['logo' => 'wuling', 'name' => 'Wuling'],
-                    ['logo' => 'transmart', 'name' => 'Transmart'],
-                    ['logo' => 'huawei', 'name' => 'Huawei'],
-                ];
-                @endphp
+                @if(!isset($clients) || (is_object($clients) && $clients->isEmpty()))
+                    @php
+                    $clients = collect([
+                        (object)['logo' => 'colony', 'nama_client' => 'Colony'],
+                        (object)['logo' => 'citilink', 'nama_client' => 'Citilink'],
+                        (object)['logo' => 'yamaha', 'nama_client' => 'Yamaha'],
+                        (object)['logo' => 'lenovo', 'nama_client' => 'Lenovo'],
+                        (object)['logo' => 'pos-indonesia', 'nama_client' => 'Pos Indonesia'],
+                        (object)['logo' => 'bri', 'nama_client' => 'Bank BRI'],
+                        (object)['logo' => 'hyundai', 'nama_client' => 'Hyundai'],
+                        (object)['logo' => 'honda', 'nama_client' => 'Honda'],
+                        (object)['logo' => 'nissan', 'nama_client' => 'Nissan'],
+                        (object)['logo' => 'rexvin', 'nama_client' => 'Rexvin'],
+                        (object)['logo' => 'dofla-jaya-properti', 'nama_client' => 'Dofla Jaya Properti'],
+                        (object)['logo' => 'motul', 'nama_client' => 'Motul'],
+                        (object)['logo' => 'iqos', 'nama_client' => 'IQOS'],
+                        (object)['logo' => 'toyota', 'nama_client' => 'Toyota'],
+                        (object)['logo' => 'mandiri', 'nama_client' => 'Bank Mandiri'],
+                        (object)['logo' => 'telkomsel', 'nama_client' => 'Telkomsel'],
+                        (object)['logo' => 'xxi', 'nama_client' => 'Cinema XXI'],
+                        (object)['logo' => 'hokben', 'nama_client' => 'HokBen'],
+                        (object)['logo' => 'tri', 'nama_client' => 'Tri'],
+                        (object)['logo' => 'makeover', 'nama_client' => 'Make Over'],
+                        (object)['logo' => 'red-modani', 'nama_client' => 'Red Modani'],
+                        (object)['logo' => 'wuling', 'nama_client' => 'Wuling'],
+                        (object)['logo' => 'transmart', 'nama_client' => 'Transmart'],
+                        (object)['logo' => 'huawei', 'nama_client' => 'Huawei'],
+                    ]);
+                    @endphp
+                @endif
 
                 @foreach($clients as $client)
                 <div class="client-logo-item flex-shrink-0">
-                    <img src="{{ asset('images/landing/clients/' . $client['logo'] . '.png') }}"
-                         alt="{{ $client['name'] }}"
+                    @php
+                        $logoName = $client->logo ?? strtolower(str_replace(' ', '-', $client->nama_client));
+                    @endphp
+                    <img src="{{ asset('images/landing/clients/' . $logoName . '.png') }}"
+                         alt="{{ $client->nama_client }}"
                          class="client-logo-img"
                          style="max-width:120px; max-height:50px; width:auto; height:auto; object-fit:contain;">
                 </div>

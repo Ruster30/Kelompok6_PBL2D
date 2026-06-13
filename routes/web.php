@@ -14,10 +14,7 @@ Route::get('/profil', function () {
     return '<p>Jurusan Teknologi Informasi - Politeknik Negeri Padang</p>';
 });
 
-Route::get('/', function () {
-    return view('landing.index');
-});
-<<<<<<< HEAD
+Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +26,7 @@ Route::get('/', function () {
 */
 Route::get('/company-profile/pdf', [CompanyProfileController::class, 'downloadPdf'])
     ->name('company-profile.pdf');
-=======
+    
 Route::get('/dashboard', function () {
     return redirect()->route('client.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -96,4 +93,3 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
     Route::post('/notifications/read',      [ClientController::class, 'notifRead'])
          ->name('notif.read');
 });
->>>>>>> 76bad9fe144e41c580d9fbf34bad313496db9098

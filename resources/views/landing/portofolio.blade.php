@@ -26,60 +26,33 @@
         </div>
 
         {{-- ===== Grid Portofolio ===== --}}
-        @php
-        $portfolio = [
-            [
-                'img'    => 'portofolio1.png',
-                'title'  => 'Tech Summit 2024',
-                'cat'    => 'Korporat',
-                'filter' => 'korporat',
-            ],
-            [
-                'img'    => 'portofolio2.png',
-                'title'  => 'Pernikahan Mewah Safira & Hadaffi',
-                'cat'    => 'Pernikahan',
-                'filter' => 'pernikahan',
-            ],
-            [
-                'img'    => 'portofolio3.png',
-                'title'  => 'Konser Musik Nusantara',
-                'cat'    => 'Konser',
-                'filter' => 'konser',
-            ],
-            [
-                'img'    => 'portofolio4.png',
-                'title'  => 'Peluncuran Produk X Brand',
-                'cat'    => 'Peluncuran',
-                'filter' => 'peluncuran',
-            ],
-            [
-                'img'    => 'portofolio5.png',
-                'title'  => 'Gala Amal Charity Night',
-                'cat'    => 'Gala',
-                'filter' => 'gala',
-            ],
-            [
-                'img'    => 'portofolio6.png',
-                'title'  => 'Wedding Dinner Eksklusif 2024',
-                'cat'    => 'Pernikahan',
-                'filter' => 'pernikahan',
-            ],
-        ];
-        @endphp
+        @if(!isset($portfolios) || (is_object($portfolios) && $portfolios->isEmpty()))
+            @php
+            $portfolios = collect([
+                (object)['gambar' => 'portofolio1.png', 'judul'  => 'Tech Summit 2024', 'kategori'    => 'Korporat'],
+                (object)['gambar' => 'portofolio2.png', 'judul'  => 'Pernikahan Mewah Safira & Hadaffi', 'kategori'    => 'Pernikahan'],
+                (object)['gambar' => 'portofolio3.png', 'judul'  => 'Konser Musik Nusantara', 'kategori'    => 'Konser'],
+                (object)['gambar' => 'portofolio4.png', 'judul'  => 'Peluncuran Produk X Brand', 'kategori'    => 'Peluncuran'],
+                (object)['gambar' => 'portofolio5.png', 'judul'  => 'Gala Amal Charity Night', 'kategori'    => 'Gala'],
+                (object)['gambar' => 'portofolio6.png', 'judul'  => 'Wedding Dinner Eksklusif 2024', 'kategori'    => 'Pernikahan'],
+            ]);
+            @endphp
+        @endif
 
         <div class="row g-4" id="portfolioGrid">
-            @foreach($portfolio as $i => $item)
-            <div class="col-md-6 col-lg-4 pf-item" data-filter="{{ $item['filter'] }}" data-aos="fade-up" data-aos-delay="{{ $i * 70 }}">
+            @foreach($portfolios as $i => $item)
+            @php $filter = strtolower(str_replace(' ', '-', $item->kategori)); @endphp
+            <div class="col-md-6 col-lg-4 pf-item" data-filter="{{ $filter }}" data-aos="fade-up" data-aos-delay="{{ $i * 70 }}">
                 <div class="pf-card rounded-4 overflow-hidden position-relative">
                     <img
-                        src="{{ asset('images/landing/portofolio/' . $item['img']) }}"
-                        alt="{{ $item['title'] }}"
+                        src="{{ asset('images/landing/portofolio/' . ($item->gambar ?? 'portofolio'.(($i%6)+1).'.png')) }}"
+                        alt="{{ $item->judul }}"
                         class="pf-img w-100"
                         style="height:260px; object-fit:cover; display:block;">
                     {{-- Overlay on hover --}}
                     <div class="pf-overlay">
-                        <span class="pf-badge">{{ $item['cat'] }}</span>
-                        <h6 class="pf-overlay-title">{{ $item['title'] }}</h6>
+                        <span class="pf-badge">{{ $item->kategori }}</span>
+                        <h6 class="pf-overlay-title">{{ $item->judul }}</h6>
                     </div>
                 </div>
             </div>

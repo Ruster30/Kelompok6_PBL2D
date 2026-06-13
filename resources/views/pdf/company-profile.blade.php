@@ -401,14 +401,12 @@
     }
     .team-avatar {
         width: 50px; height: 50px;
-        background: linear-gradient(135deg, #0d1b2e 0%, #1a3060 100%);
-        border-radius: 50%;
         margin: 0 auto 10px;
         text-align: center;
-        padding-top: 12px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #d4af37;
+    }
+    .team-avatar img {
+        width: 50px; height: 50px;
+        border-radius: 50%;
     }
     .team-name {
         font-size: 10.5px;
@@ -785,7 +783,7 @@
             @foreach($row as $member)
             <td class="team-cell">
                 <div class="team-avatar">
-                    {{ strtoupper(substr($member['name'], 0, 1)) }}
+                    <img src="{{ $member['img'] }}" alt="{{ $member['name'] }}">
                 </div>
                 <div class="team-name">{{ $member['name'] }}</div>
                 <div style="margin-top:5px;"><span class="team-role">{{ $member['role'] }}</span></div>
@@ -825,6 +823,9 @@
         <tr>
             @foreach($row as $item)
             <td class="portfolio-cell">
+                <div style="margin-bottom: 8px;">
+                    <img src="{{ $item['img'] }}" alt="{{ $item['title'] }}" style="width:100%; height:90px;">
+                </div>
                 <div class="portfolio-cat">{{ $item['cat'] }}</div>
                 <div class="portfolio-title">{{ $item['title'] }}</div>
             </td>
@@ -844,7 +845,12 @@
 
         <div class="clients-wrap">
             @foreach($clients as $client)
-            <span class="client-tag">{{ $client }}</span>
+            <span class="client-tag">
+                @if(file_exists($client['logo']))
+                    <img src="{{ $client['logo'] }}" alt="{{ $client['name'] }}" style="height:12px; vertical-align:middle; margin-right:4px;">
+                @endif
+                {{ $client['name'] }}
+            </span>
             @endforeach
         </div>
     </div>
