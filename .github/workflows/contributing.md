@@ -1,19 +1,19 @@
-# 📘 Panduan Kolaborasi Tim (GitHub Workflow)
+#  Panduan Kolaborasi Tim (GitHub Workflow)
 
-## 🎯 Tujuan
+##  Tujuan
 
 Dokumen ini dibuat untuk memastikan semua anggota tim bekerja secara terstruktur, rapi, dan mudah dipantau kontribusinya.
 
 ---
 
-# 🧩 Struktur Branch
+#  Struktur Branch
 
-## 🔹 Branch Utama
+## - Branch Utama
 
 * `main` → versi final (production)
 * `dev` → penggabungan semua fitur
 
-## 🔹 Branch Per Orang
+## - Branch Per Orang
 
 Setiap anggota memiliki branch masing-masing:
 
@@ -24,7 +24,7 @@ Setiap anggota memiliki branch masing-masing:
 
 👉 Digunakan untuk tracking kontribusi individu.
 
-## 🔹 Branch Feature (Sementara)
+## - Branch Feature (Sementara)
 
 Digunakan untuk mengerjakan fitur tertentu:
 
@@ -36,15 +36,15 @@ Digunakan untuk mengerjakan fitur tertentu:
 
 ---
 
-# 🚀 Setup Awal (Sekali Saja)
+#  Setup Awal (Sekali Saja)
 
 ## 1. Buat branch `dev`
 
 ```bash
-git checkout main
+git checkout main -> mengganti branch ke main
 git pull
 
-git checkout -b dev
+git checkout -b dev -> membikin branch dev
 git push origin dev
 ```
 
@@ -58,47 +58,94 @@ git push origin dev/nama
 
 ---
 
-# 🪜 Alur Kerja Harian
+#  Alur Kerja Harian
 
 ## 1. Ambil update terbaru dari `dev`
 
 ```bash
-git checkout dev
-git pull
+git checkout dev -> mengganti branch ke dev
+git pull -> mengambil update terbaru dari git ke lokal
 ```
 
 ## 2. Masuk ke branch pribadi
 
 ```bash
-git checkout nama_branch
-git pull
+git checkout nama_branch -> mengganti branch ke branch pribadi
+git pull -> mengambil update dari branch pribadi di git ke lokal
 ```
 
 ## 3. Buat branch fitur
 
 ```bash
-git checkout -b feature/nama-fitur
+git checkout -b feature/nama-fitur -> bikin branch fitur yang akan dibuat ini udah langsung ke ganti
 ```
 
 ## 4. Kerjakan fitur
 
 ```bash
-git add .
-git commit -m "deskripsi perubahan"
-git push origin feature/nama-fitur
+git add . -> add file 
+git commit -m "deskripsi perubahan" -> pesan commit ke git
+git push origin feature/nama-fitur -> mengirim hasil kerjaan ke git
 ```
 
 ---
+##  Aturan Penting
 
-# 🔗 Proses Pull Request (PR) & Merge
+##  Aturan Pesan Commit
 
-## 🎯 Tujuan
+Setiap anggota wajib menggunakan format pesan commit yang jelas dan konsisten.
+
+### Format Commit
+
+```bash
+kategori: deskripsi perubahan
+```
+
+### Kategori Commit
+
+| Kategori | Indikasi Pesan Commit / Dampak |
+|-----------|--------------------------------|
+| feat | Penambahan fitur baru |
+| fix | Perbaikan bug |
+| refactor | Perubahan struktur tanpa mengubah fungsi |
+| docs | Perubahan dokumentasi |
+| test | Penambahan/modifikasi testing |
+| chore | Pembaruan minor (config, database, dependency, dll.) |
+
+### Contoh Commit
+
+```bash
+feat: membuat halaman login
+fix: memperbaiki error pada view dashboard
+refactor: memisahkan controller admin
+docs: memperbarui dokumentasi project
+test: menambahkan unit test login
+chore: update konfigurasi github actions
+```
+
+### Commit yang Tidak Disarankan
+
+```bash
+update
+perbaikan
+revisi
+tugas pbl
+commit terbaru
+```
+
+Karena tidak menjelaskan perubahan yang dilakukan dan menyulitkan proses tracking kontribusi anggota tim.
+
+---
+
+#  Proses Pull Request (PR) & Merge
+
+##  Tujuan
 
 PR digunakan untuk menggabungkan kode dengan aman melalui proses review.
 
 ---
 
-## 🪜 Langkah Membuat Pull Request (PR)
+##  Langkah Membuat Pull Request (PR)
 
 ### 1. Push branch ke GitHub
 
@@ -124,7 +171,7 @@ Contoh:
 
 ---
 
-## 🔄 Alur PR dalam Tim
+##  Alur PR dalam Tim
 
 ### 1. Feature → Dev Pribadi
 
@@ -143,7 +190,7 @@ Contoh:
 
 ---
 
-## ✅ Aturan Merge
+##  Aturan Merge
 
 * PR harus direview minimal 1 orang
 * Pastikan tidak ada conflict
@@ -152,7 +199,7 @@ Contoh:
 
 ---
 
-## ⚠️ Jika Terjadi Conflict
+##  Jika Terjadi Conflict
 
 1. Checkout branch kamu
 
@@ -180,7 +227,7 @@ git push
 
 ---
 
-# 🔄 Update Setelah Merge
+#  Update Setelah Merge
 
 ```bash
 git checkout dev
@@ -193,9 +240,9 @@ git push
 
 ---
 
-# 🔧 Perbaikan & Perubahan Feature
+#  Perbaikan & Perubahan Feature
 
-## 🟢 Jika Feature BELUM di-merge
+## * Jika Feature BELUM di-merge
 
 Gunakan branch feature yang sama (tidak perlu buat baru).
 
@@ -212,7 +259,7 @@ git push
 
 ---
 
-## 🟡 Jika SUDAH PR tapi diminta revisi
+## * Jika SUDAH PR tapi diminta revisi
 
 Tetap gunakan branch feature yang sama.
 
@@ -229,7 +276,7 @@ git push
 
 ---
 
-## 🔴 Jika Feature SUDAH di-merge
+## * Jika Feature SUDAH di-merge
 
 JANGAN gunakan branch lama.
 
@@ -252,7 +299,7 @@ git push origin fix/nama-fitur
 
 ---
 
-## 📌 Aturan Penting
+##  Aturan Penting
 
 * Gunakan branch yang sama jika feature belum selesai
 * Buat branch baru jika sudah di-merge
@@ -260,16 +307,16 @@ git push origin fix/nama-fitur
 
 ---
 
-# 📜 Aturan Wajib
+#  Aturan Wajib
 
-## ❌ Dilarang
+##  Dilarang
 
 * Push langsung ke `main`
 * Merge tanpa Pull Request
 * Mengubah branch orang lain
 * Lompat merge (feature → main)
 
-## ✅ Wajib
+##  Wajib
 
 * Semua kerja dari `dev`
 * Gunakan branch `feature/...`
@@ -278,7 +325,7 @@ git push origin fix/nama-fitur
 
 ---
 
-# 🎯 Alur Singkat
+#  Alur Singkat
 
 ```
 main
@@ -292,10 +339,98 @@ feature/nama-fitur
 
 ---
 
-# 📌 Penutup
-
-Dengan mengikuti aturan ini:
-
-* Kolaborasi tim menjadi lebih rapi
-* Konflik kode dapat diminimalisir
-* Kontribusi tiap anggota dapat terlihat jelas
+# Struktur Folder
+project-eo/
+│
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── LandingController.php
+│   │   │   ├── Auth/
+│   │   │   ├── Admin/
+│   │   │   ├── Client/
+│   │   │   ├── Vendor/
+│   │   │   └── Event/
+│   │   │
+│   │   └── Requests/
+│   │
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Event.php
+│   │   ├── Vendor.php
+│   │   ├── Client.php
+│   │   ├── Negotiation.php
+│   │   └── OfferLetter.php
+│   │
+│   └── Services/
+│
+│
+├── public/
+│   ├── images/
+│   │   ├── landing/
+│   │   ├── portfolio/
+│   │   ├── team/
+│   │   └── icons/
+│   │
+│   ├── css/
+│   │   └── landing.css
+│   │
+│   └── js/
+│
+│
+├── resources/
+│   ├── views/
+│   │
+│   │   ├── layouts/
+│   │   │   ├── app.blade.php
+│   │   │   ├── admin.blade.php
+│   │   │   └── client.blade.php
+│   │   │
+│   │   ├── components/
+│   │   │   ├── navbar.blade.php
+│   │   │   ├── footer.blade.php
+│   │   │   ├── hero.blade.php
+│   │   │   ├── service-card.blade.php
+│   │   │   └── contact-form.blade.php
+│   │   │
+│   │   ├── landing/
+│   │   │   ├── index.blade.php
+│   │   │   ├── about.blade.php
+│   │   │   ├── services.blade.php
+│   │   │   ├── portfolio.blade.php
+│   │   │   ├── team.blade.php
+│   │   │   └── contact.blade.php
+│   │   │
+│   │   ├── auth/
+│   │   │   ├── login.blade.php
+│   │   │   └── register.blade.php
+│   │   │
+│   │   ├── admin/
+│   │   │   ├── dashboard.blade.php
+│   │   │   ├── event/
+│   │   │   ├── vendor/
+│   │   │   └── negotiation/
+│   │   │
+│   │   ├── client/
+│   │   │   ├── dashboard.blade.php
+│   │   │   ├── timeline.blade.php
+│   │   │   └── offer-letter.blade.php
+│   │   │
+│   │   └── vendor/
+│   │
+│   └── css/
+│
+│
+├── routes/
+│   ├── web.php
+│   ├── admin.php
+│   ├── client.php
+│   └── auth.php
+│
+│
+├── database/
+│   ├── migrations/
+│   └── seeders/
+│
+│
+└── tests/
