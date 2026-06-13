@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Client\ClientController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/d', function () {
@@ -155,3 +156,58 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
 });
 
 require __DIR__.'/auth.php';
+
+/*
+|─────────────────────────────────────────────────────────
+|  CLIENT DASHBOARD ROUTES
+|  Semua dilindungi middleware 'auth'
+|  Prefix URL  : /client/...
+|  Prefix name : client....
+|─────────────────────────────────────────────────────────
+*/
+Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
+ 
+    // ── Ringkasan / Dashboard ────────────────────────
+    Route::get('/',                         [ClientController::class, 'dashboard'])
+         ->name('dashboard');
+ 
+    // ── Event Terdaftar ──────────────────────────────
+    Route::get('/events',                   [ClientController::class, 'events'])
+         ->name('events');
+ 
+    // ── Ajukan Event Baru ────────────────────────────
+    Route::get('/event/create',             [ClientController::class, 'eventCreate'])
+         ->name('event.create');
+    Route::post('/event',                   [ClientController::class, 'eventStore'])
+         ->name('event.store');
+ 
+    // ── Timeline ─────────────────────────────────────
+    Route::get('/timeline',                 [ClientController::class, 'timeline'])
+         ->name('timeline');
+    Route::get('/timeline/{id}',            [ClientController::class, 'timeline'])
+         ->name('timeline.show');
+ 
+    // ── Anggaran & Faktur ────────────────────────────
+    Route::get('/invoices',                 [ClientController::class, 'invoices'])
+         ->name('invoices');
+    Route::post('/invoices/{id}/bayar',     [ClientController::class, 'bayar'])
+         ->name('invoices.bayar');
+ 
+    // ── Surat Penawaran ──────────────────────────────
+    Route::get('/proposals',                [ClientController::class, 'proposals'])
+         ->name('proposals');
+    Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
+         ->name('proposals.show');
+ 
+    // ── Pengaturan Akun ──────────────────────────────
+    Route::get('/settings',                 [ClientController::class, 'settings'])
+         ->name('settings');
+    Route::put('/settings/profile',         [ClientController::class, 'settingsProfile'])
+         ->name('settings.profile');
+    Route::put('/settings/password',        [ClientController::class, 'settingsPassword'])
+         ->name('settings.password');
+ 
+    // ── Notifikasi ───────────────────────────────────
+    Route::post('/notifications/read',      [ClientController::class, 'notifRead'])
+         ->name('notif.read');
+});
