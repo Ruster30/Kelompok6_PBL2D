@@ -15,19 +15,6 @@
         </div>
 
         <div class="row g-4 justify-content-center">
-            @if(!isset($teams) || (is_object($teams) && $teams->isEmpty()))
-                @php
-                $teams = collect([
-                    (object)['nama' => 'Fajar Villiano', 'jabatan' => 'Founder', 'foto' => 'team/team1.png'],
-                    (object)['nama' => 'Valdy Dwi Wahyu', 'jabatan' => 'CO Founder', 'foto' => 'team/team2.png'],
-                    (object)['nama' => 'Intan Prasywi', 'jabatan' => 'Finance Manager', 'foto' => 'team/team3.png'],
-                    (object)['nama' => 'Muhammad Pinda Rahmadan', 'jabatan' => 'Creative Director', 'foto' => 'team/team4.png'],
-                    (object)['nama' => 'Baghaztra', 'jabatan' => 'IT Support', 'foto' => 'team/team5.png'],
-                    (object)['nama' => 'Fadil Febrianto', 'jabatan' => 'Graphic Designer', 'foto' => 'team/team6.png'],
-                ]);
-                @endphp
-            @endif
-
             @foreach($teams as $i => $member)
             <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
                 <div class="team-card rounded-3 overflow-hidden text-center">

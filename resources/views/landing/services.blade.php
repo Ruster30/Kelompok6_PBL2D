@@ -16,39 +16,6 @@
             </p>
         </div>
 
-        {{-- Cards Grid --}}
-        @if(!isset($services) || (is_object($services) && $services->isEmpty()))
-            @php
-            $services = collect([
-                (object)[
-                    'icon' => 'bi-people-fill',
-                    'nama_layanan' => 'M.I.C.E',
-                    'deskripsi' => 'Meeting, Incentive, Convention, dan Exhibition yang dirancang profesional untuk kebutuhan perusahaan dan organisasi.'
-                ],
-                (object)[
-                    'icon' => 'bi-camera-video-fill',
-                    'nama_layanan' => 'Production',
-                    'deskripsi' => 'Layanan produksi event mulai dari desain grafis, aplikasi pendukung, maintenance service hingga LED Videotron.'
-                ],
-                (object)[
-                    'icon' => 'bi-megaphone-fill',
-                    'nama_layanan' => 'Marketing',
-                    'deskripsi' => 'Grand Opening, Activation, Selling Program, dan Branding untuk meningkatkan citra serta jangkauan bisnis Anda.'
-                ],
-                (object)[
-                    'icon' => 'bi-stars',
-                    'nama_layanan' => 'Special Event',
-                    'deskripsi' => 'Pengelolaan expo, fashion show, kompetisi, acara virtual, hingga berbagai event spesial lainnya.'
-                ],
-                (object)[
-                    'icon' => 'bi-briefcase-fill',
-                    'nama_layanan' => 'Corporate Event',
-                    'deskripsi' => 'Product Launching, Conference Gathering, dan Corporate Meeting dengan konsep profesional dan terstruktur.'
-                ],
-            ]);
-            @endphp
-        @endif
-
         <div class="row g-4 justify-content-center">
             @foreach($services as $i => $service)
             <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ $i * 70 }}">

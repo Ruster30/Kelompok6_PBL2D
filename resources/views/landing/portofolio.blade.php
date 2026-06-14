@@ -25,19 +25,6 @@
             </div>
         </div>
 
-        {{-- ===== Grid Portofolio ===== --}}
-        @if(!isset($portfolios) || (is_object($portfolios) && $portfolios->isEmpty()))
-            @php
-            $portfolios = collect([
-                (object)['gambar' => 'portofolio1.png', 'judul'  => 'Tech Summit 2024', 'kategori'    => 'Korporat'],
-                (object)['gambar' => 'portofolio2.png', 'judul'  => 'Pernikahan Mewah Safira & Hadaffi', 'kategori'    => 'Pernikahan'],
-                (object)['gambar' => 'portofolio3.png', 'judul'  => 'Konser Musik Nusantara', 'kategori'    => 'Konser'],
-                (object)['gambar' => 'portofolio4.png', 'judul'  => 'Peluncuran Produk X Brand', 'kategori'    => 'Peluncuran'],
-                (object)['gambar' => 'portofolio5.png', 'judul'  => 'Gala Amal Charity Night', 'kategori'    => 'Gala'],
-                (object)['gambar' => 'portofolio6.png', 'judul'  => 'Wedding Dinner Eksklusif 2024', 'kategori'    => 'Pernikahan'],
-            ]);
-            @endphp
-        @endif
 
         <div class="row g-4" id="portfolioGrid">
             @foreach($portfolios as $i => $item)
