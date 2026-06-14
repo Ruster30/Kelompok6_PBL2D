@@ -19,7 +19,7 @@
             <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
                 <div class="team-card rounded-3 overflow-hidden text-center">
                     <div class="team-img-wrap position-relative overflow-hidden">
-                        <img src="{{ asset('images/landing/' . ($member->foto ?? 'team/team'.(($i%6)+1).'.png')) }}"
+                        <img src="{{ asset('images/landing/team/' . ($member->foto ?? 'team/team'.(($i%6)+1).'.png')) }}"
                              alt="{{ $member->nama }}"
                              class="img-fluid w-100 team-img"
                              style="height:280px; object-fit:cover; object-position: center top;">

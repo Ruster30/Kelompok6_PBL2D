@@ -25,8 +25,9 @@ class CompanyProfileController extends Controller
         $company = [
             'name'    => 'ALPHA Organizer',
             'tagline' => 'Menciptakan Event yang Sempurna',
-            'desc1'   => 'Alpha Organizer adalah perusahaan Event Organizer profesional yang bergerak di bidang Event Organizer, Exhibition, Convention, dan Musical Entertainment. Sejak berdiri, kami telah dipercaya menangani berbagai acara dengan standar kualitas tinggi dan reputasi yang kuat di industri event.',
-            'desc2'   => 'Didukung oleh tim yang berpengalaman, kreatif, dan berdedikasi, kami berkomitmen menghadirkan solusi terbaik untuk setiap kebutuhan klien. Dengan mengedepankan profesionalisme, inovasi, dan integritas, kami menciptakan pengalaman yang berkesan serta memastikan setiap acara berjalan sukses sesuai harapan.',
+            'about_title' => 'Kami Tidak Hanya Merencanakan Event, Kami Menciptakan Warisan',
+            'about_desc1'   => 'Alpha Organizer adalah perusahaan Event Organizer profesional yang bergerak di bidang Event Organizer, Exhibition, Convention, dan Musical Entertainment. Sejak berdiri, kami telah dipercaya menangani berbagai acara dengan standar kualitas tinggi dan reputasi yang kuat di industri event.',
+            'about_desc2'   => 'Didukung oleh tim yang berpengalaman, kreatif, dan berdedikasi, kami berkomitmen menghadirkan solusi terbaik untuk setiap kebutuhan klien. Dengan mengedepankan profesionalisme, inovasi, dan integritas, kami menciptakan pengalaman yang berkesan serta memastikan setiap acara berjalan sukses sesuai harapan.',
             'email'   => 'info@alphaorganizer.com',
             'phone'   => '+62 812 3456 7890',
             'address' => 'Padang, Sumatera Barat, Indonesia',
@@ -58,9 +59,13 @@ class CompanyProfileController extends Controller
             ['title' => 'Kepuasan Klien Prioritas',      'desc' => 'Berkomitmen memberikan pelayanan terbaik dan membangun hubungan jangka panjang dengan setiap klien.'],
         ];
 
+        $services = [];
+$services2 = [];
         $servicesQuery = Service::where('is_active', true)->orderBy('urutan')->get();
         if ($servicesQuery->isNotEmpty()) {
-            $services = $servicesQuery->map(function($s) { return ['title' => $s->nama_layanan, 'desc' => $s->deskripsi]; })->toArray();
+            $servicesAll = $servicesQuery->map(function($s) { return ['icon'  => $s->icon ?? '★', 'title' => $s->nama_layanan, 'desc' => $s->deskripsi]; })->toArray();
+            $services  = array_slice($servicesAll, 0, 5);
+    $services2 = array_slice($servicesAll, 5, 3);
         } 
 
         $teamQuery = Team::where('is_active', true)->orderBy('urutan')->get();
@@ -69,7 +74,7 @@ class CompanyProfileController extends Controller
                 return [
                     'name' => $t->nama, 
                     'role' => $t->jabatan,
-                    'img'  => $t->foto ? public_path('images/landing/' . $t->foto) : public_path('images/landing/team/team1.png')
+                    'img'  => $t->foto ? public_path('images/landing/team/' . $t->foto) : public_path('images/landing/team/deafult.png')
                 ]; 
             })->toArray();
         } 
@@ -107,7 +112,7 @@ class CompanyProfileController extends Controller
 
         $pdf = Pdf::loadView('pdf.company-profile', compact(
             'company', 'stats', 'visi', 'misi',
-            'services', 'whyUs', 'team', 'portfolio', 'clients',
+            'services', 'services2', 'whyUs', 'team', 'portfolio', 'clients',
             'logoBase64', 'generatedAt'
         ))
         ->setPaper('a4', 'portrait')

@@ -183,12 +183,12 @@ class LandingPageSeeder extends Seeder
 
         // 5. Team
         $teams = [
-            ['nama' => 'Fajar Villiano', 'jabatan' => 'Founder', 'foto' => null, 'urutan' => 1, 'is_active' => true],
-            ['nama' => 'Valdy Dwi Wahyu', 'jabatan' => 'CO Founder', 'foto' => null, 'urutan' => 2, 'is_active' => true],
-            ['nama' => 'Intan Prasywi', 'jabatan' => 'Finance Manager', 'foto' => null, 'urutan' => 3, 'is_active' => true],
-            ['nama' => 'Muhammad Pinda Rahmadan', 'jabatan' => 'Creative Director', 'foto' => null, 'urutan' => 4, 'is_active' => true],
-            ['nama' => 'Baghaztra', 'jabatan' => 'IT Support', 'foto' => null, 'urutan' => 5, 'is_active' => true],
-            ['nama' => 'Fadil Febrianto', 'jabatan' => 'Graphic Designer', 'foto' => null, 'urutan' => 6, 'is_active' => true],
+            ['nama' => 'Fajar Villiano', 'jabatan' => 'Founder', 'foto' => 'team1.png', 'urutan' => 1, 'is_active' => true],
+            ['nama' => 'Valdy Dwi Wahyu', 'jabatan' => 'CO Founder', 'foto' => 'team2.png', 'urutan' => 2, 'is_active' => true],
+            ['nama' => 'Intan Prasywi', 'jabatan' => 'Finance Manager', 'foto' => 'team3.png', 'urutan' => 3, 'is_active' => true],
+            ['nama' => 'Muhammad Pinda Rahmadan', 'jabatan' => 'Creative Director', 'foto' => 'team4.png', 'urutan' => 4, 'is_active' => true],
+            ['nama' => 'Baghaztra', 'jabatan' => 'IT Support', 'foto' => 'team5.png', 'urutan' => 5, 'is_active' => true],
+            ['nama' => 'Fadil Febrianto', 'jabatan' => 'Graphic Designer', 'foto' => 'team6.png', 'urutan' => 6, 'is_active' => true],
         ];
 
         foreach ($teams as $team) {
