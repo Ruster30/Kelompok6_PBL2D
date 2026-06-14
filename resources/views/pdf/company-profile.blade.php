@@ -1,541 +1,433 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title>Company Profile - {{ $company['name'] }}</title>
 <style>
-    /* ====== RESET & BASE ====== */
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-        font-family: 'DejaVu Sans', 'Arial', sans-serif;
-        font-size: 11px;
-        color: #1a2540;
-        background: #ffffff;
-        line-height: 1.6;
-    }
-
-    /* ====== COVER PAGE ====== */
-    .cover-page {
-        width: 100%;
-        height: 1122px; /* A4 height approx */
-        background: #0d1b2e;
-        position: relative;
-        page-break-after: always;
-    }
-    .cover-bg-circle-1 {
-        position: absolute;
-        top: -80px; right: -80px;
-        width: 380px; height: 380px;
-        background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%);
-        border-radius: 50%;
-    }
-    .cover-bg-circle-2 {
-        position: absolute;
-        bottom: 100px; left: -60px;
-        width: 280px; height: 280px;
-        background: radial-gradient(circle, rgba(212,175,55,0.10) 0%, transparent 70%);
-        border-radius: 50%;
-    }
-    .cover-content {
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        padding: 80px 60px;
-    }
-    .cover-logo-wrap {
-        margin-bottom: 60px;
-    }
-    .cover-logo {
-        height: 50px;
-        width: auto;
-    }
-    .cover-logo-text {
-        font-size: 22px;
-        font-weight: bold;
-        color: #d4af37;
-        letter-spacing: 2px;
-    }
-    .cover-divider-top {
-        width: 60px;
-        height: 3px;
-        background: #d4af37;
-        margin-bottom: 30px;
-    }
-    .cover-label {
-        font-size: 10px;
-        color: #d4af37;
-        letter-spacing: 4px;
-        text-transform: uppercase;
-        margin-bottom: 18px;
-    }
-    .cover-title {
-        font-size: 38px;
-        font-weight: bold;
-        color: #ffffff;
-        line-height: 1.25;
-        margin-bottom: 12px;
-    }
-    .cover-title span {
-        color: #d4af37;
-    }
-    .cover-tagline {
-        font-size: 14px;
-        color: #8899bb;
-        margin-bottom: 50px;
-        max-width: 420px;
-    }
-    .cover-stats-row {
-        margin-bottom: 60px;
-    }
-    .cover-stat-box {
-        display: inline-block;
-        width: 22%;
-        text-align: center;
-        border: 1px solid rgba(212,175,55,0.3);
-        border-radius: 8px;
-        padding: 16px 8px;
-        margin-right: 2%;
-        background: rgba(212,175,55,0.05);
-    }
-    .cover-stat-value {
-        font-size: 24px;
-        font-weight: bold;
-        color: #d4af37;
-    }
-    .cover-stat-label {
-        font-size: 9px;
-        color: #8899bb;
-        margin-top: 4px;
-    }
-    .cover-footer {
-        position: absolute;
-        bottom: 50px; left: 60px; right: 60px;
-        border-top: 1px solid rgba(255,255,255,0.1);
-        padding-top: 18px;
-    }
-    .cover-footer-left {
-        display: inline-block;
-        font-size: 9px;
-        color: #556680;
-    }
-    .cover-footer-right {
-        float: right;
-        font-size: 9px;
-        color: #d4af37;
-    }
-    .cover-badge {
-        display: inline-block;
-        border: 1px solid #d4af37;
-        border-radius: 20px;
-        padding: 6px 16px;
-        font-size: 9px;
-        color: #d4af37;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        margin-bottom: 20px;
-    }
-
-    /* ====== CONTENT PAGES ====== */
-    .page {
-        padding: 50px 55px;
-        page-break-after: always;
-    }
-    .page:last-child {
-        page-break-after: auto;
-    }
-
-    /* Section header */
-    .section-label {
-        font-size: 9px;
-        color: #d4af37;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        margin-bottom: 6px;
-    }
-    .section-title {
-        font-size: 20px;
-        font-weight: bold;
-        color: #0d1b2e;
-        margin-bottom: 6px;
-    }
-    .section-title span { color: #d4af37; }
-    .section-divider {
-        width: 45px;
-        height: 3px;
-        background: #d4af37;
-        margin-bottom: 24px;
-        border-radius: 2px;
-    }
-
-    /* Page header (top bar) */
-    .page-header {
-        border-bottom: 2px solid #0d1b2e;
-        padding-bottom: 12px;
-        margin-bottom: 30px;
-        overflow: hidden;
-    }
-    .page-header-brand {
-        display: inline-block;
-        font-size: 13px;
-        font-weight: bold;
-        color: #0d1b2e;
-    }
-    .page-header-brand span { color: #d4af37; }
-    .page-header-section {
-        float: right;
-        font-size: 9px;
-        color: #8899bb;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-top: 3px;
-    }
-
-    /* Page footer */
-    .page-footer {
-        border-top: 1px solid #e5e8f0;
-        padding-top: 10px;
-        margin-top: 30px;
-        overflow: hidden;
-        font-size: 8px;
-        color: #aab0c0;
-    }
-    .page-footer-right { float: right; }
-
-    /* ====== ABOUT SECTION ====== */
-    .about-text {
-        font-size: 11px;
-        color: #334466;
-        line-height: 1.75;
-        margin-bottom: 14px;
-    }
-    .stats-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 8px 0;
-        margin-top: 20px;
-    }
-    .stat-cell {
-        width: 25%;
-        background: #0d1b2e;
-        border-radius: 8px;
-        padding: 16px 10px;
-        text-align: center;
-    }
-    .stat-cell-value {
-        font-size: 22px;
-        font-weight: bold;
-        color: #d4af37;
-    }
-    .stat-cell-label {
-        font-size: 8.5px;
-        color: #8899bb;
-        margin-top: 3px;
-    }
-
-    /* ====== VISI MISI ====== */
-    .vm-container {
-        overflow: hidden;
-        margin-bottom: 0;
-    }
-    .visi-box {
-        float: left;
-        width: 44%;
-        background: #0d1b2e;
-        border-radius: 10px;
-        padding: 28px 24px;
-        min-height: 230px;
-    }
-    .visi-box-icon {
-        width: 36px; height: 36px;
-        background: rgba(212,175,55,0.15);
-        border-radius: 50%;
-        text-align: center;
-        margin-bottom: 14px;
-        padding-top: 8px;
-        font-size: 16px;
-        color: #d4af37;
-    }
-    .visi-box-title {
-        font-size: 14px;
-        font-weight: bold;
-        color: #ffffff;
-        margin-bottom: 12px;
-    }
-    .visi-box-text {
-        font-size: 10px;
-        color: #8899bb;
-        line-height: 1.75;
-        font-style: italic;
-    }
-    .misi-col {
-        float: right;
-        width: 52%;
-    }
-    .misi-title-row {
-        margin-bottom: 16px;
-    }
-    .misi-title {
-        font-size: 16px;
-        font-weight: bold;
-        color: #0d1b2e;
-    }
-    .misi-item {
-        padding: 12px 0;
-        border-bottom: 1px solid #e8ecf5;
-        overflow: hidden;
-    }
-    .misi-item:last-child { border-bottom: none; }
-    .misi-item-num {
-        float: left;
-        width: 24px; height: 24px;
-        background: #d4af37;
-        border-radius: 50%;
-        text-align: center;
-        font-size: 10px;
-        font-weight: bold;
-        color: #0d1b2e;
-        padding-top: 5px;
-        margin-right: 12px;
-    }
-    .misi-item-body { overflow: hidden; }
-    .misi-item-title {
-        font-size: 11px;
-        font-weight: bold;
-        color: #0d1b2e;
-        margin-bottom: 3px;
-    }
-    .misi-item-desc {
-        font-size: 9.5px;
-        color: #556680;
-        line-height: 1.6;
-    }
-
-    /* ====== SERVICES ====== */
-    .services-grid {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 8px;
-    }
-    .service-cell {
-        width: 33%;
-        border: 1px solid #e8ecf5;
-        border-radius: 10px;
-        padding: 18px 16px;
-        vertical-align: top;
-        background: #f9faff;
-    }
-    .service-num {
-        width: 28px; height: 28px;
-        background: #0d1b2e;
-        border-radius: 50%;
-        text-align: center;
-        font-size: 11px;
-        font-weight: bold;
-        color: #d4af37;
-        margin-bottom: 10px;
-        padding-top: 6px;
-        display: block;
-    }
-    .service-title {
-        font-size: 12px;
-        font-weight: bold;
-        color: #0d1b2e;
-        margin-bottom: 6px;
-    }
-    .service-desc {
-        font-size: 9.5px;
-        color: #556680;
-        line-height: 1.6;
-    }
-    .service-accent {
-        width: 25px;
-        height: 2px;
-        background: #d4af37;
-        margin-bottom: 8px;
-    }
-
-    /* ====== WHY US ====== */
-    .why-grid {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 8px;
-    }
-    .why-cell {
-        width: 33%;
-        background: #0d1b2e;
-        border-radius: 10px;
-        padding: 18px 16px;
-        vertical-align: top;
-    }
-    .why-cell-title {
-        font-size: 11px;
-        font-weight: bold;
-        color: #ffffff;
-        margin-bottom: 6px;
-    }
-    .why-cell-desc {
-        font-size: 9.5px;
-        color: #8899bb;
-        line-height: 1.6;
-    }
-    .why-dot {
-        width: 8px; height: 8px;
-        background: #d4af37;
-        border-radius: 50%;
-        margin-bottom: 10px;
-    }
-
-    /* ====== TEAM ====== */
-    .team-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 8px;
-    }
-    .team-cell {
-        width: 33%;
-        border: 1px solid #e8ecf5;
-        border-radius: 10px;
-        padding: 16px 14px;
-        vertical-align: top;
-        text-align: center;
-        background: #f9faff;
-    }
-    .team-avatar {
-        width: 50px; height: 50px;
-        margin: 0 auto 10px;
-        text-align: center;
-    }
-    .team-avatar img {
-        width: 50px; height: 50px;
-        border-radius: 50%;
-    }
-    .team-name {
-        font-size: 10.5px;
-        font-weight: bold;
-        color: #0d1b2e;
-        margin-bottom: 3px;
-    }
-    .team-role {
-        font-size: 9px;
-        color: #d4af37;
-        background: rgba(212,175,55,0.1);
-        border-radius: 20px;
-        padding: 2px 8px;
-        display: inline-block;
-    }
-
-    /* ====== PORTFOLIO ====== */
-    .portfolio-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 8px;
-    }
-    .portfolio-cell {
-        width: 33%;
-        border-left: 3px solid #d4af37;
-        background: #f9faff;
-        padding: 14px 14px;
-        border-radius: 0 8px 8px 0;
-        vertical-align: top;
-    }
-    .portfolio-cat {
-        font-size: 8px;
-        color: #d4af37;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        margin-bottom: 4px;
-    }
-    .portfolio-title {
-        font-size: 10.5px;
-        font-weight: bold;
-        color: #0d1b2e;
-    }
-
-    /* ====== CLIENTS ====== */
-    .clients-wrap {
-        background: #f5f7fc;
-        border-radius: 10px;
-        padding: 20px;
-    }
-    .client-tag {
-        display: inline-block;
-        border: 1px solid #d0d8ec;
-        border-radius: 20px;
-        padding: 5px 12px;
-        font-size: 9.5px;
-        color: #334466;
-        margin: 4px;
-        background: #ffffff;
-    }
-
-    /* ====== CONTACT / BACK COVER ====== */
-    .contact-page {
-        background: #0d1b2e;
-        padding: 60px 55px;
-    }
-    .contact-title {
-        font-size: 26px;
-        font-weight: bold;
-        color: #ffffff;
-        margin-bottom: 8px;
-    }
-    .contact-title span { color: #d4af37; }
-    .contact-subtitle {
-        font-size: 11px;
-        color: #8899bb;
-        margin-bottom: 40px;
-        max-width: 400px;
-    }
-    .contact-item {
-        overflow: hidden;
-        margin-bottom: 18px;
-    }
-    .contact-icon-box {
-        float: left;
-        width: 36px; height: 36px;
-        background: rgba(212,175,55,0.15);
-        border-radius: 8px;
-        text-align: center;
-        padding-top: 8px;
-        margin-right: 14px;
-        font-size: 14px;
-        color: #d4af37;
-    }
-    .contact-info { overflow: hidden; }
-    .contact-label {
-        font-size: 8.5px;
-        color: #556680;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        margin-bottom: 2px;
-    }
-    .contact-value {
-        font-size: 11px;
-        color: #ffffff;
-        font-weight: bold;
-    }
-    .contact-divider {
-        border: none;
-        border-top: 1px solid rgba(255,255,255,0.08);
-        margin: 30px 0;
-    }
-    .back-cover-footer {
-        font-size: 9px;
-        color: #556680;
-        text-align: center;
-        margin-top: 60px;
-    }
-    .back-cover-footer span { color: #d4af37; }
-
-    /* ====== UTILITY ====== */
-    .clearfix::after { content:''; display:table; clear:both; }
-    .text-gold { color: #d4af37; }
-    .mt-8 { margin-top: 8px; }
-    .mt-16 { margin-top: 16px; }
-    .mb-4 { margin-bottom: 4px; }
-    .mb-8 { margin-bottom: 8px; }
-    .mb-16 { margin-bottom: 16px; }
-    .mb-24 { margin-bottom: 24px; }
-</style>
+        /* =============================================
+           DomPDF-compatible CSS
+           Semua inline / style tag — no external fonts
+           ============================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 11px;
+            color: #1a2540;
+            background: #fff;
+        }
+ 
+        /* -------- COVER PAGE -------- */
+        .cover {
+            width: 100%;
+            height: 297mm;
+            background: #0a0e1a;
+            position: relative;
+            page-break-after: always;
+        }
+        .cover-accent-bar {
+            width: 100%;
+            height: 5px;
+            background: #2dd4bf;
+        }
+        .cover-body {
+            padding: 80px 60px 60px;
+        }
+        .cover-logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .cover-logo span { color: #2dd4bf; }
+        .cover-tagline {
+            font-size: 11px;
+            color: #8a9bb5;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 80px;
+        }
+        .cover-title {
+            font-size: 40px;
+            font-weight: bold;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+        .cover-title span { color: #2dd4bf; }
+        .cover-subtitle {
+            font-size: 13px;
+            color: #8a9bb5;
+            line-height: 1.7;
+            max-width: 420px;
+            margin-bottom: 60px;
+        }
+        .cover-meta {
+            border-top: 1px solid #1e2d40;
+            padding-top: 24px;
+            display: table;
+            width: 100%;
+        }
+        .cover-meta-item {
+            display: table-cell;
+            width: 33%;
+        }
+        .cover-meta-label {
+            font-size: 9px;
+            color: #8a9bb5;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+        }
+        .cover-meta-value {
+            font-size: 12px;
+            color: #fff;
+            font-weight: bold;
+        }
+        .cover-bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: #2dd4bf;
+            padding: 0 60px;
+            display: table;
+            width: 100%;
+        }
+        .cover-bottom-text {
+            display: table-cell;
+            vertical-align: middle;
+            font-size: 11px;
+            color: #0a0e1a;
+            font-weight: bold;
+        }
+        .cover-bottom-year {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+            font-size: 28px;
+            font-weight: bold;
+            color: rgba(10,14,26,.3);
+        }
+ 
+        /* -------- COMMON PAGE -------- */
+        .page {
+            padding: 48px 52px;
+            page-break-after: always;
+        }
+        .page:last-child { page-break-after: auto; }
+ 
+        /* Section header */
+        .section-label {
+            font-size: 8px;
+            font-weight: bold;
+            color: #2dd4bf;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .section-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1a2540;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        .section-divider {
+            width: 40px;
+            height: 3px;
+            background: #2dd4bf;
+            margin-bottom: 20px;
+            border-radius: 2px;
+        }
+        .section-body {
+            font-size: 10.5px;
+            color: #4a5568;
+            line-height: 1.75;
+        }
+ 
+        /* -------- PAGE HEADER -------- */
+        .page-header {
+            display: table;
+            width: 100%;
+            margin-bottom: 32px;
+            border-bottom: 1px solid #e4eaf3;
+            padding-bottom: 12px;
+        }
+        .page-header-logo {
+            display: table-cell;
+            vertical-align: middle;
+            font-size: 14px;
+            font-weight: bold;
+            color: #1a2540;
+        }
+        .page-header-logo span { color: #2dd4bf; }
+        .page-header-right {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+            font-size: 9px;
+            color: #8a9bb5;
+        }
+ 
+        /* -------- STATS TABLE -------- */
+        .stats-table {
+            display: table;
+            width: 100%;
+            margin: 24px 0;
+        }
+        .stat-cell {
+            display: table-cell;
+            width: 25%;
+            text-align: center;
+            padding: 16px 8px;
+            background: #f7fafc;
+            border: 1px solid #e4eaf3;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a2540;
+        }
+        .stat-label {
+            font-size: 9px;
+            color: #2dd4bf;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+ 
+        /* -------- VISI MISI -------- */
+        .vm-table {
+            display: table;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .vm-cell {
+            display: table-cell;
+            width: 50%;
+            padding: 20px;
+            vertical-align: top;
+        }
+        .visi-cell {
+            background: linear-gradient(145deg, #2ccdc0, #127f78);
+            border-radius: 8px;
+            padding-right: 32px;
+        }
+        .visi-cell .section-title { color: #fff; }
+        .visi-cell .section-body  { color: rgba(255,255,255,.85); font-style: italic; }
+        .misi-cell { padding-left: 32px; }
+        .misi-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e4eaf3;
+        }
+        .misi-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .misi-item-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #1a2540;
+            margin-bottom: 4px;
+        }
+        .misi-item-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #2dd4bf;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        .misi-item-desc {
+            font-size: 10px;
+            color: #6b7a99;
+            line-height: 1.6;
+        }
+ 
+        /* -------- SERVICES GRID -------- */
+        .services-grid {
+            display: table;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .services-row { display: table-row; }
+        .service-cell {
+            display: table-cell;
+            width: 33.33%;
+            padding: 14px;
+            vertical-align: top;
+        }
+        .service-box {
+            border: 1px solid #e4eaf3;
+            border-radius: 8px;
+            padding: 16px;
+            height: 100%;
+        }
+        .service-box-dot {
+            width: 32px;
+            height: 32px;
+            background: rgba(45,212,191,.12);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-align: center;
+            line-height: 32px;
+            font-size: 14px;
+            color: #2dd4bf;
+        }
+        .service-box-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #1a2540;
+            margin-bottom: 6px;
+        }
+        .service-box-desc {
+            font-size: 9.5px;
+            color: #6b7a99;
+            line-height: 1.6;
+        }
+        .service-left  { padding-left: 0; }
+        .service-right { padding-right: 0; }
+ 
+        /* -------- TEAM -------- */
+        .team-table {
+            display: table;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .team-cell {
+            display: table-cell;
+            width: 25%;
+            padding: 0 8px;
+            vertical-align: top;
+            text-align: center;
+        }
+        .team-cell:first-child { padding-left: 0; }
+        .team-cell:last-child  { padding-right: 0; }
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e4eaf3;
+            margin: 0 auto 10px;
+            overflow: hidden;
+        }
+        .team-avatar img { width: 80px; height: 80px; object-fit: cover; }
+        .team-name {
+            font-size: 11px;
+            font-weight: bold;
+            color: #1a2540;
+            margin-bottom: 3px;
+        }
+        .team-role {
+            font-size: 9.5px;
+            color: #2dd4bf;
+        }
+ 
+        /* -------- WHY US -------- */
+        .why-table { display: table; width: 100%; margin-top: 16px; }
+        .why-row   { display: table-row; }
+        .why-cell  {
+            display: table-cell;
+            width: 50%;
+            padding: 10px;
+            vertical-align: top;
+        }
+        .why-box {
+            border-left: 3px solid #2dd4bf;
+            padding: 10px 14px;
+            margin-bottom: 4px;
+        }
+        .why-title { font-size: 11px; font-weight: bold; color: #1a2540; margin-bottom: 4px; }
+        .why-desc  { font-size: 9.5px; color: #6b7a99; line-height: 1.6; }
+ 
+        /* -------- CONTACT -------- */
+        .contact-table { display: table; width: 100%; margin-top: 20px; }
+        .contact-left  {
+            display: table-cell;
+            width: 55%;
+            vertical-align: top;
+            padding-right: 40px;
+        }
+        .contact-right {
+            display: table-cell;
+            width: 45%;
+            vertical-align: top;
+            background: #f7fafc;
+            border: 1px solid #e4eaf3;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .contact-item { margin-bottom: 16px; }
+        .contact-item-label {
+            font-size: 8.5px;
+            font-weight: bold;
+            color: #2dd4bf;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
+        .contact-item-value {
+            font-size: 11px;
+            color: #1a2540;
+        }
+        .qr-placeholder {
+            width: 80px; height: 80px;
+            border: 2px dashed #e4eaf3;
+            border-radius: 6px;
+            text-align: center;
+            padding-top: 28px;
+            font-size: 9px;
+            color: #8a9bb5;
+            margin-bottom: 8px;
+        }
+ 
+        /* -------- FOOTER -------- */
+        .page-footer {
+            margin-top: 32px;
+            padding-top: 12px;
+            border-top: 1px solid #e4eaf3;
+            display: table;
+            width: 100%;
+        }
+        .page-footer-left {
+            display: table-cell;
+            font-size: 9px;
+            color: #8a9bb5;
+        }
+        .page-footer-right {
+            display: table-cell;
+            text-align: right;
+            font-size: 9px;
+            color: #8a9bb5;
+        }
+        .accent { color: #2dd4bf; }
+        .back-cover {
+            background: #0a0e1a;
+            height: 297mm;
+            text-align: center;
+            padding-top: 120px;
+        }
+        .back-cover-logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        .back-cover-logo span { color: #2dd4bf; }
+        .back-cover-line {
+            width: 60px;
+            height: 3px;
+            background: #2dd4bf;
+            margin: 16px auto;
+        }
+        .back-cover-text {
+            font-size: 11px;
+            color: #8a9bb5;
+        }
+    </style>
 </head>
 <body>
 
@@ -589,6 +481,8 @@
         </div>
     </div>
 </div>
+
+
 
 
 {{-- ========================================

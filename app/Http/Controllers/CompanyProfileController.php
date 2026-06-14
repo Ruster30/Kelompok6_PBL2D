@@ -61,15 +61,7 @@ class CompanyProfileController extends Controller
         $servicesQuery = Service::where('is_active', true)->orderBy('urutan')->get();
         if ($servicesQuery->isNotEmpty()) {
             $services = $servicesQuery->map(function($s) { return ['title' => $s->nama_layanan, 'desc' => $s->deskripsi]; })->toArray();
-        } else {
-            $services = [
-                ['title' => 'M.I.C.E',         'desc' => 'Meeting, Incentive, Convention, dan Exhibition yang dirancang profesional untuk kebutuhan perusahaan dan organisasi.'],
-                ['title' => 'Production',       'desc' => 'Layanan produksi event mulai dari desain grafis, aplikasi pendukung, maintenance service hingga LED Videotron.'],
-                ['title' => 'Marketing',        'desc' => 'Grand Opening, Activation, Selling Program, dan Branding untuk meningkatkan citra serta jangkauan bisnis Anda.'],
-                ['title' => 'Special Event',    'desc' => 'Pengelolaan expo, fashion show, kompetisi, acara virtual, hingga berbagai event spesial lainnya.'],
-                ['title' => 'Corporate Event',  'desc' => 'Product Launching, Conference Gathering, dan Corporate Meeting dengan konsep profesional dan terstruktur.'],
-            ];
-        }
+        } 
 
         $teamQuery = Team::where('is_active', true)->orderBy('urutan')->get();
         if ($teamQuery->isNotEmpty()) {
@@ -80,16 +72,7 @@ class CompanyProfileController extends Controller
                     'img'  => $t->foto ? public_path('images/landing/' . $t->foto) : public_path('images/landing/team/team1.png')
                 ]; 
             })->toArray();
-        } else {
-            $team = [
-                ['name' => 'Fajar Villiano',           'role' => 'Founder', 'img' => public_path('images/landing/team/team1.png')],
-                ['name' => 'Valdy Dwi Wahyu',          'role' => 'CO Founder', 'img' => public_path('images/landing/team/team2.png')],
-                ['name' => 'Intan Prasywi',             'role' => 'Finance Manager', 'img' => public_path('images/landing/team/team3.png')],
-                ['name' => 'Muhammad Pinda Rahmadan',   'role' => 'Creative Director', 'img' => public_path('images/landing/team/team4.png')],
-                ['name' => 'Baghaztra',                 'role' => 'IT Support', 'img' => public_path('images/landing/team/team5.png')],
-                ['name' => 'Fadil Febrianto',           'role' => 'Graphic Designer', 'img' => public_path('images/landing/team/team6.png')],
-            ];
-        }
+        } 
 
         $portfolioQuery = Portfolio::where('is_active', true)->get();
         if ($portfolioQuery->isNotEmpty()) {
@@ -100,17 +83,7 @@ class CompanyProfileController extends Controller
                     'img' => $p->gambar ? public_path('images/landing/portofolio/' . $p->gambar) : public_path('images/landing/portofolio/portofolio1.png')
                 ]; 
             })->toArray();
-        } else {
-            $portfolio = [
-                ['title' => 'Tech Summit 2024',                  'cat' => 'Korporat', 'img' => public_path('images/landing/portofolio/portofolio1.png')],
-                ['title' => 'Pernikahan Mewah Safira & Hadaffi', 'cat' => 'Pernikahan', 'img' => public_path('images/landing/portofolio/portofolio2.png')],
-                ['title' => 'Konser Musik Nusantara',            'cat' => 'Konser', 'img' => public_path('images/landing/portofolio/portofolio3.png')],
-                ['title' => 'Peluncuran Produk X Brand',         'cat' => 'Peluncuran', 'img' => public_path('images/landing/portofolio/portofolio4.png')],
-                ['title' => 'Gala Amal Charity Night',           'cat' => 'Gala', 'img' => public_path('images/landing/portofolio/portofolio5.png')],
-                ['title' => 'Wedding Dinner Eksklusif 2024',     'cat' => 'Pernikahan', 'img' => public_path('images/landing/portofolio/portofolio6.png')],
-            ];
-        }
-
+        } 
         $clientQuery = Client::where('is_active', true)->get();
         if ($clientQuery->isNotEmpty()) {
             $clients = $clientQuery->map(function($c) {
@@ -120,21 +93,7 @@ class CompanyProfileController extends Controller
                     'logo' => public_path('images/landing/clients/' . $logoName . '.png')
                 ];
             })->toArray();
-        } else {
-            $defaultClients = [
-                'Colony', 'Citilink', 'Yamaha', 'Lenovo', 'Pos Indonesia',
-                'Bank BRI', 'Hyundai', 'Honda', 'Nissan', 'Rexvin',
-                'Dofla Jaya Properti', 'Motul', 'IQOS', 'Toyota',
-                'Bank Mandiri', 'Telkomsel', 'Cinema XXI', 'HokBen',
-                'Tri', 'Make Over', 'Red Modani', 'Wuling', 'Transmart', 'Huawei',
-            ];
-            $clients = array_map(function($c) {
-                return [
-                    'name' => $c,
-                    'logo' => public_path('images/landing/clients/' . strtolower(str_replace(' ', '-', $c)) . '.png')
-                ];
-            }, $defaultClients);
-        }
+        } 
 
         $logoPath  = public_path('images/landing/logo.png');
         $logoBase64 = '';
