@@ -30,7 +30,13 @@
         @forelse($portfolios as $portfolio)
         <div class="portfolio-card">
             <div class="portfolio-img-wrap">
+                @if($portfolio->gambar)
                 <img src="{{ asset('storage/' . $portfolio->gambar) }}" alt="{{ $portfolio->judul }}" class="portfolio-img">
+                @else
+                <div class="portfolio-img" style="background:#f1f5f9; display:flex; align-items:center; justify-content:center;">
+                    <i class="fas fa-image" style="font-size:32px; color:#cbd5e1;"></i>
+                </div>
+                @endif
                 <div class="portfolio-img-actions">
                     <button class="action-btn" title="Edit"
                             onclick='openPortfolioModal({{ json_encode($portfolio) }})'
@@ -49,9 +55,19 @@
             <div class="portfolio-body">
                 <div class="portfolio-category">{{ $portfolio->kategori }}</div>
                 <div class="portfolio-title">{{ $portfolio->judul }}</div>
+                @if($portfolio->event)
+                <div style="font-size:12px; color:#14b8a6; margin-top:4px;">
+                    <i class="fas fa-link" style="font-size:11px;"></i> {{ $portfolio->event->nama_event }}
+                </div>
+                @endif
+                @if($portfolio->tanggal_event)
+                <div style="font-size:12px; color:#94a3b8; margin-top:2px;">
+                    {{ \Carbon\Carbon::parse($portfolio->tanggal_event)->format('d M Y') }}
+                </div>
+                @endif
                 <div style="margin-top:8px;">
-                    <span class="badge {{ $portfolio->is_active ? 'badge-active' : 'badge-gray' }}">
-                        {{ $portfolio->is_active ? 'Aktif' : 'Nonaktif' }}
+                    <span class="badge {{ $portfolio->status ? 'badge-active' : 'badge-gray' }}">
+                        {{ $portfolio->status ? 'Aktif' : 'Nonaktif' }}
                     </span>
                 </div>
             </div>
@@ -68,48 +84,59 @@
 
 {{-- Modal --}}
 <div id="portfolioModal" class="modal-overlay">
-    <div class="modal-box">
+    <div class="modal-box" style="width:620px;">
         <div class="modal-header">
             <span id="portfolioModalTitle">Tambah Portfolio</span>
-            <button class="modal-close" onclick="document.getElementById('portfolioModal').classList.remove('show')">
-                <i class="fas fa-times"></i>
-            </button>
+            <button class="modal-close" onclick="closePortfolioModal()"><i class="fas fa-times"></i></button>
         </div>
         <form id="portfolioForm" action="{{ route('admin.cms.storePortfolio') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="_method" id="portfolioFormMethod" value="POST">
-            <div class="modal-body">
-                <div class="form-group">
+            <div class="modal-body" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="form-group" style="grid-column:1/-1;">
                     <label class="form-label">Judul *</label>
                     <input type="text" name="judul" id="judul" class="form-input" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Kategori *</label>
                     <select name="kategori" id="kategori" class="form-input" required>
-                        <option value="Korporat">Korporat</option>
-                        <option value="Pernikahan">Pernikahan</option>
-                        <option value="Konser">Konser</option>
-                        <option value="Ulang Tahun">Ulang Tahun</option>
-                        <option value="Konferensi">Konferensi</option>
-                        <option value="Lainnya">Lainnya</option>
+                        @foreach(['Wedding','Corporate','Concert','Seminar','Launching','Expo','Lainnya'] as $kat)
+                        <option value="{{ $kat }}">{{ $kat }}</option>
+                        @endforeach
                     </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Terhubung ke Event</label>
+                    <select name="event_id" id="event_id" class="form-input">
+                        <option value="">-- Tidak terhubung --</option>
+                        @foreach($events as $event)
+                        <option value="{{ $event->id }}">{{ $event->nama_event }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal Event</label>
+                    <input type="date" name="tanggal_event" id="tanggal_event" class="form-input">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Gambar <span id="gambarRequired">*</span></label>
                     <input type="file" name="gambar" id="gambar" class="form-input" accept="image/*">
-                    <img id="gambarPreview" src="" alt="" style="display:none; max-height:120px; border-radius:8px; margin-top:6px;">
+                    <img id="gambarPreview" src="" alt="" style="display:none; max-height:100px; border-radius:8px; margin-top:6px; object-fit:cover;">
+                </div>
+                <div class="form-group" style="grid-column:1/-1;">
+                    <label class="form-label">Deskripsi</label>
+                    <textarea name="deskripsi" id="deskripsi" class="form-input" rows="2"></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">File Tips (opsional)</label>
-                    <input type="file" name="tips_file" id="tips_file" class="form-input">
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" name="is_active" id="is_active" value="1" checked>
-                    <label for="is_active">Tampilkan di landing page (Aktif)</label>
+                    <label class="form-label">Status</label>
+                    <select name="status" id="status" class="form-input">
+                        <option value="1">Aktif (Tampil di Landing Page)</option>
+                        <option value="0">Nonaktif</option>
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="document.getElementById('portfolioModal').classList.remove('show')">Batal</button>
+                <button type="button" class="btn btn-outline" onclick="closePortfolioModal()">Batal</button>
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
             </div>
         </form>
@@ -129,10 +156,15 @@ function openPortfolioModal(portfolio = null) {
         document.getElementById('portfolioModalTitle').innerText = 'Edit Portfolio';
         document.getElementById('judul').value = portfolio.judul;
         document.getElementById('kategori').value = portfolio.kategori;
-        document.getElementById('is_active').checked = !!portfolio.is_active;
+        document.getElementById('event_id').value = portfolio.event_id ?? '';
+        document.getElementById('tanggal_event').value = portfolio.tanggal_event ?? '';
+        document.getElementById('deskripsi').value = portfolio.deskripsi ?? '';
+        document.getElementById('status').value = portfolio.status ? '1' : '0';
         document.getElementById('gambarRequired').innerText = '';
-        preview.src = '{{ asset("storage") }}/' + portfolio.gambar;
-        preview.style.display = 'block';
+        if (portfolio.gambar) {
+            preview.src = '{{ asset("storage") }}/' + portfolio.gambar;
+            preview.style.display = 'block';
+        }
         form.action = '{{ url("admin/cms/portfolio") }}/' + portfolio.id;
         document.getElementById('portfolioFormMethod').value = 'PUT';
     } else {
@@ -142,6 +174,10 @@ function openPortfolioModal(portfolio = null) {
         document.getElementById('portfolioFormMethod').value = 'POST';
     }
     document.getElementById('portfolioModal').classList.add('show');
+}
+
+function closePortfolioModal() {
+    document.getElementById('portfolioModal').classList.remove('show');
 }
 
 document.getElementById('gambar').addEventListener('change', function(e) {

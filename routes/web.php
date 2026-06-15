@@ -89,16 +89,16 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::post('/notifications/mark-all-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('admin.notifications.markAllRead');
 
     // Proposal & Dokumen
-    Route::get('/proposal-dokumen', [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.proposal_dokumen.index');
-    Route::post('/proposal-dokumen/upload', [App\Http\Controllers\Admin\ProposalController::class, 'upload'])->name('admin.proposal_dokumen.upload');
-    Route::delete('/proposal-dokumen/{document}', [App\Http\Controllers\Admin\ProposalController::class, 'destroy'])->name('admin.proposal_dokumen.destroy');
-    Route::get('/proposal-dokumen/invoices', [App\Http\Controllers\Admin\ProposalController::class, 'invoices'])->name('admin.proposal_dokumen.invoices');
-    Route::post('/proposal-dokumen/invoices', [App\Http\Controllers\Admin\ProposalController::class, 'storeInvoice'])->name('admin.proposal_dokumen.storeInvoice');
-    Route::put('/proposal-dokumen/invoices/{invoice}', [App\Http\Controllers\Admin\ProposalController::class, 'updateInvoice'])->name('admin.proposal_dokumen.updateInvoice');
-    Route::delete('/proposal-dokumen/invoices/{invoice}', [App\Http\Controllers\Admin\ProposalController::class, 'destroyInvoice'])->name('admin.proposal_dokumen.destroyInvoice');
-    Route::get('/proposal-dokumen/invoices/{invoice}/print', [App\Http\Controllers\Admin\ProposalController::class, 'printInvoice'])->name('admin.proposal_dokumen.printInvoice');
-    Route::get('/proposal-dokumen/builder', [App\Http\Controllers\Admin\ProposalController::class, 'builder'])->name('admin.proposal_dokumen.builder');
-    Route::post('/proposal-dokumen/builder/generate', [App\Http\Controllers\Admin\ProposalController::class, 'generate'])->name('admin.proposal_dokumen.generate');
+    Route::get('/proposals', [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.proposals.index');
+    Route::post('/proposals/upload', [App\Http\Controllers\Admin\ProposalController::class, 'upload'])->name('admin.proposals.upload');
+    Route::delete('/proposals/{document}', [App\Http\Controllers\Admin\ProposalController::class, 'destroy'])->name('admin.proposals.destroy');
+    Route::get('/proposals/invoices', [App\Http\Controllers\Admin\ProposalController::class, 'invoices'])->name('admin.proposals.invoices');
+    Route::post('/proposals/invoices', [App\Http\Controllers\Admin\ProposalController::class, 'storeInvoice'])->name('admin.proposals.storeInvoice');
+    Route::put('/proposals/invoices/{invoice}', [App\Http\Controllers\Admin\ProposalController::class, 'updateInvoice'])->name('admin.proposals.updateInvoice');
+    Route::delete('/proposals/invoices/{invoice}', [App\Http\Controllers\Admin\ProposalController::class, 'destroyInvoice'])->name('admin.proposals.destroyInvoice');
+    Route::get('/proposals/invoices/{invoice}/print', [App\Http\Controllers\Admin\ProposalController::class, 'printInvoice'])->name('admin.proposals.printInvoice');
+    Route::get('/proposals/builder', [App\Http\Controllers\Admin\ProposalController::class, 'builder'])->name('admin.proposals.builder');
+    Route::post('/proposals/builder/generate', [App\Http\Controllers\Admin\ProposalController::class, 'generate'])->name('admin.proposals.generate');
 
     // Documentation
     Route::get('/documentation', [App\Http\Controllers\Admin\DocumentationController::class, 'index'])->name('admin.documentation.index');
@@ -111,11 +111,11 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::put('/timeline/{timeline}', [App\Http\Controllers\Admin\TimelineController::class, 'update'])->name('admin.timeline.update');
     Route::delete('/timeline/{timeline}', [App\Http\Controllers\Admin\TimelineController::class, 'destroy'])->name('admin.timeline.destroy');
 
-    // Tasks
-    Route::get('/tasks', [App\Http\Controllers\Admin\TaskController::class, 'index'])->name('admin.tasks.index');
-    Route::post('/tasks', [App\Http\Controllers\Admin\TaskController::class, 'store'])->name('admin.tasks.store');
-    Route::put('/tasks/{task}', [App\Http\Controllers\Admin\TaskController::class, 'update'])->name('admin.tasks.update');
-    Route::delete('/tasks/{task}', [App\Http\Controllers\Admin\TaskController::class, 'destroy'])->name('admin.tasks.destroy');
+    // EventVendor
+    Route::get('/event-vendors', [App\Http\Controllers\Admin\EventVendorController::class, 'index'])->name('admin.event-vendors.index');
+    Route::post('/event-vendors', [App\Http\Controllers\Admin\EventVendorController::class, 'store'])->name('admin.event-vendors.store');
+    Route::put('/event-vendors/{task}', [App\Http\Controllers\Admin\EventVendorController::class, 'update'])->name('admin.event-vendors.update');
+    Route::delete('/event-vendors/{task}', [App\Http\Controllers\Admin\EventVendorController::class, 'destroy'])->name('admin.event-vendors.destroy');
 
     // Vendors
     Route::get('/vendors', [App\Http\Controllers\Admin\VendorController::class, 'index'])->name('admin.vendors.index');

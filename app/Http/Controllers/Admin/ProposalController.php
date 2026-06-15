@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Document;
+use App\Models\Documentation;
 use App\Models\Invoice;
 use App\Models\Event;
 use App\Models\RabItem;
@@ -16,7 +16,7 @@ class ProposalController extends Controller
     // ─────────────── DOKUMEN UMUM ───────────────
     public function index(Request $request)
     {
-        $query = Document::with('user')->latest();
+        $query = Documentation::with('user')->latest();
 
         if ($request->search) {
             $query->where('nama_file', 'like', '%' . $request->search . '%');

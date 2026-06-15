@@ -317,8 +317,8 @@
         <a href="{{ route('admin.timeline.index') }}" class="nav-item {{ request()->routeIs('admin.timeline.*') ? 'active' : '' }}">
             <i class="fas fa-calendar"></i> Timeline
         </a>
-        <a href="{{ route('admin.tasks.index') }}" class="nav-item {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
-            <i class="fas fa-tasks"></i> Tugas &amp; Tim
+        <a href="{{ route('admin.event-vendors.index') }}" class="nav-item {{ request()->routeIs('admin.event-vendors.*') ? 'active' : '' }}">
+            <i class="fas fa-users-cog"></i> Tugas &amp; Tim
         </a>
         <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
             <i class="fas fa-users"></i> Vendor &amp; Klien
@@ -326,7 +326,7 @@
         <a href="{{ route('admin.cms.index') }}" class="nav-item {{ request()->routeIs('admin.cms.*') ? 'active' : '' }}">
             <i class="fas fa-palette"></i> Landing Page CMS
         </a>
-        <a href="{{ route('admin.proposal_dokumen.index') }}" class="nav-item {{ request()->routeIs('admin.proposal_dokumen.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.proposals.index') }}" class="nav-item {{ request()->routeIs('admin.proposals.*') ? 'active' : '' }}">
             <i class="fas fa-file-alt"></i> Proposal &amp; Dokumen
         </a>
         <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
