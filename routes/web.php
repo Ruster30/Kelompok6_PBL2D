@@ -23,10 +23,13 @@ Route::get('/dashboard', function () {
     } elseif ($role === 'vendor') {
         return redirect()->route('vendor.dashboard');
     }
-    return view('dashboard');
+    return app(ClientController::class)->dashboard();
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/client/dashboard', [ClientController::class, 'dashboard'])
+        ->name('client.dashboard');
+
     Route::get('/vendor/dashboard', function () {
         if (request()->user()->role !== 'vendor') {
             abort(403);
