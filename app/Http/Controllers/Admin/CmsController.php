@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\Portfolio;
 use App\Models\Team;
-use App\Models\ClientLogo;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Event;
 
 class CmsController extends Controller
 {
@@ -61,6 +62,7 @@ class CmsController extends Controller
     {
         return view('admin.cms.portfolio', [
             'portfolios' => Portfolio::latest()->get(),
+            'events' => Event::orderBy('nama_event')->get(),
         ]);
     }
 
@@ -192,7 +194,7 @@ class CmsController extends Controller
     public function clients()
     {
         return view('admin.cms.clients', [
-            'clients' => ClientLogo::latest()->get(),
+            'clients' => Client::latest()->get(),
         ]);
     }
 

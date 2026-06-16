@@ -13,15 +13,16 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('pic_admin_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('client_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('pic_admin_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('nama_event');
-            $table->string('jenis_event', 100);
+            $table->string('jenis_event', 100)->nullable();
             $table->date('tanggal_event');
-            $table->text('lokasi_event');
-            $table->integer('jumlah_tamu');
-            $table->text('detail_kebutuhan');
-            $table->enum('status_event', ['menunggu', 'diproses', 'berjalan', 'selesai', 'dibatalkan'])->default('menunggu');
+            $table->text('lokasi_event')->nullable();
+            $table->integer('jumlah_tamu')->nullable();
+            $table->text('detail_kebutuhan')->nullable();
+            $table->enum('status_event', ['menunggu','diproses','berjalan','selesai','dibatalkan'])
+                ->default('menunggu');
             $table->timestamps();
         });
     }

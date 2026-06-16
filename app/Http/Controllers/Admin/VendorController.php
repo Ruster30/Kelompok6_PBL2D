@@ -14,10 +14,15 @@ class VendorController extends Controller
     public function index(Request $request)
     {
         $query = Vendor::with('user')
-            ->withCount(['tasks' => function ($q) {
-                $q->whereIn('status', ['ditugaskan', 'dikerjakan']);
-            }])
-            ->latest();
+        ->withCount([
+            'eventVendors as active_jobs_count' => function ($q) {
+                $q->whereIn('status_vendor', [
+                    'ditugaskan',
+                    'dikerjakan'
+                ]);
+            }
+        ])
+        ->latest();
 
         if ($request->search) {
             $query->where('nama_vendor', 'like', '%' . $request->search . '%');
@@ -25,12 +30,15 @@ class VendorController extends Controller
 
         $vendors = $query->paginate(10)->withQueryString();
 
-        return view('admin.vendors.index', [
+        return view('admin.vendor.index', [
             'vendors'       => $vendors,
             'totalVendors'  => Vendor::count(),
             'activeVendors' => Vendor::whereNotNull('user_id')->count(),
-            'busyVendors'   => Vendor::whereHas('tasks', function ($q) {
-                $q->whereIn('status', ['ditugaskan', 'dikerjakan']);
+            'busyVendors'   => Vendor::whereHas('eventVendors', function ($q) {
+                $q->whereIn('status_vendor', [
+                    'ditugaskan',
+                    'dikerjakan'
+                ]);
             })->count(),
         ]);
     }

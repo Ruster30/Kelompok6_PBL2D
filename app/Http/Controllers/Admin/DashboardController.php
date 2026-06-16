@@ -7,7 +7,7 @@ use App\Models\Event;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\Vendor;
-use App\Models\Task;
+use App\Models\Timeline;
 
 class DashboardController extends Controller
 {
@@ -27,7 +27,7 @@ class DashboardController extends Controller
             'revenue' => Payment::where('status_pembayaran', 'diverifikasi')->sum('nominal'),
 
             // Tugas belum selesai
-            'pendingTasks' => Task::where('status', '!=', 'selesai')->count(),
+            'pendingTasks' => Timeline::where('status_kegiatan', '!=', 'selesai')->count(),
 
             // Event terbaru (5 terbaru, with client relation)
             'recentEvents' => Event::with('client')

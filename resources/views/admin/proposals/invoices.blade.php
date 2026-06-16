@@ -83,7 +83,7 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <form id="invoiceForm" action="{{ route('admin.proposals.invoices.store') }}" method="POST">
+        <form id="invoiceForm" action="{{ route('admin.proposals.storeInvoice') }}" method="POST">
             @csrf
             <input type="hidden" name="_method" id="invoiceFormMethod" value="POST">
             <div class="modal-body">
