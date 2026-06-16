@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\EventVendor;
 
 class Vendor extends Model
 {
@@ -29,8 +30,18 @@ class Vendor extends Model
     public function events()
     {
         return $this->belongsToMany(Event::class, 'event_vendor')
-                    ->withPivot(['jadwal_vendor', 'status_vendor', 'harga_vendor'])
+                    ->withPivot([
+                        'jadwal_vendor',
+                        'status_vendor',
+                        'harga_vendor'
+                    ])
                     ->withTimestamps();
+    }
+    
+    //** Event Vendor */
+    public function eventVendors()
+    {
+        return $this->hasMany(EventVendor::class, 'vendor_id');
     }
 
     /** Item RAB yang menggunakan vendor ini */
