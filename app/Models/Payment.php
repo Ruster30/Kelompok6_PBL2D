@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
-{
+{   
     use HasFactory;
 
     protected $fillable = [
-        'event_id',
+        'invoice_id',
         'nominal',
         'tanggal_pembayaran',
         'status_pembayaran',
@@ -28,9 +28,9 @@ class Payment extends Model
 
     // ─── Relasi ──────────────────────────────────────────────
 
-    public function event()
+    public function invoice()
     {
-        return $this->belongsTo(Event::class, 'event_id');
+        return $this->belongsTo(Invoice::class, 'invoice_id');
     }
 
     // ─── Accessors & Helpers ─────────────────────────────────

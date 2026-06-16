@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('timelines', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
             $table->string('nama_kegiatan');
             $table->date('tanggal_kegiatan');
-            $table->enum('status_kegiatan', ['belum_mulai', 'berjalan', 'selesai'])->default('belum_mulai');
+            $table->enum('status_kegiatan', ['belum_mulai','berjalan','selesai'])->default('belum_mulai');
             $table->timestamps();
-        });
+         });
     }
 
     /**

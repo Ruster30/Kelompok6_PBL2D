@@ -212,39 +212,7 @@ composer require maatwebsite/excel
 
 ---
 
-# 7. SweetAlert
-
-## What
-Library alert interaktif untuk tampilan modern.
-
-## Why
-Digunakan agar notifikasi sistem lebih menarik dan mudah dipahami pengguna.
-
-## Who
-Digunakan semua pengguna sistem.
-
-## When
-Saat:
-- Berhasil login
-- Hapus data
-- Konfirmasi pembayaran
-- Error input
-
-## Where
-Digunakan di seluruh halaman website.
-
-## How
-
-```bash
-composer require realrashid/sweet-alert
-```
-
-## Referensi
-- https://github.com/realrashid/sweet-alert
-
----
-
-# 8. Midtrans PHP SDK
+# 7. Midtrans PHP SDK
 
 ## What
 SDK pembayaran online Midtrans.
@@ -274,7 +242,7 @@ composer require midtrans/midtrans-php
 
 ---
 
-# 9. Laravel File Manager
+# 8. Laravel File Manager
 
 ## What
 Package pengelolaan file Laravel.
@@ -306,7 +274,7 @@ composer require unisharp/laravel-filemanager
 
 ---
 
-# 10. Carbon
+# 9. Carbon
 
 ## What
 Library manipulasi tanggal dan waktu pada Laravel.
