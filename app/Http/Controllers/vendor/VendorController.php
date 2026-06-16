@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\Tugas;
+use App\Models\Task;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,23 +19,23 @@ class VendorController extends Controller
         $vendor = Auth::user()->vendor;
 
         $totalEvent    = Event::whereHas('vendors', fn($q) => $q->where('vendor_id', $vendor->id))->count();
-        $tugasAktif    = Tugas::where('vendor_id', $vendor->id)->whereNotIn('status', ['selesai'])->count();
-        $tugasSelesai  = Tugas::where('vendor_id', $vendor->id)->where('status', 'selesai')->count();
+        $tugasAktif    = Task::where('vendor_id', $vendor->id)->whereNotIn('status', ['selesai'])->count();
+        $tugasSelesai  = Task::where('vendor_id', $vendor->id)->where('status', 'selesai')->count();
 
         $eventTerdekat = Event::whereHas('vendors', fn($q) => $q->where('vendor_id', $vendor->id))
-            ->where('tanggal', '>=', now())
-            ->orderBy('tanggal')
-            ->take(3)
-            ->get();
+        ->where('tanggal_event', '>=', now())
+        ->orderBy('tanggal_event')
+        ->take(3)
+        ->get();
 
-        $tugasMendatang = Tugas::where('vendor_id', $vendor->id)
+        $tugasMendatang = Task::where('vendor_id', $vendor->id)
             ->whereNotIn('status', ['selesai'])
             ->orderBy('deadline')
             ->take(5)
             ->with('event')
             ->get();
 
-        return view('vendor.pages.ringkasan', compact(
+        return view('vendor.ringkasan', compact(
             'totalEvent', 'tugasAktif', 'tugasSelesai',
             'eventTerdekat', 'tugasMendatang'
         ));
@@ -53,10 +53,10 @@ class VendorController extends Controller
             ->when($request->search, fn($q) =>
                 $q->where('nama_event', 'like', '%' . $request->search . '%')
             )
-            ->orderBy('tanggal')
+            ->orderBy('tanggal_event')
             ->get();
 
-        return view('vendor.pages.event-saya', compact('events'));
+        return view('vendor.event-saya', compact('events'));
     }
 
     /**
@@ -68,7 +68,7 @@ class VendorController extends Controller
 
         // Ambil semua event vendor untuk dropdown (jika ada lebih dari 1)
         $events = Event::whereHas('vendors', fn($q) => $q->where('vendor_id', $vendor->id))
-            ->orderBy('tanggal')
+            ->orderBy('tanggal_event')
             ->get();
 
         $selectedEvent = $request->event ?? optional($events->first())->id;
@@ -78,7 +78,7 @@ class VendorController extends Controller
             ->orderBy('tanggal')
             ->get();
 
-        return view('vendor.pages.jadwal', compact('events', 'jadwal', 'selectedEvent'));
+        return view('vendor.jadwal', compact('events', 'jadwal', 'selectedEvent'));
     }
 
     /**

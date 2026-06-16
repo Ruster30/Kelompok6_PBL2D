@@ -26,11 +26,7 @@ Route::get('/dashboard', function () {
     if ($role === 'admin') {
         return redirect()->route('admin.dashboard');
     } elseif ($role === 'vendor') {
-<<<<<<< HEAD
         return redirect()->route('vendor.ringkasan');
-=======
-        return redirect()->route('vendor.dashboard');
->>>>>>> 76270d25b5deb169ba9f6d21ec4a704486cf3288
     }
     return app(ClientController::class)->dashboard();
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -43,30 +39,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         if (request()->user()->role !== 'vendor') {
             abort(403);
         }
-<<<<<<< HEAD
         return view('vendor.ringkasan');
     })->name('vendor.dashboard');
 });
 
 
-=======
-        return view('vendor.dashboard');
-    })->name('vendor.dashboard');
-});
-
->>>>>>> 76270d25b5deb169ba9f6d21ec4a704486cf3288
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-<<<<<<< HEAD
-
-
-
-
-=======
 // ========================================
 // Admin Routes
 // ========================================
@@ -182,7 +165,6 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
 });
 
 require __DIR__.'/auth.php';
->>>>>>> 76270d25b5deb169ba9f6d21ec4a704486cf3288
 
 /*
 |─────────────────────────────────────────────────────────
