@@ -14,21 +14,18 @@ class NotifikasiController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-
-        $notifikasi = Notification::where('user_id', $user->id)
-            ->orderByDesc('created_at')
+        $notifikasi = Notification::where('user_id', auth()->id())
+            ->latest()
             ->get();
 
-        $unreadCount = $notifikasi->where('dibaca', false)->count();
+        $unreadCount = Notification::where('user_id', auth()->id())
+            ->where('dibaca', 0)
+            ->count();
 
-        Notification::where('user_id', $user->id)
-            ->where('dibaca', false)
-            ->update([
-                'dibaca' => true
-            ]);
-
-        return view('vendor.notifikasi', compact('notifikasi', 'unreadCount'));
+        return view('vendor.notifikasi', compact(
+            'notifikasi',
+            'unreadCount'
+        ));
     }
     /**
      * Tandai Semua Dibaca

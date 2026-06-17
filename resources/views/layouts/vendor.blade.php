@@ -637,6 +637,105 @@
         .notif-time { font-size: 11px; color: #b0bec5; margin-top: 4px; }
         .notif-unread-dot { width: 8px; height: 8px; background: var(--teal); border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
 
+        /* ===== EVENT SAYA ===== */
+        .event-card {
+            background: #fff;
+            border: 1px solid #e8edf2;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .event-search {
+            padding: 22px;
+            border-bottom: 1px solid #eef1f5;
+        }
+
+        .event-search .search-box {
+            position: relative;
+            max-width: 600px;
+        }
+
+        .event-search .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .event-search input {
+            width: 100%;
+            height: 52px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding-left: 46px;
+            outline: none;
+        }
+
+        .event-search input:focus {
+            border-color: var(--teal);
+        }
+
+        .event-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .event-table thead {
+            background: #f8fafc;
+        }
+
+        .event-table th {
+            padding: 18px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            text-align: left;
+        }
+
+        .event-table td {
+            padding: 18px 24px;
+            border-top: 1px solid #eef1f5;
+            font-size: 14px;
+            color: #334155;
+        }
+
+        .event-table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .empty-event {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        .status-menunggu {
+            background: #fef3c7;
+            color: #b45309;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
+        .status-berjalan {
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
+        .status-selesai {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }

@@ -11,7 +11,7 @@ class NotificationController extends Controller
     {
         $notifications = Notification::where(
             'user_id',
-            auth()->id()
+            auth()->user()->id
         )
         ->latest()
         ->paginate(15);
@@ -26,7 +26,7 @@ class NotificationController extends Controller
     {
         Notification::where(
             'user_id',
-            auth()->id()
+            auth()->user()->id
         )->update([
             'dibaca' => true
         ]);

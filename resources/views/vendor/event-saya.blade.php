@@ -6,75 +6,93 @@
 @section('content')
 
 <div class="section-card">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="section-card-title">Daftar Event</h2>
 
+    <!-- SEARCH -->
+    <div class="mb-4">
         <form method="GET" action="{{ route('vendor.event-saya') }}">
-            <input
-                type="text"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Cari event..."
-                class="form-control"
-                style="width:250px"
-            >
+            <div style="max-width:600px;">
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    placeholder="Cari event..."
+                    class="form-control"
+                >
+            </div>
         </form>
     </div>
 
-    @forelse($events as $event)
+    <!-- TABLE -->
+    <div class="table-responsive">
+        <table class="table align-middle">
 
-        <div class="event-row-item">
-            <div class="d-flex justify-content-between align-items-start">
+            <thead>
+                <tr>
+                    <th>NAMA EVENT</th>
+                    <th>PIC / KLIEN</th>
+                    <th>TANGGAL</th>
+                    <th>LOKASI</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
 
-                <div>
-                    <h5 class="fw-semibold mb-2">
-                        {{ $event->nama_event }}
-                    </h5>
+            <tbody>
 
-                    <div class="text-muted mb-1">
-                        <i class="bi bi-calendar3"></i>
-                        {{ \Carbon\Carbon::parse($event->tanggal_event)->format('d M Y') }}
-                    </div>
+                @forelse($events as $event)
 
-                    <div class="text-muted mb-1">
-                        <i class="bi bi-geo-alt"></i>
-                        {{ $event->lokasi_event }}
-                    </div>
+                    <tr>
 
-                    <div class="text-muted">
-                        Client:
-                        {{ $event->client->nama_client ?? '-' }}
-                    </div>
-                </div>
+                        <td>
+                            <strong>
+                                {{ $event->nama_event }}
+                            </strong>
+                        </td>
 
-                <div>
-                    @php
-                        $badgeClass = match($event->status_event) {
-                            'selesai' => 'bg-success',
-                            'berjalan' => 'bg-primary',
-                            'diproses' => 'bg-warning',
-                            default => 'bg-secondary'
-                        };
-                    @endphp
+                        <td>
+                            {{ $event->client->nama_client ?? '-' }}
+                        </td>
 
-                    <span class="badge {{ $badgeClass }}">
-                        {{ ucfirst($event->status_event) }}
-                    </span>
-                </div>
+                        <td>
+                            {{ \Carbon\Carbon::parse($event->tanggal_event)->format('d/m/Y') }}
+                        </td>
 
-            </div>
-        </div>
+                        <td>
+                            {{ $event->lokasi_event }}
+                        </td>
 
-    @empty
+                        <td>
 
-        <div class="text-center py-5">
-            <i class="bi bi-calendar-x" style="font-size:40px;"></i>
-            <p class="mt-3 text-muted">
-                Belum ada event yang ditugaskan.
-            </p>
-        </div>
+                            @php
+                                $badgeClass = match($event->status_event) {
+                                    'selesai' => 'bg-success',
+                                    'berjalan' => 'bg-primary',
+                                    'diproses' => 'bg-warning text-dark',
+                                    default => 'bg-secondary'
+                                };
+                            @endphp
 
-    @endforelse
+                            <span class="badge {{ $badgeClass }}">
+                                {{ ucfirst($event->status_event) }}
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                @empty
+
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            Belum ada event ditugaskan
+                        </td>
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+    </div>
 
 </div>
 
