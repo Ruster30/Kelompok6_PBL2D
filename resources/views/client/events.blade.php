@@ -57,6 +57,23 @@
                    class="btn btn-outline" style="width:100%;justify-content:center;margin-top:14px;">
                     Lihat Timeline <i class="bi bi-arrow-right"></i>
                 </a>
+                @if ($event->status_event == 'selesai')
+                    @if ($event->feedbacks->where('client_id', auth()->id())->count() == 0)
+                        <a href="{{ route('feedback.create', $event->id) }}"
+                        class="btn btn-accent"
+                        style="width: 100%; justify-content: center; margin-top: 10px;">
+                            <i class="bi bi-star-fill"></i>
+                            Beri Feedback
+                        </a>
+                    @else
+                        <button class="btn btn-success"
+                                style="width: 100%; margin-top: 10px;"
+                                disabled>
+                            <i class="bi bi-check-circle"></i>
+                            Feedback Terkirim
+                        </button>
+                    @endif
+                @endif
             </div>
         </div>
     </div>

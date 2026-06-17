@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ClientController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FeedbackController;
+
 
 Route::get('/d', function () {
     return view('welcome');
@@ -168,6 +170,14 @@ require __DIR__.'/auth.php';
 |  Prefix name : client....
 |─────────────────────────────────────────────────────────
 */
+
+
+Route::get('/feedback/{event}', [FeedbackController::class, 'create'])
+    ->name('feedback.create');
+
+Route::post('/feedback', [FeedbackController::class, 'store'])
+    ->name('feedback.store');
+
 Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
  
     // ── Ringkasan / Dashboard ────────────────────────
