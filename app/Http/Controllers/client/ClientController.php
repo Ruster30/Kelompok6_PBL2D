@@ -22,13 +22,14 @@ class ClientController extends Controller
         $uid    = Auth::id();
         $events = Event::where('client_id', $uid)->get();
         $eIds   = $events->pluck('id');
+        $invoiceIds = Invoice::whereIn('event_id',$eIds)->pluck('id');
 
         return view('client.dashboard', [
             'eventBerjalan'  => $events->where('status_event','berjalan')->count(),
-            'eventMenunggu'  => $events->whereIn('status_event',['menunggu','diproses'])->count(),
-            'totalDibayar'   => Payment::whereIn('event_id',$eIds)
-                                       ->where('status_pembayaran','diverifikasi')
-                                       ->sum('nominal'),
+            'eventMenunggu'  => $events->whereIn('status_event',['menunggu','diproses'])->count(),  
+            'totalDibayar' => Payment::whereIn('invoice_id',$invoiceIds)
+                         ->where('status_pembayaran','diverifikasi')
+                         ->sum('nominal'),
             'recentEvents'   => Event::where('client_id',$uid)
                                      ->with(['latestProposal','timelines'])
                                      ->latest()->take(3)->get(),
@@ -93,14 +94,19 @@ class ClientController extends Controller
         $uid    = Auth::id();
         $eIds   = Event::where('client_id',$uid)->pluck('id');
 
+        $invoiceIds = Invoice::whereIn('event_id',$eIds)
+                     ->pluck('id');
+
         $invoices = Invoice::whereIn('event_id',$eIds)
                            ->with('event')->latest()->paginate(10);
 
-        $payments = Payment::whereIn('event_id',$eIds)
+        $payments = Payment::whereIn('invoice_id',$invoiceIds)
                            ->with('event')->latest()->get();
 
         $totalInvoice  = Invoice::whereIn('event_id',$eIds)->sum('total_invoice');
-        $totalDibayar  = Payment::whereIn('event_id',$eIds)->where('status_pembayaran','diverifikasi')->sum('nominal');
+        $totalDibayar = Payment::whereIn('invoice_id',$invoiceIds)
+                       ->where('status_pembayaran','diverifikasi')
+                       ->sum('nominal');
 
         return view('client.invoices', [
             'invoices'      => $invoices,

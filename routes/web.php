@@ -82,3 +82,4 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
     Route::post('/notifications/read',      [ClientController::class, 'notifRead'])
          ->name('notif.read');
 });
+
