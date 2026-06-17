@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('documentation_files', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('documentation_id')->constrained('documentations')->onDelete('cascade');
+            $table->foreignId('documentation_id')->constrained('documentations')->cascadeOnDelete();
             $table->string('file_path');
-            $table->enum('jenis', ['foto', 'video'])->default('foto');
+            $table->enum('status', ['menunggu','disetujui','ditolak'])->default('menunggu');
+            $table->enum('tipe_file', ['foto','video'])->default('foto');
             $table->timestamps();
         });
     }

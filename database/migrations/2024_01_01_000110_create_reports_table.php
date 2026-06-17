@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
             $table->string('file_laporan');
-            $table->text('deskripsi')->nullable();
             $table->date('tanggal_laporan');
             $table->timestamps();
         });
