@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('rabs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
-            $table->foreignId('vendor_id')->nullable()->constrained('vendors')->onDelete('set null');
+            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('vendor_id')->nullable()->constrained('vendors')->nullOnDelete();
             $table->string('nama_biaya');
-            $table->string('kategori_biaya', 100);
-            $table->integer('jumlah_item');
-            $table->decimal('harga_satuan', 15, 2);
-            $table->decimal('subtotal_biaya', 15, 2);
+            $table->string('kategori_biaya', 100)->nullable();
+            $table->integer('jumlah_item')->default(1);
+            $table->decimal('harga_satuan', 15, 2)->default(0);
+            $table->decimal('subtotal_biaya', 15, 2)->default(0);
             $table->timestamps();
         });
     }

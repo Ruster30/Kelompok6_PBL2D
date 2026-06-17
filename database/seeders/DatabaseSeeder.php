@@ -50,5 +50,9 @@ class DatabaseSeeder extends Seeder
                 'role' => 'client',
             ]);
         }
+
+         $this->call([
+        VendorSeeder::class,
+    ]);
     }
 }

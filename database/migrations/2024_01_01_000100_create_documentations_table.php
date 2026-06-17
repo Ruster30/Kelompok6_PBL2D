@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('documentations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
-            $table->string('judul');
+            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
+            $table->string('judul');                 // BARU di ERD final
             $table->text('deskripsi')->nullable();
-            $table->date('tanggal_upload');
             $table->timestamps();
         });
     }

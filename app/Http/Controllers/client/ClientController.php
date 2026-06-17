@@ -21,14 +21,16 @@ class ClientController extends Controller
     {
         $uid    = Auth::id();
         $events = Event::where('client_id', $uid)->get();
-        $eIds   = $events->pluck('id');
+        $iIds   = Invoice::whereIn('event_id',$events->pluck('id'))->pluck('id');
 
         return view('client.dashboard', [
             'eventBerjalan'  => $events->where('status_event','berjalan')->count(),
             'eventMenunggu'  => $events->whereIn('status_event',['menunggu','diproses'])->count(),
-            'totalDibayar'   => Payment::whereIn('event_id',$eIds)
-                                       ->where('status_pembayaran','diverifikasi')
-                                       ->sum('nominal'),
+            'totalDibayar' => Payment::whereHas('invoice', function ($q) use ($iIds) {
+                                $q->whereIn('event_id', $iIds);
+                            })
+                            ->where('status_pembayaran', 'diverifikasi')
+                            ->sum('nominal'),
             'recentEvents'   => Event::where('client_id',$uid)
                                      ->with(['latestProposal','timelines'])
                                      ->latest()->take(3)->get(),
@@ -96,11 +98,15 @@ class ClientController extends Controller
         $invoices = Invoice::whereIn('event_id',$eIds)
                            ->with('event')->latest()->paginate(10);
 
-        $payments = Payment::whereIn('event_id',$eIds)
-                           ->with('event')->latest()->get();
+        $payments = Payment::whereHas('invoice', function ($q) use ($eIds) {
+                                $q->whereIn('event_id', $eIds);
+                            })
+                            ->with('invoice')
+                            ->latest()
+                            ->get();
 
         $totalInvoice  = Invoice::whereIn('event_id',$eIds)->sum('total_invoice');
-        $totalDibayar  = Payment::whereIn('event_id',$eIds)->where('status_pembayaran','diverifikasi')->sum('nominal');
+        $totalDibayar  = Payment::whereIn('invoice_id',$eIds)->where('status_pembayaran','diverifikasi')->sum('nominal');
 
         return view('client.invoices', [
             'invoices'      => $invoices,
@@ -234,13 +240,18 @@ class ClientController extends Controller
 
     public function settingsProfile(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $request->validate([
             'name'  => 'required|string|max:100',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:20',
         ]);
-        $user->update($request->only('name','email','phone'));
+        $user->fill(
+            $request->only('name', 'email', 'phone')
+        );
+
+        $user->save();
         return back()->with('success','Profil berhasil diperbarui.');
     }
 
@@ -253,7 +264,10 @@ class ClientController extends Controller
         if (!Hash::check($request->current_password, Auth::user()->password)) {
             return back()->withErrors(['current_password'=>'Password saat ini tidak sesuai.']);
         }
-        Auth::user()->update(['password'=>Hash::make($request->password)]);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $user->password = Hash::make($request->password);
+        $user->save();
         return back()->with('success','Password berhasil diubah.');
     }
 
