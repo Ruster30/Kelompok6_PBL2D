@@ -87,7 +87,7 @@ class VendorController extends Controller
     public function pengaturan()
     {
         $vendor = Auth::user()->vendor;
-        return view('vendor.pages.pengaturan', compact('vendor'));
+        return view('vendor.pengaturan', compact('vendor'));
     }
 
     /**

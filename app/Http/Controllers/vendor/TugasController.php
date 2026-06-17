@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tugas;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,13 +16,13 @@ class TugasController extends Controller
     {
         $vendor = Auth::user()->vendor;
 
-        $tugas = Tugas::where('vendor_id', $vendor->id)
+        $tugas = Task::where('vendor_id', $vendor->id)
             ->with('event')
             ->when($request->event, fn($q) => $q->where('event_id', $request->event))
             ->orderBy('deadline')
             ->get();
 
-        return view('vendor.pages.daftar-tugas', compact('tugas'));
+        return view('vendor.daftar-tugas', compact('tugas'));
     }
 
     /**
@@ -31,14 +31,14 @@ class TugasController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'tugas_id' => 'required|exists:tugas,id',
+            'tugas_id' => 'required|exists:tasks,id',
             'status'   => 'required|in:pending,on_progress,selesai',
             'catatan'  => 'nullable|string|max:1000',
         ]);
 
         $vendor = Auth::user()->vendor;
 
-        $tugas = Tugas::where('id', $request->tugas_id)
+        $tugas = Task::where('id', $request->tugas_id)
             ->where('vendor_id', $vendor->id)
             ->firstOrFail();
 

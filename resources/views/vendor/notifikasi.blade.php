@@ -1,4 +1,4 @@
-@extends('vendor.layouts.app')
+@extends('layouts.vendor')
 
 @section('title', 'Notifikasi')
 @section('page-title', 'Notifikasi')
@@ -27,18 +27,18 @@
 
     <!-- NOTIF LIST -->
     @forelse($notifikasi ?? [] as $notif)
-        <div class="notif-item {{ !$notif->is_read ? 'unread' : '' }}">
+        <div class="notif-item {{ !$notif->dibaca ? 'unread' : '' }}">
             <div class="notif-icon-wrap"
-                style="background:{{ $notif->type === 'tugas' ? '#e6f5f3' : ($notif->type === 'event' ? '#dbeafe' : '#fef9c3') }}">
-                <i class="bi bi-{{ $notif->type === 'tugas' ? 'check2-square' : ($notif->type === 'event' ? 'calendar3-event' : 'bell') }}"
-                   style="color:{{ $notif->type === 'tugas' ? '#1a8f7e' : ($notif->type === 'event' ? '#2563eb' : '#ca8a04') }}; font-size:16px;"></i>
+                style="background: {{ $notif->tipe === 'tugas' ? '#e6f5f3' : ($notif->type === 'event' ? '#dbeafe' : '#fef9c3') }}">
+                <i class="bi bi-{{ $notif->tipe === 'tugas' ? 'check2-square' : ($notif->type === 'event' ? 'calendar3-event' : 'bell') }}"
+                   style="color: {{ $notif->tiype === 'tugas' ? '#1a8f7e' : ($notif->type === 'event' ? '#2563eb' : '#ca8a04') }}; font-size:16px;"></i>
             </div>
             <div class="flex-grow-1">
                 <div class="notif-title">{{ $notif->judul }}</div>
                 <div class="notif-body">{{ $notif->isi }}</div>
                 <div class="notif-time">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</div>
             </div>
-            @if(!$notif->is_read)
+            @if(!$notif->dibaca)
                 <div class="notif-unread-dot"></div>
             @endif
         </div>
@@ -55,8 +55,8 @@
 
         @foreach($demoNotif as $notif)
             <div class="notif-item {{ $notif['unread'] ? 'unread' : '' }}">
-                <div class="notif-icon-wrap" style="background:{{ $notif['bg'] }}">
-                    <i class="bi bi-{{ $notif['icon'] }}" style="color:{{ $notif['icon_color'] }}; font-size:16px;"></i>
+                <div class="notif-icon-wrap" style="background: {{ $notif['bg'] }}">
+                    <i class="bi bi-{{ $notif['icon'] }}" style="color: {{ $notif['icon_color'] }}; font-size:16px;"></i>
                 </div>
                 <div class="flex-grow-1">
                     <div class="notif-title">{{ $notif['title'] }}</div>
