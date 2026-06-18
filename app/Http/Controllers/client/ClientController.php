@@ -27,9 +27,7 @@ class ClientController extends Controller
         return view('client.dashboard', [
             'eventBerjalan'  => $events->where('status_event','berjalan')->count(),
             'eventMenunggu'  => $events->whereIn('status_event',['menunggu','diproses'])->count(),  
-            'totalDibayar' => Payment::whereIn('invoice_id',$invoiceIds)
-                         ->where('status_pembayaran','diverifikasi')
-                         ->sum('nominal'),
+            'totalDibayar' => 0,
             'recentEvents'   => Event::where('client_id',$uid)
                                      ->with(['latestProposal','timelines'])
                                      ->latest()->take(3)->get(),

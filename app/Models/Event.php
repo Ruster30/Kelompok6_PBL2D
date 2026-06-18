@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Feedback;
 
 class Event extends Model
 {
@@ -161,5 +162,12 @@ class Event extends Model
             'dibatalkan' => 'Dibatalkan',
             default      => ucfirst($this->status_event),
         };
+    }
+
+    public function feedbacks()
+    {
+
+        return $this->hasMany(Feedback::class);
+
     }
 }
