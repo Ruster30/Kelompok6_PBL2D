@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ClientController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Vendor\TugasController;
@@ -18,6 +19,19 @@ Route::get('/profil', function () {
     return '<p>Jurusan Teknologi Informasi - Politeknik Negeri Padang</p>';
 });
 
+Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
+
+/*
+|--------------------------------------------------------------------------
+| Company Profile PDF Export
+|--------------------------------------------------------------------------
+| Route ini men-generate PDF dari data landing page terkini secara
+| real-time. Setiap kali admin mengubah konten landing page (di
+| CompanyProfileController), PDF yang diunduh akan otomatis diperbarui.
+*/
+Route::get('/company-profile/pdf', [CompanyProfileController::class, 'downloadPdf'])
+    ->name('company-profile.pdf');
+    
 Route::get('/', function () {
     return view('landing.index');
 });
@@ -228,6 +242,12 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
     // ── Notifikasi ───────────────────────────────────
     Route::post('/notifications/read',      [ClientController::class, 'notifRead'])
          ->name('notif.read');
+});
+    Route::get('/notifications', [ClientController::class, 'notifications'])
+    ->name('notifications');
+
+    Route::post('/notifications/read', [ClientController::class, 'notifRead'])
+    ->name('notif.read');
 });
 
 /*

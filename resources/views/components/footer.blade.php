@@ -15,7 +15,7 @@
         <!-- Download Profile -->
         <div class="text-center mb-5" data-aos="fade-up">
             <p class="text-light-muted small mb-2">Dapatkan profil perusahaan kami lengkap dengan layanan dan portofolio terbaik kami.</p>
-            <a href="#" class="btn btn-outline-accent px-4 py-2 fw-semibold">
+            <a href="{{ route('company-profile.pdf') }}" class="btn btn-outline-accent px-4 py-2 fw-semibold">
                 <i class="bi bi-download me-2"></i>Unduh Company Profile
             </a>
         </div>
