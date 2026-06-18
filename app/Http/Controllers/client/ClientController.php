@@ -238,13 +238,18 @@ class ClientController extends Controller
 
     public function settingsProfile(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $request->validate([
             'name'  => 'required|string|max:100',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:20',
         ]);
-        $user->update($request->only('name','email','phone'));
+        $user->fill(
+            $request->only('name', 'email', 'phone')
+        );
+
+        $user->save();
         return back()->with('success','Profil berhasil diperbarui.');
     }
 
@@ -257,7 +262,10 @@ class ClientController extends Controller
         if (!Hash::check($request->current_password, Auth::user()->password)) {
             return back()->withErrors(['current_password'=>'Password saat ini tidak sesuai.']);
         }
-        Auth::user()->update(['password'=>Hash::make($request->password)]);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $user->password = Hash::make($request->password);
+        $user->save();
         return back()->with('success','Password berhasil diubah.');
     }
 
