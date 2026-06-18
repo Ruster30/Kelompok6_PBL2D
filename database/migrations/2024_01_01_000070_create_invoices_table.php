@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
             $table->string('nomor_invoice', 100)->unique();
-            $table->decimal('total_invoice', 15, 2);
-            $table->enum('status_invoice', ['draft', 'terkirim', 'lunas'])->default('draft');
+            $table->decimal('total_invoice', 15, 2)->default(0);
+            $table->enum('status_invoice', ['draft','terkirim','lunas'])->default('draft');
             $table->date('tanggal_invoice');
             $table->timestamps();
         });

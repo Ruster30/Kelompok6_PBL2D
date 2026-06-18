@@ -1,0 +1,22 @@
+.sidebar{
+    background:#071533;
+}
+
+.sidebar .nav-link{
+    color:white;
+    padding:15px;
+}
+
+.sidebar .nav-link:hover{
+    background:#16b3a3;
+    border-radius:10px;
+}
+
+.card{
+    border:none;
+    border-radius:20px;
+}
+
+body{
+    background:#f3f4f6;
+}

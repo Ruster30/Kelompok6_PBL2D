@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('nama_vendor');
-            $table->string('jenis_vendor', 100);
-            $table->text('alamat');
+            $table->string('jenis_vendor', 100)->nullable();
+            $table->text('alamat')->nullable();
             $table->text('deskripsi')->nullable();
             $table->timestamps();
         });
