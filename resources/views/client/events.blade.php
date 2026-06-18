@@ -25,7 +25,6 @@
     <div class="event-card">
         {{-- Gambar / Header --}}
         <div class="event-card-img">
-            <img src="{{ asset('images/event-placeholder.jpg') }}" alt="{{ $event->nama_event }}">
             <div class="event-card-badge">
                 <span class="badge {{ $event->badge_class }}">{{ $event->status_label }}</span>
             </div>

@@ -664,8 +664,8 @@ body {
 }
 
 .badge-selesai {
-    background: #f3f4f6;
-    color: #6b7280;
+    background: #fbfbfb;
+    color: #868a92;
 }
 
 /* ============================================================
@@ -769,8 +769,9 @@ body {
 
 .event-card-img {
     position: relative;
-    height: 200px;
+    height: 100px;
     overflow: hidden;
+
 }
 
 .event-card-img img {
@@ -798,9 +799,14 @@ body {
     padding: 40px 16px 14px;
     background: linear-gradient(to top, rgba(10, 14, 26, .85), transparent);
     color: #fff;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 800;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    height: 100%;
 }
+
 
 .event-card-body {
     padding: 18px;
