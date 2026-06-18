@@ -27,9 +27,7 @@ class ClientController extends Controller
         return view('client.dashboard', [
             'eventBerjalan'  => $events->where('status_event','berjalan')->count(),
             'eventMenunggu'  => $events->whereIn('status_event',['menunggu','diproses'])->count(),  
-            'totalDibayar' => Payment::whereIn('invoice_id',$invoiceIds)
-                         ->where('status_pembayaran','diverifikasi')
-                         ->sum('nominal'),
+            'totalDibayar' => 0,
             'recentEvents'   => Event::where('client_id',$uid)
                                      ->with(['latestProposal','timelines'])
                                      ->latest()->take(3)->get(),
@@ -271,10 +269,44 @@ class ClientController extends Controller
         return back()->with('success','Password berhasil diubah.');
     }
 
-    // Tandai semua notifikasi dibaca
+    // Notikasi
+    public function notifications()
+    {
+        $notifications = Notification::where(
+            'user_id',
+            auth()->id()
+        )
+        ->latest()
+        ->paginate(10);
+
+        $unreadCount = Notification::where(
+            'user_id',
+            auth()->id()
+        )
+        ->where('dibaca', false)
+        ->count();
+
+        return view(
+            'client.notification',
+            compact(
+                'notifications',
+                'unreadCount'
+            )
+        );
+    }
     public function notifRead()
     {
-        Notification::where('user_id',Auth::id())->update(['dibaca'=>true]);
-        return back();
+        Notification::where(
+            'user_id',
+            auth()->id()
+        )
+        ->update([
+            'dibaca' => true
+        ]);
+
+        return back()->with(
+            'success',
+            'Semua notifikasi telah dibaca.'
+        );
     }
 }
