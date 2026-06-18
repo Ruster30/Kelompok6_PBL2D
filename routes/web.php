@@ -4,6 +4,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ClientController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompanyProfileController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\Vendor\VendorController;
+use App\Http\Controllers\Vendor\TugasController;
+use App\Http\Controllers\Vendor\DokumentasiController;
+use App\Http\Controllers\Vendor\NotifikasiController;
 
 Route::get('/d', function () {
     return view('welcome');
@@ -27,12 +32,16 @@ Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
 Route::get('/company-profile/pdf', [CompanyProfileController::class, 'downloadPdf'])
     ->name('company-profile.pdf');
     
+Route::get('/', function () {
+    return view('landing.index');
+});
+
 Route::get('/dashboard', function () {
     $role = request()->user()->role;
     if ($role === 'admin') {
         return redirect()->route('admin.dashboard');
     } elseif ($role === 'vendor') {
-        return redirect()->route('vendor.dashboard');
+        return redirect()->route('vendor.ringkasan');
     }
     return app(ClientController::class)->dashboard();
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -45,9 +54,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         if (request()->user()->role !== 'vendor') {
             abort(403);
         }
-        return view('vendor.dashboard');
+        return view('vendor.ringkasan');
     })->name('vendor.dashboard');
 });
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -179,6 +189,14 @@ require __DIR__.'/auth.php';
 |  Prefix name : client....
 |─────────────────────────────────────────────────────────
 */
+
+
+Route::get('/feedback/{event}', [FeedbackController::class, 'create'])
+    ->name('feedback.create');
+
+Route::post('/feedback', [FeedbackController::class, 'store'])
+    ->name('feedback.store');
+
 Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
  
     // ── Ringkasan / Dashboard ────────────────────────
@@ -225,3 +243,53 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
     Route::post('/notifications/read',      [ClientController::class, 'notifRead'])
          ->name('notif.read');
 });
+    Route::get('/notifications', [ClientController::class, 'notifications'])
+    ->name('notifications');
+
+    Route::post('/notifications/read', [ClientController::class, 'notifRead'])
+    ->name('notif.read');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Vendor Routes
+|--------------------------------------------------------------------------
+| Semua route ini dilindungi oleh middleware 'auth' dan 'role:vendor'
+| Sesuaikan middleware dengan sistem autentikasi yang Anda gunakan.
+*/
+
+Route::prefix('vendor')->name('vendor.')->middleware(['auth'])->group(function () {
+
+    // Ringkasan (Dashboard)
+    Route::get('/ringkasan', [VendorController::class, 'ringkasan'])->name('ringkasan');
+
+    // Event Saya
+    Route::get('/event-saya', [VendorController::class, 'eventSaya'])->name('event-saya');
+
+    // Jadwal
+    Route::get('/jadwal', [VendorController::class, 'jadwal'])->name('jadwal');
+
+    // Daftar Tugas
+    Route::get('/daftar-tugas', [TugasController::class, 'index'])->name('daftar-tugas');
+    Route::put('/tugas/update', [TugasController::class, 'update'])->name('tugas.update');
+
+    // Dokumentasi
+    Route::post('/dokumentasi/store', [DokumentasiController::class, 'store'])->name('dokumentasi.store');
+
+    // Notifikasi
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi');
+    Route::post('/notifikasi/read-all', [NotifikasiController::class, 'readAll'])->name('notifikasi.read-all');
+
+    // Pengaturan
+    Route::get('/pengaturan', [VendorController::class, 'pengaturan'])->name('pengaturan');
+
+    // Logout
+    Route::post('/logout', [VendorController::class, 'logout'])->name('logout');
+
+    // Redirect root /vendor ke ringkasan
+    Route::redirect('/', '/vendor/ringkasan');
+
+});
+
+require __DIR__.'/auth.php';
+
