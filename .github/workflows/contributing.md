@@ -1,218 +1,436 @@
-# 📘 CONTRIBUTING GUIDELINES
+#  Panduan Kolaborasi Tim (GitHub Workflow)
 
-Terima kasih telah berkontribusi pada project ini! 🎉
+##  Tujuan
 
-Dokumen ini berisi aturan dan panduan kerja tim agar kolaborasi berjalan rapi, jelas, dan mudah dievaluasi.
+Dokumen ini dibuat untuk memastikan semua anggota tim bekerja secara terstruktur, rapi, dan mudah dipantau kontribusinya.
 
 ---
 
-# 🧩 1. STRUKTUR BRANCH
+#  Struktur Branch
 
-Project ini menggunakan struktur branch berikut:
-
-```
-main
-dev
-dev/nama-anggota
-feature/nama-fitur
-```
-
-### Penjelasan:
+## - Branch Utama
 
 * `main` → versi final (production)
 * `dev` → penggabungan semua fitur
-* `dev/nama` → branch pribadi untuk tracking kontribusi
-* `feature/...` → branch untuk pengerjaan fitur spesifik
+
+## - Branch Per Orang
+
+Setiap anggota memiliki branch masing-masing:
+
+* `rafi`
+* `hadaffi`
+* `salwa`
+* `restia`
+
+👉 Digunakan untuk tracking kontribusi individu.
+
+## - Branch Feature (Sementara)
+
+Digunakan untuk mengerjakan fitur tertentu:
+
+* `feature/login`
+* `feature/register`
+* `feature/dashboard`
+
+👉 Akan dihapus setelah selesai.
 
 ---
 
-# 👥 2. BRANCH PRIBADI
+#  Setup Awal (Sekali Saja)
 
-* Setiap anggota WAJIB memiliki branch pribadi
-* Format penamaan:
+## 1. Buat branch `dev`
 
-  ```
-  dev/nama
-  ```
-* Contoh:
+```bash
+git checkout main -> mengganti branch ke main
+git pull
 
-  * `dev/andi`
-  * `dev/budi`
+git checkout -b dev -> membikin branch dev
+git push origin dev
+```
 
-Semua pekerjaan individu harus masuk ke branch ini terlebih dahulu.
+## 2. Buat branch per orang
+
+```bash
+git checkout dev
+git checkout -b dev/nama
+git push origin dev/nama
+```
 
 ---
 
-# 🌿 3. FEATURE BRANCH
+#  Alur Kerja Harian
 
-* Setiap fitur WAJIB dibuat dalam branch terpisah
-* Format:
+## 1. Ambil update terbaru dari `dev`
 
-  ```
-  feature/nama-fitur
-  ```
-* Contoh:
+```bash
+git checkout dev -> mengganti branch ke dev
+git pull -> mengambil update terbaru dari git ke lokal
+```
 
-  * `feature/login`
-  * `feature/register`
+## 2. Masuk ke branch pribadi
 
-❌ Dilarang mengerjakan lebih dari satu fitur dalam satu branch
+```bash
+git checkout nama_branch -> mengganti branch ke branch pribadi
+git pull -> mengambil update dari branch pribadi di git ke lokal
+```
+
+## 3. Buat branch fitur
+
+```bash
+git checkout -b feature/nama-fitur -> bikin branch fitur yang akan dibuat ini udah langsung ke ganti
+```
+
+## 4. Kerjakan fitur
+
+```bash
+git add . -> add file 
+git commit -m "deskripsi perubahan" -> pesan commit ke git
+git push origin feature/nama-fitur -> mengirim hasil kerjaan ke git
+```
 
 ---
+##  Aturan Penting
 
-# 🔄 4. WORKFLOW
+##  Aturan Pesan Commit
 
-Alur kerja yang WAJIB diikuti:
+Setiap anggota wajib menggunakan format pesan commit yang jelas dan konsisten.
 
-```
-dev → dev/nama → feature → dev/nama → dev → main
-```
+### Format Commit
 
-### Langkah detail:
-
-1. Ambil update dari `dev`
-2. Checkout ke `dev/nama`
-3. Buat branch `feature/...`
-4. Kerjakan fitur
-5. Merge ke `dev/nama`
-6. Buat Pull Request ke `dev`
-7. Setelah stabil → merge `dev` ke `main`
-
----
-
-# 🔀 5. PULL REQUEST (PR)
-
-* Semua perubahan WAJIB melalui Pull Request
-* PR harus berisi:
-
-  * Deskripsi perubahan
-  * Referensi issue (jika ada)
-* Minimal 1 reviewer sebelum merge
-
-❌ Dilarang merge tanpa review
-
----
-
-# 📝 6. COMMIT MESSAGE
-
-Gunakan format commit yang jelas:
-
-```
-add login feature - andi
-fix bug register - budi
+```bash
+kategori: deskripsi perubahan
 ```
 
-❌ Hindari commit seperti:
+### Kategori Commit
 
+| Kategori | Indikasi Pesan Commit / Dampak |
+|-----------|--------------------------------|
+| feat | Penambahan fitur baru |
+| fix | Perbaikan bug |
+| refactor | Perubahan struktur tanpa mengubah fungsi |
+| docs | Perubahan dokumentasi |
+| test | Penambahan/modifikasi testing |
+| chore | Pembaruan minor (config, database, dependency, dll.) |
+
+### Contoh Commit
+
+```bash
+feat: membuat halaman login
+fix: memperbaiki error pada view dashboard
+refactor: memisahkan controller admin
+docs: memperbarui dokumentasi project
+test: menambahkan unit test login
+chore: update konfigurasi github actions
 ```
+
+### Commit yang Tidak Disarankan
+
+```bash
 update
-fix
-coba
+perbaikan
+revisi
+tugas pbl
+commit terbaru
+```
+
+Karena tidak menjelaskan perubahan yang dilakukan dan menyulitkan proses tracking kontribusi anggota tim.
+
+---
+
+#  Proses Pull Request (PR) & Merge
+
+##  Tujuan
+
+PR digunakan untuk menggabungkan kode dengan aman melalui proses review.
+
+---
+
+##  Langkah Membuat Pull Request (PR)
+
+### 1. Push branch ke GitHub
+
+```bash
+git push origin nama-branch
+```
+
+### 2. Buka GitHub
+
+* Masuk ke repository
+* Klik **Compare & pull request**
+
+### 3. Atur PR
+
+* **base**: tujuan merge
+* **compare**: branch kamu
+
+Contoh:
+
+* `feature/login` → `nama_branch`
+* `nama_branch` → `dev`
+* `dev` → `main`
+
+---
+
+##  Alur PR dalam Tim
+
+### 1. Feature → Dev Pribadi
+
+* base: `nama_branch`
+* compare: `feature/nama-fitur`
+
+### 2. Dev Pribadi → Dev
+
+* base: `dev`
+* compare: `nama_branch`
+
+### 3. Dev → Main
+
+* base: `main`
+* compare: `dev`
+
+---
+
+##  Aturan Merge
+
+* PR harus direview minimal 1 orang
+* Pastikan tidak ada conflict
+* Pastikan fitur sudah berjalan dengan baik
+* Gunakan tombol **Merge Pull Request** di GitHub
+
+---
+
+##  Jika Terjadi Conflict
+
+1. Checkout branch kamu
+
+```bash
+git checkout nama_branch
+```
+
+2. Ambil update terbaru
+
+```bash
+git pull origin dev
+```
+
+3. Perbaiki conflict di file
+
+4. Commit ulang
+
+```bash
+git add .
+git commit -m "fix conflict"
+git push
+```
+
+👉 PR akan otomatis ter-update
+
+---
+
+#  Update Setelah Merge
+
+```bash
+git checkout dev
+git pull
+
+git checkout nama_branch
+git merge dev
+git push
 ```
 
 ---
 
-# 📌 7. ISSUE
+#  Perbaikan & Perubahan Feature
 
-* Semua task harus dibuat dalam Issue
-* Wajib memiliki:
+## * Jika Feature BELUM di-merge
 
-  * Judul yang jelas
-  * Deskripsi
-  * Assignee
+Gunakan branch feature yang sama (tidak perlu buat baru).
 
----
+```bash
+git checkout feature/nama-fitur
+# lakukan perbaikan
 
-# 🚫 8. LARANGAN
-
-* ❌ Push langsung ke `main`
-* ❌ Merge tanpa PR
-* ❌ Bekerja tanpa branch `feature/...`
-* ❌ Menggabungkan banyak fitur dalam satu branch
-* ❌ Menghapus branch orang lain tanpa izin
-
----
-
-# 🎯 9. TUJUAN
-
-Aturan ini dibuat untuk:
-
-* Memastikan kontribusi tiap anggota terlihat jelas
-* Menjaga struktur project tetap rapi
-* Menghindari konflik dalam pengembangan
-* Mempermudah proses review dan penilaian
-
----
-
-# 💡 CATATAN
-
-* `dev/nama` = bukti kontribusi individu
-* `feature/...` = bukti pengerjaan fitur
-
-Gunakan kedua jenis branch ini dengan disiplin.
-
----
-
----
-
-# 📄 10. TEMPLATE ISSUE
-
-Gunakan template berikut saat membuat Issue:
-
+git add .
+git commit -m "fix / update fitur"
+git push
 ```
-Title: [Feature] Nama Fitur
 
-Description:
-- Jelaskan fitur secara singkat
+👉 Pull Request (PR) akan otomatis ter-update.
 
-Checklist:
-- [ ] UI
-- [ ] Logic
-- [ ] Testing
+---
 
-Assignee: @nama
+## * Jika SUDAH PR tapi diminta revisi
+
+Tetap gunakan branch feature yang sama.
+
+```bash
+git checkout feature/nama-fitur
+# perbaiki sesuai review
+
+git add .
+git commit -m "revisi sesuai review"
+git push
+```
+
+👉 Tidak perlu buat PR baru.
+
+---
+
+## * Jika Feature SUDAH di-merge
+
+JANGAN gunakan branch lama.
+
+Buat branch baru dari `dev`:
+
+```bash
+git checkout dev
+git pull
+
+git checkout -b fix/nama-fitur
+```
+
+Lanjutkan:
+
+```bash
+git add .
+git commit -m "fix bug fitur"
+git push origin fix/nama-fitur
 ```
 
 ---
 
-# 🔀 11. TEMPLATE PULL REQUEST
+##  Aturan Penting
 
-Gunakan template berikut saat membuat PR:
+* Gunakan branch yang sama jika feature belum selesai
+* Buat branch baru jika sudah di-merge
+* Jangan edit langsung di `dev` atau `main`
+
+---
+
+#  Aturan Wajib
+
+##  Dilarang
+
+* Push langsung ke `main`
+* Merge tanpa Pull Request
+* Mengubah branch orang lain
+* Lompat merge (feature → main)
+
+##  Wajib
+
+* Semua kerja dari `dev`
+* Gunakan branch `feature/...`
+* Gunakan Pull Request untuk merge
+* Commit dengan pesan jelas
+
+---
+
+#  Alur Singkat
 
 ```
-Title: Nama fitur
-
-Description:
-- Apa yang dikerjakan
-- Perubahan apa saja
-
-Related Issue: #nomor
-
-Checklist:
-- [ ] Sudah dites
-- [ ] Tidak ada error
-- [ ] Siap direview
+main
+ ↑
+dev
+ ↑
+nama_branch
+ ↑
+feature/nama-fitur
 ```
 
 ---
 
-# 🔒 12. BRANCH PROTECTION (WAJIB SETUP)
-
-Atur di repository settings:
-
-## Untuk branch `main`:
-
-* Require pull request before merging
-* Require approval (minimal 1 reviewer)
-* Block direct push
-
-## Untuk branch `dev`:
-
-* Require pull request
-* Optional: require status checks (CI/CD)
-
----
-
-# 🎯 PENUTUP
-
-Terima kasih dan selamat berkolaborasi! 🚀
+# Struktur Folder
+project-eo/
+│
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── LandingController.php
+│   │   │   ├── Auth/
+│   │   │   ├── Admin/
+│   │   │   ├── Client/
+│   │   │   ├── Vendor/
+│   │   │   └── Event/
+│   │   │
+│   │   └── Requests/
+│   │
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Event.php
+│   │   ├── Vendor.php
+│   │   ├── Client.php
+│   │   ├── Negotiation.php
+│   │   └── OfferLetter.php
+│   │
+│   └── Services/
+│
+│
+├── public/
+│   ├── images/
+│   │   ├── landing/
+│   │   ├── portfolio/
+│   │   ├── team/
+│   │   └── icons/
+│   │
+│   ├── css/
+│   │   └── landing.css
+│   │
+│   └── js/
+│
+│
+├── resources/
+│   ├── views/
+│   │
+│   │   ├── layouts/
+│   │   │   ├── app.blade.php
+│   │   │   ├── admin.blade.php
+│   │   │   └── client.blade.php
+│   │   │
+│   │   ├── components/
+│   │   │   ├── navbar.blade.php
+│   │   │   ├── footer.blade.php
+│   │   │   ├── hero.blade.php
+│   │   │   ├── service-card.blade.php
+│   │   │   └── contact-form.blade.php
+│   │   │
+│   │   ├── landing/
+│   │   │   ├── index.blade.php
+│   │   │   ├── about.blade.php
+│   │   │   ├── services.blade.php
+│   │   │   ├── portfolio.blade.php
+│   │   │   ├── team.blade.php
+│   │   │   └── contact.blade.php
+│   │   │
+│   │   ├── auth/
+│   │   │   ├── login.blade.php
+│   │   │   └── register.blade.php
+│   │   │
+│   │   ├── admin/
+│   │   │   ├── dashboard.blade.php
+│   │   │   ├── event/
+│   │   │   ├── vendor/
+│   │   │   └── negotiation/
+│   │   │
+│   │   ├── client/
+│   │   │   ├── dashboard.blade.php
+│   │   │   ├── timeline.blade.php
+│   │   │   └── offer-letter.blade.php
+│   │   │
+│   │   └── vendor/
+│   │
+│   └── css/
+│
+│
+├── routes/
+│   ├── web.php
+│   ├── admin.php
+│   ├── client.php
+│   └── auth.php
+│
+│
+├── database/
+│   ├── migrations/
+│   └── seeders/
+│
+│
+└── tests/
