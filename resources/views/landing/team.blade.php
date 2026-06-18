@@ -15,69 +15,22 @@
         </div>
 
         <div class="row g-4 justify-content-center">
-            @php
-            $team = [
-                [
-                    'name' => 'Fajar Villiano',
-                    'role' => 'Founder',
-                    'img' => 'team/team1.png',
-                    'instagram' => '',
-                    'linkedin' => '',
-                ],
-                [
-                    'name' => 'Valdy Dwi Wahyu',
-                    'role' => 'CO Founder',
-                    'img' => 'team/team2.png',
-                    'instagram' => '',
-                    'linkedin' => '',
-                ],
-                [
-                    'name' => 'Intan Prasywi',
-                    'role' => 'Finance Manager',
-                    'img' => 'team/team3.png',
-                    'instagram' => '',
-                    'linkedin' => '',
-                ],
-                [
-                    'name' => 'Muhammad Pinda Rahmadan',
-                    'role' => 'Creative Director',
-                    'img' => 'team/team4.png',
-                    'instagram' => '',
-                    'linkedin' => '',
-                ],
-                [
-                    'name' => 'Baghaztra',
-                    'role' => 'IT Support',
-                    'img' => 'team/team5.png',
-                    'instagram' => '',
-                    'linkedin' => '',
-                ],
-                [
-                    'name' => 'Fadil Febrianto',
-                    'role' => 'Graphic Designer',
-                    'img' => 'team/team6.png',
-                    'instagram' => '',
-                    'linkedin' => '',
-                ],
-            ];
-            @endphp
-
-            @foreach($team as $i => $member)
+            @foreach($teams as $i => $member)
             <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
                 <div class="team-card rounded-3 overflow-hidden text-center">
                     <div class="team-img-wrap position-relative overflow-hidden">
-                        <img src="{{ asset('images/landing/' . $member['img']) }}"
-                             alt="{{ $member['name'] }}"
+                        <img src="{{ asset('images/landing/team/' . ($member->foto ?? 'team/team'.(($i%6)+1).'.png')) }}"
+                             alt="{{ $member->nama }}"
                              class="img-fluid w-100 team-img"
                              style="height:280px; object-fit:cover; object-position: center top;">
                         <div class="team-overlay d-flex align-items-center justify-content-center gap-2">
-                            <a href="{{ $member['linkedin'] }}" target="_blank" class="team-social-btn"><i class="bi bi-linkedin"></i></a>
-                            <a href="{{ $member['instagram'] }}" target="_blank" class="team-social-btn"><i class="bi bi-instagram"></i></a>
+                            <a href="#" target="_blank" class="team-social-btn"><i class="bi bi-linkedin"></i></a>
+                            <a href="#" target="_blank" class="team-social-btn"><i class="bi bi-instagram"></i></a>
                         </div>
                     </div>
                     <div class="team-info p-3">
-                        <h6 class="text-white fw-bold mb-1">{{ $member['name'] }}</h6>
-                        <p class="text-accent small mb-0">{{ $member['role'] }}</p>
+                        <h6 class="text-white fw-bold mb-1">{{ $member->nama }}</h6>
+                        <p class="text-accent small mb-0">{{ $member->jabatan }}</p>
                     </div>
                 </div>
             </div>
