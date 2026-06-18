@@ -226,8 +226,11 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
          ->name('settings.password');
  
     // ── Notifikasi ───────────────────────────────────
-    Route::post('/notifications/read',      [ClientController::class, 'notifRead'])
-         ->name('notif.read');
+    Route::get('/notifications', [ClientController::class, 'notifications'])
+    ->name('notifications');
+
+    Route::post('/notifications/read', [ClientController::class, 'notifRead'])
+    ->name('notif.read');
 });
 
 /*
