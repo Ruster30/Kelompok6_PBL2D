@@ -25,7 +25,7 @@
     <div class="event-card">
         {{-- Gambar / Header --}}
         <div class="event-card-img">
-            <img src="{{ asset('images/event-placeholder.jpg') }}" alt="{{ $event->nama_event }}">
+            <img src="{{ asset('images/event/seminar.png') }}" alt="{{ $event->nama_event }}">
             <div class="event-card-badge">
                 <span class="badge {{ $event->badge_class }}">{{ $event->status_label }}</span>
             </div>
@@ -51,7 +51,7 @@
                     <span class="progress-pct">{{ $event->progress }}%</span>
                 </div>
                 <div class="progress-bar-wrap" style="margin-top:8px;">
-                    <div class="progress-bar-fill" style="width:{{ $event->progress }}%"></div>
+                    <div class="progress-bar-fill" style="width: {{ $event->progress}}%"></div>
                 </div>
                 <a href="{{ route('client.timeline.show', $event->id) }}"
                    class="btn btn-outline" style="width:100%;justify-content:center;margin-top:14px;">
