@@ -31,10 +31,6 @@ Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
 */
 Route::get('/company-profile/pdf', [CompanyProfileController::class, 'downloadPdf'])
     ->name('company-profile.pdf');
-    
-Route::get('/', function () {
-    return view('landing.index');
-});
 
 Route::get('/dashboard', function () {
     $role = request()->user()->role;
@@ -242,7 +238,7 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
     // ── Notifikasi ───────────────────────────────────
     Route::post('/notifications/read',      [ClientController::class, 'notifRead'])
          ->name('notif.read');
-});
+                  
     Route::get('/notifications', [ClientController::class, 'notifications'])
     ->name('notifications');
 
