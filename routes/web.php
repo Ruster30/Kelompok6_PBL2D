@@ -31,10 +31,6 @@ Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
 */
 Route::get('/company-profile/pdf', [CompanyProfileController::class, 'downloadPdf'])
     ->name('company-profile.pdf');
-    
-Route::get('/', function () {
-    return view('landing.index');
-});
 
 Route::get('/dashboard', function () {
     $role = request()->user()->role;
