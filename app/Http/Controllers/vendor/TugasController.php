@@ -15,6 +15,7 @@ class TugasController extends Controller
     public function index(Request $request)
     {
         $vendor = Auth::user()->vendor;
+        abort_if(!$vendor, 403);
 
         $tugas = Task::where('vendor_id', $vendor->id)
             ->with('event')
@@ -32,11 +33,11 @@ class TugasController extends Controller
     {
         $request->validate([
             'tugas_id' => 'required|exists:tasks,id',
-            'status'   => 'required|in:pending,on_progress,selesai',
-            'catatan'  => 'nullable|string|max:1000',
+            'status'   => 'required|in:ditugaskan,dikerjakan,selesai',
         ]);
 
         $vendor = Auth::user()->vendor;
+        abort_if(!$vendor, 403);
 
         $tugas = Task::where('id', $request->tugas_id)
             ->where('vendor_id', $vendor->id)
@@ -44,7 +45,6 @@ class TugasController extends Controller
 
         $tugas->update([
             'status'  => $request->status,
-            'catatan' => $request->catatan,
         ]);
 
         return redirect()->route('vendor.daftar-tugas')

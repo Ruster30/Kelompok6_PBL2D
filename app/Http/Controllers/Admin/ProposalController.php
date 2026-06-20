@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Documentation;
+use App\Models\Document;
 use App\Models\Invoice;
 use App\Models\Event;
-use App\Models\RabItem;
+use App\Models\Rab;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -16,7 +16,7 @@ class ProposalController extends Controller
     // ─────────────── DOKUMEN UMUM ───────────────
     public function index(Request $request)
     {
-        $query = Documentation::with('user')->latest();
+        $query = Document::with(['user', 'event'])->latest();
 
         if ($request->search) {
             $query->where('nama_file', 'like', '%' . $request->search . '%');
@@ -138,7 +138,7 @@ class ProposalController extends Controller
 
         $event = Event::with(['client', 'rabs'])->findOrFail($request->event_id);
         $sections = $request->sections;
-        $rabItems = in_array('rab', $sections) ? RabItem::where('event_id', $event->id)->get() : collect();
+        $rabItems = in_array('rab', $sections) ? Rab::where('event_id', $event->id)->get() : collect();
 
         $pdf = Pdf::loadView('admin.proposals.proposal_pdf', compact('event', 'sections', 'rabItems'));
         return $pdf->stream('proposal-' . str_replace(' ', '-', $event->nama_event) . '.pdf');

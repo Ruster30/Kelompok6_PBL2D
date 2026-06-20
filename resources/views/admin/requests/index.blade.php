@@ -20,9 +20,11 @@
             </div>
             <select class="select-filter" id="statusFilter">
                 <option value="">Semua Status</option>
-                <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
-                <option value="disetujui" {{ request('status')=='disetujui' ? 'selected' : '' }}>Disetujui</option>
-                <option value="ditolak" {{ request('status')=='ditolak' ? 'selected' : '' }}>Ditolak</option>
+                <option value="menunggu" {{ request('status')=='menunggu' ? 'selected' : '' }}>Menunggu</option>
+                <option value="diproses" {{ request('status')=='diproses' ? 'selected' : '' }}>Diproses</option>
+                <option value="berjalan" {{ request('status')=='berjalan' ? 'selected' : '' }}>Berjalan</option>
+                <option value="selesai" {{ request('status')=='selesai' ? 'selected' : '' }}>Selesai</option>
+                <option value="dibatalkan" {{ request('status')=='dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
             </select>
             <button class="btn btn-outline"><i class="fas fa-filter"></i> Filter Lainnya</button>
         </div>
@@ -36,7 +38,7 @@
                 <th>Jenis Event</th>
                 <th>Tanggal</th>
                 <th>Lokasi</th>
-                <th>Anggaran</th>
+                <th>Jumlah Tamu</th>
                 <th>Status</th>
                 <th>Aksi</th>
             </tr>
@@ -44,25 +46,39 @@
         <tbody>
             @forelse($requests as $req)
             <tr>
-                <td style="font-weight:500;">{{ $req->client_name }}</td>
-                <td>{{ $req->event_name }}</td>
-                <td>{{ $req->event_type }}</td>
-                <td>{{ \Carbon\Carbon::parse($req->event_date)->format('d M Y') }}</td>
-                <td>{{ $req->location ?? '-' }}</td>
-                <td>Rp {{ number_format($req->budget ?? 0, 0, ',', '.') }}</td>
+                <td style="font-weight:500;">{{ $req->client->name ?? '-' }}</td>
+                <td>{{ $req->nama_event }}</td>
+                <td>{{ $req->jenis_event ?? '-' }}</td>
+                <td>{{ $req->tanggal_event ? $req->tanggal_event->format('d M Y') : '-' }}</td>
+                <td>{{ $req->lokasi_event ?? '-' }}</td>
+                <td>{{ number_format($req->jumlah_tamu ?? 0, 0, ',', '.') }}</td>
                 <td>
                     @php
-                        $map = ['pending'=>'badge-pending','disetujui'=>'badge-active','ditolak'=>'badge-cancel'];
-                        $cls = $map[strtolower($req->status)] ?? 'badge-pending';
+                        $map = [
+                            'menunggu' => 'badge-pending',
+                            'diproses' => 'badge-done',
+                            'berjalan' => 'badge-active',
+                            'selesai' => 'badge-done',
+                            'dibatalkan' => 'badge-cancel',
+                        ];
+                        $labels = [
+                            'menunggu' => 'Menunggu',
+                            'diproses' => 'Diproses',
+                            'berjalan' => 'Berjalan',
+                            'selesai' => 'Selesai',
+                            'dibatalkan' => 'Dibatalkan',
+                        ];
+                        $status = strtolower($req->status_event);
+                        $cls = $map[$status] ?? 'badge-pending';
                     @endphp
-                    <span class="badge {{ $cls }}">{{ ucfirst($req->status) }}</span>
+                    <span class="badge {{ $cls }}">{{ $labels[$status] ?? ucfirst($status) }}</span>
                 </td>
                 <td>
                     <div class="action-btns">
                         <a href="{{ route('admin.requests.show', $req->id) }}" class="action-btn" title="Lihat Detail">
                             <i class="fas fa-eye" style="font-size:12px;"></i>
                         </a>
-                        @if($req->status === 'pending')
+                        @if($req->status_event === 'menunggu')
                         <form action="{{ route('admin.requests.approve', $req->id) }}" method="POST" style="display:inline;">
                             @csrf @method('PATCH')
                             <button type="submit" class="action-btn" title="Setujui" style="color:#16a34a; border-color:#16a34a;">

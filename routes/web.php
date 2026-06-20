@@ -79,8 +79,8 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     // Requests
     Route::get('/requests', [App\Http\Controllers\Admin\ClientRequestController::class, 'index'])->name('admin.requests.index');
     Route::get('/requests/{clientRequest}', [App\Http\Controllers\Admin\ClientRequestController::class, 'show'])->name('admin.requests.show');
-    Route::post('/requests/{clientRequest}/approve', [App\Http\Controllers\Admin\ClientRequestController::class, 'approve'])->name('admin.requests.approve');
-    Route::post('/requests/{clientRequest}/reject', [App\Http\Controllers\Admin\ClientRequestController::class, 'reject'])->name('admin.requests.reject');
+    Route::patch('/requests/{clientRequest}/approve', [App\Http\Controllers\Admin\ClientRequestController::class, 'approve'])->name('admin.requests.approve');
+    Route::patch('/requests/{clientRequest}/reject', [App\Http\Controllers\Admin\ClientRequestController::class, 'reject'])->name('admin.requests.reject');
 
     // Events
     Route::get('/events', [App\Http\Controllers\Admin\EventController::class, 'index'])->name('admin.events.index');
@@ -99,7 +99,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     // Payments
     Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('admin.payments.index');
     Route::get('/payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('admin.payments.show');
-    Route::post('/payments/{payment}/verify', [App\Http\Controllers\Admin\PaymentController::class, 'verify'])->name('admin.payments.verify');
+    Route::patch('/payments/{payment}/verify', [App\Http\Controllers\Admin\PaymentController::class, 'verify'])->name('admin.payments.verify');
 
     // Analytics
     Route::get('/analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('admin.analytics.index');
@@ -122,8 +122,8 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
 
     // Documentation
     Route::get('/documentation', [App\Http\Controllers\Admin\DocumentationController::class, 'index'])->name('admin.documentation.index');
-    Route::post('/documentation/{documentation}/approve', [App\Http\Controllers\Admin\DocumentationController::class, 'approve'])->name('admin.documentation.approve');
-    Route::post('/documentation/{documentation}/reject', [App\Http\Controllers\Admin\DocumentationController::class, 'reject'])->name('admin.documentation.reject');
+    Route::patch('/documentation/files/{file}/approve', [App\Http\Controllers\Admin\DocumentationController::class, 'approveFile'])->name('admin.documentation.approve-file');
+    Route::patch('/documentation/files/{file}/reject', [App\Http\Controllers\Admin\DocumentationController::class, 'rejectFile'])->name('admin.documentation.reject-file');
 
     // Timeline
     Route::get('/timeline', [App\Http\Controllers\Admin\TimelineController::class, 'index'])->name('admin.timeline.index');

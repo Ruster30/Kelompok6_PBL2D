@@ -144,6 +144,15 @@
                         >
                             Update
                         </button>
+                        <button
+                            class="btn btn-sm btn-outline-secondary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#documentationModal"
+                            data-tugas-id="{{ $t->id }}"
+                            data-tugas-nama="{{ $t->nama_tugas }}"
+                        >
+                            Dokumentasi
+                        </button>
 
                     </td>
 
@@ -267,6 +276,104 @@
 
 </div>
 
+{{-- MODAL UPLOAD DOKUMENTASI --}}
+<div class="modal fade"
+     id="documentationModal"
+     tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <form
+                action="{{ route('vendor.dokumentasi.store') }}"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                @csrf
+
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Upload Dokumentasi
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <input
+                        type="hidden"
+                        name="tugas_id"
+                        id="documentationTugasId"
+                    >
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Judul Dokumentasi
+                        </label>
+                        <input
+                            type="text"
+                            name="judul"
+                            id="documentationTitle"
+                            class="form-control"
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Catatan
+                        </label>
+                        <textarea
+                            name="catatan"
+                            class="form-control"
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            File Foto/Video
+                        </label>
+                        <input
+                            type="file"
+                            name="file"
+                            class="form-control"
+                            accept=".jpg,.jpeg,.png,.mp4,.mov"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Batal
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Upload
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
 @endsection
 
 @push('scripts')
@@ -291,6 +398,35 @@ function(event){
     document.getElementById(
     'updateTugasId'
     ).value = tugasId;
+});
+
+const documentationModal =
+document.getElementById('documentationModal');
+
+documentationModal.addEventListener(
+'show.bs.modal',
+function(event){
+
+    let button =
+    event.relatedTarget;
+
+    let tugasId =
+    button.getAttribute(
+    'data-tugas-id'
+    );
+
+    let tugasNama =
+    button.getAttribute(
+    'data-tugas-nama'
+    );
+
+    document.getElementById(
+    'documentationTugasId'
+    ).value = tugasId;
+
+    document.getElementById(
+    'documentationTitle'
+    ).value = 'Dokumentasi ' + tugasNama;
 });
 
 </script>

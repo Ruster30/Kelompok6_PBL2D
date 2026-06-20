@@ -17,6 +17,7 @@ class VendorController extends Controller
     public function ringkasan()
     {
         $vendor = Auth::user()->vendor;
+        abort_if(!$vendor, 403);
 
         $totalEvent    = Event::whereHas('vendors', fn($q) => $q->where('vendor_id', $vendor->id))->count();
         $tugasAktif    = Task::where('vendor_id', $vendor->id)->whereNotIn('status', ['selesai'])->count();
@@ -47,9 +48,10 @@ class VendorController extends Controller
     public function eventSaya(Request $request)
     {
         $vendor = Auth::user()->vendor;
+        abort_if(!$vendor, 403);
 
         $events = Event::whereHas('vendors', fn($q) => $q->where('vendor_id', $vendor->id))
-            ->with('klien')
+            ->with('client')
             ->when($request->search, fn($q) =>
                 $q->where('nama_event', 'like', '%' . $request->search . '%')
             )
@@ -65,6 +67,7 @@ class VendorController extends Controller
     public function jadwal(Request $request)
     {
         $vendor = Auth::user()->vendor;
+        abort_if(!$vendor, 403);
 
         // Ambil semua event vendor untuk dropdown (jika ada lebih dari 1)
         $events = Event::whereHas('vendors', fn($q) => $q->where('vendor_id', $vendor->id))
@@ -87,6 +90,7 @@ class VendorController extends Controller
     public function pengaturan()
     {
         $vendor = Auth::user()->vendor;
+        abort_if(!$vendor, 403);
         return view('vendor.pengaturan', compact('vendor'));
     }
 

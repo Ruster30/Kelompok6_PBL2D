@@ -23,11 +23,14 @@ class ClientController extends Controller
         $events = Event::where('client_id', $uid)->get();
         $eIds   = $events->pluck('id');
         $invoiceIds = Invoice::whereIn('event_id',$eIds)->pluck('id');
+        $totalDibayar = Payment::whereIn('invoice_id',$invoiceIds)
+            ->where('status_pembayaran','diverifikasi')
+            ->sum('nominal');
 
         return view('client.dashboard', [
             'eventBerjalan'  => $events->where('status_event','berjalan')->count(),
             'eventMenunggu'  => $events->whereIn('status_event',['menunggu','diproses'])->count(),  
-            'totalDibayar' => 0,
+            'totalDibayar' => $totalDibayar,
             'recentEvents'   => Event::where('client_id',$uid)
                                      ->with(['latestProposal','timelines'])
                                      ->latest()->take(3)->get(),
@@ -99,7 +102,7 @@ class ClientController extends Controller
                            ->with('event')->latest()->paginate(10);
 
         $payments = Payment::whereIn('invoice_id',$invoiceIds)
-                           ->with('event')->latest()->get();
+                           ->with('invoice.event')->latest()->get();
 
         $totalInvoice  = Invoice::whereIn('event_id',$eIds)->sum('total_invoice');
         $totalDibayar = Payment::whereIn('invoice_id',$invoiceIds)
@@ -118,7 +121,7 @@ class ClientController extends Controller
     }
 
     // Upload bukti pembayaran
-    public function bayar(Request $request, int $eventId)
+    public function bayar(Request $request, int $invoiceId)
     {
         $request->validate([
             'bukti_pembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
@@ -126,12 +129,17 @@ class ClientController extends Controller
             'nominal'          => 'required|numeric|min:1000',
         ]);
 
-        $event = $this->myEvent($eventId);
+        $invoice = Invoice::with('event')
+            ->where('id', $invoiceId)
+            ->whereHas('event', fn ($query) => $query->where('client_id', Auth::id()))
+            ->firstOrFail();
+
+        $event = $invoice->event;
         $path  = $request->file('bukti_pembayaran')
-                         ->store('payments/'.$eventId,'public');
+                         ->store('payments/'.$invoiceId,'public');
 
         Payment::create([
-            'event_id'           => $event->id,
+            'invoice_id'         => $invoice->id,
             'nominal'            => $request->nominal,
             'tanggal_pembayaran' => now()->toDateString(),
             'status_pembayaran'  => 'menunggu',

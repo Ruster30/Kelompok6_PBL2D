@@ -51,9 +51,11 @@
             justify-content: center; cursor: pointer; border-radius: 8px; transition: background 0.2s;
         }
         .topbar-notif:hover { background: #f1f5f9; }
-        .notif-badge {
-            position: absolute; top: 4px; right: 4px; width: 8px; height: 8px;
-            background: #f43f5e; border-radius: 50%; border: 2px solid white;
+        .notif-count {
+            position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px;
+            background: #ef4444; color: white; border-radius: 50%; border: 2px solid white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700; z-index: 10;
         }
         .topbar-user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .topbar-user span { font-size: 14px; font-weight: 500; color: #334155; }
@@ -358,10 +360,16 @@
     <header class="topbar">
         <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
         <div class="topbar-right">
-            <a href="{{ route('admin.notifications.index') }}" class="topbar-notif">
-                <i class="fas fa-bell" style="color:#64748b; font-size:17px;"></i>
-                <span class="notif-badge"></span>
-            </a>
+            <a href="{{ route('admin.notifications.index') }}"
+                class="topbar-notif">
+                    <i class="fas fa-bell"
+                        style="color:#64748b;font-size:17px;"></i>
+                    @if($unreadNotifications > 0)
+                        <span class="notif-count">
+                            {{ $unreadNotifications }}
+                        </span>
+                    @endif
+                </a>
             <div class="topbar-user">
                 <span>{{ auth()->user()->name ?? 'admin' }}</span>
                 <div class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'AD', 0, 2)) }}</div>

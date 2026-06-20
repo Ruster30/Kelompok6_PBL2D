@@ -37,7 +37,7 @@
                             style="background:white;">
                         <i class="fas fa-edit" style="font-size:12px;"></i>
                     </button>
-                    <form action="{{ route('admin.cms.team.destroy', $team->id) }}" method="POST" style="display:inline;"
+                    <form action="{{ route('admin.cms.destroyTeam', $team->id) }}" method="POST" style="display:inline;"
                           onsubmit="return confirm('Hapus anggota tim ini?')">
                         @csrf @method('DELETE')
                         <button type="submit" class="action-btn danger" title="Hapus" style="background:white;">

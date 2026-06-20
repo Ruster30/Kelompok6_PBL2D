@@ -99,11 +99,11 @@
     padding: 4px 12px; border-radius: 20px;
     font-size: 12px; font-weight: 500;
 }
-.status-mendatang { background: #dbeafe; color: #1d4ed8; }
-.status-aktif     { background: #dcfce7; color: #15803d; }
+.status-diproses  { background: #dbeafe; color: #1d4ed8; }
+.status-berjalan  { background: #dcfce7; color: #15803d; }
 .status-selesai   { background: #e0e7ff; color: #4338ca; }
-.status-pending   { background: #fef3c7; color: #b45309; }
-.status-batal     { background: #fee2e2; color: #b91c1c; }
+.status-menunggu  { background: #fef3c7; color: #b45309; }
+.status-dibatalkan { background: #fee2e2; color: #b91c1c; }
 
 .eye-btn {
     width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e2e8f0;
@@ -238,22 +238,22 @@
                     <td>{{ $event->tanggal_event ? $event->tanggal_event->format('d/m/Y') : '-' }}</td>
                     <td>
                         @php
-                            $s = strtolower($event->status_event ?? 'pending');
+                            $s = strtolower($event->status_event ?? 'menunggu');
                             $pillMap = [
-                                'mendatang' => 'status-mendatang',
-                                'aktif'     => 'status-aktif',
-                                'selesai'   => 'status-selesai',
-                                'pending'   => 'status-pending',
-                                'batal'     => 'status-batal',
+                                'menunggu' => 'status-menunggu',
+                                'diproses' => 'status-diproses',
+                                'berjalan' => 'status-berjalan',
+                                'selesai' => 'status-selesai',
+                                'dibatalkan' => 'status-dibatalkan',
                             ];
                             $labelMap = [
-                                'mendatang' => 'Mendatang',
-                                'aktif'     => 'Aktif',
-                                'selesai'   => 'Selesai',
-                                'pending'   => 'Pending',
-                                'batal'     => 'Batal',
+                                'menunggu' => 'Menunggu',
+                                'diproses' => 'Diproses',
+                                'berjalan' => 'Berjalan',
+                                'selesai' => 'Selesai',
+                                'dibatalkan' => 'Dibatalkan',
                             ];
-                            $pillCls = $pillMap[$s] ?? 'status-pending';
+                            $pillCls = $pillMap[$s] ?? 'status-menunggu';
                             $pillLbl = $labelMap[$s] ?? ucfirst($s);
                         @endphp
                         <span class="status-pill {{ $pillCls }}">{{ $pillLbl }}</span>
