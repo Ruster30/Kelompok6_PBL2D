@@ -77,7 +77,7 @@
         {{-- Topbar --}}
         <header class="topbar">
             <div style="display:flex;align-items:center;gap:12px;">
-                <button id="sidebarToggle" class="btn btn-outline btn-sm"
+                <button id="sidebarToggle" class="topbar-notif-link"
                         style="display:none;padding:6px 10px;">
                     <i class="bi bi-list" style="font-size:18px;"></i>
                 </button>
@@ -85,32 +85,26 @@
             </div>
 
             <div class="topbar-right">
-                {{-- Notifikasi Bell --}}
-                <div style="position:relative;">
+                <div class="topbar-notif">
                     <a href="{{ route('client.notifications') }}"
-                    class="btn btn-outline btn-sm"
-                    style="padding:7px 10px;position:relative;">
-
-                        <i class="bi bi-bell"></i>
-
+                    class="topbar-notif-link">
+                        <i class="bi bi-bell-fill"></i>
                         @if(isset($unreadCount) && $unreadCount > 0)
-                        <span style="position:absolute;top:-5px;right:-5px;background:#ef4444;
-                            color:#fff;font-size:10px;font-weight:700;border-radius:999px;
-                            min-width:17px;height:17px;display:flex;align-items:center;
-                            justify-content:center;padding:0 3px;">
-                            {{ $unreadCount > 9 ? '9+' : $unreadCount }}
-                        </span>
+                            <span class="notif-count">
+                                {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                            </span>
                         @endif
                     </a>
                 </div>
 
-                {{-- User Badge --}}
                 <div class="user-badge">
                     <div class="user-info">
                         <div class="user-name">{{ Auth::user()->name }}</div>
                         <div class="user-role">Klien</div>
                     </div>
-                    <div class="user-avatar">{{ Auth::user()->initials }}</div>
+                    <div class="user-avatar">
+                        {{ Auth::user()->initials }}
+                    </div>
                 </div>
             </div>
         </header>
