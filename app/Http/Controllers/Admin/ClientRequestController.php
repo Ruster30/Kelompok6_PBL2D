@@ -11,7 +11,7 @@ class ClientRequestController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Event::with('client')->latest();
+        $query = Event::with(['client', 'latestProposal'])->latest();
 
         if ($request->search) {
             $query->where(function ($q) use ($request) {
@@ -31,7 +31,7 @@ class ClientRequestController extends Controller
 
     public function show(Event $clientRequest)
     {
-        return view('admin.requests.show', ['request' => $clientRequest->load('client')]);
+        return view('admin.requests.show', ['request' => $clientRequest->load(['client', 'latestProposal'])]);
     }
 
     public function approve(Event $clientRequest)

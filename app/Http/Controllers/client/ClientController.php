@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Event, Invoice, Payment, Proposal, Timeline, Notification};
+use App\Models\{Event, Invoice, Payment, Proposal, Timeline, Notification, User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, Hash};
 
@@ -211,6 +211,7 @@ class ClientController extends Controller
             'tanggal_event'    => 'required|date|after:today',
             'lokasi_event'     => 'required|string|max:500',
             'jumlah_tamu'      => 'required|integer|min:1',
+            'rentang_anggaran' => 'nullable|string|max:100',
             'detail_kebutuhan' => 'nullable|string|max:2000',
         ]);
 
@@ -226,6 +227,15 @@ class ClientController extends Controller
             'pesan'   => 'Event "'.$event->nama_event.'" berhasil diajukan. Tim kami akan segera menghubungi Anda.',
             'tipe'    => 'info',
         ]);
+
+        User::where('role', 'admin')->each(function (User $admin) use ($event) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'judul' => 'Request Event Baru',
+                'pesan' => 'Client mengajukan event "' . $event->nama_event . '" dan menunggu peninjauan.',
+                'tipe' => 'event',
+            ]);
+        });
 
         return redirect()->route('client.dashboard')
                ->with('success','Event berhasil diajukan! Tim kami akan menghubungi Anda dalam 24 jam.');

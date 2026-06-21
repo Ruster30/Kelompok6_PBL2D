@@ -328,7 +328,7 @@
             <i class="fas fa-users-cog"></i> Tugas &amp; Tim
         </a>
         <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
-            <i class="fas fa-users"></i> Vendor &amp; Klien
+            <i class="fas fa-users"></i> Vendor
         </a>
         <a href="{{ route('admin.cms.index') }}" class="nav-item {{ request()->routeIs('admin.cms.*') ? 'active' : '' }}">
             <i class="fas fa-palette"></i> Landing Page CMS
@@ -390,6 +390,11 @@
         @if(session('error'))
             <div style="background:#fee2e2; color:#991b1b; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
                 <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+            </div>
+        @endif
+        @if($errors->any())
+            <div style="background:#fee2e2; color:#991b1b; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
+                <i class="fas fa-exclamation-circle"></i> {{ $errors->first() }}
             </div>
         @endif
         @yield('content')

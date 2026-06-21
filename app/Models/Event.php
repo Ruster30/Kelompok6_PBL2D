@@ -18,6 +18,7 @@ class Event extends Model
         'tanggal_event',
         'lokasi_event',
         'jumlah_tamu',
+        'rentang_anggaran',
         'detail_kebutuhan',
         'status_event',
     ];

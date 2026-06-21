@@ -14,6 +14,7 @@ class Vendor extends Model
         'user_id',
         'nama_vendor',
         'jenis_vendor',
+        'email',
         'alamat',
         'deskripsi',
     ];

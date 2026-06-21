@@ -31,7 +31,10 @@ class TimelineController extends Controller
         $data = $request->validate([
             'event_id'         => 'required|exists:events,id',
             'nama_kegiatan'    => 'required|string|max:255',
+            'deskripsi'        => 'nullable|string|max:1000',
+            'penanggung_jawab' => 'nullable|string|max:100',
             'tanggal_kegiatan' => 'required|date',
+            'deadline'         => 'nullable|date',
             'status_kegiatan'  => 'required|in:belum_mulai,berjalan,selesai',
         ]);
 
@@ -45,7 +48,10 @@ class TimelineController extends Controller
     {
         $data = $request->validate([
             'nama_kegiatan'    => 'required|string|max:255',
+            'deskripsi'        => 'nullable|string|max:1000',
+            'penanggung_jawab' => 'nullable|string|max:100',
             'tanggal_kegiatan' => 'required|date',
+            'deadline'         => 'nullable|date',
             'status_kegiatan'  => 'required|in:belum_mulai,berjalan,selesai',
         ]);
 

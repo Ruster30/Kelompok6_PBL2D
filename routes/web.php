@@ -107,6 +107,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     // Notifications
     Route::get('/notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('admin.notifications.index');
     Route::post('/notifications/mark-all-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('admin.notifications.markAllRead');
+    Route::patch('/notifications/{notification}/read', [App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('admin.notifications.markRead');
 
     // Proposal & Dokumen
     Route::get('/proposals', [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.proposals.index');
@@ -119,6 +120,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::get('/proposals/invoices/{invoice}/print', [App\Http\Controllers\Admin\ProposalController::class, 'printInvoice'])->name('admin.proposals.printInvoice');
     Route::get('/proposals/builder', [App\Http\Controllers\Admin\ProposalController::class, 'builder'])->name('admin.proposals.builder');
     Route::post('/proposals/builder/generate', [App\Http\Controllers\Admin\ProposalController::class, 'generate'])->name('admin.proposals.generate');
+    Route::get('/proposals/{proposal}/download', [App\Http\Controllers\Admin\ProposalController::class, 'download'])->name('admin.proposals.download');
 
     // Documentation
     Route::get('/documentation', [App\Http\Controllers\Admin\DocumentationController::class, 'index'])->name('admin.documentation.index');
@@ -194,7 +196,6 @@ Route::post('/feedback', [FeedbackController::class, 'store'])
     ->name('feedback.store');
 
 Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
- 
     // ── Ringkasan / Dashboard ────────────────────────
     Route::get('/',                         [ClientController::class, 'dashboard'])
          ->name('dashboard');
@@ -286,5 +287,3 @@ Route::prefix('vendor')->name('vendor.')->middleware(['auth'])->group(function (
 });
 
 require __DIR__.'/auth.php';
-
- 

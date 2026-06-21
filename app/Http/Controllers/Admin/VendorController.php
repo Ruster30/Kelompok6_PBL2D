@@ -7,7 +7,9 @@ use App\Models\Vendor;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class VendorController extends Controller
 {
@@ -50,28 +52,38 @@ class VendorController extends Controller
             'jenis_vendor' => 'nullable|string|max:100',
             'alamat'       => 'nullable|string',
             'deskripsi'    => 'nullable|string',
-            'email'        => 'nullable|email|unique:users,email',
+            'email'        => 'nullable|email|max:255|unique:vendors,email|required_with:password',
             'password'     => 'nullable|string|min:8',
         ]);
 
-        $userId = null;
-        if (!empty($data['email']) && !empty($data['password'])) {
-            $user = User::create([
-                'name'     => $data['nama_vendor'],
-                'email'    => $data['email'],
-                'password' => Hash::make($data['password']),
-                'role'     => 'vendor',
+        if (!empty($data['password']) && User::where('email', $data['email'])->exists()) {
+            throw ValidationException::withMessages([
+                'email' => 'Email tersebut sudah digunakan oleh akun lain.',
             ]);
-            $userId = $user->id;
         }
 
-        Vendor::create([
-            'user_id'      => $userId,
-            'nama_vendor'  => $data['nama_vendor'],
-            'jenis_vendor' => $data['jenis_vendor'] ?? null,
-            'alamat'       => $data['alamat'] ?? null,
-            'deskripsi'    => $data['deskripsi'] ?? null,
-        ]);
+        DB::transaction(function () use ($data) {
+            $userId = null;
+
+            if (!empty($data['password'])) {
+                $user = User::create([
+                    'name'     => $data['nama_vendor'],
+                    'email'    => $data['email'],
+                    'password' => Hash::make($data['password']),
+                    'role'     => 'vendor',
+                ]);
+                $userId = $user->id;
+            }
+
+            Vendor::create([
+                'user_id'      => $userId,
+                'nama_vendor'  => $data['nama_vendor'],
+                'jenis_vendor' => $data['jenis_vendor'] ?? null,
+                'email'        => $data['email'] ?? null,
+                'alamat'       => $data['alamat'] ?? null,
+                'deskripsi'    => $data['deskripsi'] ?? null,
+            ]);
+        });
 
         return redirect()->route('admin.vendors.index')->with('success', 'Vendor berhasil ditambahkan.');
     }
@@ -84,8 +96,8 @@ class VendorController extends Controller
             'alamat'       => 'nullable|string',
             'deskripsi'    => 'nullable|string',
             'email' => [
-                'nullable', 'email',
-                Rule::unique('users', 'email')->ignore($vendor->user_id),
+                'nullable', 'email', 'max:255', 'required_with:password',
+                Rule::unique('vendors', 'email')->ignore($vendor->id),
             ],
             'password'     => 'nullable|string|min:8',
         ]);
@@ -93,12 +105,19 @@ class VendorController extends Controller
         $vendor->update([
             'nama_vendor'  => $data['nama_vendor'],
             'jenis_vendor' => $data['jenis_vendor'] ?? null,
+            'email'        => $data['email'] ?? null,
             'alamat'       => $data['alamat'] ?? null,
             'deskripsi'    => $data['deskripsi'] ?? null,
         ]);
 
         // Jika belum punya akun dan email+password diisi, buatkan akun
-        if (!$vendor->user_id && !empty($data['email']) && !empty($data['password'])) {
+        if (!$vendor->user_id && !empty($data['password'])) {
+            if (User::where('email', $data['email'])->exists()) {
+                throw ValidationException::withMessages([
+                    'email' => 'Email tersebut sudah digunakan oleh akun lain.',
+                ]);
+            }
+
             $user = User::create([
                 'name'     => $data['nama_vendor'],
                 'email'    => $data['email'],
@@ -106,9 +125,24 @@ class VendorController extends Controller
                 'role'     => 'vendor',
             ]);
             $vendor->update(['user_id' => $user->id]);
-        } elseif ($vendor->user_id && !empty($data['password'])) {
-            // update password akun yang sudah ada
-            $vendor->user->update(['password' => Hash::make($data['password'])]);
+        } elseif ($vendor->user_id) {
+            $account = $vendor->user;
+
+            if (!empty($data['email']) && $data['email'] !== $account->email) {
+                if (User::where('email', $data['email'])->where('id', '!=', $account->id)->exists()) {
+                    throw ValidationException::withMessages([
+                        'email' => 'Email tersebut sudah digunakan oleh akun lain.',
+                    ]);
+                }
+
+                $account->email = $data['email'];
+            }
+
+            $account->name = $data['nama_vendor'];
+            if (!empty($data['password'])) {
+                $account->password = Hash::make($data['password']);
+            }
+            $account->save();
         }
 
         return redirect()->route('admin.vendors.index')->with('success', 'Vendor berhasil diperbarui.');
