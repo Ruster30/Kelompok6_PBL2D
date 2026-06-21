@@ -43,7 +43,7 @@
                             style="background:white;">
                         <i class="fas fa-edit" style="font-size:12px;"></i>
                     </button>
-                    <form action="{{ route('admin.cms.portfolio.destroy', $portfolio->id) }}" method="POST" style="display:inline;"
+                    <form action="{{ route('admin.cms.destroyPortfolio', $portfolio->id) }}" method="POST" style="display:inline;"
                           onsubmit="return confirm('Hapus portfolio ini?')">
                         @csrf @method('DELETE')
                         <button type="submit" class="action-btn danger" title="Hapus" style="background:white;">

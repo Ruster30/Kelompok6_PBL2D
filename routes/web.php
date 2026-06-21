@@ -3,6 +3,12 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ClientController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CompanyProfileController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\Vendor\VendorController;
+use App\Http\Controllers\Vendor\TugasController;
+use App\Http\Controllers\Vendor\DokumentasiController;
+use App\Http\Controllers\Vendor\NotifikasiController;
 
 Route::get('/d', function () {
     return view('welcome');
@@ -13,15 +19,25 @@ Route::get('/profil', function () {
     return '<p>Jurusan Teknologi Informasi - Politeknik Negeri Padang</p>';
 });
 
-Route::get('/', function () {
-    return view('landing.index');
-});
+Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
+
+/*
+|--------------------------------------------------------------------------
+| Company Profile PDF Export
+|--------------------------------------------------------------------------
+| Route ini men-generate PDF dari data landing page terkini secara
+| real-time. Setiap kali admin mengubah konten landing page (di
+| CompanyProfileController), PDF yang diunduh akan otomatis diperbarui.
+*/
+Route::get('/company-profile/pdf', [CompanyProfileController::class, 'downloadPdf'])
+    ->name('company-profile.pdf');
+
 Route::get('/dashboard', function () {
     $role = request()->user()->role;
     if ($role === 'admin') {
         return redirect()->route('admin.dashboard');
     } elseif ($role === 'vendor') {
-        return redirect()->route('vendor.dashboard');
+        return redirect()->route('vendor.ringkasan');
     }
     return app(ClientController::class)->dashboard();
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -34,9 +50,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         if (request()->user()->role !== 'vendor') {
             abort(403);
         }
-        return view('vendor.dashboard');
+        return view('vendor.ringkasan');
     })->name('vendor.dashboard');
 });
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -62,8 +79,8 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     // Requests
     Route::get('/requests', [App\Http\Controllers\Admin\ClientRequestController::class, 'index'])->name('admin.requests.index');
     Route::get('/requests/{clientRequest}', [App\Http\Controllers\Admin\ClientRequestController::class, 'show'])->name('admin.requests.show');
-    Route::post('/requests/{clientRequest}/approve', [App\Http\Controllers\Admin\ClientRequestController::class, 'approve'])->name('admin.requests.approve');
-    Route::post('/requests/{clientRequest}/reject', [App\Http\Controllers\Admin\ClientRequestController::class, 'reject'])->name('admin.requests.reject');
+    Route::patch('/requests/{clientRequest}/approve', [App\Http\Controllers\Admin\ClientRequestController::class, 'approve'])->name('admin.requests.approve');
+    Route::patch('/requests/{clientRequest}/reject', [App\Http\Controllers\Admin\ClientRequestController::class, 'reject'])->name('admin.requests.reject');
 
     // Events
     Route::get('/events', [App\Http\Controllers\Admin\EventController::class, 'index'])->name('admin.events.index');
@@ -82,7 +99,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     // Payments
     Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('admin.payments.index');
     Route::get('/payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('admin.payments.show');
-    Route::post('/payments/{payment}/verify', [App\Http\Controllers\Admin\PaymentController::class, 'verify'])->name('admin.payments.verify');
+    Route::patch('/payments/{payment}/verify', [App\Http\Controllers\Admin\PaymentController::class, 'verify'])->name('admin.payments.verify');
 
     // Analytics
     Route::get('/analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('admin.analytics.index');
@@ -90,6 +107,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     // Notifications
     Route::get('/notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('admin.notifications.index');
     Route::post('/notifications/mark-all-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('admin.notifications.markAllRead');
+    Route::patch('/notifications/{notification}/read', [App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('admin.notifications.markRead');
 
     // Proposal & Dokumen
     Route::get('/proposals', [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.proposals.index');
@@ -102,11 +120,12 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::get('/proposals/invoices/{invoice}/print', [App\Http\Controllers\Admin\ProposalController::class, 'printInvoice'])->name('admin.proposals.printInvoice');
     Route::get('/proposals/builder', [App\Http\Controllers\Admin\ProposalController::class, 'builder'])->name('admin.proposals.builder');
     Route::post('/proposals/builder/generate', [App\Http\Controllers\Admin\ProposalController::class, 'generate'])->name('admin.proposals.generate');
+    Route::get('/proposals/{proposal}/download', [App\Http\Controllers\Admin\ProposalController::class, 'download'])->name('admin.proposals.download');
 
     // Documentation
     Route::get('/documentation', [App\Http\Controllers\Admin\DocumentationController::class, 'index'])->name('admin.documentation.index');
-    Route::post('/documentation/{documentation}/approve', [App\Http\Controllers\Admin\DocumentationController::class, 'approve'])->name('admin.documentation.approve');
-    Route::post('/documentation/{documentation}/reject', [App\Http\Controllers\Admin\DocumentationController::class, 'reject'])->name('admin.documentation.reject');
+    Route::patch('/documentation/files/{file}/approve', [App\Http\Controllers\Admin\DocumentationController::class, 'approveFile'])->name('admin.documentation.approve-file');
+    Route::patch('/documentation/files/{file}/reject', [App\Http\Controllers\Admin\DocumentationController::class, 'rejectFile'])->name('admin.documentation.reject-file');
 
     // Timeline
     Route::get('/timeline', [App\Http\Controllers\Admin\TimelineController::class, 'index'])->name('admin.timeline.index');
@@ -168,8 +187,15 @@ require __DIR__.'/auth.php';
 |  Prefix name : client....
 |─────────────────────────────────────────────────────────
 */
+
+
+Route::get('/feedback/{event}', [FeedbackController::class, 'create'])
+    ->name('feedback.create');
+
+Route::post('/feedback', [FeedbackController::class, 'store'])
+    ->name('feedback.store');
+
 Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
- 
     // ── Ringkasan / Dashboard ────────────────────────
     Route::get('/',                         [ClientController::class, 'dashboard'])
          ->name('dashboard');
@@ -211,6 +237,53 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
          ->name('settings.password');
  
     // ── Notifikasi ───────────────────────────────────
-    Route::post('/notifications/read',      [ClientController::class, 'notifRead'])
-         ->name('notif.read');
+     Route::get('/notifications', [ClientController::class, 'notifications'])
+    ->name('notifications');
+
+    Route::post('/notifications/read', [ClientController::class, 'notifRead'])
+    ->name('notif.read');
+
 });
+   
+/*
+|--------------------------------------------------------------------------
+| Vendor Routes
+|--------------------------------------------------------------------------
+| Semua route ini dilindungi oleh middleware 'auth' dan 'role:vendor'
+| Sesuaikan middleware dengan sistem autentikasi yang Anda gunakan.
+*/
+
+Route::prefix('vendor')->name('vendor.')->middleware(['auth'])->group(function () {
+
+    // Ringkasan (Dashboard)
+    Route::get('/ringkasan', [VendorController::class, 'ringkasan'])->name('ringkasan');
+
+    // Event Saya
+    Route::get('/event-saya', [VendorController::class, 'eventSaya'])->name('event-saya');
+
+    // Jadwal
+    Route::get('/jadwal', [VendorController::class, 'jadwal'])->name('jadwal');
+
+    // Daftar Tugas
+    Route::get('/daftar-tugas', [TugasController::class, 'index'])->name('daftar-tugas');
+    Route::put('/tugas/update', [TugasController::class, 'update'])->name('tugas.update');
+
+    // Dokumentasi
+    Route::post('/dokumentasi/store', [DokumentasiController::class, 'store'])->name('dokumentasi.store');
+
+    // Notifikasi
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi');
+    Route::post('/notifikasi/read-all', [NotifikasiController::class, 'readAll'])->name('notifikasi.read-all');
+
+    // Pengaturan
+    Route::get('/pengaturan', [VendorController::class, 'pengaturan'])->name('pengaturan');
+
+    // Logout
+    Route::post('/logout', [VendorController::class, 'logout'])->name('logout');
+
+    // Redirect root /vendor ke ringkasan
+    Route::redirect('/', '/vendor/ringkasan');
+
+});
+
+require __DIR__.'/auth.php';

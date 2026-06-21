@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Documentation;
+use App\Models\Document;
 use App\Models\Invoice;
 use App\Models\Event;
-use App\Models\RabItem;
+use App\Models\Rab;
+use App\Models\Proposal;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProposalController extends Controller
@@ -16,7 +19,7 @@ class ProposalController extends Controller
     // ─────────────── DOKUMEN UMUM ───────────────
     public function index(Request $request)
     {
-        $query = Documentation::with('user')->latest();
+        $query = Document::with(['user', 'event'])->latest();
 
         if ($request->search) {
             $query->where('nama_file', 'like', '%' . $request->search . '%');
@@ -122,10 +125,11 @@ class ProposalController extends Controller
     }
 
     // ─────────────── PROPOSAL BUILDER ───────────────
-    public function builder()
+    public function builder(Request $request)
     {
         return view('admin.proposals.builder', [
             'events' => Event::orderBy('nama_event')->get(),
+            'selectedEventId' => $request->integer('event_id'),
         ]);
     }
 
@@ -138,9 +142,41 @@ class ProposalController extends Controller
 
         $event = Event::with(['client', 'rabs'])->findOrFail($request->event_id);
         $sections = $request->sections;
-        $rabItems = in_array('rab', $sections) ? RabItem::where('event_id', $event->id)->get() : collect();
+        $rabItems = in_array('rab', $sections) ? Rab::where('event_id', $event->id)->get() : collect();
 
         $pdf = Pdf::loadView('admin.proposals.proposal_pdf', compact('event', 'sections', 'rabItems'));
-        return $pdf->stream('proposal-' . str_replace(' ', '-', $event->nama_event) . '.pdf');
+        $version = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
+        $filename = 'proposal-' . Str::slug($event->nama_event) . '-v' . $version . '-' . now()->format('YmdHis') . '.pdf';
+        $path = 'proposals/' . $filename;
+
+        Storage::disk('public')->put($path, $pdf->output());
+
+        $proposal = Proposal::create([
+            'event_id' => $event->id,
+            'nomor_proposal' => sprintf('PEN-%s-%02d', now()->format('Ymd'), $version),
+            'file_proposal' => $path,
+            'versi' => $version,
+            'status' => 'diajukan',
+            'tanggal_proposal' => now()->toDateString(),
+        ]);
+
+        Notification::create([
+            'user_id' => $event->client_id,
+            'judul' => 'Surat Penawaran Tersedia',
+            'pesan' => 'Surat penawaran untuk event "' . $event->nama_event . '" sudah tersedia untuk ditinjau.',
+            'tipe' => 'info',
+        ]);
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function download(Proposal $proposal)
+    {
+        abort_unless(Storage::disk('public')->exists($proposal->file_proposal), 404);
+
+        return Storage::disk('public')->response($proposal->file_proposal);
     }
 }

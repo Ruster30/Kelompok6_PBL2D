@@ -40,6 +40,14 @@
                class="nav-item {{ request()->routeIs('client.proposals*') ? 'active' : '' }}">
                 <i class="bi bi-file-earmark-text"></i> Surat Penawaran
             </a>
+            <a href="{{ route('client.notifications') }}" class="nav-item {{ request()->routeIs('client.notifications*') ? 'active' : '' }}">
+                <i class="bi bi-bell"></i> Notifikasi
+                @if(isset($unreadCount) && $unreadCount > 0)
+                    <span class="sidebar-notification-badge">
+                        {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                    </span>
+                @endif
+            </a>
 
             <div style="height:1px;background:var(--border);margin:12px 4px;"></div>
 
@@ -69,7 +77,7 @@
         {{-- Topbar --}}
         <header class="topbar">
             <div style="display:flex;align-items:center;gap:12px;">
-                <button id="sidebarToggle" class="btn btn-outline btn-sm"
+                <button id="sidebarToggle" class="topbar-notif-link"
                         style="display:none;padding:6px 10px;">
                     <i class="bi bi-list" style="font-size:18px;"></i>
                 </button>
@@ -77,71 +85,26 @@
             </div>
 
             <div class="topbar-right">
-                {{-- Notifikasi Bell --}}
-                <div style="position:relative;">
-                    <button onclick="toggleNotif(this)" class="btn btn-outline btn-sm"
-                            style="padding:7px 10px;">
-                        <i class="bi bi-bell"></i>
+                <div class="topbar-notif">
+                    <a href="{{ route('client.notifications') }}"
+                    class="topbar-notif-link">
+                        <i class="bi bi-bell-fill"></i>
                         @if(isset($unreadCount) && $unreadCount > 0)
-                        <span style="position:absolute;top:-5px;right:-5px;background:#ef4444;
-                              color:#fff;font-size:10px;font-weight:700;border-radius:999px;
-                              min-width:17px;height:17px;display:flex;align-items:center;
-                              justify-content:center;padding:0 3px;">
-                            {{ $unreadCount > 9 ? '9+' : $unreadCount }}
-                        </span>
+                            <span class="notif-count">
+                                {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                            </span>
                         @endif
-                    </button>
-
-                    {{-- Dropdown Notifikasi --}}
-                    <div id="notifDropdown"
-                         style="display:none;position:absolute;right:0;top:48px;width:320px;
-                                background:#fff;border:1px solid var(--border);border-radius:12px;
-                                box-shadow:var(--shadow-lg);z-index:300;overflow:hidden;">
-                        <div style="padding:14px 16px;border-bottom:1px solid var(--border);
-                                    display:flex;align-items:center;justify-content:space-between;">
-                            <span style="font-weight:700;font-size:14px;color:var(--dark);">Notifikasi</span>
-                            <form method="POST" action="{{ route('client.notif.read') }}" style="margin:0;">
-                                @csrf
-                                <button type="submit"
-                                        style="background:none;border:none;font-size:11px;
-                                               color:var(--accent);font-weight:600;cursor:pointer;
-                                               padding:0;">
-                                    Tandai semua dibaca
-                                </button>
-                            </form>
-                        </div>
-                        <div style="max-height:300px;overflow-y:auto;">
-                            @forelse($notifications ?? [] as $notif)
-                            <div style="padding:12px 16px;border-bottom:1px solid var(--border);
-                                        background:{{ $notif->dibaca ? '#fff' : '#f0fbf9' }};">
-                                <div style="font-size:13px;
-                                            font-weight:{{ $notif->dibaca ? '500' : '700' }};
-                                            color:var(--dark);margin-bottom:3px;">
-                                    {{ $notif->judul }}
-                                </div>
-                                <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">
-                                    {{ $notif->pesan }}
-                                </div>
-                                <div style="font-size:11px;color:var(--text-light);margin-top:4px;">
-                                    {{ $notif->created_at->diffForHumans() }}
-                                </div>
-                            </div>
-                            @empty
-                            <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">
-                                Tidak ada notifikasi
-                            </div>
-                            @endforelse
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
-                {{-- User Badge --}}
                 <div class="user-badge">
                     <div class="user-info">
                         <div class="user-name">{{ Auth::user()->name }}</div>
                         <div class="user-role">Klien</div>
                     </div>
-                    <div class="user-avatar">{{ Auth::user()->initials }}</div>
+                    <div class="user-avatar">
+                        {{ Auth::user()->initials }}
+                    </div>
                 </div>
             </div>
         </header>
@@ -183,16 +146,6 @@ document.addEventListener('click', e => {
 });
 window.addEventListener('resize', checkMobile);
 checkMobile();
-
-// Notifikasi dropdown
-function toggleNotif(btn) {
-    const d = document.getElementById('notifDropdown');
-    d.style.display = d.style.display === 'none' ? 'block' : 'none';
-}
-document.addEventListener('click', e => {
-    if (!e.target.closest('#notifDropdown') && !e.target.closest('[onclick^="toggleNotif"]'))
-        document.getElementById('notifDropdown').style.display = 'none';
-});
 </script>
 @stack('scripts')
 </body>

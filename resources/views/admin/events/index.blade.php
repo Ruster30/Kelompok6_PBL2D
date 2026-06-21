@@ -22,10 +22,11 @@
             </div>
             <select class="select-filter" id="statusFilter">
                 <option value="">Semua Status</option>
-                <option value="aktif" {{ request('status')=='aktif' ? 'selected' : '' }}>Aktif</option>
-                <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
+                <option value="menunggu" {{ request('status')=='menunggu' ? 'selected' : '' }}>Menunggu</option>
+                <option value="diproses" {{ request('status')=='diproses' ? 'selected' : '' }}>Diproses</option>
+                <option value="berjalan" {{ request('status')=='berjalan' ? 'selected' : '' }}>Berjalan</option>
                 <option value="selesai" {{ request('status')=='selesai' ? 'selected' : '' }}>Selesai</option>
-                <option value="batal" {{ request('status')=='batal' ? 'selected' : '' }}>Batal</option>
+                <option value="dibatalkan" {{ request('status')=='dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
             </select>
             <button class="btn btn-outline" id="filterBtn"><i class="fas fa-filter"></i> Filter Lainnya</button>
         </div>
@@ -38,7 +39,7 @@
                 <th>Klien</th>
                 <th>Tanggal</th>
                 <th>Lokasi</th>
-                <th>Anggaran</th>
+                <th>Jumlah Tamu</th>
                 <th>Status</th>
                 <th>Aksi</th>
             </tr>
@@ -46,17 +47,31 @@
         <tbody>
             @forelse($events as $event)
             <tr>
-                <td style="font-weight:500;">{{ $event->name }}</td>
+                <td style="font-weight:500;">{{ $event->nama_event }}</td>
                 <td>{{ $event->client->name ?? '-' }}</td>
-                <td>{{ \Carbon\Carbon::parse($event->event_date)->format('d M Y') }}</td>
-                <td>{{ $event->location ?? '-' }}</td>
-                <td>Rp {{ number_format($event->budget ?? 0, 0, ',', '.') }}</td>
+                <td>{{ $event->tanggal_event ? $event->tanggal_event->format('d M Y') : '-' }}</td>
+                <td>{{ $event->lokasi_event ?? '-' }}</td>
+                <td>{{ number_format($event->jumlah_tamu ?? 0, 0, ',', '.') }}</td>
                 <td>
                     @php
-                        $statusMap = ['aktif'=>'badge-active','selesai'=>'badge-done','pending'=>'badge-pending','batal'=>'badge-cancel'];
-                        $cls = $statusMap[strtolower($event->status)] ?? 'badge-pending';
+                        $statusMap = [
+                            'menunggu' => 'badge-pending',
+                            'diproses' => 'badge-done',
+                            'berjalan' => 'badge-active',
+                            'selesai' => 'badge-done',
+                            'dibatalkan' => 'badge-cancel',
+                        ];
+                        $labelMap = [
+                            'menunggu' => 'Menunggu',
+                            'diproses' => 'Diproses',
+                            'berjalan' => 'Berjalan',
+                            'selesai' => 'Selesai',
+                            'dibatalkan' => 'Dibatalkan',
+                        ];
+                        $status = strtolower($event->status_event);
+                        $cls = $statusMap[$status] ?? 'badge-pending';
                     @endphp
-                    <span class="badge {{ $cls }}">{{ ucfirst($event->status) }}</span>
+                    <span class="badge {{ $cls }}">{{ $labelMap[$status] ?? ucfirst($status) }}</span>
                 </td>
                 <td>
                     <div class="action-btns">

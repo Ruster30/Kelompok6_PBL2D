@@ -50,5 +50,12 @@ class DatabaseSeeder extends Seeder
                 'role' => 'client',
             ]);
         }
+
+        $this->call([
+            LandingPageSeeder::class,
+        ]);
+         $this->call([
+        VendorSeeder::class,
+    ]);
     }
 }

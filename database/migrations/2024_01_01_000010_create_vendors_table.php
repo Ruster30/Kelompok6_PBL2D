@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            // Vendor dapat dicatat lebih dulu tanpa harus dibuatkan akun login.
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('nama_vendor');
             $table->string('jenis_vendor', 100)->nullable();
             $table->text('alamat')->nullable();
