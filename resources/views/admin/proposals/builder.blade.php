@@ -26,7 +26,7 @@
             <select name="event_id" class="form-input" required>
                 <option value="">-- Pilih Event --</option>
                 @foreach($events as $event)
-                <option value="{{ $event->id }}">{{ $event->nama_event }}</option>
+                <option value="{{ $event->id }}" @selected($selectedEventId === $event->id)>{{ $event->nama_event }}</option>
                 @endforeach
             </select>
         </div>

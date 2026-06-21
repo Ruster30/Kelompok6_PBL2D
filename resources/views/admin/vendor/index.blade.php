@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Vendor & Klien')
-@section('page-title', 'Vendor & Klien')
+@section('title', 'Vendor')
+@section('page-title', 'Vendor')
 
 @section('content')
 <div class="page-header">
     <div class="page-header-left">
-        <h1>Vendor &amp; Klien</h1>
+        <h1>Vendor</h1>
         <p>Master data vendor &amp; manajemen akun login.</p>
     </div>
     <button class="btn btn-primary" onclick="document.getElementById('addVendorModal').classList.add('show')">
@@ -56,7 +56,7 @@
             <tr>
                 <td style="font-weight:500;">{{ $vendor->nama_vendor }}</td>
                 <td>{{ $vendor->jenis_vendor ?? '-' }}</td>
-                <td>{{ $vendor->user->email ?? '-' }}</td>
+                <td>{{ $vendor->email ?? $vendor->user->email ?? '-' }}</td>
                 <td>
                     @if($vendor->user_id)
                         <span class="badge badge-active">Terhubung</span>
@@ -73,7 +73,7 @@
                 </td>
                 <td>
                     @php
-                        $busy = ($vendor->tasks_count ?? 0) > 0;
+                        $busy = ($vendor->active_jobs_count ?? 0) > 0;
                     @endphp
                     <span class="badge {{ $busy ? 'badge-active' : 'badge-gray' }}">{{ $busy ? 'Bertugas' : 'Tersedia' }}</span>
                 </td>
@@ -136,15 +136,34 @@
                 </div>
                 <hr style="border:none; border-top:1px solid #f1f5f9;">
                 <p style="font-size:13px; color:#64748b; margin:-8px 0 0;">
-                    Opsional: buat akun login untuk vendor ini agar bisa mengakses portal vendor.
+                    Email dapat digunakan sebagai kontak vendor. Isi password bila ingin sekaligus membuat akun login vendor.
                 </p>
                 <div class="form-group">
-                    <label class="form-label">Email Akun</label>
+                    <label class="form-label">Email Kontak</label>
                     <input type="email" name="email" id="vendor_email" class="form-input" placeholder="email@vendor.com">
                 </div>
                 <div class="form-group" id="passwordGroup">
-                    <label class="form-label">Password Akun</label>
-                    <input type="password" name="password" id="vendor_password" class="form-input" placeholder="Minimal 8 karakter">
+                    <label class="form-label">Password Akun (opsional)</label>
+
+                    <div style="position:relative;">
+                        <input type="password"
+                            name="password"
+                            id="vendor_password"
+                            class="form-input"
+                            placeholder="Minimal 8 karakter">
+
+                        <i class="bi bi-eye"
+                        id="togglePassword"
+                        style="
+                            position:absolute;
+                            right:14px;
+                            top:50%;
+                            transform:translateY(-50%);
+                            cursor:pointer;
+                            color:#94a3b8;
+                            font-size:14px;">
+                        </i>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -160,6 +179,20 @@
 <script>
 document.getElementById('searchInput').addEventListener('input', debounce(filterTable, 300));
 
+document.getElementById('togglePassword').addEventListener('click', function () {
+    const password = document.getElementById('vendor_password');
+
+    if (password.type === 'password') {
+        password.type = 'text';
+        this.classList.remove('bi-eye');
+        this.classList.add('bi-eye-slash');
+    } else {
+        password.type = 'password';
+        this.classList.remove('bi-eye-slash');
+        this.classList.add('bi-eye');
+    }
+});
+
 function filterTable() {
     const search = document.getElementById('searchInput').value;
     window.location.href = `{{ route('admin.vendors.index') }}?search=${encodeURIComponent(search)}`;
@@ -174,7 +207,7 @@ function editVendor(vendor) {
     document.getElementById('jenis_vendor').value = vendor.jenis_vendor ?? '';
     document.getElementById('alamat').value = vendor.alamat ?? '';
     document.getElementById('deskripsi').value = vendor.deskripsi ?? '';
-    document.getElementById('vendor_email').value = vendor.user?.email ?? '';
+    document.getElementById('vendor_email').value = vendor.email ?? vendor.user?.email ?? '';
     document.getElementById('passwordGroup').style.display = vendor.user_id ? 'none' : 'block';
     document.getElementById('vendorForm').action = '{{ url("admin/vendors") }}/' + vendor.id;
     document.getElementById('vendorFormMethod').value = 'PUT';

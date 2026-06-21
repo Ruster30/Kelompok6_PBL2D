@@ -49,7 +49,7 @@
                         </td>
 
                         <td>
-                            {{ $event->client->nama_client ?? '-' }}
+                            {{ $event->client->name ?? '-' }}
                         </td>
 
                         <td>

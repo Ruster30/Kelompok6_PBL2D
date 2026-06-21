@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Event, Invoice, Payment, Proposal, Timeline, Notification};
+use App\Models\{Event, Invoice, Payment, Proposal, Timeline, Notification, User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, Hash};
 
@@ -23,11 +23,14 @@ class ClientController extends Controller
         $events = Event::where('client_id', $uid)->get();
         $eIds   = $events->pluck('id');
         $invoiceIds = Invoice::whereIn('event_id',$eIds)->pluck('id');
+        $totalDibayar = Payment::whereIn('invoice_id',$invoiceIds)
+            ->where('status_pembayaran','diverifikasi')
+            ->sum('nominal');
 
         return view('client.dashboard', [
             'eventBerjalan'  => $events->where('status_event','berjalan')->count(),
             'eventMenunggu'  => $events->whereIn('status_event',['menunggu','diproses'])->count(),  
-            'totalDibayar' => 0,
+            'totalDibayar' => $totalDibayar,
             'recentEvents'   => Event::where('client_id',$uid)
                                      ->with(['latestProposal','timelines'])
                                      ->latest()->take(3)->get(),
@@ -99,7 +102,7 @@ class ClientController extends Controller
                            ->with('event')->latest()->paginate(10);
 
         $payments = Payment::whereIn('invoice_id',$invoiceIds)
-                           ->with('event')->latest()->get();
+                           ->with('invoice.event')->latest()->get();
 
         $totalInvoice  = Invoice::whereIn('event_id',$eIds)->sum('total_invoice');
         $totalDibayar = Payment::whereIn('invoice_id',$invoiceIds)
@@ -118,7 +121,7 @@ class ClientController extends Controller
     }
 
     // Upload bukti pembayaran
-    public function bayar(Request $request, int $eventId)
+    public function bayar(Request $request, int $invoiceId)
     {
         $request->validate([
             'bukti_pembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
@@ -126,12 +129,17 @@ class ClientController extends Controller
             'nominal'          => 'required|numeric|min:1000',
         ]);
 
-        $event = $this->myEvent($eventId);
+        $invoice = Invoice::with('event')
+            ->where('id', $invoiceId)
+            ->whereHas('event', fn ($query) => $query->where('client_id', Auth::id()))
+            ->firstOrFail();
+
+        $event = $invoice->event;
         $path  = $request->file('bukti_pembayaran')
-                         ->store('payments/'.$eventId,'public');
+                         ->store('payments/'.$invoiceId,'public');
 
         Payment::create([
-            'event_id'           => $event->id,
+            'invoice_id'         => $invoice->id,
             'nominal'            => $request->nominal,
             'tanggal_pembayaran' => now()->toDateString(),
             'status_pembayaran'  => 'menunggu',
@@ -203,6 +211,7 @@ class ClientController extends Controller
             'tanggal_event'    => 'required|date|after:today',
             'lokasi_event'     => 'required|string|max:500',
             'jumlah_tamu'      => 'required|integer|min:1',
+            'rentang_anggaran' => 'nullable|string|max:100',
             'detail_kebutuhan' => 'nullable|string|max:2000',
         ]);
 
@@ -218,6 +227,15 @@ class ClientController extends Controller
             'pesan'   => 'Event "'.$event->nama_event.'" berhasil diajukan. Tim kami akan segera menghubungi Anda.',
             'tipe'    => 'info',
         ]);
+
+        User::where('role', 'admin')->each(function (User $admin) use ($event) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'judul' => 'Request Event Baru',
+                'pesan' => 'Client mengajukan event "' . $event->nama_event . '" dan menunggu peninjauan.',
+                'tipe' => 'event',
+            ]);
+        });
 
         return redirect()->route('client.dashboard')
                ->with('success','Event berhasil diajukan! Tim kami akan menghubungi Anda dalam 24 jam.');

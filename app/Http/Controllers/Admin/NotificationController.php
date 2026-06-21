@@ -36,4 +36,13 @@ class NotificationController extends Controller
             'Semua notifikasi ditandai sudah dibaca.'
         );
     }
+
+    public function markRead(Notification $notification)
+    {
+        abort_unless($notification->user_id === auth()->id(), 403);
+
+        $notification->markAsRead();
+
+        return back();
+    }
 }

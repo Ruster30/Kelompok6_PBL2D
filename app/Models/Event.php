@@ -18,6 +18,7 @@ class Event extends Model
         'tanggal_event',
         'lokasi_event',
         'jumlah_tamu',
+        'rentang_anggaran',
         'detail_kebutuhan',
         'status_event',
     ];
@@ -83,7 +84,7 @@ class Event extends Model
 
     public function payments()
     {
-        return $this->hasMany(Payment::class, 'event_id');
+        return $this->hasManyThrough(Payment::class, Invoice::class, 'event_id', 'invoice_id', 'id', 'id');
     }
 
     public function timelines()
