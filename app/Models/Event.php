@@ -53,6 +53,24 @@ class Event extends Model
     {
         return $this->hasMany(Proposal::class, 'event_id');
     }
+    
+    // Relasi ke negosiasi (dari client)
+    public function negotiations()
+    {
+        return $this->hasMany(\App\Models\Negotiation::class, 'event_id')->latest();
+    }
+
+    // Negosiasi terbaru
+    public function latestNegotiation()
+    {
+        return $this->hasOne(\App\Models\Negotiation::class, 'event_id')->latestOfMany();
+    }
+
+    // Cek apakah ada negosiasi yang belum direspons
+    public function getHasNegotiationAttribute(): bool
+    {
+        return $this->negotiations()->exists();
+    }
 
     /** Proposal terakhir (versi terbaru) */
     public function latestProposal()
