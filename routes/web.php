@@ -82,6 +82,34 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::patch('/requests/{clientRequest}/approve', [App\Http\Controllers\Admin\ClientRequestController::class, 'approve'])->name('admin.requests.approve');
     Route::patch('/requests/{clientRequest}/reject', [App\Http\Controllers\Admin\ClientRequestController::class, 'reject'])->name('admin.requests.reject');
 
+    // ─── Surat Penawaran ────────────────────────────────────────────
+    // Preview surat penawaran (tampilan admin sebelum kirim)
+    Route::get('/requests/{event}/surat-penawaran',
+        [App\Http\Controllers\Admin\ProposalController::class, 'suratPenawaran'])
+        ->name('admin.requests.surat-penawaran');
+
+    // Kirim penawaran ke client (generate PDF + simpan proposal + notifikasi)
+    Route::post('/requests/{event}/kirim-penawaran',
+        [App\Http\Controllers\Admin\ProposalController::class, 'kirimPenawaran'])
+        ->name('admin.requests.kirim-penawaran');
+
+    // Export PDF langsung (download)
+    Route::get('/requests/{event}/export-pdf',
+        [App\Http\Controllers\Admin\ProposalController::class, 'exportPdf'])
+        ->name('admin.requests.export-pdf');
+
+    // Revisi penawaran
+    Route::post('/requests/{event}/revisi-penawaran',
+        [App\Http\Controllers\Admin\ProposalController::class, 'revisiPenawaran'])
+        ->name('admin.requests.revisi-penawaran');
+
+    // ─── Negosiasi ──────────────────────────────────────────────────
+
+    // Riwayat negosiasi (dari client)
+    Route::get('/requests/{event}/negosiasi',
+        [App\Http\Controllers\Admin\ClientRequestController::class, 'negosiasi'])
+        ->name('admin.requests.negosiasi');
+
     // Events
     Route::get('/events', [App\Http\Controllers\Admin\EventController::class, 'index'])->name('admin.events.index');
     Route::get('/events/create', [App\Http\Controllers\Admin\EventController::class, 'create'])->name('admin.events.create');
@@ -227,6 +255,21 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
          ->name('proposals');
     Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
          ->name('proposals.show');
+    
+    // ── Terima Penawaran LANGSUNG (tanpa negosiasi) ─────────────────
+    Route::post('/proposals/{id}/terima',
+        [App\Http\Controllers\client\ClientController::class, 'terimaProposal'])
+        ->name('proposals.terima');
+
+    // ── Ajukan Negosiasi ────────────────────────────────────────────
+    Route::post('/proposals/{id}/negosiasi',
+        [App\Http\Controllers\client\ClientController::class, 'submitNegosiasi'])
+        ->name('proposals.negosiasi');
+
+    // ── Terima Penawaran Revisi SETELAH Negosiasi ───────────────────
+    Route::post('/proposals/{id}/terima-setelah-negosiasi',
+        [App\Http\Controllers\client\ClientController::class, 'terimaSetelahNegosiasi'])
+        ->name('proposals.terima-setelah-negosiasi');
  
     // ── Pengaturan Akun ──────────────────────────────
     Route::get('/settings',                 [ClientController::class, 'settings'])
