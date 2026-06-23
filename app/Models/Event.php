@@ -78,6 +78,16 @@ class Event extends Model
         return $this->hasOne(Proposal::class, 'event_id')->latestOfMany();
     }
 
+    public function negotiationHistories()
+    {
+        return $this->hasMany(\App\Models\Negotiation::class, 'event_id')->latest();
+    }
+
+    public function latestNegotiationHistories()
+    {
+        return $this->hasOne(\App\Models\Negotiation::class, 'event_id')->latestOfMany();
+    }
+
     /** Satu kontrak aktif per event */
     public function contract()
     {

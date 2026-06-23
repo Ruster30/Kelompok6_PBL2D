@@ -255,6 +255,21 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
          ->name('proposals');
     Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
          ->name('proposals.show');
+    
+    // ── Terima Penawaran LANGSUNG (tanpa negosiasi) ─────────────────
+    Route::post('/proposals/{id}/terima',
+        [App\Http\Controllers\client\ClientController::class, 'terimaProposal'])
+        ->name('proposals.terima');
+
+    // ── Ajukan Negosiasi ────────────────────────────────────────────
+    Route::post('/proposals/{id}/negosiasi',
+        [App\Http\Controllers\client\ClientController::class, 'submitNegosiasi'])
+        ->name('proposals.negosiasi');
+
+    // ── Terima Penawaran Revisi SETELAH Negosiasi ───────────────────
+    Route::post('/proposals/{id}/terima-setelah-negosiasi',
+        [App\Http\Controllers\client\ClientController::class, 'terimaSetelahNegosiasi'])
+        ->name('proposals.terima-setelah-negosiasi');
  
     // ── Pengaturan Akun ──────────────────────────────
     Route::get('/settings',                 [ClientController::class, 'settings'])

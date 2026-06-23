@@ -14,8 +14,11 @@ return new class extends Migration
     {
         Schema::create('negotiations', function (Blueprint $table) {
             $table->id();
+            // Event terkait
             $table->foreignId('event_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // siapa yang mengirim negosiasi (client)
+            // siapa yang mengirim negosiasi (client)
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            // Isi negosiasi
             $table->text('pesan');
             $table->decimal('budget_diinginkan', 15, 2)->nullable();
             $table->text('catatan_tambahan')->nullable();
