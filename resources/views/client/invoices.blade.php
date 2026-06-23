@@ -95,9 +95,7 @@
             </tbody>
         </table>
     </div>
-    @if($invoices->hasPages())
-    <div style="margin-top:16px;">{{ $invoices->links() }}</div>
-    @endif
+    
 </div>
 
 {{-- Riwayat Pembayaran --}}

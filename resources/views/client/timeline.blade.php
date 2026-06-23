@@ -10,12 +10,12 @@
 </div>
 
 {{-- Selector event jika lebih dari 1 --}}
-@if($myEvents->count() > 1)
+@if($events->count() > 1)
 <div style="margin-bottom:20px;">
     <select class="form-select-styled"
             onchange="window.location='{{ url('client/timeline') }}/'+this.value">
-        @foreach($myEvents as $e)
-        <option value="{{ $e->id }}" {{ $selected?->id == $e->id ? 'selected' : '' }}>
+        @foreach($events as $e)
+        <option value="{{ $e->id }}" {{ $selectedEvent?->id == $e->id ? 'selected' : '' }}>
             {{ $e->nama_event }}
         </option>
         @endforeach
@@ -23,7 +23,7 @@
 </div>
 @endif
 
-@if(!$selected)
+@if(!$selectedEvent)
 <div class="card">
     <div class="empty-state">
         <i class="bi bi-calendar3"></i>

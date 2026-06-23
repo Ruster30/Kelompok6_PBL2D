@@ -9,6 +9,7 @@ use App\Models\Event;
 use App\Models\Rab;
 use App\Models\Proposal;
 use App\Models\Notification;
+use App\Models\Negotiation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -44,7 +45,6 @@ class ProposalController extends Controller
         $file = $request->file('file');
         $path = $file->store('documents', 'public');
 
-        $ext = strtolower($file->getClientOriginalExtension());
         $type = match (true) {
             str_contains(strtolower($file->getClientOriginalName()), 'proposal') => 'proposal',
             str_contains(strtolower($file->getClientOriginalName()), 'kontrak')  => 'kontrak',
@@ -136,39 +136,39 @@ class ProposalController extends Controller
     public function generate(Request $request)
     {
         $request->validate([
-            'event_id'   => 'required|exists:events,id',
-            'sections'   => 'required|array|min:1',
+            'event_id' => 'required|exists:events,id',
+            'sections' => 'required|array|min:1',
         ]);
 
-        $event = Event::with(['client', 'rabs'])->findOrFail($request->event_id);
+        $event    = Event::with(['client', 'rabs'])->findOrFail($request->event_id);
         $sections = $request->sections;
         $rabItems = in_array('rab', $sections) ? Rab::where('event_id', $event->id)->get() : collect();
 
-        $pdf = Pdf::loadView('admin.proposals.proposal_pdf', compact('event', 'sections', 'rabItems'));
-        $version = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
+        $pdf      = Pdf::loadView('admin.proposals.proposal_pdf', compact('event', 'sections', 'rabItems'));
+        $version  = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
         $filename = 'proposal-' . Str::slug($event->nama_event) . '-v' . $version . '-' . now()->format('YmdHis') . '.pdf';
-        $path = 'proposals/' . $filename;
+        $path     = 'proposals/' . $filename;
 
         Storage::disk('public')->put($path, $pdf->output());
 
-        $proposal = Proposal::create([
-            'event_id' => $event->id,
-            'nomor_proposal' => sprintf('PEN-%s-%02d', now()->format('Ymd'), $version),
-            'file_proposal' => $path,
-            'versi' => $version,
-            'status' => 'diajukan',
-            'tanggal_proposal' => now()->toDateString(),
+        Proposal::create([
+            'event_id'        => $event->id,
+            'nomor_proposal'  => sprintf('PEN-%s-%02d', now()->format('Ymd'), $version),
+            'file_proposal'   => $path,
+            'versi'           => $version,
+            'status'          => 'diajukan',
+            'tanggal_proposal'=> now()->toDateString(),
         ]);
 
         Notification::create([
             'user_id' => $event->client_id,
-            'judul' => 'Surat Penawaran Tersedia',
-            'pesan' => 'Surat penawaran untuk event "' . $event->nama_event . '" sudah tersedia untuk ditinjau.',
-            'tipe' => 'info',
+            'judul'   => 'Surat Penawaran Tersedia',
+            'pesan'   => 'Surat penawaran untuk event "' . $event->nama_event . '" sudah tersedia untuk ditinjau.',
+            'tipe'    => 'info',
         ]);
 
         return response($pdf->output(), 200, [
-            'Content-Type' => 'application/pdf',
+            'Content-Type'        => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $filename . '"',
         ]);
     }
@@ -176,7 +176,138 @@ class ProposalController extends Controller
     public function download(Proposal $proposal)
     {
         abort_unless(Storage::disk('public')->exists($proposal->file_proposal), 404);
-
         return Storage::disk('public')->response($proposal->file_proposal);
+    }
+
+    // ─────────────── SURAT PENAWARAN ───────────────
+
+    /**
+     * Tampilkan preview Surat Penawaran dari suatu event/request.
+     * Route: GET /admin/requests/{event}/surat-penawaran
+     */
+    public function suratPenawaran(Event $event)
+    {
+        $event->load(['client', 'rabs', 'latestProposal']);
+
+        // Nomor surat otomatis: PEN-{YYYYMMDD}-{count+1}
+        $nomorSurat = sprintf(
+            'PEN-%s-%03d',
+            now()->format('Ymd'),
+            Proposal::whereDate('created_at', today())->count() + 1
+        );
+
+        return view('admin.requests.surat_penawaran', compact('event', 'nomorSurat'));
+    }
+
+    /**
+     * Generate PDF Surat Penawaran & simpan ke proposals, kirim notifikasi ke client.
+     * Route: POST /admin/requests/{event}/kirim-penawaran
+     */
+    public function kirimPenawaran(Request $request, Event $event)
+    {
+        $data = $request->validate([
+            'nomor_surat'   => 'required|string|max:100',
+            'tanggal_surat' => 'required|date',
+        ]);
+
+        $event->load(['client', 'rabs']);
+
+        // Generate PDF Surat Penawaran
+        $pdf      = Pdf::loadView('admin.requests.surat_penawaran_pdf', compact('event', 'data'));
+        $version  = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
+        $filename = 'surat-penawaran-' . Str::slug($event->nama_event) . '-v' . $version . '.pdf';
+        $path     = 'proposals/' . $filename;
+
+        Storage::disk('public')->put($path, $pdf->output());
+
+        // Simpan sebagai Proposal
+        Proposal::create([
+            'event_id'         => $event->id,
+            'nomor_proposal'   => $data['nomor_surat'],
+            'file_proposal'    => $path,
+            'versi'            => $version,
+            'status'           => 'diajukan',
+            'tanggal_proposal' => $data['tanggal_surat'],
+        ]);
+
+        // Update status event → diproses
+        $event->update(['status_event' => 'diproses']);
+
+        // Notifikasi ke client
+        Notification::create([
+            'user_id' => $event->client_id,
+            'judul'   => 'Surat Penawaran Dikirim',
+            'pesan'   => 'Surat penawaran untuk event "' . $event->nama_event . '" telah dikirim. Silakan tinjau dan berikan respon Anda.',
+            'tipe'    => 'info',
+        ]);
+
+        return redirect()
+            ->route('admin.requests.index')
+            ->with('success', 'Surat penawaran berhasil dikirim ke client.');
+    }
+
+    /**
+     * Export PDF Surat Penawaran langsung (tanpa menyimpan).
+     * Route: GET /admin/requests/{event}/export-pdf
+     */
+    public function exportPdf(Event $event)
+    {
+        $event->load(['client', 'rabs', 'latestProposal']);
+
+        $data = [
+            'nomor_surat'   => $event->latestProposal?->nomor_proposal
+                ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), Proposal::where('event_id', $event->id)->count()),
+            'tanggal_surat' => $event->latestProposal?->tanggal_proposal?->format('Y-m-d')
+                ?? now()->format('Y-m-d'),
+        ];
+
+        $pdf      = Pdf::loadView('admin.requests.surat_penawaran_pdf', compact('event', 'data'))
+                       ->setPaper('a4', 'portrait');
+        $filename = 'Surat-Penawaran-' . Str::slug($event->nama_event) . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Revisi penawaran — buat proposal baru dengan status diajukan.
+     * Route: POST /admin/requests/{event}/revisi-penawaran
+     */
+    public function revisiPenawaran(Event $event)
+    {
+        $event->load(['client', 'rabs']);
+
+        $pdf      = Pdf::loadView('admin.requests.surat_penawaran_pdf', [
+            'event' => $event,
+            'data'  => [
+                'nomor_surat'   => sprintf('REV-%s-%03d', now()->format('Ymd'), Proposal::where('event_id', $event->id)->count() + 1),
+                'tanggal_surat' => now()->format('Y-m-d'),
+            ],
+        ]);
+
+        $version  = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
+        $filename = 'revisi-penawaran-' . Str::slug($event->nama_event) . '-v' . $version . '.pdf';
+        $path     = 'proposals/' . $filename;
+
+        Storage::disk('public')->put($path, $pdf->output());
+
+        Proposal::create([
+            'event_id'         => $event->id,
+            'nomor_proposal'   => sprintf('REV-%s-%03d', now()->format('Ymd'), $version),
+            'file_proposal'    => $path,
+            'versi'            => $version,
+            'status'           => 'diajukan',
+            'tanggal_proposal' => now()->toDateString(),
+        ]);
+
+        Notification::create([
+            'user_id' => $event->client_id,
+            'judul'   => 'Revisi Penawaran Dikirim',
+            'pesan'   => 'Revisi surat penawaran untuk event "' . $event->nama_event . '" telah dikirim.',
+            'tipe'    => 'info',
+        ]);
+
+        return redirect()
+            ->route('admin.requests.index')
+            ->with('success', 'Revisi penawaran berhasil dikirim.');
     }
 }
