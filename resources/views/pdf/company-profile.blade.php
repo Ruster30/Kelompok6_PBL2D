@@ -3,1293 +3,583 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>Company Profile - {{ $company['name'] }}</title>
-<style>
-        /* =============================================
-           DomPDF-compatible CSS
-           Semua inline / style tag — no external fonts
-           ============================================= */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
- 
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 11px;
-            color: #1a2540;
-            background: #fff;
-        }
- 
-        /* -------- COVER PAGE -------- */
-        .cover {
-            width: 100%;
-            height: 297mm;
-            background: #0a0e1a;
-            position: relative;
-            page-break-after: always;
-        }
-        .cover-accent-bar {
-            width: 100%;
-            height: 5px;
-            background: #2dd4bf;
-        }
-        .cover-body {
-            padding: 80px 60px 60px;
-        }
-        .cover-logo {
-            font-size: 32px;
-            font-weight: bold;
-            color: #fff;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-        .cover-logo span { color: #2dd4bf; }
-        .cover-tagline {
-            font-size: 11px;
-            color: #8a9bb5;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 80px;
-        }
-        .cover-title {
-            font-size: 40px;
-            font-weight: bold;
-            color: #fff;
-            line-height: 1.2;
-            margin-bottom: 16px;
-        }
-        .cover-title span { color: #2dd4bf; }
-        .cover-subtitle {
-            font-size: 13px;
-            color: #8a9bb5;
-            line-height: 1.7;
-            max-width: 420px;
-            margin-bottom: 60px;
-        }
-        .cover-meta {
-            border-top: 1px solid #1e2d40;
-            padding-top: 24px;
-            display: table;
-            width: 100%;
-        }
-        .cover-meta-item {
-            display: table-cell;
-            width: 33%;
-        }
-        .cover-meta-label {
-            font-size: 9px;
-            color: #8a9bb5;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 4px;
-        }
-        .cover-meta-value {
-            font-size: 12px;
-            color: #fff;
-            font-weight: bold;
-        }
-        .cover-bottom-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 80px;
-            background: #2dd4bf;
-            padding: 0 60px;
-            display: table;
-            width: 100%;
-        }
-        .cover-bottom-text {
-            display: table-cell;
-            vertical-align: middle;
-            font-size: 11px;
-            color: #0a0e1a;
-            font-weight: bold;
-        }
-        .cover-bottom-year {
-            display: table-cell;
-            vertical-align: middle;
-            text-align: right;
-            font-size: 28px;
-            font-weight: bold;
-            color: rgba(10,14,26,.3);
-        }
- 
-        /* -------- COMMON PAGE -------- */
-        .page {
-            padding: 48px 52px;
-            page-break-after: always;
-        }
-        .page:last-child { page-break-after: auto; }
- 
-        /* Section header */
-        .section-label {
-            font-size: 8px;
-            font-weight: bold;
-            color: #2dd4bf;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 6px;
-        }
-        .section-title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #1a2540;
-            margin-bottom: 6px;
-            line-height: 1.3;
-        }
-        .section-divider {
-            width: 40px;
-            height: 3px;
-            background: #2dd4bf;
-            margin-bottom: 20px;
-            border-radius: 2px;
-        }
-        .section-body {
-            font-size: 10.5px;
-            color: #4a5568;
-            line-height: 1.75;
-        }
- 
-        /* -------- PAGE HEADER -------- */
-        .page-header {
-            display: table;
-            width: 100%;
-            margin-bottom: 32px;
-            border-bottom: 1px solid #e4eaf3;
-            padding-bottom: 12px;
-        }
-        .page-header-logo {
-            display: table-cell;
-            vertical-align: middle;
-            font-size: 14px;
-            font-weight: bold;
-            color: #1a2540;
-        }
-        .page-header-logo span { color: #2dd4bf; }
-        .page-header-right {
-            display: table-cell;
-            vertical-align: middle;
-            text-align: right;
-            font-size: 9px;
-            color: #8a9bb5;
-        }
- 
-        /* -------- STATS TABLE -------- */
-        .stats-table {
-            display: table;
-            width: 100%;
-            margin: 24px 0;
-        }
-        .stat-cell {
-            display: table-cell;
-            width: 25%;
-            text-align: center;
-            padding: 16px 8px;
-            background: #f7fafc;
-            border: 1px solid #e4eaf3;
-        }
-        .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1a2540;
-        }
-        .stat-label {
-            font-size: 9px;
-            color: #2dd4bf;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 4px;
-        }
- 
-        /* -------- VISI MISI -------- */
-        .vm-table {
-            display: table;
-            width: 100%;
-            margin-top: 20px;
-        }
-        .vm-cell {
-            display: table-cell;
-            width: 50%;
-            padding: 20px;
-            vertical-align: top;
-        }
-        .visi-cell {
-            background: #127f78;
-            border-radius: 8px;
-            padding-right: 32px;
-        }
-        .visi-cell .section-title { color: #fff; }
-        .visi-cell .section-body  { color: rgba(255,255,255,.85); font-style: italic; }
-        .misi-cell { padding-left: 32px; }
-        .misi-item {
-            margin-bottom: 16px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #e4eaf3;
-        }
-        .misi-item:last-child { border-bottom: none; margin-bottom: 0; }
-        .misi-item-title {
-            font-size: 11px;
-            font-weight: bold;
-            color: #1a2540;
-            margin-bottom: 4px;
-        }
-        .misi-item-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #2dd4bf;
-            border-radius: 50%;
-            margin-right: 6px;
-            vertical-align: middle;
-        }
-        .misi-item-desc {
-            font-size: 10px;
-            color: #6b7a99;
-            line-height: 1.6;
-        }
- 
-        /* -------- SERVICES -------- */
-
-        .services-grid {
-            margin-top: 20px;
-        }
-
-        .service-box {
-            width: 100%;
-            border: 1px solid #e4eaf3;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            page-break-inside: avoid;
-        }
-
-        .service-box-dot {
-            width: 28px;
-            height: 28px;
-            background: rgba(45,212,191,.12);
-            border-radius: 6px;
-            text-align: center;
-            line-height: 28px;
-            font-size: 12px;
-            color: #2dd4bf;
-            margin-bottom: 8px;
-        }
-
-        .service-box-title {
-            font-size: 11px;
-            font-weight: bold;
-            color: #1a2540;
-            margin-bottom: 4px;
-        }
-
-        .service-box-desc {
-            font-size: 9px;
-            color: #6b7a99;
-            line-height: 1.5;
-        }
- 
-        /* -------- TEAM -------- */
-        .team-table {
-            display: table;
-            width: 100%;
-            margin-top: 20px;
-        }
-        .team-cell {
-            display: table-cell;
-            width: 25%;
-            padding: 0 8px;
-            vertical-align: top;
-            text-align: center;
-        }
-        .team-cell:first-child { padding-left: 0; }
-        .team-cell:last-child  { padding-right: 0; }
-        .team-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #e4eaf3;
-            margin: 0 auto 10px;
-            overflow: hidden;
-        }
-        .team-avatar img { width: 80px; height: 80px; object-fit: cover; }
-        .team-name {
-            font-size: 11px;
-            font-weight: bold;
-            color: #1a2540;
-            margin-bottom: 3px;
-        }
-        .team-role {
-            font-size: 9.5px;
-            color: #2dd4bf;
-        }
- 
-        /* -------- WHY US -------- */
-        .why-table { display: table; width: 100%; margin-top: 16px; }
-        .why-row   { display: table-row; }
-        .why-cell  {
-            display: table-cell;
-            width: 50%;
-            padding: 10px;
-            vertical-align: top;
-        }
-        .why-box {
-            border-left: 3px solid #2dd4bf;
-            padding: 10px 14px;
-            margin-bottom: 4px;
-        }
-        .why-title { font-size: 11px; font-weight: bold; color: #1a2540; margin-bottom: 4px; }
-        .why-desc  { font-size: 9.5px; color: #6b7a99; line-height: 1.6; }
- 
-        /* -------- CONTACT -------- */
-        .contact-table { display: table; width: 100%; margin-top: 20px; }
-        .contact-left  {
-            display: table-cell;
-            width: 55%;
-            vertical-align: top;
-            padding-right: 40px;
-        }
-        .contact-right {
-            display: table-cell;
-            width: 45%;
-            vertical-align: top;
-            background: #f7fafc;
-            border: 1px solid #e4eaf3;
-            border-radius: 8px;
-            padding: 20px;
-        }
-        .contact-item { margin-bottom: 16px; }
-        .contact-item-label {
-            font-size: 8.5px;
-            font-weight: bold;
-            color: #2dd4bf;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 3px;
-        }
-        .contact-item-value {
-            font-size: 11px;
-            color: #1a2540;
-        }
-        .qr-placeholder {
-            width: 80px; height: 80px;
-            border: 2px dashed #e4eaf3;
-            border-radius: 6px;
-            text-align: center;
-            padding-top: 28px;
-            font-size: 9px;
-            color: #8a9bb5;
-            margin-bottom: 8px;
-        }
-        /* ==========================================
-        PORTFOLIO
-        ========================================== */
-
-        .portfolio-grid{
-            margin-top:20px;
-        }
-
-        .portfolio-row{
-            display:table;
-            width:100%;
-            margin-bottom:15px;
-        }
-
-        .portfolio-card{
-            display:table-cell;
-            width:33.33%;
-            padding:8px;
-            vertical-align:top;
-        }
-
-        .portfolio-box{
-            border:1px solid #e4eaf3;
-            border-radius:8px;
-            overflow:hidden;
-            background:#fff;
-        }
-
-        .portfolio-img{
-            width:100%;
-            height:120px;
-            object-fit:cover;
-        }
-
-        .portfolio-info{
-            padding:10px;
-        }
-
-        .portfolio-category{
-            font-size:8px;
-            color:#2dd4bf;
-            text-transform:uppercase;
-            letter-spacing:1px;
-            margin-bottom:4px;
-        }
-
-        .portfolio-name{
-            font-size:11px;
-            font-weight:bold;
-            color:#1a2540;
-        }
-
-        /* ==========================================
-        CLIENTS
-        ========================================== */
-
-        .clients-grid{
-            margin-top:20px;
-        }
-
-        .client-row{
-            display:table;
-            width:100%;
-            margin-bottom:12px;
-        }
-
-        .client-cell{
-            display:table-cell;
-            width:25%;
-            text-align:center;
-            vertical-align:middle;
-            padding:12px;
-        }
-
-        .client-box{
-            border:1px solid #e4eaf3;
-            border-radius:8px;
-            background:#fff;
-            padding:15px;
-            height:80px;
-        }
-
-        .client-logo{
-            max-height:35px;
-            margin-bottom:6px;
-        }
-
-        .client-name{
-            font-size:9px;
-            color:#1a2540;
-        }
- 
-        /* -------- FOOTER -------- */
-        .page-footer {
-            margin-top: 32px;
-            padding-top: 12px;
-            border-top: 1px solid #e4eaf3;
-            display: table;
-            width: 100%;
-        }
-        .page-footer-left {
-            display: table-cell;
-            font-size: 9px;
-            color: #8a9bb5;
-        }
-        .page-footer-right {
-            display: table-cell;
-            text-align: right;
-            font-size: 9px;
-            color: #8a9bb5;
-        }
-        .accent { color: #2dd4bf; }
-        .back-cover {
-            background: #0a0e1a;
-            height: 297mm;
-            text-align: center;
-            padding-top: 120px;
-        }
-        .back-cover-logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 12px;
-        }
-        .back-cover-logo span { color: #2dd4bf; }
-        .back-cover-line {
-            width: 60px;
-            height: 3px;
-            background: #2dd4bf;
-            margin: 16px auto;
-        }
-        .back-cover-text {
-            font-size: 11px;
-            color: #8a9bb5;
-        }
+    <title>Company Profile - {{ $company['name'] }}</title>
+    <style>
+    {!! file_get_contents(public_path('css/company-profil-pdf.css')) !!}
     </style>
 </head>
 <body>
+@php
+$slideNo = 2;
+@endphp
 
-{{-- ================================================
-     HALAMAN 1: COVER
-     ================================================ --}}
-<div class="cover">
-    
-    <div class="cover-accent-bar"></div>
+{{-- ═══════════════════════════════════════════════════
+     SLIDE 1 — COVER
+     ═══════════════════════════════════════════════════ --}}
+<div class="slide cover">
+    <div class="cover-strip"></div>
+    <div class="cover-topbar"></div>
+    <div class="cover-circle"></div>
+    <div class="cover-circle2"></div>
 
-    <div class="cover-body">
-
-        {{-- Logo Perusahaan --}}
-        <div class="cover-logo">
-            {{ $company['name'] }}
+    <div class="cover-content">
+        <div class="cover-bottom">
+            <div class="cover-bottom-inner">
+                <div class="cover-bottom-left">Company Profile &bull; {{ $company['name'] }}</div>
+                <div class="cover-bottom-right">{{ date('Y') }}</div>
+            </div>
         </div>
+        <div class="cover-inner">
+            <div class="cover-eyebrow">Event Organizer Profesional</div>
+            <div class="cover-name">{{ $company['name'] }}</div>
+            <div class="cover-title-main">Company</div>
+            <div class="cover-title-accent">Profile</div>
+            <div class="cover-tagline">{{ $company['tagline'] }}</div>
 
-        {{-- Sub Logo --}}
-        <div class="cover-tagline">
-            Event Organizer Profesional
+            <div class="cover-stats-row tbl">
+                <div class="tr">
+                    @foreach($stats as $stat)
+                    <div class="td cover-stat-item">
+                        <div class="cover-stat-val">{{ $stat['value'] }}</div>
+                        <div class="cover-stat-lbl">{{ $stat['label'] }}</div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
+    </div>
+</div>
 
-        {{-- Judul --}}
-        <div class="cover-title">
-            Company<br>
-            <span>Profile</span>
+{{-- ═══════════════════════════════════════════════════
+     SLIDE 2 — TENTANG KAMI
+     ═══════════════════════════════════════════════════ --}}
+<div class="slide">
+    <div class="slide-lbar"></div>
+
+    <div class="slide-hdr tbl">
+        <div class="tr">
+            <div class="td slide-hdr-logo">{{ $company['name'] }}</div>
+            <div class="td slide-hdr-right">Company Profile {{ date('Y') }} &nbsp;|&nbsp; Tentang Kami</div>
         </div>
+    </div>
 
-        {{-- Tagline --}}
-        <div class="cover-subtitle">
-            {{ $company['tagline'] }}
-        </div>
+    {{-- Body 2-kolom: konten kiri, stats kanan --}}
+    <div class="slide-body">
+        <div class="tbl" style="height: 5.in;">
+            <div class="tr">
 
-        {{-- Statistik --}}
-        <div class="cover-meta">
-
-            {{-- Statistik dari Controller --}}
-            @foreach($stats as $stat)
-                <div class="cover-meta-item">
-                    <div class="cover-meta-label">
-                        {{ $stat['label'] }}
+                {{-- KIRI: teks about --}}
+                <div class="td about-left" style="padding-top:5px;">
+                    <div class="sec-eyebrow">Tentang Kami</div>
+                    <div class="sec-title">{{ $company['about_title'] }}</div>
+                    <div class="sec-divider"></div>
+                    <div class="sec-body">
+                        <p style="margin-bottom:30px;">{{ $company['about_desc1'] }}</p>
+                        <p>{{ $company['about_desc2'] }}</p>
                     </div>
 
-                    <div class="cover-meta-value">
-                        {{ $stat['value'] }}
+                    {{-- Decorative quote strip --}}
+                    <div style="margin-top:30px; border-left:4px solid #2dd4bf; padding:14px 18px; background:#f8fafc; border-radius:0 8px 8px 0;">
+                        <div style="font-size:25px; color:#4a5568; font-style:italic; line-height:1.7;">
+                            "Profesional, Kreatif, dan Berkesan — itulah komitmen kami dalam setiap event."
+                        </div>
                     </div>
                 </div>
-            @endforeach
 
+                {{-- KANAN: stat cards 2x2 --}}
+                <div class="td about-right">
+                    <div class="tbl">
+                        <div class="tr">
+                            @foreach(array_slice($stats, 0, 2) as $i => $stat)
+                                @if($i > 0)<div class="td stat-grid-space"></div>@endif
+                                <div class="td">
+                                    <div class="stat-card">
+                                        <div class="stat-card-val">{{ $stat['value'] }}</div>
+                                        <div class="stat-card-lbl">{{ $stat['label'] }}</div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="tbl">
+                        <div class="tr">
+                            @foreach(array_slice($stats, 2) as $i => $stat)
+                                @if($i > 0)<div class="td stat-grid-space"></div>@endif
+                                <div class="td">
+                                    <div class="stat-card">
+                                        <div class="stat-card-val">{{ $stat['value'] }}</div>
+                                        <div class="stat-card-lbl">{{ $stat['label'] }}</div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Established banner --}}
+                    <div style="margin-top:20px; background:#2dd4bf; border-radius:10px; padding:20px; text-align:center;">
+                        <div style="font-size:20px; color:#07101f; text-transform:uppercase; letter-spacing:2px; font-weight:bold;">Berdiri Sejak</div>
+                        <div style="font-size:35px; font-weight:bold; color:#07101f; margin-top:4px;">2021</div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-
     </div>
 
-    {{-- Footer Cover --}}
-    <div class="cover-bottom-bar">
-
-        <div class="cover-bottom-text">
-            Company Profile • {{ $company['name'] }}
+    <div class="slide-ftr tbl">
+        <div class="tr">
+            <div class="td slide-ftr-left">&copy; {{ date('Y') }} {{ $company['name'] }} — Semua hak dilindungi</div>
+            <div class="td slide-ftr-right">Slide {{ $slideNo++ }}</div>
         </div>
-
-        <div class="cover-bottom-year">
-            {{ date('Y') }}
-        </div>
-
     </div>
-
 </div>
 
+{{-- ═══════════════════════════════════════════════════
+     SLIDE 3 — VISI & MISI
+     ═══════════════════════════════════════════════════ --}}
+<div class="slide">
+    <div class="slide-lbar"></div>
 
-{{-- ================================================
-     HALAMAN 2: TENTANG + STATISTIK
-     ================================================ --}}
-<div class="page">
-
-    <div class="page-header">
-        <div class="page-header-logo">
-            {{ $company['name'] }}
-        </div>
-
-        <div class="page-header-right">
-            Company Profile {{ date('Y') }}
-            &nbsp;|&nbsp;
-            Tentang Kami
+    <div class="slide-hdr tbl">
+        <div class="tr">
+            <div class="td slide-hdr-logo">{{ $company['name'] }}</div>
+            <div class="td slide-hdr-right">Company Profile {{ date('Y') }} &nbsp;|&nbsp; Visi &amp; Misi</div>
         </div>
     </div>
 
-    {{-- Judul --}}
-    <div class="section-label">
-        Tentang Kami
-    </div>
+    <div class="slide-body">
+        <div class="sec-eyebrow">Arah Perusahaan</div>
+        <div class="sec-title">Visi &amp; Misi Kami</div>
+        <div class="sec-divider"></div>
 
-    <div class="section-title">
-        {{ $company['about_title'] }}
-    </div>
+        <div class="tbl" style="margin-top: 100px;">
+            <div class="tr">
 
-    <div class="section-divider"></div>
+                <div class="td visi-panel">
+                    <div class="sec-eyebrow" style="color:#2dd4bf;">Visi Kami</div>
+                    <div class="sec-title" style="color:#fff; font-size:27px; margin-top:8px;">Menjadi yang Terdepan</div>
+                    <div class="visi-quote">"{{ $visi }}"</div>
+                </div>
 
-    {{-- Deskripsi --}}
-    <div class="section-body">
-        {{ $company['about_desc1'] }}
-    </div>
+                <div class="td vm-gap"></div>
 
-    <br>
+                <div class="td misi-panel">
+                    <div class="sec-eyebrow" style="margin-bottom:14px;">Misi Kami</div>
+                    @foreach($misi as $item)
+                    <div class="misi-item">
+                        <div class="misi-item-title">{{ $item['title'] }}</div>
+                        <div class="misi-item-desc">{{ $item['desc'] }}</div>
+                    </div>
+                    @endforeach
+                </div>
 
-    <div class="section-body">
-        {{ $company['about_desc2'] }}
-    </div>
-
-    {{-- Statistik --}}
-    <div class="stats-table">
-
-        @foreach($stats as $stat)
-
-        <div class="stat-cell">
-
-            <div class="stat-number">
-                {{ $stat['value'] }}
             </div>
-
-            <div class="stat-label">
-                {{ $stat['label'] }}
-            </div>
-
         </div>
+    </div>
+
+    <div class="slide-ftr tbl">
+        <div class="tr">
+            <div class="td slide-ftr-left">&copy; {{ date('Y') }} {{ $company['name'] }}</div>
+            <div class="td slide-ftr-right">Slide {{ $slideNo++ }}</div>
+        </div>
+    </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════
+     SLIDE 4 — LAYANAN
+     ═══════════════════════════════════════════════════ --}}
+
+@foreach(array_chunk($services, 6) as $slideIndex => $serviceChunk)
+<div class="slide">
+    <div class="slide-lbar"></div>
+
+    <div class="slide-hdr tbl">
+        <div class="tr">
+            <div class="td slide-hdr-logo">{{ $company['name'] }}</div>
+            <div class="td slide-hdr-right">Company Profile {{ date('Y') }} &nbsp;|&nbsp; Layanan</div>
+        </div>
+    </div>
+
+    <div class="slide-body">
+        <div class="sec-eyebrow">Keahlian Kami</div>
+        <div class="sec-title">Layanan Kami</div>
+        <div class="sec-divider"></div>
+        <div class="sec-body" style="margin-bottom:22px;">
+            Kami menawarkan spektrum penuh layanan manajemen acara yang disesuaikan untuk memenuhi kebutuhan unik setiap klien.
+        </div>
+
+        @foreach(array_chunk($serviceChunk, 3) as $row)
+
+        <div class="svc-tbl">
+            <div class="tr">
+
+                @foreach($row as $svc)
+
+                <div class="td svc-card-wrap">
+
+                    @php
+                        $title = strtolower($svc['title'] ?? '');
+
+                        if(str_contains($title,'mice') || str_contains($title,'meeting') || str_contains($title,'convention') || str_contains($title,'exhibition'))
+                            $symbol='&#9830;';
+                        elseif(str_contains($title,'produksi') || str_contains($title,'production'))
+                            $symbol='&#9654;';
+                        elseif(str_contains($title,'market') || str_contains($title,'branding') || str_contains($title,'grand opening'))
+                            $symbol='&#9650;';
+                        elseif(str_contains($title,'special') || str_contains($title,'expo') || str_contains($title,'fashion'))
+                            $symbol='&#9733;';
+                        elseif(str_contains($title,'corporate') || str_contains($title,'conference'))
+                            $symbol='&#9632;';
+                        else
+                            $symbol='&#9733;';
+                    @endphp
+
+                    <div class="svc-card-inner">
+                        <div class="svc-card-badge">{!! $symbol !!}</div>
+                        <div class="svc-card-accent"></div>
+                        <div class="svc-card-title">{{ $svc['title'] }}</div>
+                        <div class="svc-card-desc">{{ $svc['desc'] }}</div>
+                    </div>
+
+                </div>
+
+                @endforeach
+
+            </div>
+        </div>
+
+        <div style="height:18px;"></div>
 
         @endforeach
-
     </div>
 
-    {{-- Footer --}}
-    <div class="page-footer">
-
-        <div class="page-footer-left">
-            © {{ date('Y') }}
-            {{ $company['name'] }}
-            — Semua hak dilindungi undang-undang
+    <div class="slide-ftr tbl">
+        <div class="tr">
+            <div class="td slide-ftr-left">&copy; {{ date('Y') }} {{ $company['name'] }}</div>
+            <div class="td slide-ftr-right">Slide {{ $slideNo++ }}</div>
         </div>
-
-        <div class="page-footer-right">
-            Halaman 2
-        </div>
-
     </div>
-
 </div>
+@endforeach
 
+{{-- ═══════════════════════════════════════════════════
+     SLIDE 5 — TIM KAMI (full, no keunggulan)
+     ═══════════════════════════════════════════════════ --}}
 
-{{-- ================================================
-     HALAMAN 3: VISI & MISI
-     ================================================ --}}
-<div class="page">
+@foreach(array_chunk($team, 6) as $slideIndex => $teamChunk)
+<div class="slide">
+    <div class="slide-lbar"></div>
 
-    <div class="page-header">
+    <div class="slide-hdr tbl">
+        <div class="tr">
+            <div class="td slide-hdr-logo">{{ $company['name'] }}</div>
+            <div class="td slide-hdr-right">Company Profile {{ date('Y') }} &nbsp;|&nbsp; Tim Kami</div>
+        </div>
+    </div>
 
-        <div class="page-header-logo">
-            {{ $company['name'] }}
+    <div class="slide-body">
+        <div class="sec-eyebrow">Kenali Lebih Dekat</div>
+        <div class="sec-title">Tim Kami</div>
+        <div class="sec-divider"></div>
+        <div class="sec-body" style="margin-bottom:22px; text-align: center;">
+            Dikelola oleh para profesional berpengalaman yang berdedikasi untuk menghadirkan event terbaik bagi setiap klien kami.
         </div>
 
-        <div class="page-header-right">
-            Company Profile {{ date('Y') }}
-            &nbsp;|&nbsp;
-            Visi &amp; Misi
+        <div class="team-grid-wrap tbl">
+            @foreach(array_chunk($teamChunk, 3) as $row)
+            <div class="tr">
+                    @foreach($row as $index => $member)
+                    @if($index > 0)<div class="td team-gap"></div>@endif
+                    <div class="td team-card">
+                        <div class="team-avatar-wrap">
+                            @if(!empty($member['img']))
+                                <img src="{{ $member['img'] }}" alt="{{ $member['name'] }}">
+                            @endif
+                        </div>
+                        <div class="team-name">{{ $member['name'] }}</div>
+                        <div class="team-role">{{ $member['role'] }}</div>
+                    </div>
+                @endforeach
+            </div>
+            @endforeach
         </div>
-
     </div>
 
-    {{-- Judul --}}
-    <div class="section-label">
-        Arah Perusahaan
+    <div class="slide-ftr tbl">
+        <div class="tr">
+            <div class="td slide-ftr-left">&copy; {{ date('Y') }} {{ $company['name'] }}</div>
+            <div class="td slide-ftr-right">Slide {{ $slideNo++ }}</div>
+        </div>
+    </div>
+</div>
+@endforeach
+
+{{-- ═══════════════════════════════════════════════════
+     SLIDE 6 — KEUNGGULAN KAMI (pisah dari Tim)
+     ═══════════════════════════════════════════════════ --}}
+@foreach(array_chunk($whyUs, 6) as $slideIndex => $whyUsChunk)
+<div class="slide">
+    <div class="slide-lbar"></div>
+
+    <div class="slide-hdr tbl">
+        <div class="tr">
+            <div class="td slide-hdr-logo">{{ $company['name'] }}</div>
+            <div class="td slide-hdr-right">Company Profile {{ date('Y') }} &nbsp;|&nbsp; Keunggulan</div>
+        </div>
     </div>
 
-    <div class="section-title">
-        Visi &amp; Misi Kami
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="vm-table">
+    <div class="slide-body">
+        <div class="sec-eyebrow">Mengapa Memilih Kami</div>
+        <div class="sec-title">Keunggulan Kami</div>
+        <div class="sec-divider"></div>
+        <div class="sec-body" style="margin-bottom:22px;">
+            Kami hadir dengan komitmen penuh untuk memberikan pengalaman event yang tak terlupakan bagi setiap klien.
+        </div>
 
         
-        {{-- VISI --}}
-        <div class="vm-cell visi-cell">
-
-            <div class="section-title">
-                Visi Kami
-            </div>
-
-            <br>
-
-            <div class="section-body">
-                {{ $visi }}
-            </div>
-
-        </div>
-
-        {{-- MISI --}}
-        <div class="vm-cell misi-cell">
-
-            <div class="section-label">
-                Misi Kami
-            </div>
-
-            <br>
-
-            @foreach($misi as $item)
-
-            <div class="misi-item">
-
-                <div class="misi-item-title">
-                    <span class="misi-item-dot"></span>
-                    {{ $item['title'] }}
-                </div>
-
-                <div class="misi-item-desc">
-                    {{ $item['desc'] }}
-                </div>
-
-            </div>
-
-            @endforeach
-
-        </div>
-
-    </div>
-
-    {{-- Footer --}}
-    <div class="page-footer">
-
-        <div class="page-footer-left">
-            © {{ date('Y') }}
-            {{ $company['name'] }}
-            — Semua hak dilindungi undang-undang
-        </div>
-
-        <div class="page-footer-right">
-            Halaman 3
-        </div>
-
-    </div>
-
-</div>
-
-
-{{-- ================================================
-     HALAMAN 4: LAYANAN
-     ================================================ --}}
-<div class="page">
-
-    <div class="page-header">
-        <div class="page-header-logo">
-            {{ $company['name'] }}
-        </div>
-
-        <div class="page-header-right">
-            Company Profile {{ date('Y') }}
-            &nbsp;|&nbsp;
-            Layanan
-        </div>
-    </div>
-
-    <div class="section-label">
-        Keahlian Kami
-    </div>
-
-    <div class="section-title">
-        Layanan Kami
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="section-body">
-        Kami menawarkan spektrum penuh layanan manajemen acara yang disesuaikan untuk memenuhi kebutuhan unik setiap klien.
-    </div>
-
-    <div class="services-grid">
-
-        @foreach($services as $svc)
-
-        <div class="service-box">
-
-            <div class="service-box-dot">
-                {{ $svc['icon'] ?? '★' }}
-            </div>
-
-            <div class="service-box-title">
-                {{ $svc['title'] }}
-            </div>
-
-            <div class="service-box-desc">
-                {{ $svc['desc'] }}
-            </div>
-
-        </div>
-
-        @endforeach
-
-    </div>
-
-    <div class="page-footer">
-
-        <div class="page-footer-left">
-            © {{ date('Y') }}
-            {{ $company['name'] }}
-            — Semua hak dilindungi undang-undang
-        </div>
-
-        <div class="page-footer-right">
-            Halaman 4
-        </div>
-
-    </div>
-
-</div>
-
-
-{{-- ================================================
-     HALAMAN 5: TIM + KEUNGGULAN
-     ================================================ --}}
-<div class="page">
-
-    <div class="page-header">
-
-        <div class="page-header-logo">
-            {{ $company['name'] }}
-        </div>
-
-        <div class="page-header-right">
-            Company Profile {{ date('Y') }}
-            &nbsp;|&nbsp;
-            Tim &amp; Keunggulan
-        </div>
-
-    </div>
-
-    {{-- TIM --}}
-    <div class="section-label">
-        Kenali Lebih Dekat
-    </div>
-
-    <div class="section-title">
-        Tim Kami
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="team-table">
-
-        @foreach($team as $member)
-
-        <div class="team-cell">
-
-            <div class="team-avatar">
-
-                @if(!empty($member['img']))
-                    <img
-                        src="{{ $member['img'] }}"
-                        alt="{{ $member['name'] }}">
-                @endif
-
-            </div>
-
-            <div class="team-name">
-                {{ $member['name'] }}
-            </div>
-
-            <div class="team-role">
-                {{ $member['role'] }}
-            </div>
-
-        </div>
-
-        @endforeach
-
-    </div>
-
-    <br><br>
-
-    {{-- WHY US --}}
-    <div class="section-label">
-        Mengapa Memilih Kami
-    </div>
-
-    <div class="section-title">
-        Keunggulan Kami
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="why-table">
-
-        @foreach($whyUs as $item)
-
-        <div class="why-box">
-
-            <div class="why-title">
-                {{ $item['title'] }}
-            </div>
-
-            <div class="why-desc">
-                {{ $item['desc'] }}
-            </div>
-
-        </div>
-
-        @endforeach
-
-    </div>
-
-    <div class="page-footer">
-
-        <div class="page-footer-left">
-            © {{ date('Y') }}
-            {{ $company['name'] }}
-            — Semua hak dilindungi undang-undang
-        </div>
-
-        <div class="page-footer-right">
-            Halaman 5
-        </div>
-
-    </div>
-
-</div>
-
-{{-- ================================================
-     HALAMAN 6: PORTOFOLIO
-     ================================================ --}}
-<div class="page">
-
-    <div class="page-header">
-        <div class="page-header-logo">
-            {{ $company['name'] }}
-        </div>
-
-        <div class="page-header-right">
-            Company Profile {{ date('Y') }}
-            &nbsp;|&nbsp;
-            Portofolio
-        </div>
-    </div>
-
-    <div class="section-label">
-        Karya Terbaik Kami
-    </div>
-
-    <div class="section-title">
-        Portofolio Proyek
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="portfolio-grid">
-
-        @php
-            $rows = array_chunk($portfolio, 3);
-        @endphp
-
-        @foreach($rows as $row)
-
-        <div class="portfolio-row">
-
-            @foreach($row as $item)
-
-            <div class="portfolio-card">
-
-                <div class="portfolio-box">
-
-                    <img
-                        src="{{ $item['img'] }}"
-                        class="portfolio-img">
-
-                    <div class="portfolio-info">
-
-                        <div class="portfolio-category">
-                            {{ $item['cat'] }}
-                        </div>
-
-                        <div class="portfolio-name">
-                            {{ $item['title'] }}
-                        </div>
-
+        <div class="why-grid-wrap tbl">
+            @foreach(array_chunk($whyUsChunk, 3) as $row)
+            <div class="tr">
+                @foreach($row as $index => $item)
+                    @if($index > 0)<div class="td why-gap"></div>@endif
+                    <div class="td why-card">
+                        <div class="why-num">0{{ $index + 1 }}</div>
+                        <div class="why-title">{{ $item['title'] }}</div>
+                        <div class="why-desc">{{ $item['desc'] }}</div>
                     </div>
-
-                </div>
-
+                @endforeach
             </div>
-
+            <div style="height:30px;"></div>
             @endforeach
-
-        </div>
-
-        @endforeach
-
-    </div>
-
-    <div class="page-footer">
-        <div class="page-footer-left">
-            © {{ date('Y') }} {{ $company['name'] }}
-        </div>
-
-        <div class="page-footer-right">
-            Halaman 6
         </div>
     </div>
 
+    <div class="slide-ftr tbl">
+        <div class="tr">
+            <div class="td slide-ftr-left">&copy; {{ date('Y') }} {{ $company['name'] }}</div>
+            <div class="td slide-ftr-right">Slide {{ $slideNo++ }}</div>
+        </div>
+    </div>
 </div>
+@endforeach
 
-{{-- ================================================
-     HALAMAN 7: KLIEN
-     ================================================ --}}
-<div class="page">
+{{-- ═══════════════════════════════════════════════════
+     SLIDE 7 — PORTOFOLIO PROYEK (3+3 grid, foto besar)
+     ═══════════════════════════════════════════════════ --}}
+@foreach(array_chunk($portfolio, 6) as $slideIndex => $portfolioChunk)
+<div class="slide">
+    <div class="slide-lbar"></div>
 
-    <div class="page-header">
+    <div class="slide-hdr tbl">
+        <div class="tr">
+            <div class="td slide-hdr-logo">{{ $company['name'] }}</div>
+            <div class="td slide-hdr-right">Company Profile {{ date('Y') }} &nbsp;|&nbsp; Portofolio</div>
+        </div>
+    </div>
 
-        <div class="page-header-logo">
-            {{ $company['name'] }}
+    <div class="slide-body" style="padding-top:20px; padding-bottom:10px;">
+        <div class="sec-eyebrow">Karya Terbaik Kami</div>
+        <div class="sec-title">Portofolio Proyek</div>
+        <div class="sec-divider"></div>
+
+        {{-- ROW 1: 3 cards --}}
+        <div class="port-tbl">
+            @foreach(array_chunk($portfolioChunk,3) as $row)
+            <div class="tr">
+                @foreach($row as $index => $item)
+                    <div class="td port-card">
+                        <div class="port-card-inner">
+                            <div class="port-img-wrap">
+                                <img src="{{ $item['img'] }}" alt="portfolio">
+                            </div>
+                            <div class="port-info">
+                                <div class="port-cat">{{ $item['cat'] }}</div>
+                                <div class="port-name">{{ $item['title'] }}</div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            @endforeach
         </div>
 
-        <div class="page-header-right">
-            Company Profile {{ date('Y') }}
-            &nbsp;|&nbsp;
-            Klien Kami
+    </div>
+
+    <div class="slide-ftr tbl">
+        <div class="tr">
+            <div class="td slide-ftr-left">&copy; {{ date('Y') }} {{ $company['name'] }}</div>
+            <div class="td slide-ftr-right">Slide {{ $slideNo++ }}</div>
+        </div>
+    </div>
+</div>
+@endforeach
+
+{{-- ═══════════════════════════════════════════════════
+     SLIDE 8 — KLIEN KAMI
+═══════════════════════════════════════════════════ --}}
+
+@foreach(array_chunk($clients, 12) as $slideIndex => $clientChunk)
+<div class="slide">
+    <div class="slide-lbar"></div>
+
+    <div class="slide-hdr tbl">
+        <div class="tr">
+            <div class="td slide-hdr-logo">{{ $company['name'] }}</div>
+            <div class="td slide-hdr-right">Company Profile {{ date('Y') }} &nbsp;|&nbsp; Klien Kami</div>
+        </div>
+    </div>
+
+    <div class="slide-body">
+        <div class="sec-eyebrow">Dipercaya Oleh</div>
+        <div class="sec-title">Klien Kami</div>
+        <div class="sec-divider"></div>
+        <div class="sec-body" style="margin-bottom:28px;">
+            Berbagai perusahaan, organisasi, dan instansi telah mempercayakan kebutuhan event mereka kepada kami.
         </div>
 
-    </div>
+        @foreach(array_chunk($clientChunk, 4) as $row)
+        <div class="tbl">
+            <div class="tr">
 
-    <div class="section-label">
-        Dipercaya Oleh
-    </div>
+                @foreach($row as $i => $client)
 
-    <div class="section-title">
-        Klien Kami
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="section-body">
-        Berbagai perusahaan, organisasi, dan instansi telah mempercayakan kebutuhan event mereka kepada kami.
-    </div>
-
-    <div class="clients-grid">
-
-        @php
-            $clientRows = array_chunk($clients, 4);
-        @endphp
-
-        @foreach($clientRows as $row)
-
-        <div class="client-row">
-
-            @foreach($row as $client)
-
-            <div class="client-cell">
-
-                <div class="client-box">
-
-                    @if(isset($client['logo']) && file_exists($client['logo']))
-                        <img
-                            src="{{ $client['logo'] }}"
-                            class="client-logo">
+                    @if($i > 0)
+                        <div class="td client-gap"></div>
                     @endif
 
-                    <div class="client-name">
-                        {{ $client['name'] }}
+                    <div class="td client-card">
+
+                        <div class="client-logo-wrap">
+                            @if(isset($client['logo']) && file_exists($client['logo']))
+                                <img src="{{ $client['logo'] }}" alt="{{ $client['name'] }}">
+                            @else
+                                <div style="height:55px;line-height:55px;font-size:22px;color:#2dd4bf;font-weight:bold;">
+                                    {{ mb_substr($client['name'], 0, 1) }}
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="client-name">
+                            {{ $client['name'] }}
+                        </div>
+
                     </div>
 
-                </div>
+                @endforeach
 
             </div>
-
-            @endforeach
-
         </div>
+
+        <div style="height:14px;"></div>
 
         @endforeach
 
     </div>
 
-    <div class="page-footer">
+    <div class="slide-ftr tbl">
+        <div class="tr">
+            <div class="td slide-ftr-left">
+                &copy; {{ date('Y') }} {{ $company['name'] }}
+            </div>
 
-        <div class="page-footer-left">
-            © {{ date('Y') }} {{ $company['name'] }}
+            <div class="td slide-ftr-right">
+                Slide {{ $slideNo++ }}
+            </div>
         </div>
-
-        <div class="page-footer-right">
-            Halaman 7
-        </div>
-
     </div>
+</div>
+@endforeach
 
+{{-- ═══════════════════════════════════════════════════
+     SLIDE 9 — KONTAK (split layout)
+     ═══════════════════════════════════════════════════ --}}
+<div class="slide">
+    <div class="tbl">
+        <div class="tr">
+
+            {{-- KIRI: dark panel --}}
+            <div class="td contact-slide-left">
+                <div class="sec-eyebrow">Hubungi Kami</div>
+                <div class="sec-title" style="color:#fff; margin-top:8px;">Mari Diskusikan<br>Event Anda</div>
+                <div class="sec-divider" style="background:#2dd4bf; margin-top:12px; margin-bottom:28px;"></div>
+
+                <div class="cinfo-item">
+                    <div class="cinfo-label">Alamat Kantor</div>
+                    <div class="cinfo-val">{{ $company['address'] }}</div>
+                </div>
+                <div class="cinfo-item">
+                    <div class="cinfo-label">Telepon</div>
+                    <div class="cinfo-val">{{ $company['phone'] }}</div>
+                </div>
+                <div class="cinfo-item">
+                    <div class="cinfo-label">Email</div>
+                    <div class="cinfo-val">{{ $company['email'] }}</div>
+                </div>
+                <div class="cinfo-item">
+                    <div class="cinfo-label">Website</div>
+                    <div class="cinfo-val">{{ $company['website'] }}</div>
+                </div>
+
+                {{-- Decorative teal bar at bottom --}}
+                <div style="position:absolute; bottom:0; left:0; right:0; height:5px; background:#2dd4bf;"></div>
+            </div>
+
+            {{-- KANAN: info boxes --}}
+            <div class="td contact-slide-right">
+                <div class="sec-eyebrow" style="margin-bottom:20px; margin-top:10px;">Informasi Dokumen</div>
+
+                <div class="cright-box">
+                    <div class="cright-label">Dokumen Dibuat Pada</div>
+                    <div class="cright-val">{{ $generatedAt }}</div>
+                </div>
+
+                <div class="cright-box">
+                    <div class="cright-label">Versi Dokumen</div>
+                    <div class="cright-val">v{{ date('Y.m') }}</div>
+                    <div class="cright-note">
+                        Dokumen ini dibuat secara otomatis dari sistem {{ $company['name'] }} dan selalu menampilkan informasi terbaru yang tersedia pada database perusahaan.
+                    </div>
+                </div>
+
+                <div class="cright-box" style="background:#07101f; border-color:#07101f;">
+                    <div class="cright-label">Siap Berkolaborasi?</div>
+                    <div style="font-size:12px; color:#8a9bb5; margin-top:6px; line-height:1.7;">
+                        Tim kami siap membantu mewujudkan event impian Anda. Hubungi kami sekarang dan dapatkan konsultasi gratis.
+                    </div>
+                    <div style="margin-top:12px; font-size:13px; font-weight:bold; color:#2dd4bf;">
+                        {{ $company['email'] }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
 
-{{-- ================================================
-     HALAMAN 8: KONTAK
-     ================================================ --}}
-<div class="page">
+{{-- ═══════════════════════════════════════════════════
+     SLIDE 10 — BACK COVER
+     ═══════════════════════════════════════════════════ --}}
+<div class="slide back-cover">
+    <div class="back-cover-strip"></div>
+    <div class="back-cover-strip-bottom"></div>
+    <div class="back-cover-deco"></div>
+    <div class="back-cover-deco2"></div>
 
-    <div class="page-header">
-
-        <div class="page-header-logo">
-            {{ $company['name'] }}
+    <div class="back-cover-center">
+        <div class="back-cover-center-inner">
+            <div class="back-logo">{{ $company['name'] }}</div>
+            <div class="back-tag">Event Organizer Profesional</div>
+            <div class="back-line"></div>
+            <div class="back-msg">
+                Terima kasih telah meluangkan waktu untuk membaca Company Profile {{ $company['name'] }}.<br>
+                Kami siap menjadi mitra terpercaya dalam mewujudkan event yang profesional, kreatif, dan berkesan.
+            </div>
+            <div class="back-contact-row">
+                {{ $company['email'] }} &nbsp;&bull;&nbsp; {{ $company['phone'] }}
+            </div>
+            <div class="back-web">{{ $company['website'] }}</div>
         </div>
-
-        <div class="page-header-right">
-            Company Profile {{ date('Y') }}
-            &nbsp;|&nbsp;
-            Kontak
-        </div>
-
     </div>
-
-    <div class="section-label">
-        Hubungi Kami
-    </div>
-
-    <div class="section-title">
-        Mari Diskusikan Event Anda
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="contact-table">
-
-        {{-- Kiri --}}
-        <div class="contact-left">
-
-            <div class="contact-item">
-                <div class="contact-item-label">
-                    Alamat Kantor
-                </div>
-
-                <div class="contact-item-value">
-                    {{ $company['address'] }}
-                </div>
-            </div>
-
-            <div class="contact-item">
-                <div class="contact-item-label">
-                    Telepon
-                </div>
-
-                <div class="contact-item-value">
-                    {{ $company['phone'] }}
-                </div>
-            </div>
-
-            <div class="contact-item">
-                <div class="contact-item-label">
-                    Email
-                </div>
-
-                <div class="contact-item-value">
-                    {{ $company['email'] }}
-                </div>
-            </div>
-
-            <div class="contact-item">
-                <div class="contact-item-label">
-                    Website
-                </div>
-
-                <div class="contact-item-value">
-                    {{ $company['website'] }}
-                </div>
-            </div>
-
-            <div class="contact-item">
-                <div class="contact-item-label">
-                    Jam Operasional
-                </div>
-
-                <div class="contact-item-value">
-                    Senin – Jumat, 08.00 – 17.00 WIB
-                </div>
-            </div>
-
-        </div>
-
-        {{-- Kanan --}}
-        <div class="contact-right">
-
-            <div class="section-label">
-                Dokumen Dibuat Pada
-            </div>
-
-            <br>
-
-            <div class="stat-number" style="font-size:18px;">
-                {{ $generatedAt }}
-            </div>
-
-            <br><br>
-
-            <div class="section-label">
-                Versi Dokumen
-            </div>
-
-            <br>
-
-            <div class="contact-item-value">
-                v{{ date('Y.m') }}
-            </div>
-
-            <br>
-
-            <div style="font-size:9px; color:#8a9bb5; line-height:1.6;">
-                Dokumen ini dibuat secara otomatis dari sistem Alpha Organizer
-                dan selalu menampilkan informasi terbaru yang tersedia pada
-                database perusahaan.
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="page-footer">
-
-        <div class="page-footer-left">
-            © {{ date('Y') }}
-            {{ $company['name'] }}
-            — Semua hak dilindungi undang-undang
-        </div>
-
-        <div class="page-footer-right">
-            Halaman 6
-        </div>
-
-    </div>
-
-</div>
-
-{{-- ================================================
-     BACK COVER
-     ================================================ --}}
-<div class="back-cover">
-
-    <div class="back-cover-logo">
-        {{ $company['name'] }}
-    </div>
-
-    <div class="back-cover-line"></div>
-
-    <div class="back-cover-text" style="color:#8a9bb5;">
-
-        Terima kasih telah meluangkan waktu untuk membaca
-        Company Profile {{ $company['name'] }}.
-
-        <br><br>
-
-        Kami siap menjadi mitra terpercaya dalam mewujudkan
-        event yang profesional, kreatif, dan berkesan.
-
-    </div>
-
-    <br><br>
-
-    <div class="back-cover-text"
-         style="color:#2dd4bf; font-weight:bold;">
-
-        {{ $company['email'] }}
-        &nbsp;|&nbsp;
-        {{ $company['phone'] }}
-
-    </div>
-
-    <br>
-
-    <div style="
-        font-size:10px;
-        color:#8a9bb5;
-        margin-top:10px;
-    ">
-        {{ $company['website'] }}
-    </div>
-
 </div>
 
 </body>
