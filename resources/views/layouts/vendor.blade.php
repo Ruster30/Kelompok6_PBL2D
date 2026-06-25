@@ -790,6 +790,11 @@
         <a href="{{ route('vendor.notifikasi') }}" class="nav-item-custom {{ request()->routeIs('vendor.notifikasi') ? 'active' : '' }}">
             <i class="bi bi-bell"></i>
             Notifikasi
+            @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                <span class="notif-count ms-auto" style="position:static;transform:none;font-size:10px;padding:1px 5px;">
+                    {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
+                </span>
+            @endif
         </a>
         <a href="{{ route('vendor.pengaturan') }}" class="nav-item-custom {{ request()->routeIs('vendor.pengaturan') ? 'active' : '' }}">
             <i class="bi bi-gear"></i>
@@ -818,9 +823,9 @@
         <div class="topbar-right">
             <a href="{{ route('vendor.notifikasi') }}" class="notif-btn">
                 <i class="bi bi-bell-fill"></i>
-                @if(isset($unreadCount) && $unreadCount > 0)
+                @if(isset($unreadNotifications) && $unreadNotifications > 0)
                     <span class="notif-count">
-                        {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                        {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
                     </span>
                 @endif
             </a>

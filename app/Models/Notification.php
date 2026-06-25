@@ -45,6 +45,7 @@ class Notification extends Model
             'event'      => 'fa-calendar',
             'sukses'     => 'fa-check-circle',
             'peringatan' => 'fa-exclamation-triangle',
+            'info'       => 'fa-info-circle',
             default      => 'fa-bell',
         };
     }
@@ -58,6 +59,7 @@ class Notification extends Model
             'invoice'    => 'text-yellow-500',
             'kontrak'    => 'text-purple-500',
             'event'      => 'text-teal-500',
+            'info'       => 'text-blue-400',
             default      => 'text-gray-500',
         };
     }
