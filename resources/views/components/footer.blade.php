@@ -7,7 +7,7 @@
             <h2 class="fw-bold mb-3">Siap Membuat Sesuatu yang Luar Biasa?</h2>
             <p class="text-light-muted mb-4">Mari diskusikan event Anda bersama kami. Tim ahli kami siap menghadirkan pengalaman yang tak terlupakan untuk setiap momen Anda.</p>
             <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <a href="#" class="btn btn-accent px-4 py-2 fw-semibold">Pesan Konsultasi</a>
+                <a href="{{ route('register') }}" class="btn btn-accent px-4 py-2 fw-semibold">Ajukan Event</a>
                 <a href="#" class="btn btn-outline-light px-4 py-2 fw-semibold">Lihat Katalog</a>
             </div>
         </div>

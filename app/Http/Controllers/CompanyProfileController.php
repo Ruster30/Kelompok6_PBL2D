@@ -115,7 +115,7 @@ $services2 = [];
             'services', 'services2', 'whyUs', 'team', 'portfolio', 'clients',
             'logoBase64', 'generatedAt'
         ))
-        ->setPaper('a4', 'portrait')
+        ->setPaper([0,0,1280,720], 'landscape')
         ->setOptions([
             'dpi'                       => 150,
             'defaultFont'               => 'sans-serif',
