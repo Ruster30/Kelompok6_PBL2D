@@ -158,30 +158,47 @@
             margin: 0;
         }
 
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
+        .topbar-right{
+            display:flex;
+            align-items:center;
+            gap:16px;
         }
 
         .notif-btn {
             position: relative;
-            background: none; border: none; padding: 6px;
-            color: #5a6a7e; cursor: pointer;
-            border-radius: 8px;
-            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 18px;
+            transition: all .2s ease;
         }
 
-        .notif-btn:hover { background: #f0f2f5; }
-        .notif-btn i { font-size: 20px; }
+        .notif-btn:hover {
+            color: #2dd4bf;
+        }
 
-        .notif-badge {
+        .notif-btn i {
+            font-size: 18px;
+        }
+
+        .notif-count {
             position: absolute;
-            top: 4px; right: 4px;
-            width: 8px; height: 8px;
-            background: #e74c3c;
-            border-radius: 50%;
-            border: 1.5px solid #fff;
+            top: -6px;
+            right: -8px;
+            min-width: 18px;
+            height: 18px;
+            background: #ef4444;
+            color: #fff;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 0 5px;
+            z-index: 10;
         }
 
         .user-info {
@@ -800,9 +817,11 @@
         <h1 class="topbar-title">@yield('page-title')</h1>
         <div class="topbar-right">
             <a href="{{ route('vendor.notifikasi') }}" class="notif-btn">
-                <i class="bi bi-bell"></i>
-                @if(isset($unreadNotif) && $unreadNotif > 0)
-                    <span class="notif-badge"></span>
+                <i class="bi bi-bell-fill"></i>
+                @if(isset($unreadCount) && $unreadCount > 0)
+                    <span class="notif-count">
+                        {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                    </span>
                 @endif
             </a>
             <div class="user-info">

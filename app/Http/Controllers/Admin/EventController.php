@@ -35,13 +35,13 @@ class EventController extends Controller
     {
         $data = $request->validate([
             'nama_event'       => 'required|string|max:255',
-            'client_id'        => 'nullable|exists:users,id',
+            'client_id'        => 'required|exists:users,id',
             'jenis_event'      => 'nullable|string|max:100',
             'tanggal_event'    => 'required|date',
             'lokasi_event'     => 'nullable|string|max:255',
             'jumlah_tamu'      => 'nullable|integer|min:0',
             'detail_kebutuhan' => 'nullable|string',
-            'status_event'     => 'required|in:pending,mendatang,aktif,selesai,batal',
+            'status_event'     => 'required|in:menunggu,diproses,berjalan,selesai,dibatalkan',
         ]);
 
         Event::create($data);
@@ -66,13 +66,13 @@ class EventController extends Controller
     {
         $data = $request->validate([
             'nama_event'       => 'required|string|max:255',
-            'client_id'        => 'nullable|exists:users,id',
+            'client_id'        => 'required|exists:users,id',
             'jenis_event'      => 'nullable|string|max:100',
             'tanggal_event'    => 'required|date',
             'lokasi_event'     => 'nullable|string|max:255',
             'jumlah_tamu'      => 'nullable|integer|min:0',
             'detail_kebutuhan' => 'nullable|string',
-            'status_event'     => 'required|in:pending,mendatang,aktif,selesai,batal',
+            'status_event'     => 'required|in:menunggu,diproses,berjalan,selesai,dibatalkan',
         ]);
 
         $event->update($data);

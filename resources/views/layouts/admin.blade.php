@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f6fa; display: flex; min-height: 100vh; }
@@ -47,14 +48,20 @@
         .topbar-title { font-size: 18px; font-weight: 600; color: #1e293b; }
         .topbar-right { display: flex; align-items: center; gap: 16px; }
         .topbar-notif {
-            position: relative; width: 36px; height: 36px; display: flex; align-items: center;
-            justify-content: center; cursor: pointer; border-radius: 8px; transition: background 0.2s;
+            position: relative; display: flex; align-items: center; justify-content: center;
+            color: #94a3b8; text-decoration: none; transition: color .2s ease;
         }
-        .topbar-notif:hover { background: #f1f5f9; }
-        .notif-badge {
-            position: absolute; top: 4px; right: 4px; width: 8px; height: 8px;
-            background: #f43f5e; border-radius: 50%; border: 2px solid white;
+
+        .topbar-notif:hover {
+            color: #2dd4bf;
         }
+        .notif-count {
+            position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px;
+            background: #ef4444; color: white; border-radius: 50%; border: 2px solid white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700; z-index: 10;
+        }
+        .topbar-notif i { font-size: 18px; }
         .topbar-user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .topbar-user span { font-size: 14px; font-weight: 500; color: #334155; }
         .avatar {
@@ -321,7 +328,7 @@
             <i class="fas fa-users-cog"></i> Tugas &amp; Tim
         </a>
         <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
-            <i class="fas fa-users"></i> Vendor &amp; Klien
+            <i class="fas fa-users"></i> Vendor
         </a>
         <a href="{{ route('admin.cms.index') }}" class="nav-item {{ request()->routeIs('admin.cms.*') ? 'active' : '' }}">
             <i class="fas fa-palette"></i> Landing Page CMS
@@ -358,10 +365,15 @@
     <header class="topbar">
         <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
         <div class="topbar-right">
-            <a href="{{ route('admin.notifications.index') }}" class="topbar-notif">
-                <i class="fas fa-bell" style="color:#64748b; font-size:17px;"></i>
-                <span class="notif-badge"></span>
-            </a>
+            <a href="{{ route('admin.notifications.index') }}"
+                class="topbar-notif">
+                    <i class="bi bi-bell-fill"></i>
+                    @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                        <span class="notif-count">
+                            {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
+                        </span>
+                    @endif
+                </a>
             <div class="topbar-user">
                 <span>{{ auth()->user()->name ?? 'admin' }}</span>
                 <div class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'AD', 0, 2)) }}</div>
@@ -378,6 +390,11 @@
         @if(session('error'))
             <div style="background:#fee2e2; color:#991b1b; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
                 <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+            </div>
+        @endif
+        @if($errors->any())
+            <div style="background:#fee2e2; color:#991b1b; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
+                <i class="fas fa-exclamation-circle"></i> {{ $errors->first() }}
             </div>
         @endif
         @yield('content')

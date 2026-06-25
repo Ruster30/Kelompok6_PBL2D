@@ -33,7 +33,7 @@
                 <button class="action-btn" title="Edit" onclick='openClientModal({{ json_encode($client) }})'>
                     <i class="fas fa-edit" style="font-size:12px;"></i>
                 </button>
-                <form action="{{ route('admin.cms.clients.destroy', $client->id) }}" method="POST" style="display:inline;"
+                <form action="{{ route('admin.cms.destroyClient', $client->id) }}" method="POST" style="display:inline;"
                       onsubmit="return confirm('Hapus logo ini?')">
                     @csrf @method('DELETE')
                     <button type="submit" class="action-btn danger" title="Hapus">

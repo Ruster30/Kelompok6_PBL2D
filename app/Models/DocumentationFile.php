@@ -12,7 +12,8 @@ class DocumentationFile extends Model
     protected $fillable = [
         'documentation_id',
         'file_path',
-        'jenis',
+        'status',
+        'tipe_file',
     ];
 
     public function documentation()

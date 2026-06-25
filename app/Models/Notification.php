@@ -43,6 +43,8 @@ class Notification extends Model
             'invoice'    => 'fa-file-invoice',
             'kontrak'    => 'fa-file-contract',
             'event'      => 'fa-calendar',
+            'sukses'     => 'fa-check-circle',
+            'peringatan' => 'fa-exclamation-triangle',
             default      => 'fa-bell',
         };
     }

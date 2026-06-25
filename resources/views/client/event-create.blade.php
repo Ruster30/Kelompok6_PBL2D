@@ -74,6 +74,21 @@
             </div>
 
             <div class="form-group">
+                <label class="form-label">Rentang Anggaran</label>
+                <select name="rentang_anggaran" class="form-control">
+                    <option value="">Pilih rentang anggaran</option>
+                    @foreach(['Di bawah Rp 100 Juta', 'Rp 100 Juta - Rp 250 Juta', 'Rp 250 Juta - Rp 500 Juta', 'Di atas Rp 500 Juta'] as $anggaran)
+                    <option value="{{ $anggaran }}" {{ old('rentang_anggaran') === $anggaran ? 'selected' : '' }}>
+                        {{ $anggaran }}
+                    </option>
+                    @endforeach
+                </select>
+                @error('rentang_anggaran')
+                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="form-group">
                 <label class="form-label">
                     Tanggal Event <span style="color:#dc2626;">*</span>
                 </label>
