@@ -1,0 +1,870 @@
+/* =============================================
+           DomPDF-compatible CSS — PPT Presentation Style
+           16:9 Landscape, tiap slide PENUH
+           ============================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: DejaVu Sans, sans-serif;
+    font-size: 12px;
+    color: #1a2540;
+    background: #fff;
+    line-height: 1.4;
+}
+
+@page {
+    size: 13.333in 7.5in;
+    margin: 0;
+}
+
+/* ─── SLIDE BASE ─── */
+.slide {
+    width: 13.333in;
+    height: 7.5in;
+    position: relative;
+    page-break-after: always;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.slide:last-child {
+    page-break-after: auto;
+}
+
+/* ─── TABLE HELPERS ─── */
+.tbl {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.tr {
+    display: table-row;
+}
+
+.td {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.td-m {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.td-b {
+    display: table-cell;
+    vertical-align: bottom;
+}
+
+/* ═══════════════════════════════════════════
+           SLIDE 1 — COVER (full bleed dark + visual)
+           ═══════════════════════════════════════════ */
+.cover {
+    background: #07101f;
+}
+
+/* Teal accent strip kiri */
+.cover-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 100%;
+    background: #2dd4bf;
+}
+
+/* Decorative circle besar kanan */
+.cover-circle {
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 580px;
+    height: 580px;
+    border-radius: 50%;
+    border: 60px solid rgba(45, 212, 191, .08);
+}
+
+.cover-circle2 {
+    position: absolute;
+    bottom: -80px;
+    right: 80px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    border: 40px solid rgba(45, 212, 191, .05);
+}
+
+/* Top bar */
+.cover-topbar {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    right: 0;
+    height: 6px;
+    background: #2dd4bf;
+}
+
+/* Content area */
+.cover-content {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    right: 0;
+    bottom: 0;
+}
+
+.cover-inner {
+    padding: 200px 80px 0 80px;
+}
+
+.cover-eyebrow {
+    font-size: 11px;
+    color: #2dd4bf;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    margin-top: 20px;
+}
+
+.cover-name {
+    font-size: 22px;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+}
+
+.cover-title-main {
+    font-size: 80px;
+    font-weight: bold;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -2px;
+}
+
+.cover-title-accent {
+    font-size: 80px;
+    font-weight: bold;
+    color: #2dd4bf;
+    line-height: 1;
+    margin-bottom: 30px;
+    letter-spacing: -2px;
+}
+
+.cover-tagline {
+    font-size: 15px;
+    color: #8a9bb5;
+    max-width: 540px;
+    line-height: 1.7;
+    margin-bottom: 50px;
+}
+
+/* Stats row on cover */
+.cover-stats-row {
+    border-top: 1px solid rgba(255, 255, 255, .1);
+    padding-top: 28px;
+}
+
+.cover-stat-item {
+    padding-right: 40px;
+}
+
+.cover-stat-val {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2dd4bf;
+}
+
+.cover-stat-lbl {
+    font-size: 9px;
+    color: #8a9bb5;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 3px;
+}
+
+/* Bottom bar cover */
+
+.cover-bottom-inner {
+    padding: 0 80px;
+    line-height: 50px;
+}
+
+.cover-bottom-left {
+    font-size: 12px;
+    color: #2dd4bf;
+    font-weight: bold;
+    float: left;
+}
+
+.cover-bottom-right {
+    font-size: 22px;
+    font-weight: bold;
+    color: #2dd4bf;
+    float: right;
+}
+
+/* ═══════════════════════════════════════════
+           SHARED INNER SLIDE LAYOUT
+           ═══════════════════════════════════════════ */
+/* Left accent bar on content slides */
+.slide-lbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg, #2dd4bf 0%, #0891b2 100%);
+}
+
+/* Header strip */
+.slide-hdr {
+    background: #f8fafc;
+    border-bottom: 2px solid #e4eaf3;
+    padding: 18px 60px 18px 66px;
+}
+
+.slide-hdr-logo {
+    font-size: 15px;
+    font-weight: bold;
+    color: #1a2540;
+}
+
+.slide-hdr-logo span {
+    color: #2dd4bf;
+}
+
+.slide-hdr-right {
+    text-align: right;
+    font-size: 10px;
+    color: #8a9bb5;
+    font-weight: 500;
+}
+
+/* Main body area */
+.slide-body {
+    padding: 30px 60px 20px 66px;
+}
+
+/* Footer strip */
+.slide-ftr {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 42px;
+    background: #07101f;
+    padding: 0 60px 20px 66px;
+}
+
+.slide-ftr-left {
+    font-size: 9px;
+    color: #8a9bb5;
+    line-height: 42px;
+}
+
+.slide-ftr-right {
+    text-align: right;
+    font-size: 10px;
+    color: #2dd4bf;
+    font-weight: bold;
+    line-height: 42px;
+}
+
+/* ─── Section typography ─── */
+.sec-eyebrow {
+    font-size: 25px;
+    font-weight: bold;
+    color: #2dd4bf;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 2.5px;
+    margin-bottom: 5px;
+}
+
+.sec-title {
+    font-size: 30px;
+    font-weight: bold;
+    color: #1a2540;
+    line-height: 1.15;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.sec-divider {
+    width: 150px;
+    height: 3px;
+    background: #2dd4bf;
+    border-radius: 2px;
+    margin: 12px auto 20px;
+}
+
+.sec-body {
+    font-size: 25px;
+    color: #4a5568;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+/* ═══════════════════════════════════════════
+           SLIDE 2 — TENTANG KAMI (2-column layout)
+           Left = text dark panel, Right = stats
+           ═══════════════════════════════════════════ */
+.about-left {
+    width: 56%;
+    padding-right: 40px;
+    vertical-align: top;
+}
+
+.about-right {
+    width: 44%;
+    padding-top: 180px;
+}
+
+/* Stats cards 2x2 grid */
+.stat-card {
+    background: #07101f;
+    border-radius: 10px;
+    padding: 22px 20px;
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.stat-card-val {
+    font-size: 38px;
+    font-weight: bold;
+    color: #2dd4bf;
+    line-height: 1;
+}
+
+.stat-card-lbl {
+    font-size: 9px;
+    color: #8a9bb5;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 6px;
+}
+
+.stat-grid-space {
+    width: 12px;
+}
+
+.stat-grid-row-space {
+    height: 12px;
+}
+
+/* ═══════════════════════════════════════════
+           SLIDE 3 — VISI & MISI
+           ═══════════════════════════════════════════ */
+.visi-panel {
+    background: #07101f;
+    border-radius: 10px;
+    padding: 35px 30px;
+    width: 42%;
+    vertical-align: middle;
+}
+
+.visi-panel .sec-title {
+    color: #fff;
+    font-size: 22px;
+}
+
+.visi-quote {
+    font-size: 25px;
+    color: rgba(255, 255, 255, .85);
+    font-style: italic;
+    line-height: 1.8;
+    margin-top: 30px;
+    border-left: 3px solid #2dd4bf;
+    padding-left: 15px;
+}
+
+.vm-gap {
+    width: 30px;
+}
+
+.misi-panel {
+    width: 55%;
+    vertical-align: middle;
+}
+
+.misi-item {
+    border-left: 3px solid #2dd4bf;
+    padding: 10px 15px;
+    margin-bottom: 14px;
+    background: #f8fafc;
+    border-radius: 0 6px 6px 0;
+}
+
+.misi-item:last-child {
+    margin-bottom: 20px;
+}
+
+.misi-item-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1a2540;
+    margin-bottom: 3px;
+}
+
+.misi-item-desc {
+    font-size: 15px;
+    color: #6b7a99;
+    line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════
+           SLIDE 4 — LAYANAN
+           Full-fill card grid
+           ═══════════════════════════════════════════ */
+.svc-tbl {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-spacing: 0;
+}
+
+.svc-card-wrap {
+    display: table-cell;
+    vertical-align: top;
+    padding-right: 12px;
+}
+
+.svc-card-wrap:last-child {
+    padding-right: 0;
+}
+
+.svc-card-inner {
+    background: #f8fafc;
+    border: 1px solid #e4eaf3;
+    border-radius: 10px;
+    padding: 22px 16px;
+    height: 240px;
+}
+
+.svc-card-badge {
+    width: 48px;
+    height: 48px;
+
+    background: #07101f;
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #2dd4bf;
+    font-size: 22px;
+    padding-left: 25px;
+    margin-bottom: 12px;
+}
+
+.svc-card-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1a2540;
+    margin-bottom: 8px;
+}
+
+.svc-card-desc {
+    font-size: 20px;
+    color: #6b7a99;
+    line-height: 1.65;
+}
+
+.svc-card-accent {
+    width: 80px;
+    height: 2px;
+    background: #2dd4bf;
+    margin-bottom: 10px;
+}
+
+.svc-gap {
+    width: 12px;
+}
+
+/* ═══════════════════════════════════════════
+           SLIDE 5 — TIM KAMI (full slide, no keunggulan)
+           ═══════════════════════════════════════════ */
+/* Background decoration */
+.slide-dark-bg {
+    background: #07101f;
+}
+
+.team-grid-wrap {
+    margin-top: 10px;
+    width: 60%;
+    margin: 0 auto;
+}
+
+.team-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 18px 10px;
+    text-align: center;
+    vertical-align: top;
+    width: 10px;
+}
+
+.team-gap {
+    width: 16px;
+}
+
+.team-avatar-wrap {
+    width: 140px;
+    height: 210px;
+    border-radius: 10%;
+    background: #e4eaf3;
+    margin: 0 auto 12px;
+    overflow: hidden;
+    border: 3px solid #2dd4bf;
+}
+
+.team-avatar-wrap img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.team-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1a2540;
+    margin-bottom: 4px;
+}
+
+.team-role {
+    font-size: 15px;
+    color: #2dd4bf;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ═══════════════════════════════════════════
+           SLIDE 6 — KEUNGGULAN (dipisah dari Tim)
+           ═══════════════════════════════════════════ */
+.why-card {
+    background: #fff;
+    border: 1px solid #e4eaf3;
+    border-radius: 8px;
+    padding: 20px;
+    vertical-align: top;
+    height: 120px;
+}
+
+.why-grid-wrap {
+    width: 75%;
+    margin: 10px auto;
+}
+
+
+.why-num {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2dd4bf;
+    margin-bottom: 8px;
+}
+
+.why-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1a2540;
+    margin-bottom: 8px;
+}
+
+.why-desc {
+    font-size: px;
+    color: #6b7a99;
+    line-height: 1.5;
+}
+
+.why-gap {
+    width: 12px;
+}
+
+/* ═══════════════════════════════════════════
+           SLIDE 7 — PORTOFOLIO
+           3+3 grid, gambar besar, no spacer cells
+           ═══════════════════════════════════════════ */
+.port-tbl {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-spacing: 20px;
+}
+
+.port-card {
+    display: table-cell;
+    vertical-align: top;
+    padding-right: 12px;
+    background: transparent;
+}
+
+.port-card:last-child {
+    padding-right: 0;
+}
+
+.port-card-inner {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e4eaf3;
+}
+
+.port-img-wrap {
+    width: 100%;
+    height: 270px;
+    overflow: hidden;
+    background: #0d1b2a;
+}
+
+.port-img-wrap img {
+    width: 100%;
+    height: 270px;
+    display: block;
+}
+
+.port-info {
+    padding: 10px 13px;
+    border-top: 2px solid #2dd4bf;
+}
+
+.port-cat {
+    font-size: 15px;
+    color: #2dd4bf;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 3px;
+}
+
+.port-name {
+    font-size: 25px;
+    font-weight: bold;
+    color: #1a2540;
+}
+
+/* ═══════════════════════════════════════════
+           SLIDE 8 — KLIEN
+           Logo cards, fill seluruh slide
+           ═══════════════════════════════════════════ */
+.client-card {
+    background: #fff;
+    border: 1px solid #e4eaf3;
+    border-radius: 10px;
+    padding: 28px 16px;
+    text-align: center;
+    vertical-align: middle;
+    height: 130px;
+}
+
+.client-gap {
+    width: 16px;
+}
+
+.client-logo-wrap {
+    height: 55px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.client-logo-wrap img {
+    max-height: 55px;
+    max-width: 100%;
+}
+
+.client-name {
+    font-size: 10px;
+    font-weight: bold;
+    color: #1a2540;
+}
+
+/* ═══════════════════════════════════════════
+           SLIDE 9 — KONTAK
+           Split: dark left panel + white right
+═══════════════════════════════════════════ */
+.contact-slide-left {
+    width: 46%;
+    background: #07101f;
+    height: auto;
+    vertical-align: top;
+    padding: 70px 50px;
+    position: relative;
+}
+
+.contact-slide-right {
+    width: 54%;
+    vertical-align: top;
+    padding: 60px 60px;
+}
+
+.contact-slide-left .sec-title {
+    color: #fff;
+    font-size: 26px;
+}
+
+.contact-slide-left .sec-eyebrow {
+    margin-top: 0;
+}
+
+.contact-slide-left .sec-divider {
+    background: #2dd4bf;
+}
+
+.cinfo-item {
+    margin-bottom: 24px;
+}
+
+.cinfo-label {
+    font-size: 9px;
+    font-weight: bold;
+    color: #2dd4bf;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 5px;
+}
+
+.cinfo-val {
+    font-size: 13px;
+    color: #fff;
+}
+
+/* right side info boxes */
+.cright-box {
+    background: #f8fafc;
+    border: 1px solid #e4eaf3;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 18px;
+}
+
+.cright-label {
+    font-size: 9px;
+    color: #2dd4bf;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.cright-val {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1a2540;
+}
+
+.cright-note {
+    font-size: 10px;
+    color: #8a9bb5;
+    line-height: 1.6;
+    margin-top: 8px;
+}
+
+/* ═══════════════════════════════════════════
+           SLIDE 10 — BACK COVER
+═══════════════════════════════════════════ */
+.back-cover {
+    background: #07101f;
+}
+
+.back-cover-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: #2dd4bf;
+}
+
+.back-cover-strip-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: #2dd4bf;
+}
+
+.back-cover-deco {
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    border: 60px solid rgba(45, 212, 191, .06);
+}
+
+.back-cover-deco2 {
+    position: absolute;
+    bottom: -80px;
+    right: -80px;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    border: 50px solid rgba(45, 212, 191, .06);
+}
+
+.back-cover-center {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+}
+
+.back-cover-center-inner {
+    padding-top: 140px;
+}
+
+.back-logo {
+    font-size: 44px;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.back-tag {
+    font-size: 11px;
+    color: #2dd4bf;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 40px;
+}
+
+.back-line {
+    width: 70px;
+    height: 3px;
+    background: #2dd4bf;
+    margin: 0 auto 40px;
+}
+
+.back-msg {
+    font-size: 14px;
+    color: #8a9bb5;
+    line-height: 1.8;
+    max-width: 600px;
+    margin: 0 auto 50px;
+}
+
+.back-contact-row {
+    font-size: 14px;
+    color: #2dd4bf;
+    font-weight: bold;
+}
+
+.back-web {
+    font-size: 11px;
+    color: #8a9bb5;
+    margin-top: 10px;
+}

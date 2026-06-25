@@ -1,7 +1,36 @@
 {{-- resources/views/sections/hero.blade.php --}}
 <section class="hero-section d-flex align-items-center" id="beranda">
+    {{-- Background Carousel --}}
+    <div id="heroCarousel"
+         class="carousel slide carousel-fade hero-carousel"
+         data-bs-ride="carousel"
+         data-bs-interval="3000">
+
+        <div class="carousel-inner">
+
+            <div class="carousel-item active">
+                <img src="{{ asset('images/landing/hero/hero1.png') }}"
+                     class="d-block w-100 hero-bg-img"
+                     alt="Hero 1">
+            </div>
+
+            <div class="carousel-item">
+                <img src="{{ asset('images/landing/hero/hero2.png') }}"
+                     class="d-block w-100 hero-bg-img"
+                     alt="Hero 2">
+            </div>
+
+            <div class="carousel-item">
+                <img src="{{ asset('images/landing/hero/hero3.png') }}"
+                     class="d-block w-100 hero-bg-img"
+                     alt="Hero 3">
+            </div>
+
+        </div>
+    </div>
+
     <div class="hero-overlay"></div>
-    <div class="container position-relative z-1">
+    <div class="container position-relative z-3">
         <div class="row justify-content-center align-items-center min-vh-100 py-5">
             <div class="col-lg-8 col-xl-8 pt-5">
                 <p class="text-accent small fw-semibold mb-3 text-center text-uppercase tracking-wide" data-aos="fade-up">Event Organizer Terpercaya</p>
