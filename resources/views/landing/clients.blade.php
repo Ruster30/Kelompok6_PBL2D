@@ -6,7 +6,6 @@
             <p class="text-light-muted">Dipercaya oleh perusahaan-perusahaan dan brand ternama di indonesia.</p>
         </div>
     </div>
-
         <div class="clients-track-wrap overflow-hidden" data-aos="fade-up">
             <div class="clients-track d-flex align-items-center gap-5">
                 @foreach($clients as $client)
