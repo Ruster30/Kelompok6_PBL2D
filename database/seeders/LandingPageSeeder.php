@@ -212,9 +212,9 @@ class LandingPageSeeder extends Seeder
         // 7. Client
         $clients = [
             'Colony', 'Citilink', 'Yamaha', 'Lenovo', 'Pos Indonesia',
-            'bri', 'Hyundai', 'Honda', 'Nissan', 'Rexvin',
+            'Bri', 'Hyundai', 'Honda', 'Nissan', 'Rexvin',
             'Dofla Jaya Properti', 'Motul', 'IQOS', 'Toyota',
-            'Bank Mandiri', 'Telkomsel', 'Cinema XXI', 'HokBen',
+            'Mandiri', 'Telkomsel', 'XXI', 'HokBen',
             'Tri', 'Make Over', 'Red Modani', 'Wuling', 'Transmart', 'Huawei',
         ];
 
