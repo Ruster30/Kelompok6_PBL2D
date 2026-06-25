@@ -23,9 +23,9 @@
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
                 <div class="form-group" style="grid-column:1/-1;">
                     <label class="form-label">Nama Event <span style="color:#f43f5e;">*</span></label>
-                    <input type="text" name="name" class="form-input @error('name') error @enderror"
-                           value="{{ old('name', $event->name ?? '') }}" placeholder="Masukkan nama event" required>
-                    @error('name')<span class="form-error">{{ $message }}</span>@enderror
+                    <input type="text" name="nama_event" class="form-input @error('nama_event') error @enderror"
+                           value="{{ old('nama_event', $event->nama_event ?? '') }}" placeholder="Masukkan nama event" required>
+                    @error('nama_event')<span class="form-error">{{ $message }}</span>@enderror
                 </div>
 
                 <div class="form-group">
@@ -42,45 +42,45 @@
 
                 <div class="form-group">
                     <label class="form-label">Jenis Event</label>
-                    <select name="type" class="form-input">
+                    <select name="jenis_event" class="form-input">
                         <option value="">-- Pilih Jenis --</option>
                         @foreach(['Wedding','Corporate','Birthday','Concert','Conference','Exhibition','Other'] as $type)
-                        <option value="{{ $type }}" {{ old('type', $event->type ?? '') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                        <option value="{{ $type }}" {{ old('jenis_event', $event->jenis_event ?? '') == $type ? 'selected' : '' }}>{{ $type }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Tanggal Event <span style="color:#f43f5e;">*</span></label>
-                    <input type="date" name="event_date" class="form-input @error('event_date') error @enderror"
-                           value="{{ old('event_date', isset($event) ? \Carbon\Carbon::parse($event->event_date)->format('Y-m-d') : '') }}" required>
-                    @error('event_date')<span class="form-error">{{ $message }}</span>@enderror
+                    <input type="date" name="tanggal_event" class="form-input @error('tanggal_event') error @enderror"
+                           value="{{ old('tanggal_event', isset($event) ? $event->tanggal_event->format('Y-m-d') : '') }}" required>
+                    @error('tanggal_event')<span class="form-error">{{ $message }}</span>@enderror
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Lokasi</label>
-                    <input type="text" name="location" class="form-input"
-                           value="{{ old('location', $event->location ?? '') }}" placeholder="Lokasi acara">
+                    <input type="text" name="lokasi_event" class="form-input"
+                           value="{{ old('lokasi_event', $event->lokasi_event ?? '') }}" placeholder="Lokasi acara">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Anggaran (Rp)</label>
-                    <input type="number" name="budget" class="form-input"
-                           value="{{ old('budget', $event->budget ?? '') }}" placeholder="0">
+                    <label class="form-label">Jumlah Tamu</label>
+                    <input type="number" name="jumlah_tamu" class="form-input"
+                           value="{{ old('jumlah_tamu', $event->jumlah_tamu ?? '') }}" placeholder="0" min="0">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Status</label>
-                    <select name="status" class="form-input">
-                        @foreach(['pending','aktif','selesai','batal'] as $s)
-                        <option value="{{ $s }}" {{ old('status', $event->status ?? 'pending') == $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+                    <select name="status_event" class="form-input">
+                        @foreach(['menunggu' => 'Menunggu', 'diproses' => 'Diproses', 'berjalan' => 'Berjalan', 'selesai' => 'Selesai', 'dibatalkan' => 'Dibatalkan'] as $value => $label)
+                        <option value="{{ $value }}" {{ old('status_event', $event->status_event ?? 'menunggu') == $value ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="form-group" style="grid-column:1/-1;">
-                    <label class="form-label">Deskripsi</label>
-                    <textarea name="description" class="form-input" rows="4" placeholder="Deskripsi singkat event...">{{ old('description', $event->description ?? '') }}</textarea>
+                    <label class="form-label">Detail Kebutuhan</label>
+                    <textarea name="detail_kebutuhan" class="form-input" rows="4" placeholder="Detail kebutuhan event...">{{ old('detail_kebutuhan', $event->detail_kebutuhan ?? '') }}</textarea>
                 </div>
             </div>
 

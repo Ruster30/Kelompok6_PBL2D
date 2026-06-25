@@ -33,7 +33,7 @@
                 <button class="action-btn" title="Edit" onclick='openServiceModal({{ json_encode($service) }})'>
                     <i class="fas fa-edit" style="font-size:12px;"></i>
                 </button>
-                <form action="{{ route('admin.cms.services.destroy', $service->id) }}" method="POST" style="display:inline;"
+                <form action="{{ route('admin.cms.destroyService', $service->id) }}" method="POST" style="display:inline;"
                       onsubmit="return confirm('Hapus layanan ini?')">
                     @csrf @method('DELETE')
                     <button type="submit" class="action-btn danger" title="Hapus">

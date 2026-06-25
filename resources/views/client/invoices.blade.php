@@ -73,7 +73,7 @@
                     </td>
                     <td>
                         @if($inv->status_invoice !== 'lunas')
-                        <button onclick="openPayModal({{ $inv->event_id }})"
+                        <button onclick="openPayModal({{ $inv->id }})"
                                 class="btn btn-accent btn-sm">
                             <i class="bi bi-credit-card"></i> Bayar
                         </button>
@@ -95,9 +95,7 @@
             </tbody>
         </table>
     </div>
-    @if($invoices->hasPages())
-    <div style="margin-top:16px;">{{ $invoices->links() }}</div>
-    @endif
+    
 </div>
 
 {{-- Riwayat Pembayaran --}}
@@ -120,7 +118,7 @@
             <tbody>
                 @forelse($payments as $pay)
                 <tr>
-                    <td>{{ $pay->event->nama_event ?? '-' }}</td>
+                    <td>{{ $pay->invoice->event->nama_event ?? '-' }}</td>
                     <td>
                         <span class="badge {{ $pay->jenis_pembayaran === 'dp' ? 'badge-mendatang' : 'badge-aktif' }}">
                             {{ strtoupper($pay->jenis_pembayaran) }}
@@ -205,8 +203,8 @@
 
 @push('scripts')
 <script>
-function openPayModal(eventId) {
-    document.getElementById('payForm').action = '/client/invoices/' + eventId + '/bayar';
+function openPayModal(invoiceId) {
+    document.getElementById('payForm').action = '/client/invoices/' + invoiceId + '/bayar';
     document.getElementById('payModal').style.display = 'flex';
 }
 function closePayModal() {

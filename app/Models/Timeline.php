@@ -12,7 +12,10 @@ class Timeline extends Model
     protected $fillable = [
         'event_id',
         'nama_kegiatan',
+        'deskripsi',
+        'penanggung_jawab',
         'tanggal_kegiatan',
+        'deadline',
         'status_kegiatan',
     ];
 
@@ -20,6 +23,7 @@ class Timeline extends Model
     {
         return [
             'tanggal_kegiatan' => 'date',
+            'deadline' => 'date',
         ];
     }
 
