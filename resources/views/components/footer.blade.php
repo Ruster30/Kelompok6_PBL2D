@@ -31,31 +31,37 @@
                 <p class="text-light-muted small mb-3">Kami adalah perusahaan event organizer profesional yang berdedikasi menghadirkan pengalaman tak terlupakan untuk setiap momen spesial Anda.</p>
                 <div class="d-flex gap-2">
                     <a href="https://www.instagram.com/alphaorganizer.co?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="social-icon"><i class="bi bi-instagram"></i></a>
-                    <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="social-icon"><i class="bi bi-twitter-x"></i></a>
-                    <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=alphaorganizer@gmail.com" class="social-icon" target="_blank" rel="noopener noreferrer">
+                        <i class="bi bi-envelope-fill"></i>
+                    </a>
+                    <a href="https://api.whatsapp.com/send?phone=6282233181883" class="social-icon" target="_blank" rel="noopener noreferrer">
+                        <i class="bi bi-whatsapp"></i>
+                    </a>    
                 </div>
             </div>
 
             <div class="col-lg-2 col-md-6 col-6">
                 <h6 class="text-white fw-semibold mb-3">Layanan</h6>
                 <ul class="list-unstyled footer-links">
-                    <li><a href="#">M.I.C.E</a></li>
-                    <li><a href="#">Production</a></li>
-                    <li><a href="#">Marketing</a></li>
-                    <li><a href="#">Special Event</a></li>
-                    <li><a href="#">Corporat event</a></li>
+                    <li><a href="#layanan">M.I.C.E</a></li>
+                    <li><a href="#layanan">Production</a></li>
+                    <li><a href="#layanan">Marketing</a></li>
+                    <li><a href="#layanan">Special Event</a></li>
+                    <li><a href="#layanan">Corporat event</a></li>
                 </ul>
             </div>
 
             <div class="col-lg-2 col-md-6 col-6">
                 <h6 class="text-white fw-semibold mb-3">Perusahaan</h6>
                 <ul class="list-unstyled footer-links">
-                    <li><a href="#">Tentang Kami</a></li>
-                    <li><a href="#">Tim Kami</a></li>
-                    <li><a href="#">Portofolio</a></li>
-                    <li><a href="#">Karir</a></li>
-                    <li><a href="#">Blog</a></li>
+                    <li><a href="#tentang">Tentang Kami</a></li>
+                    <li><a href="#tim">Tim Kami</a></li>
+                    <li><a href="#portofolio">Portofolio</a></li>
+                    <li>
+                        <a href="https://linktr.ee/alphaorganizer.co" target="_blank" rel="noopener noreferrer">
+                            Blog
+                        </a>
+                    </li>
                 </ul>
             </div>
 
