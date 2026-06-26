@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Vendor;
 use App\Models\Task;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -45,7 +46,24 @@ class TaskController extends Controller
             'deskripsi'  => 'nullable|string',
         ]);
 
-        Task::create($data);
+        $task = Task::create($data);
+
+        // Kirim notifikasi ke vendor yang ditugaskan
+        if (!empty($data['vendor_id'])) {
+            $vendor = Vendor::with('user')->find($data['vendor_id']);
+            $event  = Event::find($data['event_id']);
+            if ($vendor && $vendor->user_id && $event) {
+                $deadlineInfo = $data['deadline']
+                    ? ' Deadline: ' . \Carbon\Carbon::parse($data['deadline'])->format('d M Y') . '.'
+                    : '';
+                Notification::create([
+                    'user_id' => $vendor->user_id,
+                    'judul'   => 'Tugas Baru: ' . $data['nama_tugas'],
+                    'pesan'   => 'Anda mendapat tugas baru "' . $data['nama_tugas'] . '" untuk event "' . $event->nama_event . '".' . $deadlineInfo,
+                    'tipe'    => 'event',
+                ]);
+            }
+        }
 
         return redirect()->route('admin.tasks.index')->with('success', 'Tugas berhasil dibuat.');
     }
@@ -63,6 +81,23 @@ class TaskController extends Controller
         ]);
 
         $task->update($data);
+
+        // Kirim notifikasi ke vendor jika ada vendor yang ditugaskan
+        if (!empty($data['vendor_id'])) {
+            $vendor = Vendor::with('user')->find($data['vendor_id']);
+            $event  = Event::find($data['event_id']);
+            if ($vendor && $vendor->user_id && $event) {
+                $deadlineInfo = $data['deadline']
+                    ? ' Deadline: ' . \Carbon\Carbon::parse($data['deadline'])->format('d M Y') . '.'
+                    : '';
+                Notification::create([
+                    'user_id' => $vendor->user_id,
+                    'judul'   => 'Tugas Diperbarui: ' . $data['nama_tugas'],
+                    'pesan'   => 'Tugas "' . $data['nama_tugas'] . '" untuk event "' . $event->nama_event . '" telah diperbarui.' . $deadlineInfo,
+                    'tipe'    => 'event',
+                ]);
+            }
+        }
 
         return redirect()->route('admin.tasks.index')->with('success', 'Tugas berhasil diperbarui.');
     }

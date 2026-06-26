@@ -8,6 +8,7 @@ use App\Models\Task;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Notification;
 
 class VendorController extends Controller
 {
@@ -69,17 +70,24 @@ class VendorController extends Controller
         $vendor = Auth::user()->vendor;
         abort_if(!$vendor, 403);
 
-        // Ambil semua event vendor untuk dropdown (jika ada lebih dari 1)
+        // Ambil semua event vendor untuk dropdown
         $events = Event::whereHas('vendors', fn($q) => $q->where('vendor_id', $vendor->id))
             ->orderBy('tanggal_event')
             ->get();
 
-        $selectedEvent = $request->event ?? optional($events->first())->id;
+        $selectedEvent = $request->filled('event') ? (int) $request->event : optional($events->first())->id;
 
-        // Ambil jadwal/milestone dari event terpilih
-        $jadwal = \App\Models\Jadwal::where('event_id', $selectedEvent)
-            ->orderBy('tanggal')
-            ->get();
+        // Pastikan event yang dipilih memang milik vendor ini
+        if ($selectedEvent && !$events->pluck('id')->contains($selectedEvent)) {
+            $selectedEvent = optional($events->first())->id;
+        }
+
+        // Ambil jadwal dari event terpilih
+        $jadwal = $selectedEvent
+            ? \App\Models\Jadwal::where('event_id', $selectedEvent)
+                ->orderBy('tanggal')
+                ->get()
+            : collect();
 
         return view('vendor.jadwal', compact('events', 'jadwal', 'selectedEvent'));
     }
