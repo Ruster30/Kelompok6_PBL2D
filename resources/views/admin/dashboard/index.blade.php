@@ -50,8 +50,8 @@
 .stat-badge-dash.green { background: #dcfce7; color: #15803d; }
 .stat-badge-dash.amber { background: #fef3c7; color: #b45309; }
 
-.stat-value-dash { font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1.1; }
-.stat-label-dash { font-size: 13px; color: #64748b; margin-top: -6px; }
+.stat-value-dash { font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1; margin-bottom: 8px; }
+.stat-label-dash { font-size: 13px; color: #64748b; line-height: 1.5; margin-top: 0; }
 
 /* ── Bottom Layout ── */
 .dash-bottom {

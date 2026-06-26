@@ -32,6 +32,28 @@
             color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;
             transition: all 0.2s; border-left: 3px solid transparent;
         }
+        .sidebar-footer .nav-logout{
+            width:100%;
+            background:transparent;
+            border:none;
+            text-align:left;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            color:#d1d5db;
+            padding:14px 18px;
+            border-radius:10px;
+            transition:.25s;
+            cursor:pointer;
+        }
+        .sidebar-footer .nav-logout:hover{
+            background:#dc2626;
+            color:#fff;
+        }
+        .sidebar-footer .nav-logout:hover i{
+            color:#fff;
+        }
+
         .nav-item:hover { background: #1e293b; color: #e2e8f0; }
         .nav-item.active { background: #134e4a; color: #2dd4bf; border-left-color: #14b8a6; }
         .nav-item i { width: 18px; text-align: center; font-size: 15px; }
@@ -306,7 +328,7 @@
     </div>
 
     <nav class="sidebar-nav">
-        <a href="{{ route('admin.dashboard') }}"  class="nav-item {{ request()->routeIs('admin.dashboard.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.dashboard') }}"  class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <i class="fas fa-home"></i> Ringkasan Dashboard
         </a>
         <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
@@ -351,10 +373,11 @@
     </nav>
 
     <div class="sidebar-footer">
-        <form action="{{ route('logout') }}" method="POST">
+        <form id="logout-form" action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit" class="nav-item" style="width:100%; background:none; border:none; text-align:left;">
-                <i class="fas fa-sign-out-alt"></i> Keluar
+            <button type="button" onclick="confirmLogout(event)" class="nav-item nav-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Keluar</span>
             </button>
         </form>
     </div>
@@ -401,6 +424,7 @@
     </main>
 </div>
 
+<x-logout-confirmation />
 @stack('scripts')
 </body>
 </html>

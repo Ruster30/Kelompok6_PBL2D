@@ -62,9 +62,9 @@
         </nav>
 
         <div class="sidebar-footer">
-            <form method="POST" action="{{ route('logout') }}">
+            <form id="logout-form" method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="nav-item danger" style="width:100%;">
+                <button type="button" onclick="confirmLogout(event)" class="nav-item danger" style="width:100%;">
                     <i class="bi bi-box-arrow-right"></i> Keluar
                 </button>
             </form>
@@ -147,6 +147,7 @@ document.addEventListener('click', e => {
 window.addEventListener('resize', checkMobile);
 checkMobile();
 </script>
+<x-logout-confirmation />
 @stack('scripts')
 </body>
 </html>

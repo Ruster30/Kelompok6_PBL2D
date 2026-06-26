@@ -803,8 +803,8 @@
     </nav>
 
     <div class="sidebar-footer">
-        <a href="{{ route('vendor.logout') }}"
-           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+        <a href="#"
+           onclick="confirmLogout(event)">
             <i class="bi bi-box-arrow-right" style="font-size:17px; width:20px; text-align:center; opacity:0.8;"></i>
             Keluar
         </a>
@@ -847,6 +847,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<x-logout-confirmation />
 @stack('scripts')
 </body>
 </html>
