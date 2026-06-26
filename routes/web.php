@@ -150,6 +150,27 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::post('/proposals/builder/generate', [App\Http\Controllers\Admin\ProposalController::class, 'generate'])->name('admin.proposals.generate');
     Route::get('/proposals/{proposal}/download', [App\Http\Controllers\Admin\ProposalController::class, 'download'])->name('admin.proposals.download');
 
+    // Document Builder
+    Route::get('/document-builder',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'index'])
+        ->name('admin.document_builder.index');
+
+    Route::post('/document-builder/preview',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'preview'])
+        ->name('admin.document_builder.preview');
+
+    Route::post('/document-builder/download',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'download'])
+        ->name('admin.document_builder.download');
+
+    Route::post('/document-builder/print',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'print'])
+        ->name('admin.document_builder.print');
+
+    Route::post('/document-builder/send',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'sendToClient'])
+        ->name('admin.document_builder.send');
+
     // Documentation
     Route::get('/documentation', [App\Http\Controllers\Admin\DocumentationController::class, 'index'])->name('admin.documentation.index');
     Route::patch('/documentation/files/{file}/approve', [App\Http\Controllers\Admin\DocumentationController::class, 'approveFile'])->name('admin.documentation.approve-file');
