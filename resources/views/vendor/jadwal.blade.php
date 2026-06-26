@@ -20,36 +20,41 @@
         </div>
 
         <form method="GET" action="{{ route('vendor.jadwal') }}">
+            @if($events->count())
             <select
                 name="event"
                 class="form-select"
                 onchange="this.form.submit()"
                 style="width:360px;"
             >
-                @forelse($events as $event)
-
+                @foreach($events as $event)
                     <option
                         value="{{ $event->id }}"
                         {{ $selectedEvent == $event->id ? 'selected' : '' }}
                     >
                         {{ $event->nama_event }}
                     </option>
-
-                @empty
-
-                    <option>
-                        Belum ada event
-                    </option>
-
-                @endforelse
+                @endforeach
             </select>
+            @endif
         </form>
 
     </div>
 
     <div class="section-card" style="min-height:400px;">
 
-        @if($jadwal->count())
+        @if(!$events->count())
+
+            <div
+                class="d-flex justify-content-center align-items-center"
+                style="height:300px;"
+            >
+                <h4 class="text-muted fw-normal">
+                    Anda belum ditugaskan ke event apapun.
+                </h4>
+            </div>
+
+        @elseif($jadwal->count())
 
             <div class="timeline-wrapper">
 
@@ -94,7 +99,7 @@
                 style="height:300px;"
             >
                 <h4 class="text-muted fw-normal">
-                    Anda belum ditugaskan ke event apapun.
+                    Belum ada jadwal untuk event ini.
                 </h4>
             </div>
 

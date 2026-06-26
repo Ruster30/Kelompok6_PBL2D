@@ -790,6 +790,11 @@
         <a href="{{ route('vendor.notifikasi') }}" class="nav-item-custom {{ request()->routeIs('vendor.notifikasi') ? 'active' : '' }}">
             <i class="bi bi-bell"></i>
             Notifikasi
+            @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                <span class="notif-count ms-auto" style="position:static;transform:none;font-size:10px;padding:1px 5px;">
+                    {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
+                </span>
+            @endif
         </a>
         <a href="{{ route('vendor.pengaturan') }}" class="nav-item-custom {{ request()->routeIs('vendor.pengaturan') ? 'active' : '' }}">
             <i class="bi bi-gear"></i>
@@ -798,8 +803,8 @@
     </nav>
 
     <div class="sidebar-footer">
-        <a href="{{ route('vendor.logout') }}"
-           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+        <a href="#"
+           onclick="confirmLogout(event)">
             <i class="bi bi-box-arrow-right" style="font-size:17px; width:20px; text-align:center; opacity:0.8;"></i>
             Keluar
         </a>
@@ -818,9 +823,9 @@
         <div class="topbar-right">
             <a href="{{ route('vendor.notifikasi') }}" class="notif-btn">
                 <i class="bi bi-bell-fill"></i>
-                @if(isset($unreadCount) && $unreadCount > 0)
+                @if(isset($unreadNotifications) && $unreadNotifications > 0)
                     <span class="notif-count">
-                        {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                        {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
                     </span>
                 @endif
             </a>
@@ -842,6 +847,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<x-logout-confirmation />
 @stack('scripts')
 </body>
 </html>
