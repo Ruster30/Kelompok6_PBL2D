@@ -39,6 +39,10 @@ class RegisteredUserController extends Controller
 
         $phone = preg_replace('/\D/', '', $request->phone);
 
+        if (str_starts_with($phone, '0')) {
+            $phone = substr($phone, 1);
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
