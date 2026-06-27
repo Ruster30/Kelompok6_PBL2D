@@ -28,9 +28,9 @@ class CompanyProfileController extends Controller
             'about_title' => 'Kami Tidak Hanya Merencanakan Event, Kami Menciptakan Warisan',
             'about_desc1'   => 'Alpha Organizer adalah perusahaan Event Organizer profesional yang bergerak di bidang Event Organizer, Exhibition, Convention, dan Musical Entertainment. Sejak berdiri, kami telah dipercaya menangani berbagai acara dengan standar kualitas tinggi dan reputasi yang kuat di industri event.',
             'about_desc2'   => 'Didukung oleh tim yang berpengalaman, kreatif, dan berdedikasi, kami berkomitmen menghadirkan solusi terbaik untuk setiap kebutuhan klien. Dengan mengedepankan profesionalisme, inovasi, dan integritas, kami menciptakan pengalaman yang berkesan serta memastikan setiap acara berjalan sukses sesuai harapan.',
-            'email'   => 'info@alphaorganizer.com',
-            'phone'   => '+62 812 3456 7890',
-            'address' => 'Padang, Sumatera Barat, Indonesia',
+            'email'   => 'alphaorganizer1209@gmail.com',
+            'phone'   => '+62 822 3318 1883',
+            'address' => 'JL. Kenangan Air Dingin No.25, Kec Koto Tangah, Kota Padang',
             'website' => 'www.alphaorganizer.com',
         ];
 
@@ -80,15 +80,21 @@ $services2 = [];
         } 
 
         $portfolioQuery = Portfolio::where('is_active', true)->get();
+
         if ($portfolioQuery->isNotEmpty()) {
-            $portfolio = $portfolioQuery->map(function($p) { 
+
+            $portfolio = $portfolioQuery->map(function ($p) {
+
+                $image = $p->gambar ?: 'portofolio1.png';
+
                 return [
-                    'title' => $p->judul, 
-                    'cat' => $p->kategori,
-                    'img' => $p->gambar ? public_path('images/landing/portofolio/' . $p->gambar) : public_path('images/landing/portofolio/portofolio1.png')
-                ]; 
+                    'title' => $p->judul,
+                    'cat'   => $p->kategori,
+                    'img'   => public_path('images/landing/portofolio/' . $image),
+                ];
+
             })->toArray();
-        } 
+        }
         $clientQuery = Client::where('is_active', true)->get();
         if ($clientQuery->isNotEmpty()) {
             $clients = $clientQuery->map(function($c) {
