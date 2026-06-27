@@ -123,29 +123,32 @@ body {
 }
 
 .cover-eyebrow {
-    font-size: 11px;
+    font-size: 20px;
     color: #2dd4bf;
     letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: 18px;
     margin-top: 20px;
+    text-align: center;
 }
 
 .cover-name {
-    font-size: 22px;
+    font-size: 30px;
     font-weight: bold;
     color: #fff;
     letter-spacing: 1px;
     margin-bottom: 40px;
+    text-align: center;
 }
 
 .cover-title-main {
     font-size: 80px;
     font-weight: bold;
-    color: #ffffff;
+    color: #2dd4bf;
     line-height: 1;
     margin-bottom: 4px;
     letter-spacing: -2px;
+    text-align: center;
 }
 
 .cover-title-accent {
@@ -155,38 +158,49 @@ body {
     line-height: 1;
     margin-bottom: 30px;
     letter-spacing: -2px;
+    text-align: center;
 }
 
 .cover-tagline {
-    font-size: 15px;
+    font-size: 20px;
     color: #8a9bb5;
     max-width: 540px;
     line-height: 1.7;
     margin-bottom: 50px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Stats row on cover */
 .cover-stats-row {
     border-top: 1px solid rgba(255, 255, 255, .1);
     padding-top: 28px;
+    margin-top: 200px;
+    justify-content: center;
 }
 
 .cover-stat-item {
     padding-right: 40px;
+    justify-content: center;
 }
 
 .cover-stat-val {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     color: #2dd4bf;
+    margin-left: auto;
+    text-align: center;
 }
 
 .cover-stat-lbl {
-    font-size: 9px;
+    font-size: 20px;
     color: #8a9bb5;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     margin-top: 3px;
+    margin-left: auto;
+    text-align: center;
 }
 
 /* Bottom bar cover */
@@ -324,7 +338,7 @@ body {
 
 .about-right {
     width: 44%;
-    padding-top: 180px;
+    padding-top: 200px;
 }
 
 /* Stats cards 2x2 grid */
@@ -696,14 +710,14 @@ body {
     background: #07101f;
     height: auto;
     vertical-align: top;
-    padding: 70px 50px;
+    padding: 200px 50px 0px 50px;
     position: relative;
 }
 
 .contact-slide-right {
     width: 54%;
     vertical-align: top;
-    padding: 60px 60px;
+    padding: 200px 60px 0px 60px;
 }
 
 .contact-slide-left .sec-title {
@@ -724,7 +738,7 @@ body {
 }
 
 .cinfo-label {
-    font-size: 9px;
+    font-size: 25px;
     font-weight: bold;
     color: #2dd4bf;
     text-transform: uppercase;
@@ -733,7 +747,7 @@ body {
 }
 
 .cinfo-val {
-    font-size: 13px;
+    font-size: 20px;
     color: #fff;
 }
 
@@ -747,7 +761,7 @@ body {
 }
 
 .cright-label {
-    font-size: 9px;
+    font-size: 25px;
     color: #2dd4bf;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -756,13 +770,13 @@ body {
 }
 
 .cright-val {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
     color: #1a2540;
 }
 
 .cright-note {
-    font-size: 10px;
+    font-size: 17px;
     color: #8a9bb5;
     line-height: 1.6;
     margin-top: 8px;
@@ -823,11 +837,12 @@ body {
 }
 
 .back-cover-center-inner {
-    padding-top: 140px;
+    padding-top: 200px;
+
 }
 
 .back-logo {
-    font-size: 44px;
+    font-size: 60px;
     font-weight: bold;
     color: #fff;
     letter-spacing: 2px;
@@ -835,7 +850,7 @@ body {
 }
 
 .back-tag {
-    font-size: 11px;
+    font-size: 30px;
     color: #2dd4bf;
     text-transform: uppercase;
     letter-spacing: 3px;
@@ -843,14 +858,14 @@ body {
 }
 
 .back-line {
-    width: 70px;
+    width: 100px;
     height: 3px;
     background: #2dd4bf;
     margin: 0 auto 40px;
 }
 
 .back-msg {
-    font-size: 14px;
+    font-size: 20px;
     color: #8a9bb5;
     line-height: 1.8;
     max-width: 600px;
@@ -858,13 +873,13 @@ body {
 }
 
 .back-contact-row {
-    font-size: 14px;
+    font-size: 30px;
     color: #2dd4bf;
     font-weight: bold;
 }
 
 .back-web {
-    font-size: 11px;
+    font-size: 20px;
     color: #8a9bb5;
     margin-top: 10px;
 }

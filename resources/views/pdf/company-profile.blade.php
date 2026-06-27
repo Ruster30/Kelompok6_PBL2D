@@ -32,8 +32,7 @@ $slideNo = 2;
         <div class="cover-inner">
             <div class="cover-eyebrow">Event Organizer Profesional</div>
             <div class="cover-name">{{ $company['name'] }}</div>
-            <div class="cover-title-main">Company</div>
-            <div class="cover-title-accent">Profile</div>
+            <div class="cover-title-main">Company Profile</div>
             <div class="cover-tagline">{{ $company['tagline'] }}</div>
 
             <div class="cover-stats-row tbl">
