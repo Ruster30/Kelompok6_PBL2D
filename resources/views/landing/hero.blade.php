@@ -42,7 +42,7 @@
                     Tingkatkan acara korporat, pernikahan, dan festival Anda bersama ALPHA.CORP, kami mengubah visi menjadi pengalaman yang sempurna.
                 </p>
                 <div class="d-flex gap-3 flex-wrap justify-content-center mt-5" data-aos="fade-up" data-aos-delay="300">
-                    <a href="#kontak" class="btn btn-accent btn-lg px-4 fw-semibold">
+                    <a href="{{ route('login') }}" class="btn btn-accent btn-lg px-4 fw-semibold">
                         Mulai Sekarang <i class="bi bi-arrow-right ms-1"></i>
                     </a>
                     <a href="#portofolio" class="btn btn-outline-light btn-lg px-4 fw-semibold">

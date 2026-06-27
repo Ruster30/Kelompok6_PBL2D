@@ -197,12 +197,12 @@ class LandingPageSeeder extends Seeder
 
         // 6. Portfolio
         $portfolios = [
-            ['judul' => 'Tech Summit 2024', 'kategori' => 'Korporat', 'gambar' => null, 'tips_file' => null, 'is_active' => true],
-            ['judul' => 'Pernikahan Mewah Safira & Hadaffi', 'kategori' => 'Pernikahan', 'gambar' => null, 'tips_file' => null, 'is_active' => true],
-            ['judul' => 'Konser Musik Nusantara', 'kategori' => 'Konser', 'gambar' => null, 'tips_file' => null, 'is_active' => true],
-            ['judul' => 'Peluncuran Produk X Brand', 'kategori' => 'Peluncuran', 'gambar' => null, 'tips_file' => null, 'is_active' => true],
-            ['judul' => 'Gala Amal Charity Night', 'kategori' => 'Gala', 'gambar' => null, 'tips_file' => null, 'is_active' => true],
-            ['judul' => 'Wedding Dinner Eksklusif 2024', 'kategori' => 'Pernikahan', 'gambar' => null, 'tips_file' => null, 'is_active' => true],
+            ['judul' => 'Tech Summit 2024', 'kategori' => 'Korporat', 'gambar' => 'portofolio1.png', 'tips_file' => null, 'is_active' => true],
+            ['judul' => 'Pernikahan Mewah Safira & Hadaffi', 'kategori' => 'Pernikahan', 'gambar' => 'portofolio2.png', 'tips_file' => null, 'is_active' => true],
+            ['judul' => 'Konser Musik Nusantara', 'kategori' => 'Konser', 'gambar' => 'portofolio3.png', 'tips_file' => null, 'is_active' => true],
+            ['judul' => 'Peluncuran Produk X Brand', 'kategori' => 'Peluncuran', 'gambar' => 'portofolio4.png', 'tips_file' => null, 'is_active' => true],
+            ['judul' => 'Gala Amal Charity Night', 'kategori' => 'Gala', 'gambar' => 'portofolio5.png', 'tips_file' => null, 'is_active' => true],
+            ['judul' => 'Wedding Dinner Eksklusif 2024', 'kategori' => 'Pernikahan', 'gambar' => 'portofolio6.png', 'tips_file' => null, 'is_active' => true],
         ];
 
         foreach ($portfolios as $port) {
@@ -215,7 +215,7 @@ class LandingPageSeeder extends Seeder
             'Bri', 'Hyundai', 'Honda', 'Nissan', 'Rexvin',
             'Dofla Jaya Properti', 'Motul', 'IQOS', 'Toyota',
             'Mandiri', 'Telkomsel', 'XXI', 'HokBen',
-            'Tri', 'Make Over', 'Red Modani', 'Wuling', 'Transmart', 'Huawei',
+            'Tri', 'MakeOver', 'Red Modani', 'Wuling', 'Transmart', 'Huawei',
         ];
 
         foreach ($clients as $clientName) {
