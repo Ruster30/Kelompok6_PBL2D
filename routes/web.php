@@ -43,9 +43,6 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/client/dashboard', [ClientController::class, 'dashboard'])
-        ->name('client.dashboard');
-
     Route::get('/vendor/dashboard', function () {
         if (request()->user()->role !== 'vendor') {
             abort(403);
@@ -66,6 +63,19 @@ Route::middleware('auth')->group(function () {
 // ========================================
 Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+
+    // ─── Kelola Klien ─────────────────────────────────────────────────────────────
+    // Route ini mengelola akun user dengan role='client'.
+    // Tidak bentrok dengan /admin/clients (yang mengelola tabel 'clients' / logo klien CMS).
+    Route::prefix('kelola-klien')->name('admin.kelola-klien.')->group(function () {
+        Route::get('/',                              [\App\Http\Controllers\Admin\KelolKlienController::class, 'index'])           ->name('index');
+        Route::get('/{user}',                        [\App\Http\Controllers\Admin\KelolKlienController::class, 'show'])            ->name('show');
+        Route::get('/{user}/edit',                   [\App\Http\Controllers\Admin\KelolKlienController::class, 'edit'])            ->name('edit');
+        Route::put('/{user}',                        [\App\Http\Controllers\Admin\KelolKlienController::class, 'update'])          ->name('update');
+        Route::post('/kirim-notifikasi',             [\App\Http\Controllers\Admin\KelolKlienController::class, 'kirimNotifikasi']) ->name('kirim-notifikasi');
+        Route::patch('/{user}/toggle-status',        [\App\Http\Controllers\Admin\KelolKlienController::class, 'toggleStatus'])    ->name('toggle-status');
+        Route::delete('/{user}',                     [\App\Http\Controllers\Admin\KelolKlienController::class, 'destroy'])         ->name('destroy');
+    });
 
     // Clients
     Route::get('/clients', [App\Http\Controllers\Admin\ClientController::class, 'index'])->name('admin.clients.index');
@@ -350,4 +360,4 @@ Route::prefix('vendor')->name('vendor.')->middleware(['auth'])->group(function (
 
 });
 
-require __DIR__.'/auth.php';
+

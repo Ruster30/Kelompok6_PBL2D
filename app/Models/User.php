@@ -27,6 +27,7 @@ class User extends Authenticatable
         'google_id',
         'avatar',
         'email_verified_at',
+        'last_active_at',  // ← ditambah untuk fitur "Terakhir Aktif" di Kelola Klien
     ];
 
     /**
@@ -49,6 +50,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
+            'last_active_at'    => 'datetime',
         ];
     }
 
@@ -76,6 +78,25 @@ class User extends Authenticatable
     public function notifikasi()
     {
         return $this->hasMany(Notification::class, 'user_id');
+    }
+
+    /** Notifikasi yang dikirim admin ke klien ini */
+    public function receivedAdminNotifications()
+    {
+        return $this->hasMany(AdminClientNotification::class, 'recipient_id')->latest();
+    }
+
+    /** Notifikasi yang pernah dikirim admin ini ke klien */
+    public function sentAdminNotifications()
+    {
+        return $this->hasMany(AdminClientNotification::class, 'sender_id')->latest();
+    }
+
+    /** Pembayaran yang dilakukan oleh klien ini (via event_id) */
+    public function payments()
+    {
+        return $this->hasManyThrough(Payment::class, Event::class, 'client_id', 'invoice_id')
+                    ->join('invoices', 'invoices.id', '=', 'payments.invoice_id');
     }
 
     // ─── Helper Role ─────────────────────────────────────────
@@ -122,5 +143,21 @@ class User extends Authenticatable
     public function getUnreadNotifCountAttribute(): int
     {
         return $this->notifikasi()->where('dibaca', false)->count();
+    }
+
+    /** Apakah klien aktif (login dalam 30 hari terakhir) */
+    public function getIsActiveClientAttribute(): bool
+    {
+        if (!$this->last_active_at) {
+            // Fallback: cek tanggal update akun
+            return $this->updated_at->diffInDays(now()) <= 30;
+        }
+        return $this->last_active_at->diffInDays(now()) <= 30;
+    }
+
+    /** Total event yang dimiliki klien ini */
+    public function getTotalEventAttribute(): int
+    {
+        return $this->events()->count();
     }
 }
