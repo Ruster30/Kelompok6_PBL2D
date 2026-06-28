@@ -66,25 +66,45 @@ class CmsController extends Controller
         ]);
     }
 
-    public function storePortfolio(Request $request)
+   public function storePortfolio(Request $request)
     {
         $data = $request->validate([
             'judul'     => 'required|string|max:255',
             'kategori'  => 'required|string|max:100',
-            'gambar'    => 'required|image|max:2048',
+            'gambar' => 'required|image|mimes:jpg,jpeg,png|max:2048',
             'tips_file' => 'nullable|file|max:5120',
             'is_active' => 'nullable|boolean',
+        ],
+        [
+            'gambar.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
         ]);
 
-        $data['gambar'] = $request->file('gambar')->store('portfolio', 'public');
+        // Upload gambar ke public/images/landing/portofolio
+        if ($request->hasFile('gambar')) {
+
+        $file = $request->file('gambar');
+
+        $namaFile = time() . '.' . $file->getClientOriginalExtension();
+
+        $file->move(
+            public_path('images/landing/portofolio'),
+            $namaFile
+        );
+
+        $data['gambar'] = $namaFile;
+        }
+
+        // Upload tips file
         if ($request->hasFile('tips_file')) {
             $data['tips_file'] = $request->file('tips_file')->store('portfolio/tips', 'public');
         }
+
         $data['is_active'] = $request->boolean('is_active');
 
         Portfolio::create($data);
 
-        return redirect()->route('admin.cms.portfolio')->with('success', 'Portfolio berhasil ditambahkan.');
+        return redirect()->route('admin.cms.portfolio')
+            ->with('success', 'Portfolio berhasil ditambahkan.');
     }
 
     public function updatePortfolio(Request $request, Portfolio $portfolio)
@@ -92,16 +112,32 @@ class CmsController extends Controller
         $data = $request->validate([
             'judul'     => 'required|string|max:255',
             'kategori'  => 'required|string|max:100',
-            'gambar'    => 'nullable|image|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'tips_file' => 'nullable|file|max:5120',
             'is_active' => 'nullable|boolean',
         ]);
 
         if ($request->hasFile('gambar')) {
+
             if ($portfolio->gambar) {
-                Storage::disk('public')->delete($portfolio->gambar);
+
+                $old = public_path('images/landing/portofolio/'.$portfolio->gambar);
+
+                if(file_exists($old)){
+                    unlink($old);
+                }
             }
-            $data['gambar'] = $request->file('gambar')->store('portfolio', 'public');
+
+            $file = $request->file('gambar');
+
+            $namaFile = time().'.'.$file->getClientOriginalExtension();
+
+            $file->move(
+                public_path('images/landing/portofolio'),
+                $namaFile
+            );
+
+            $data['gambar'] = $namaFile;
         }
 
         if ($request->hasFile('tips_file')) {
@@ -120,9 +156,16 @@ class CmsController extends Controller
 
     public function destroyPortfolio(Portfolio $portfolio)
     {
-        if ($portfolio->gambar) {
-            Storage::disk('public')->delete($portfolio->gambar);
+        if($portfolio->gambar){
+
+        $old = public_path('images/landing/portofolio/'.$portfolio->gambar);
+
+            if(file_exists($old)){
+                unlink($old);
+            }
+
         }
+        
         if ($portfolio->tips_file) {
             Storage::disk('public')->delete($portfolio->tips_file);
         }
@@ -144,13 +187,25 @@ class CmsController extends Controller
         $data = $request->validate([
             'nama'      => 'required|string|max:255',
             'jabatan'   => 'required|string|max:255',
-            'foto'      => 'required|image|max:2048',
+            'foto' => 'required|image|mimes:jpg,jpeg,png|max:2048',
             'deskripsi' => 'nullable|string',
             'urutan'    => 'nullable|integer|min:0',
             'is_active' => 'required|in:0,1',
+        ],
+        [
+            'foto.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
         ]);
 
-        $data['foto'] = $request->file('foto')->store('team', 'public');
+        if ($request->hasFile('foto')) {
+
+            $file = $request->file('foto');
+
+            $filename = time().'_'.$file->getClientOriginalName();
+
+            $file->move(public_path('images/landing/team'), $filename);
+
+            $data['foto'] = $filename;
+        }
 
         Team::create($data);
 
@@ -162,17 +217,28 @@ class CmsController extends Controller
         $data = $request->validate([
             'nama'      => 'required|string|max:255',
             'jabatan'   => 'required|string|max:255',
-            'foto'      => 'nullable|image|max:2048',
-            'deskripsi' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'urutan'    => 'nullable|integer|min:0',
             'is_active' => 'required|in:0,1',
         ]);
 
         if ($request->hasFile('foto')) {
-            if ($team->foto) {
-                Storage::disk('public')->delete($team->foto);
+            if (
+                $team->foto &&
+                file_exists(public_path('images/landing/team/'.$team->foto))
+            ) {
+
+                unlink(public_path('images/landing/team/'.$team->foto));
+
             }
-            $data['foto'] = $request->file('foto')->store('team', 'public');
+
+            $file = $request->file('foto');
+
+            $filename = time().'_'.$file->getClientOriginalName();
+
+            $file->move(public_path('images/landing/team'), $filename);
+
+            $data['foto'] = $filename;
         }
 
         $team->update($data);
@@ -182,8 +248,11 @@ class CmsController extends Controller
 
     public function destroyTeam(Team $team)
     {
-        if ($team->foto) {
-            Storage::disk('public')->delete($team->foto);
+        if (
+            $team->foto &&
+            file_exists(public_path('images/landing/team/'.$team->foto))
+        ) {
+            unlink(public_path('images/landing/team/'.$team->foto));
         }
         $team->delete();
 
@@ -202,34 +271,55 @@ class CmsController extends Controller
     {
         $data = $request->validate([
             'nama_client' => 'required|string|max:255',
-            'logo'        => 'required|image|max:1024',
+            'logo' => 'required|image|mimes:jpg,jpeg,png|max:1024',
             'website'     => 'nullable|url|max:255',
-            'status'      => 'required|in:partner,klien',
             'is_active'   => 'required|in:0,1',
+        ],
+        [
+            'logo.mimes' => 'Logo harus berformat JPG, JPEG, atau PNG.',
         ]);
 
-        $data['logo'] = $request->file('logo')->store('client-logos', 'public');
+        $file = $request->file('logo');
 
-        ClientLogo::create($data);
+        $filename = time().'_'.$file->getClientOriginalName();
+
+        $file->move(
+            public_path('images/landing/clients'),
+            $filename
+        );
+
+        $data['logo'] = $filename;
+
+        Client::create($data);
 
         return redirect()->route('admin.cms.clients')->with('success', 'Logo klien berhasil ditambahkan.');
     }
 
-    public function updateClient(Request $request, ClientLogo $client)
+    public function updateClient(Request $request, Client $client)
     {
         $data = $request->validate([
             'nama_client' => 'required|string|max:255',
-            'logo'        => 'nullable|image|max:1024',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:1024',
             'website'     => 'nullable|url|max:255',
-            'status'      => 'required|in:partner,klien',
             'is_active'   => 'required|in:0,1',
         ]);
 
         if ($request->hasFile('logo')) {
-            if ($client->logo) {
-                Storage::disk('public')->delete($client->logo);
+            if (
+                $client->logo &&
+                file_exists(public_path('images/landing/clients/'.$client->logo))
+            ) {
+                unlink(public_path('images/landing/clients/'.$client->logo));
             }
-            $data['logo'] = $request->file('logo')->store('client-logos', 'public');
+
+            $file = $request->file('logo');
+            $filename = time().'_'.$file->getClientOriginalName();
+            $file->move(
+                public_path('images/landing/clients'),
+                $filename
+            );
+
+            $data['logo'] = $filename;
         }
 
         $client->update($data);
@@ -239,8 +329,13 @@ class CmsController extends Controller
 
     public function destroyClient(ClientLogo $client)
     {
-        if ($client->logo) {
-            Storage::disk('public')->delete($client->logo);
+        if (
+            $client->logo &&
+            file_exists(public_path('images/landing/clients/'.$client->logo))
+        ) {
+
+            unlink(public_path('images/landing/clients/'.$client->logo));
+
         }
         $client->delete();
 

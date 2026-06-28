@@ -41,7 +41,7 @@
                     </button>
                 </form>
             </div>
-            <img src="{{ asset('storage/' . $client->logo) }}" alt="{{ $client->nama_client }}">
+            <img src="{{ asset('images/landing/clients/' . $client->logo) }}" alt="{{ $client->nama_client }}">
             <div class="logo-card-name">{{ $client->nama_client }}</div>
             <span class="badge {{ $client->is_active ? 'badge-active' : 'badge-gray' }}" style="font-size:11px;">
                 {{ $client->is_active ? 'Aktif' : 'Nonaktif' }}
@@ -85,13 +85,6 @@
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                     <div class="form-group">
-                        <label class="form-label">Status Kerjasama</label>
-                        <select name="status" id="status" class="form-input">
-                            <option value="partner">Partner</option>
-                            <option value="klien">Klien</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label class="form-label">Tampilkan</label>
                         <select name="is_active" id="is_active" class="form-input">
                             <option value="1">Aktif</option>
@@ -124,7 +117,7 @@ function openClientModal(client = null) {
         document.getElementById('status').value = client.status ?? 'partner';
         document.getElementById('is_active').value = client.is_active ? '1' : '0';
         document.getElementById('logoRequired').innerText = '';
-        preview.src = '{{ asset("storage") }}/' + client.logo;
+        preview.src = '{{ asset("images/landing/clients/") }}/' + client.logo;
         preview.style.display = 'block';
         form.action = '{{ url("admin/cms/clients") }}/' + client.id;
         document.getElementById('clientFormMethod').value = 'PUT';

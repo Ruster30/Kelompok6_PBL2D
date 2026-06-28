@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Vendor;
 use App\Models\EventVendor;
+use App\Models\Notification;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -48,6 +49,21 @@ class EventVendorController extends Controller
         $assignment = EventVendor::create($data);
         $this->syncTask($assignment, $request);
 
+        // Kirim notifikasi ke user yang memiliki vendor ini
+        $vendor = Vendor::with('user')->find($data['vendor_id']);
+        $event  = Event::find($data['event_id']);
+        if ($vendor && $vendor->user_id && $event) {
+            $jadwalInfo = $data['jadwal_vendor']
+                ? ' pada ' . \Carbon\Carbon::parse($data['jadwal_vendor'])->format('d M Y')
+                : '';
+            Notification::create([
+                'user_id' => $vendor->user_id,
+                'judul'   => 'Penugasan Baru',
+                'pesan'   => 'Anda telah ditugaskan pada event "' . $event->nama_event . '"' . $jadwalInfo . '.',
+                'tipe'    => 'event',
+            ]);
+        }
+
         return redirect()
             ->route('admin.event-vendors.index')
             ->with('success', 'Penugasan vendor berhasil dibuat.');
@@ -68,6 +84,21 @@ class EventVendorController extends Controller
 
         $task->update($data);
         $this->syncTask($task, $request);
+
+        // Kirim notifikasi ke vendor jika jadwal berubah
+        $vendor = Vendor::with('user')->find($data['vendor_id']);
+        $event  = Event::find($data['event_id']);
+        if ($vendor && $vendor->user_id && $event) {
+            $jadwalInfo = $data['jadwal_vendor']
+                ? ' Jadwal diperbarui ke ' . \Carbon\Carbon::parse($data['jadwal_vendor'])->format('d M Y') . '.'
+                : '';
+            Notification::create([
+                'user_id' => $vendor->user_id,
+                'judul'   => 'Penugasan Diperbarui',
+                'pesan'   => 'Detail penugasan Anda pada event "' . $event->nama_event . '" telah diperbarui.' . $jadwalInfo,
+                'tipe'    => 'event',
+            ]);
+        }
 
         return redirect()
             ->route('admin.event-vendors.index')
