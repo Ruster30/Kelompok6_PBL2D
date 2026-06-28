@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\client;
+namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
@@ -288,7 +288,7 @@ class ClientController extends Controller
         });
 
         return redirect()
-            ->route('proposals.show', $proposal->id)
+            ->route('client.proposals.show', $proposal->id)
             ->with('success', 'Negosiasi berhasil diajukan. Menunggu respon dari admin.');
     }
 
@@ -334,7 +334,7 @@ class ClientController extends Controller
         });
 
         return redirect()
-            ->route('proposals.show', $proposal->id)
+            ->route('client.proposals.show', $proposal->id)
             ->with('success', 'Penawaran diterima! Timeline event telah disiapkan secara otomatis.');
     }
 
