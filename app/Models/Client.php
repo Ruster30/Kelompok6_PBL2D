@@ -13,9 +13,8 @@ class Client extends Model
         'nama_client',
         'logo',
         'website',
-        'status',
         'is_active',
-    ];
+    ];  
 
     protected function casts(): array
     {

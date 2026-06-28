@@ -31,7 +31,7 @@
         <div class="portfolio-card">
             <div class="portfolio-img-wrap">
                 @if($portfolio->gambar)
-                <img src="{{ asset('storage/' . $portfolio->gambar) }}" alt="{{ $portfolio->judul }}" class="portfolio-img">
+                <img src="{{ asset('images/landing/portofolio/'.$portfolio->gambar) }}" alt="{{ $portfolio->judul }}" class="portfolio-img">
                 @else
                 <div class="portfolio-img" style="background:#f1f5f9; display:flex; align-items:center; justify-content:center;">
                     <i class="fas fa-image" style="font-size:32px; color:#cbd5e1;"></i>
@@ -66,8 +66,8 @@
                 </div>
                 @endif
                 <div style="margin-top:8px;">
-                    <span class="badge {{ $portfolio->status ? 'badge-active' : 'badge-gray' }}">
-                        {{ $portfolio->status ? 'Aktif' : 'Nonaktif' }}
+                    <span class="badge {{ $portfolio->is_active ? 'badge-active' : 'badge-gray' }}">
+                        {{ $portfolio->is_active ? 'Aktif' : 'Nonaktif' }}
                     </span>
                 </div>
             </div>
@@ -129,7 +129,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Status</label>
-                    <select name="status" id="status" class="form-input">
+                    <select name="is_active" id="is_active" class="form-input">
                         <option value="1">Aktif (Tampil di Landing Page)</option>
                         <option value="0">Nonaktif</option>
                     </select>
@@ -159,10 +159,10 @@ function openPortfolioModal(portfolio = null) {
         document.getElementById('event_id').value = portfolio.event_id ?? '';
         document.getElementById('tanggal_event').value = portfolio.tanggal_event ?? '';
         document.getElementById('deskripsi').value = portfolio.deskripsi ?? '';
-        document.getElementById('status').value = portfolio.status ? '1' : '0';
+        document.getElementById('is_active').value = portfolio.is_active ? '1' : '0';
         document.getElementById('gambarRequired').innerText = '';
         if (portfolio.gambar) {
-            preview.src = '{{ asset("storage") }}/' + portfolio.gambar;
+            preview.src='{{ asset("images/landing/portofolio") }}/'+portfolio.gambar;
             preview.style.display = 'block';
         }
         form.action = '{{ url("admin/cms/portfolio") }}/' + portfolio.id;

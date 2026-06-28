@@ -211,20 +211,19 @@ class LandingPageSeeder extends Seeder
 
         // 7. Client
         $clients = [
-            'Colony', 'Citilink', 'Yamaha', 'Lenovo', 'Pos Indonesia',
-            'Bri', 'Hyundai', 'Honda', 'Nissan', 'Rexvin',
-            'Dofla Jaya Properti', 'Motul', 'IQOS', 'Toyota',
-            'Mandiri', 'Telkomsel', 'XXI', 'HokBen',
-            'Tri', 'MakeOver', 'Red Modani', 'Wuling', 'Transmart', 'Huawei',
+            'Colony.png', 'Citilink.png', 'Yamaha.png', 'Lenovo.png', 'Pos-Indonesia.png',
+            'Bri.png', 'Hyundai.png', 'Honda.png', 'Nissan.png', 'Rexvin.png',
+            'Dofla-Jaya-Properti.png', 'Motul.png', 'IQOS.png', 'Toyota.png',
+            'Mandiri.png', 'Telkomsel.png', 'XXI.png', 'HokBen.png',
+            'Tri.png', 'MakeOver.png', 'Red-Modani.png', 'Wuling.png', 'Transmart.png', 'Huawei.png',
         ];
 
         foreach ($clients as $clientName) {
             Client::updateOrCreate(
                 ['nama_client' => $clientName],
                 [
-                    'logo' => null,
+                    'logo' => $clientName,
                     'website' => null,
-                    'status' => 'Aktif',
                     'is_active' => true,
                 ]
             );

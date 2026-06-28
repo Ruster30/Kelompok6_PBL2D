@@ -22,6 +22,8 @@
                 <button class="pf-btn" data-filter="konser">Konser</button>
                 <button class="pf-btn" data-filter="peluncuran">Peluncuran</button>
                 <button class="pf-btn" data-filter="gala">Gala</button>
+                <button class="pf-btn" data-filter="seminar">Seminar</button>
+                <button class="pf-btn" data-filter="expo">Expo</button>
             </div>
         </div>
 
@@ -91,5 +93,6 @@
         });
     });
 })();
+
 </script>
 @endpush

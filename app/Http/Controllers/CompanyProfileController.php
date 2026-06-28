@@ -60,27 +60,27 @@ class CompanyProfileController extends Controller
         ];
 
         $services = [];
-$services2 = [];
-        $servicesQuery = Service::where('is_active', true)->orderBy('urutan')->get();
-        if ($servicesQuery->isNotEmpty()) {
-            $servicesAll = $servicesQuery->map(function($s) { return ['icon'  => $s->icon ?? '★', 'title' => $s->nama_layanan, 'desc' => $s->deskripsi]; })->toArray();
-            $services  = array_slice($servicesAll, 0, 5);
-    $services2 = array_slice($servicesAll, 5, 3);
-        } 
+        $services2 = [];
+                $servicesQuery = Service::where('is_active', true)->orderBy('urutan')->get();
+                if ($servicesQuery->isNotEmpty()) {
+                    $servicesAll = $servicesQuery->map(function($s) { return ['icon'  => $s->icon ?? '★', 'title' => $s->nama_layanan, 'desc' => $s->deskripsi]; })->toArray();
+                    $services  = array_slice($servicesAll, 0, 5);
+                    $services2 = array_slice($servicesAll, 5, 3);
+                } 
 
         $teamQuery = Team::where('is_active', true)->orderBy('urutan')->get();
         if ($teamQuery->isNotEmpty()) {
             $team = $teamQuery->map(function($t) { 
+               $image = $t->foto ?: 'default.png';
                 return [
-                    'name' => $t->nama, 
+                    'name' => $t->nama,
                     'role' => $t->jabatan,
-                    'img'  => $t->foto ? public_path('images/landing/team/' . $t->foto) : public_path('images/landing/team/deafult.png')
-                ]; 
+                    'img' => public_path('images/landing/team/'.$image)
+                ];
             })->toArray();
         } 
 
         $portfolioQuery = Portfolio::where('is_active', true)->get();
-
         if ($portfolioQuery->isNotEmpty()) {
 
             $portfolio = $portfolioQuery->map(function ($p) {
@@ -90,21 +90,23 @@ $services2 = [];
                 return [
                     'title' => $p->judul,
                     'cat'   => $p->kategori,
-                    'img'   => public_path('images/landing/portofolio/' . $image),
+                    'img' => public_path('images/landing/portofolio/'.$p->gambar)
                 ];
 
             })->toArray();
         }
+
         $clientQuery = Client::where('is_active', true)->get();
         if ($clientQuery->isNotEmpty()) {
-            $clients = $clientQuery->map(function($c) {
-                $logoName = $c->logo ?? strtolower(str_replace(' ', '-', $c->nama_client));
+            $clients = $clientQuery->map(function ($c) {
+
                 return [
                     'name' => $c->nama_client,
-                    'logo' => public_path('images/landing/clients/' . $logoName . '.png')
+                    'logo' => public_path('images/landing/clients/' . $c->logo),
                 ];
+
             })->toArray();
-        } 
+        }
 
         $logoPath  = public_path('images/landing/logo.png');
         $logoBase64 = '';
