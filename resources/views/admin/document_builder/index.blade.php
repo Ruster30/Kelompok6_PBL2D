@@ -14,7 +14,6 @@
 <div class="tabs">
     <a href="{{ route('admin.proposals.index') }}" class="tab-link">Dokumen Umum</a>
     <a href="{{ route('admin.proposals.invoices') }}" class="tab-link">Invoice &amp; Kwitansi</a>
-    <a href="{{ route('admin.proposals.builder') }}" class="tab-link">Proposal Builder</a>
     <a href="{{ route('admin.document_builder.index') }}" class="tab-link active">Document Builder</a>
 </div>
 

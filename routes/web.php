@@ -156,8 +156,6 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::put('/proposals/invoices/{invoice}', [App\Http\Controllers\Admin\ProposalController::class, 'updateInvoice'])->name('admin.proposals.updateInvoice');
     Route::delete('/proposals/invoices/{invoice}', [App\Http\Controllers\Admin\ProposalController::class, 'destroyInvoice'])->name('admin.proposals.destroyInvoice');
     Route::get('/proposals/invoices/{invoice}/print', [App\Http\Controllers\Admin\ProposalController::class, 'printInvoice'])->name('admin.proposals.printInvoice');
-    Route::get('/proposals/builder', [App\Http\Controllers\Admin\ProposalController::class, 'builder'])->name('admin.proposals.builder');
-    Route::post('/proposals/builder/generate', [App\Http\Controllers\Admin\ProposalController::class, 'generate'])->name('admin.proposals.generate');
     Route::get('/proposals/{proposal}/download', [App\Http\Controllers\Admin\ProposalController::class, 'download'])->name('admin.proposals.download');
 
     // Document Builder
