@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
 // ========================================
 // Admin Routes
 // ========================================
-Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
 
     // ─── Kelola Klien ─────────────────────────────────────────────────────────────
@@ -228,10 +228,8 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::put('/settings/update', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
     Route::put('/settings/update-password', [App\Http\Controllers\Admin\SettingsController::class, 'updatePassword'])->name('admin.settings.updatePassword');
 
-    // Alias singkat untuk kemudahan sidebar (opsional tapi dibutuhkan jika blade pakai nama ini)
-    // admin.proposals alias (dari ProposalController - redirect dari upload/destroy)
-    Route::get('/proposals', [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.proposals.index');
-    Route::get('/proposals/invoices', [App\Http\Controllers\Admin\ProposalController::class, 'invoices'])->name('admin.proposals.invoices');
+    // Catatan: admin.proposals.index dan admin.proposals.invoices sudah didefinisikan di atas (baris ~151).
+    // Duplikasi dihapus untuk menghindari route name conflict.
 });
 
 require __DIR__.'/auth.php';
@@ -252,7 +250,7 @@ Route::get('/feedback/{event}', [FeedbackController::class, 'create'])
 Route::post('/feedback', [FeedbackController::class, 'store'])
     ->name('feedback.store');
 
-Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
+Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->group(function () {
     // ── Ringkasan / Dashboard ────────────────────────
     Route::get('/',                         [ClientController::class, 'dashboard'])
          ->name('dashboard');
@@ -287,17 +285,17 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
     
     // ── Terima Penawaran LANGSUNG (tanpa negosiasi) ─────────────────
     Route::post('/proposals/{id}/terima',
-        [App\Http\Controllers\client\ClientController::class, 'terimaProposal'])
+        [App\Http\Controllers\Client\ClientController::class, 'terimaProposal'])
         ->name('proposals.terima');
 
     // ── Ajukan Negosiasi ────────────────────────────────────────────
     Route::post('/proposals/{id}/negosiasi',
-        [App\Http\Controllers\client\ClientController::class, 'submitNegosiasi'])
+        [App\Http\Controllers\Client\ClientController::class, 'submitNegosiasi'])
         ->name('proposals.negosiasi');
 
     // ── Terima Penawaran Revisi SETELAH Negosiasi ───────────────────
     Route::post('/proposals/{id}/terima-setelah-negosiasi',
-        [App\Http\Controllers\client\ClientController::class, 'terimaSetelahNegosiasi'])
+        [App\Http\Controllers\Client\ClientController::class, 'terimaSetelahNegosiasi'])
         ->name('proposals.terima-setelah-negosiasi');
  
     // ── Pengaturan Akun ──────────────────────────────
@@ -325,7 +323,7 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
 | Sesuaikan middleware dengan sistem autentikasi yang Anda gunakan.
 */
 
-Route::prefix('vendor')->name('vendor.')->middleware(['auth'])->group(function () {
+Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'vendor.role'])->group(function () {
 
     // Ringkasan (Dashboard)
     Route::get('/ringkasan', [VendorController::class, 'ringkasan'])->name('ringkasan');
@@ -357,5 +355,3 @@ Route::prefix('vendor')->name('vendor.')->middleware(['auth'])->group(function (
     Route::redirect('/', '/vendor/ringkasan');
 
 });
-
-

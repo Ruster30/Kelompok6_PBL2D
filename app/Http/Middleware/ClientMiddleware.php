@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class ClientMiddleware
 {
     /**
      * Handle an incoming request.
@@ -19,8 +19,8 @@ class AdminMiddleware
             return redirect()->route('login');
         }
 
-        if ($request->user()->role !== 'admin') {
-            abort(403, 'Akses ditolak. Halaman ini khusus admin.');
+        if ($request->user()->role !== 'client') {
+            abort(403, 'Akses ditolak. Halaman ini khusus client.');
         }
 
         return $next($request);
