@@ -76,6 +76,26 @@
             pointer-events: none;
         }
 
+        /*back home*/
+        .back-home{
+            margin-bottom:24px;
+        }
+
+        .back-home a{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            color:var(--text-secondary);
+            text-decoration:none;
+            font-size:14px;
+            font-weight:600;
+            transition:.25s;
+        }
+
+        .back-home a:hover{
+            color:var(--accent);
+        }
+
         .logo-box {
             background: #fff;
             border-radius: 10px;
@@ -472,6 +492,12 @@
 
 <!-- LEFT PANEL -->
 <div class="left-panel">
+    <div class="back-home">
+        <a href="{{ url('/') }}">
+            <i class="bi bi-arrow-left"></i>
+            Kembali ke Beranda
+        </a>
+    </div>
     <div class="logo-box">
         {{-- Ganti src dengan path logo Anda --}}
         <img src="{{ asset('images/Logo-bg.png') }}" alt="Alpha Organizer"
@@ -518,6 +544,8 @@
         <form method="POST" action="{{ route('login') }}" id="loginForm">
             @csrf
 
+            <input type="hidden" name="login" id="login">
+
             <!-- Field Email -->
             <div class="form-group" id="field-email">
                 <label class="form-label" for="email">Alamat Email</label>
@@ -550,7 +578,10 @@
                         class="form-control-custom {{ $errors->has('phone') ? 'is-invalid' : '' }}"
                         placeholder="+62 812-3456-7890"
                         value="{{ old('phone') }}"
-                        autocomplete="tel">
+                        autocomplete="tel"
+                        inputmode="numeric"
+                        pattern="[0-9]*"
+                        maxlength="13">
                     <i class="bi bi-telephone input-icon"></i>
                 </div>
                 @error('phone')
@@ -666,9 +697,29 @@
         }
     }
 
+    document.getElementById('loginForm').addEventListener('submit', function () {
+
+        const loginType = document.getElementById('login_type').value;
+
+        if (loginType === 'email') {
+            document.getElementById('login').value =
+                document.getElementById('email').value.trim();
+        } else {
+            document.getElementById('login').value =
+                document.getElementById('phone').value.trim();
+        }
+
+    });
+
+    // Hanya izinkan angka pada input nomor telepon
+    document.getElementById('phone').addEventListener('input', function () {
+        this.value = this.value.replace(/\D/g, '');
+    });
+
     // Set initial required state
     document.getElementById('email').required = true;
     document.getElementById('phone').required = false;
+    
 </script>
 </body>
 </html>

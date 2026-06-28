@@ -331,6 +331,10 @@
         <a href="{{ route('admin.dashboard') }}"  class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <i class="fas fa-home"></i> Ringkasan Dashboard
         </a>
+        <a href="{{ route('admin.kelola-klien.index') }}"
+            class="nav-item {{ request()->routeIs('admin.kelola-klien.*') ? 'active' : '' }}">
+            <i class="fas fa-user-friends"></i> Kelola Klien
+        </a>
         <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
             <i class="fas fa-calendar-alt"></i> Kelola Event
         </a>

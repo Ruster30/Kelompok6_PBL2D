@@ -75,6 +75,26 @@
             pointer-events: none;
         }
 
+        /* Tombol Kembali */
+        .back-login{
+            margin-bottom:24px;
+        }
+
+        .back-login a{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            color:var(--text-secondary);
+            text-decoration:none;
+            font-size:14px;
+            font-weight:600;
+            transition:.25s;
+        }
+
+        .back-login a:hover{
+            color:var(--accent);
+        }
+
         .logo-box {
             background: #fff;
             border-radius: 10px;
@@ -157,13 +177,12 @@
         /* ── RIGHT PANEL ── */
         .right-panel {
             width: 60%;
-            height: 100vh;
             min-height: 100vh;
             background: var(--bg-panel);
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding: 40px 56px;
+            align-items: flex-start;
+            padding: 70px 56px 50px;
             margin-left: 40%;
             overflow-y: auto;
         }
@@ -171,7 +190,7 @@
         .form-wrapper {
             width: 100%;
             max-width: 500px;
-            padding: 8px 0;
+            padding: 20px 0 40px;
         }
 
         .form-wrapper h2 {
@@ -442,6 +461,12 @@
 
 <!-- LEFT PANEL -->
 <div class="left-panel">
+    <div class="back-login">
+        <a href="{{ route('login') }}">
+            <i class="bi bi-arrow-left"></i>
+            Kembali ke Login
+        </a>
+    </div>
     <div class="logo-box">
         <img src="{{ asset('images/Logo-bg.png') }}" alt="Alpha Organizer"
              onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
@@ -696,17 +721,14 @@
     }
 
     // Phone number auto-format
-    document.getElementById('phone').addEventListener('input', function(e) {
-        let val = e.target.value.replace(/\D/g, '');
-        // Remove leading 0 if present (because we have +62 prefix)
-        if (val.startsWith('0')) val = val.substring(1);
-        // Format: 812-3456-7890
-        if (val.length > 3 && val.length <= 7) {
-            val = val.substring(0,3) + '-' + val.substring(3);
-        } else if (val.length > 7) {
-            val = val.substring(0,3) + '-' + val.substring(3,7) + '-' + val.substring(7,11);
+    document.getElementById('registerForm').addEventListener('submit', function () {
+        const phone = document.getElementById('phone');
+
+        phone.value = phone.value.replace(/\D/g, '');
+
+        if (phone.value.startsWith('0')) {
+            phone.value = phone.value.substring(1);
         }
-        e.target.value = val;
     });
 </script>
 </body>
