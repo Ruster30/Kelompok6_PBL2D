@@ -30,7 +30,7 @@
         @forelse($teams as $team)
         <div class="team-card">
             <div class="team-photo-wrap">
-                <img src="{{ asset('storage/' . $team->foto) }}" alt="{{ $team->nama }}" class="team-photo">
+                <img src="{{ asset('images/landing/team/'.$team->foto) }}" alt="{{ $team->nama }}" class="team-photo">
                 <div class="team-photo-actions">
                     <button class="action-btn" title="Edit"
                             onclick='openTeamModal({{ json_encode($team) }})'
@@ -139,7 +139,7 @@ function openTeamModal(team = null) {
         document.getElementById('urutan').value = team.urutan;
         document.getElementById('is_active').value = team.is_active ? '1' : '0';
         document.getElementById('fotoRequired').innerText = '';
-        preview.src = '{{ asset("storage") }}/' + team.foto;
+        preview.src = '{{ asset("images/landing/team") }}/' + team.foto;
         preview.style.display = 'block';
         form.action = '{{ url("admin/cms/team") }}/' + team.id;
         document.getElementById('teamFormMethod').value = 'PUT';
