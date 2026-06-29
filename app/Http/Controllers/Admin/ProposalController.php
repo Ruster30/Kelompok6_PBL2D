@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Document;
-use App\Models\Invoice;
+use App\Models\DocumentSend;
 use App\Models\Event;
-use App\Models\Rab;
-use App\Models\Proposal;
 use App\Models\Notification;
+use App\Models\Proposal;
+use App\Models\User;
 use App\Models\Negotiation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -18,6 +19,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class ProposalController extends Controller
 {
     // ─────────────── DOKUMEN UMUM ───────────────
+
     public function index(Request $request)
     {
         $query = Document::with(['user', 'event'])->latest();
@@ -29,9 +31,12 @@ class ProposalController extends Controller
             $query->where('tipe', $request->type);
         }
 
+        $clients = User::where('role', 'client')->orderBy('name')->get();
+
         return view('admin.proposals.documents', [
             'documents' => $query->paginate(10)->withQueryString(),
             'events'    => Event::orderBy('nama_event')->get(),
+            'clients'   => $clients,
         ]);
     }
 
@@ -59,7 +64,103 @@ class ProposalController extends Controller
             'tipe'      => $type,
         ]);
 
-        return redirect()->route('admin.proposals.index')->with('success', 'File berhasil diunggah.');
+        return redirect()->route('admin.proposals.index')
+            ->with('success', 'File berhasil diunggah.');
+    }
+
+    /**
+     * Preview dokumen di tab baru (stream, bukan download).
+     */
+    public function preview(Document $document)
+    {
+        abort_unless(Storage::disk('public')->exists($document->file_path), 404);
+
+        return Storage::disk('public')->response($document->file_path, $document->nama_file, [
+            'Content-Disposition' => 'inline; filename="' . $document->nama_file . '"',
+        ]);
+    }
+
+    /**
+     * Download dokumen langsung.
+     */
+    public function downloadDocument(Document $document)
+    {
+        abort_unless(Storage::disk('public')->exists($document->file_path), 404);
+
+        return Storage::disk('public')->download($document->file_path, $document->nama_file);
+    }
+
+    /**
+     * Kirim dokumen ke client yang dipilih.
+     * - Simpan riwayat ke document_sends
+     * - Kirim notifikasi dalam sistem
+     * - Kirim email jika SMTP terkonfigurasi
+     */
+    public function sendToClient(Request $request, Document $document)
+    {
+        $request->validate([
+            'client_id' => 'required|exists:users,id',
+            'pesan'     => 'nullable|string|max:1000',
+        ]);
+
+        $client    = User::findOrFail($request->client_id);
+        $emailSent = false;
+
+        // Simpan riwayat pengiriman
+        DocumentSend::create([
+            'document_id'  => $document->id,
+            'sender_id'    => auth()->id(),
+            'recipient_id' => $client->id,
+            'pesan'        => $request->pesan,
+            'email_sent'   => false,
+            'sent_at'      => now(),
+        ]);
+
+        // Notifikasi dalam sistem
+        Notification::create([
+            'user_id' => $client->id,
+            'judul'   => 'Dokumen Baru Dikirim',
+            'pesan'   => 'Admin telah mengirimkan dokumen "' . $document->nama_file . '" kepada Anda.'
+                . ($request->pesan ? ' Pesan: ' . $request->pesan : ''),
+            'tipe'    => 'info',
+        ]);
+
+        // Kirim email jika SMTP terkonfigurasi
+        if ($this->smtpConfigured()) {
+            try {
+                $filePath = Storage::disk('public')->path($document->file_path);
+                Mail::raw(
+                    "Yth. {$client->name},\n\n"
+                    . "Admin telah mengirimkan dokumen \"{$document->nama_file}\" kepada Anda.\n"
+                    . ($request->pesan ? "\nPesan: {$request->pesan}\n" : '')
+                    . "\nSilakan login ke sistem untuk melihat detail.\n\n"
+                    . "Salam,\nTim Alpha.corp",
+                    function ($mail) use ($client, $document, $filePath) {
+                        $mail->to($client->email)
+                             ->subject('Dokumen Baru: ' . $document->nama_file)
+                             ->attach($filePath, ['as' => $document->nama_file]);
+                    }
+                );
+                $emailSent = true;
+
+                // Update flag email_sent
+                DocumentSend::where('document_id', $document->id)
+                    ->where('recipient_id', $client->id)
+                    ->latest()
+                    ->first()
+                    ?->update(['email_sent' => true]);
+
+            } catch (\Exception $e) {
+                // SMTP gagal — notifikasi sistem tetap terkirim
+                \Log::warning('Kirim email dokumen gagal: ' . $e->getMessage());
+            }
+        }
+
+        $msg = $emailSent
+            ? "Dokumen berhasil dikirim ke {$client->name} via notifikasi dan email."
+            : "Dokumen berhasil dikirim ke {$client->name} via notifikasi sistem.";
+
+        return redirect()->route('admin.proposals.index')->with('success', $msg);
     }
 
     public function destroy(Document $document)
@@ -69,78 +170,16 @@ class ProposalController extends Controller
         }
         $document->delete();
 
-        return redirect()->route('admin.proposals.index')->with('success', 'Dokumen berhasil dihapus.');
-    }
-
-    // ─────────────── INVOICE & KWITANSI ───────────────
-    public function invoices()
-    {
-        return view('admin.proposals.invoices', [
-            'invoices' => Invoice::with('event.client')->latest()->get(),
-            'events'   => Event::orderBy('nama_event')->get(),
-        ]);
-    }
-
-    public function storeInvoice(Request $request)
-    {
-        $data = $request->validate([
-            'nomor_invoice'   => 'required|string|max:100|unique:invoices,nomor_invoice',
-            'event_id'        => 'required|exists:events,id',
-            'total_invoice'   => 'required|numeric|min:0',
-            'tanggal_invoice' => 'required|date',
-            'status_invoice'  => 'required|in:draft,terkirim,lunas',
-        ]);
-
-        Invoice::create($data);
-
-        return redirect()->route('admin.proposals.invoices')->with('success', 'Kwitansi berhasil dibuat.');
-    }
-
-    public function updateInvoice(Request $request, Invoice $invoice)
-    {
-        $data = $request->validate([
-            'nomor_invoice'   => 'required|string|max:100|unique:invoices,nomor_invoice,' . $invoice->id,
-            'event_id'        => 'required|exists:events,id',
-            'total_invoice'   => 'required|numeric|min:0',
-            'tanggal_invoice' => 'required|date',
-            'status_invoice'  => 'required|in:draft,terkirim,lunas',
-        ]);
-
-        $invoice->update($data);
-
-        return redirect()->route('admin.proposals.invoices')->with('success', 'Kwitansi berhasil diperbarui.');
-    }
-
-    public function destroyInvoice(Invoice $invoice)
-    {
-        $invoice->delete();
-        return redirect()->route('admin.proposals.invoices')->with('success', 'Kwitansi berhasil dihapus.');
-    }
-
-    public function printInvoice(Invoice $invoice)
-    {
-        $invoice->load('event.client');
-        $pdf = Pdf::loadView('admin.proposals.invoice_pdf', compact('invoice'));
-        return $pdf->stream('kwitansi-' . $invoice->nomor_invoice . '.pdf');
-    }
-
-    public function download(Proposal $proposal)
-    {
-        abort_unless(Storage::disk('public')->exists($proposal->file_proposal), 404);
-        return Storage::disk('public')->response($proposal->file_proposal);
+        return redirect()->route('admin.proposals.index')
+            ->with('success', 'Dokumen berhasil dihapus.');
     }
 
     // ─────────────── SURAT PENAWARAN ───────────────
 
-    /**
-     * Tampilkan preview Surat Penawaran dari suatu event/request.
-     * Route: GET /admin/requests/{event}/surat-penawaran
-     */
     public function suratPenawaran(Event $event)
     {
         $event->load(['client', 'rabs', 'latestProposal']);
 
-        // Nomor surat otomatis: PEN-{YYYYMMDD}-{count+1}
         $nomorSurat = sprintf(
             'PEN-%s-%03d',
             now()->format('Ymd'),
@@ -150,10 +189,6 @@ class ProposalController extends Controller
         return view('admin.requests.surat_penawaran', compact('event', 'nomorSurat'));
     }
 
-    /**
-     * Generate PDF Surat Penawaran & simpan ke proposals, kirim notifikasi ke client.
-     * Route: POST /admin/requests/{event}/kirim-penawaran
-     */
     public function kirimPenawaran(Request $request, Event $event)
     {
         $data = $request->validate([
@@ -163,7 +198,6 @@ class ProposalController extends Controller
 
         $event->load(['client', 'rabs']);
 
-        // Generate PDF Surat Penawaran
         $pdf      = Pdf::loadView('admin.requests.surat_penawaran_pdf', compact('event', 'data'));
         $version  = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
         $filename = 'surat-penawaran-' . Str::slug($event->nama_event) . '-v' . $version . '.pdf';
@@ -171,7 +205,6 @@ class ProposalController extends Controller
 
         Storage::disk('public')->put($path, $pdf->output());
 
-        // Simpan sebagai Proposal
         Proposal::create([
             'event_id'         => $event->id,
             'nomor_proposal'   => $data['nomor_surat'],
@@ -181,10 +214,8 @@ class ProposalController extends Controller
             'tanggal_proposal' => $data['tanggal_surat'],
         ]);
 
-        // Update status event → diproses
         $event->update(['status_event' => 'diproses']);
 
-        // Notifikasi ke client
         Notification::create([
             'user_id' => $event->client_id,
             'judul'   => 'Surat Penawaran Dikirim',
@@ -192,15 +223,10 @@ class ProposalController extends Controller
             'tipe'    => 'info',
         ]);
 
-        return redirect()
-            ->route('admin.requests.index')
+        return redirect()->route('admin.requests.index')
             ->with('success', 'Surat penawaran berhasil dikirim ke client.');
     }
 
-    /**
-     * Export PDF Surat Penawaran langsung (tanpa menyimpan).
-     * Route: GET /admin/requests/{event}/export-pdf
-     */
     public function exportPdf(Event $event)
     {
         $event->load(['client', 'rabs', 'latestProposal']);
@@ -219,31 +245,28 @@ class ProposalController extends Controller
         return $pdf->download($filename);
     }
 
-    /**
-     * Revisi penawaran — buat proposal baru dengan status diajukan.
-     * Route: POST /admin/requests/{event}/revisi-penawaran
-     */
     public function revisiPenawaran(Event $event)
     {
         $event->load(['client', 'rabs']);
 
+        $version  = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
+        $nomorRev = sprintf('REV-%s-%03d', now()->format('Ymd'), $version);
+
         $pdf      = Pdf::loadView('admin.requests.surat_penawaran_pdf', [
             'event' => $event,
             'data'  => [
-                'nomor_surat'   => sprintf('REV-%s-%03d', now()->format('Ymd'), Proposal::where('event_id', $event->id)->count() + 1),
+                'nomor_surat'   => $nomorRev,
                 'tanggal_surat' => now()->format('Y-m-d'),
             ],
         ]);
 
-        $version  = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
         $filename = 'revisi-penawaran-' . Str::slug($event->nama_event) . '-v' . $version . '.pdf';
         $path     = 'proposals/' . $filename;
-
         Storage::disk('public')->put($path, $pdf->output());
 
         Proposal::create([
             'event_id'         => $event->id,
-            'nomor_proposal'   => sprintf('REV-%s-%03d', now()->format('Ymd'), $version),
+            'nomor_proposal'   => $nomorRev,
             'file_proposal'    => $path,
             'versi'            => $version,
             'status'           => 'diajukan',
@@ -257,8 +280,18 @@ class ProposalController extends Controller
             'tipe'    => 'info',
         ]);
 
-        return redirect()
-            ->route('admin.requests.index')
+        return redirect()->route('admin.requests.index')
             ->with('success', 'Revisi penawaran berhasil dikirim.');
+    }
+
+    // ─────────────── HELPER ───────────────
+
+    /**
+     * Cek apakah SMTP sudah dikonfigurasi (bukan driver log/array).
+     */
+    private function smtpConfigured(): bool
+    {
+        $mailer = config('mail.default');
+        return !in_array($mailer, ['log', 'array', null]);
     }
 }

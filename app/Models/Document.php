@@ -58,6 +58,11 @@ class Document extends Model
         };
     }
 
+    public function sends()
+    {
+        return $this->hasMany(DocumentSend::class);
+    }
+
     public function getFileUrlAttribute(): ?string
     {
         return $this->file_path
