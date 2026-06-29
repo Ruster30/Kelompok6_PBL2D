@@ -43,25 +43,20 @@ class ProposalController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'file'     => 'required|file|max:20480|mimes:svg,png,jpg,jpeg,pdf,docx,xlsx',
+            'file'     => 'required|file|max:102400|mimes:svg,png,jpg,jpeg,pdf,docx,xlsx',
             'event_id' => 'nullable|exists:events,id',
+            'tipe'     => 'required|in:proposal,kontrak,invoice,rab,lainnya',
         ]);
 
         $file = $request->file('file');
         $path = $file->store('documents', 'public');
-
-        $type = match (true) {
-            str_contains(strtolower($file->getClientOriginalName()), 'proposal') => 'proposal',
-            str_contains(strtolower($file->getClientOriginalName()), 'kontrak')  => 'kontrak',
-            default => 'lainnya',
-        };
 
         Document::create([
             'event_id'  => $request->event_id,
             'user_id'   => auth()->id(),
             'nama_file' => $file->getClientOriginalName(),
             'file_path' => $path,
-            'tipe'      => $type,
+            'tipe'      => $request->tipe,
         ]);
 
         return redirect()->route('admin.proposals.index')

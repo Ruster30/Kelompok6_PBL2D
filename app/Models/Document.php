@@ -17,12 +17,21 @@ class Document extends Model
         'tipe',
     ];
 
-    // Nilai tipe yang valid (sudah tidak pakai enum di DB setelah migrasi)
+    // Nilai tipe yang valid
     public const TIPE_PROPOSAL  = 'proposal';
     public const TIPE_KONTRAK   = 'kontrak';
     public const TIPE_INVOICE   = 'invoice';
     public const TIPE_RAB       = 'rab';
     public const TIPE_LAINNYA   = 'lainnya';
+
+    // Daftar tipe valid untuk validasi form
+    public const TIPE_OPTIONS = [
+        'proposal' => 'Proposal',
+        'kontrak'  => 'Kontrak',
+        'invoice'  => 'Invoice',
+        'rab'      => 'RAB',
+        'lainnya'  => 'Lainnya',
+    ];
 
     public function event()
     {
@@ -40,7 +49,7 @@ class Document extends Model
     {
         return match ($this->tipe) {
             'proposal' => 'Proposal',
-            'kontrak'  => 'Surat Kontrak',
+            'kontrak'  => 'Kontrak',
             'invoice'  => 'Invoice',
             'rab'      => 'RAB',
             default    => 'Lainnya',

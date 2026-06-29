@@ -10,7 +10,7 @@
     </div>
 </div>
 
-{{-- Tab navigasi: Invoice & Kwitansi sudah dihapus --}}
+{{-- Tab navigasi --}}
 <div class="tabs">
     <a href="{{ route('admin.proposals.index') }}" class="tab-link active">Dokumen Umum</a>
     <a href="{{ route('admin.document_builder.index') }}" class="tab-link">Document Builder</a>
@@ -27,21 +27,43 @@
     {{-- Upload Zone --}}
     <form action="{{ route('admin.proposals.upload') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
         @csrf
-        <div style="margin-bottom:12px;">
-            <select name="event_id" class="form-input" style="max-width:320px;">
-                <option value="">-- Tidak terkait event --</option>
-                @foreach($events as $event)
-                <option value="{{ $event->id }}">{{ $event->nama_event }}</option>
-                @endforeach
-            </select>
+
+        {{-- Baris 1: Event + Jenis Dokumen --}}
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+            <div>
+                <label style="display:block; font-size:.82rem; font-weight:600; color:#374151; margin-bottom:4px;">
+                    Event <span style="color:#9ca3af; font-weight:400;">(opsional)</span>
+                </label>
+                <select name="event_id" class="form-input">
+                    <option value="">-- Tidak terkait event --</option>
+                    @foreach($events as $event)
+                    <option value="{{ $event->id }}">{{ $event->nama_event }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label style="display:block; font-size:.82rem; font-weight:600; color:#374151; margin-bottom:4px;">
+                    Jenis Dokumen <span style="color:#ef4444;">*</span>
+                </label>
+                <select name="tipe" id="tipeUpload" class="form-input" required>
+                    <option value="">-- Pilih Jenis --</option>
+                    <option value="proposal">Proposal</option>
+                    <option value="kontrak">Kontrak</option>
+                    <option value="invoice">Invoice</option>
+                    <option value="rab">RAB</option>
+                    <option value="lainnya">Lainnya</option>
+                </select>
+            </div>
         </div>
+
+        {{-- Drop Zone --}}
         <label for="fileInput" class="upload-zone">
             <i class="bi bi-cloud-upload" style="font-size:2rem;"></i>
             <h3>Klik untuk upload atau seret file ke sini</h3>
-            <p>SVG, PNG, JPG, PDF, DOCX atau XLSX (maks. 20MB)</p>
+            <p>SVG, PNG, JPG, PDF, DOCX atau XLSX (maks. 100MB)</p>
             <input type="file" name="file" id="fileInput" style="display:none;"
                    accept=".svg,.png,.jpg,.jpeg,.pdf,.docx,.xlsx"
-                   onchange="document.getElementById('uploadForm').submit()">
+                   onchange="submitUpload()">
         </label>
     </form>
 
@@ -52,9 +74,11 @@
             <input type="text" id="searchInput" placeholder="Cari dokumen..." value="{{ request('search') }}">
         </div>
         <select class="select-filter" id="typeFilter">
-            <option value="">Semua Tipe</option>
+            <option value="">Semua</option>
             <option value="proposal" {{ request('type') == 'proposal' ? 'selected' : '' }}>Proposal</option>
             <option value="kontrak"  {{ request('type') == 'kontrak'  ? 'selected' : '' }}>Kontrak</option>
+            <option value="invoice"  {{ request('type') == 'invoice'  ? 'selected' : '' }}>Invoice</option>
+            <option value="rab"      {{ request('type') == 'rab'      ? 'selected' : '' }}>RAB</option>
             <option value="lainnya"  {{ request('type') == 'lainnya'  ? 'selected' : '' }}>Lainnya</option>
         </select>
     </div>
@@ -64,7 +88,8 @@
         <thead>
             <tr>
                 <th>Nama File</th>
-                <th>Tipe</th>
+                <th>Jenis</th>
+                <th>Event</th>
                 <th>Diunggah Oleh</th>
                 <th>Tanggal</th>
                 <th style="text-align:center;">Aksi</th>
@@ -74,14 +99,40 @@
             @forelse($documents as $doc)
             <tr>
                 <td style="font-weight:500;">
-                    <i class="bi bi-file-earmark-pdf" style="color:#f43f5e; margin-right:8px;"></i>
+                    @php
+                        $ext = strtolower(pathinfo($doc->nama_file, PATHINFO_EXTENSION));
+                        $icon = match(true) {
+                            in_array($ext, ['pdf'])        => 'bi-file-earmark-pdf',
+                            in_array($ext, ['docx','doc']) => 'bi-file-earmark-word',
+                            in_array($ext, ['xlsx','xls']) => 'bi-file-earmark-excel',
+                            in_array($ext, ['png','jpg','jpeg','svg']) => 'bi-file-earmark-image',
+                            default => 'bi-file-earmark',
+                        };
+                        $iconColor = match(true) {
+                            $ext === 'pdf'  => '#f43f5e',
+                            in_array($ext, ['docx','doc']) => '#2563eb',
+                            in_array($ext, ['xlsx','xls']) => '#16a34a',
+                            default => '#6b7280',
+                        };
+                    @endphp
+                    <i class="bi {{ $icon }}" style="color:{{ $iconColor }}; margin-right:8px;"></i>
                     {{ $doc->nama_file }}
                 </td>
                 <td>
-                    <span class="badge" style="background:#dbeafe; color:#1e40af; padding:3px 10px; border-radius:12px; font-size:12px;">
-                        {{ ucfirst($doc->tipe) }}
+                    @php
+                        $badgeColor = match($doc->tipe) {
+                            'proposal' => ['bg'=>'#ede9fe','text'=>'#5b21b6'],
+                            'kontrak'  => ['bg'=>'#dbeafe','text'=>'#1e40af'],
+                            'invoice'  => ['bg'=>'#fef3c7','text'=>'#92400e'],
+                            'rab'      => ['bg'=>'#dcfce7','text'=>'#166534'],
+                            default    => ['bg'=>'#f3f4f6','text'=>'#374151'],
+                        };
+                    @endphp
+                    <span class="badge" style="background:{{ $badgeColor['bg'] }}; color:{{ $badgeColor['text'] }}; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:500;">
+                        {{ $doc->tipe_label }}
                     </span>
                 </td>
+                <td style="color:#6b7280; font-size:13px;">{{ $doc->event->nama_event ?? '-' }}</td>
                 <td>{{ $doc->user->name ?? '-' }}</td>
                 <td>{{ \Carbon\Carbon::parse($doc->created_at)->format('d M Y') }}</td>
                 <td>
@@ -127,7 +178,7 @@
             </tr>
             @empty
             <tr class="empty-row">
-                <td colspan="5" style="text-align:center; color:#9ca3af; padding:32px;">
+                <td colspan="6" style="text-align:center; color:#9ca3af; padding:32px;">
                     <i class="bi bi-folder2-open" style="font-size:2rem; display:block; margin-bottom:8px;"></i>
                     Belum ada dokumen. Upload file di atas untuk memulai.
                 </td>
@@ -206,6 +257,17 @@
 
 @push('scripts')
 <script>
+// ─── Validasi & Submit upload ──────────────────────────
+function submitUpload() {
+    const tipe = document.getElementById('tipeUpload').value;
+    if (!tipe) {
+        alert('Harap pilih Jenis Dokumen sebelum mengunggah file.');
+        document.getElementById('fileInput').value = '';
+        return;
+    }
+    document.getElementById('uploadForm').submit();
+}
+
 // ─── Filter pencarian ──────────────────────────
 document.getElementById('searchInput').addEventListener('input', debounce(filterTable, 350));
 document.getElementById('typeFilter').addEventListener('change', filterTable);
@@ -227,7 +289,6 @@ function bukaModalKirim(docId, docName) {
     document.querySelector('#modalDocName span').textContent = docName;
     const modal = document.getElementById('modalKirim');
     modal.style.display = 'flex';
-    // Reset form
     modal.querySelector('select[name="client_id"]').value = '';
     modal.querySelector('textarea[name="pesan"]').value   = '';
 }
@@ -236,12 +297,10 @@ function tutupModalKirim() {
     document.getElementById('modalKirim').style.display = 'none';
 }
 
-// Tutup modal jika klik luar
 document.getElementById('modalKirim').addEventListener('click', function (e) {
     if (e.target === this) tutupModalKirim();
 });
 
-// Escape key
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') tutupModalKirim();
 });

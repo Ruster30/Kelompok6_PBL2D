@@ -142,10 +142,12 @@ class DocumentBuilderService
         $path = 'documents/' . $filename;
         Storage::disk('public')->put($path, $pdf->output());
 
-        // Map jenis dokumen ke enum di tabel documents
+        // Map jenis dokumen ke nilai tipe di tabel documents
         $tipeEnum = match ($jenis) {
             'proposal'      => 'proposal',
             'surat_kontrak' => 'kontrak',
+            'invoice'       => 'invoice',
+            'rab'           => 'rab',
             default         => 'lainnya',
         };
 
