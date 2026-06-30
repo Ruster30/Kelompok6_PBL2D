@@ -114,7 +114,7 @@
             @if(session('success'))
             <div style="background:#dcfce7;border:1px solid #86efac;color:#15803d;
                         padding:12px 16px;border-radius:8px;margin-bottom:20px;
-                        font-size:13.5px;display:flex;align-items:center;gap:8px;">
+                        font-size:13.5px;display:flex;align-items:center;gap:8px;" id="success-alert">
                 <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
             </div>
             @endif
@@ -127,6 +127,24 @@
             @endif
 
             @yield('content')
+            <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+
+                        const alert = document.getElementById('success-alert');
+
+                        if (alert) {
+                            setTimeout(() => {
+                                alert.style.transition = "opacity .3s ease";
+                                alert.style.opacity = "0";
+
+                                setTimeout(() => {
+                                    alert.remove();
+                                }, 300);
+                            }, 2000);
+                        }
+
+                    });
+            </script>
         </main>
     </div>
 </div>
