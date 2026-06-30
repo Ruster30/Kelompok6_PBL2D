@@ -408,61 +408,6 @@
             color: #b0bec5; font-size: 15px;
         }
 
-        /* Timeline (Jadwal) */
-        .timeline-wrapper { position: relative; padding-left: 32px; }
-
-        .timeline-line {
-            position: absolute;
-            left: 10px; top: 12px; bottom: 12px;
-            width: 2px;
-            background: #e2e8f0;
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 0;
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: -26px;
-            top: 18px;
-            width: 12px; height: 12px;
-            border-radius: 50%;
-            background: #d1d5db;
-            border: 2px solid #fff;
-            box-shadow: 0 0 0 2px #d1d5db;
-            z-index: 1;
-        }
-
-        .timeline-dot.active {
-            background: var(--teal);
-            box-shadow: 0 0 0 2px var(--teal);
-        }
-
-        .timeline-dot.done {
-            background: #22c55e;
-            box-shadow: 0 0 0 2px #22c55e;
-        }
-
-        .timeline-card {
-            background: #fff;
-            border-radius: 8px;
-            border: 1px solid #eef1f5;
-            padding: 16px 20px;
-            margin-bottom: 12px;
-        }
-
-        .timeline-card:hover { border-color: #cbd5e1; }
-
-        .timeline-date {
-            font-size: 12px;
-            color: var(--text-muted-custom);
-            background: #f1f5f9;
-            padding: 2px 10px;
-            border-radius: 20px;
-        }
-
         /* Buttons */
         .btn-teal {
             background: var(--teal);
@@ -778,10 +723,6 @@
         <a href="{{ route('vendor.event-saya') }}" class="nav-item-custom {{ request()->routeIs('vendor.event-saya') ? 'active' : '' }}">
             <i class="bi bi-calendar3"></i>
             Event Saya
-        </a>
-        <a href="{{ route('vendor.jadwal') }}" class="nav-item-custom {{ request()->routeIs('vendor.jadwal') ? 'active' : '' }}">
-            <i class="bi bi-clock"></i>
-            Jadwal
         </a>
         <a href="{{ route('vendor.daftar-tugas') }}" class="nav-item-custom {{ request()->routeIs('vendor.daftar-tugas') ? 'active' : '' }}">
             <i class="bi bi-check2-square"></i>
