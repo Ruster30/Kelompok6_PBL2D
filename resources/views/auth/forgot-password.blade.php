@@ -6,271 +6,476 @@
     <title>Lupa Password - Alpha Organizer</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
+        :root {
+            --bg-dark:      #0d1117;
+            --bg-panel:     #111827;
+            --bg-left:      #0b1628;
+            --bg-input:     #1a2233;
+            --border-color: #2a3448;
+            --text-primary: #f0f4ff;
+            --text-secondary:#8a99b3;
+            --text-muted:   #5a6882;
+            --accent:       #0ecab4;
+            --accent-hover: #0db8a4;
+            --accent-dark:  #0a8f82;
+            --error:        #ef4444;
         }
 
-        body{
-            font-family:'Plus Jakarta Sans',sans-serif;
-            min-height:100vh;
-            background:#071224;
-            overflow:hidden;
+        html { height: 100%; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            height: 100%;
+            display: flex;
+            overflow: hidden;
         }
 
-        .auth-wrapper{
-            min-height:100vh;
-            display:flex;
+        /* ── LEFT PANEL ── */
+        .left-panel {
+            width: 42%;
+            height: 100vh;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #091220 0%, #0d1f35 40%, #0b2240 70%, #082030 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px 52px;
+            position: fixed;
+            left: 0;
+            top: 0;
         }
 
-        /* ===== KIRI ===== */
-        .auth-left{
-            width:50%;
-            background:linear-gradient(
-                90deg,
-                #041222 0%,
-                #00142d 45%,
-                #0c3642 100%
-            );
-            position:relative;
-            display:flex;
-            flex-direction:column;
-            justify-content:center;
-            padding:80px;
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .logo-box{
-            position:absolute;
-            top:40px;
-            left:40px;
+        .logo-box img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            border-radius: 12px;
         }
 
-        .logo-box img{
-            width:100px;
-            height:100px;
-            object-fit:contain;
-            border-radius:12px;
+        .logo-box .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
         }
 
-        .left-content{
-            max-width:520px;
+        .logo-box .logo-text span {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--accent);
+            display: block;
+            letter-spacing: 2px;
         }
 
-        .left-content h1{
-            font-size:58px;
-            line-height:1.05;
-            font-weight:800;
-            color:white;
-            margin-bottom:24px;
+        .left-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 0 40px;
         }
 
-        .left-content p{
-            color:#cbd5e1;
-            font-size:18px;
-            line-height:1.8;
+        .left-content .eyebrow {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
         }
 
-        /* ===== KANAN ===== */
-        .auth-right{
-            width:50%;
-            background:#061021;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            padding:40px;
+        .left-content h1 {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--text-primary);
+            letter-spacing: -1px;
+            margin-bottom: 24px;
         }
 
-        .auth-card{
-            width:100%;
-            max-width:450px;
+        .left-content h1 span {
+            color: var(--accent);
         }
 
-        .auth-card h2{
-            color:white;
-            font-size:42px;
-            font-weight:700;
-            margin-bottom:10px;
+        .left-content p {
+            font-size: 15.5px;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            max-width: 380px;
         }
 
-        .auth-card p{
-            color:#94a3b8;
-            margin-bottom:30px;
+        .steps-list {
+            margin-top: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .form-label{
-            color:white;
-            font-size:14px;
-            font-weight:600;
-            margin-bottom:8px;
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
         }
 
-        .input-group-text{
-            background:#0f1d33;
-            border:1px solid #334155;
-            color:#94a3b8;
+        .step-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(14,202,180,0.12);
+            border: 1px solid rgba(14,202,180,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 16px;
+            flex-shrink: 0;
         }
 
-        .form-control{
-            background:#0f1d33;
-            border:1px solid #334155;
-            color:white;
-            height:52px;
+        .step-text {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            padding-top: 8px;
         }
 
-        .form-control::placeholder{
-            color:#64748b;
+        .step-text strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 2px;
+            font-weight: 600;
         }
 
-        .form-control:focus{
-            background:#0f1d33;
-            color:white;
-            border-color:#14b8a6;
-            box-shadow:none;
+        .left-footer {
+            font-size: 12.5px;
+            color: var(--text-muted);
         }
 
-        .btn-alpha{
-            width:100%;
-            height:52px;
-            border:none;
-            border-radius:10px;
-            background:#14b8a6;
-            color:white;
-            font-weight:700;
-            transition:.3s;
+        /* ── RIGHT PANEL ── */
+        .right-panel {
+            margin-left: 42%;
+            width: 58%;
+            min-height: 100vh;
+            background: var(--bg-panel);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 60px;
+            overflow-y: auto;
         }
 
-        .btn-alpha:hover{
-            background:#0d9488;
+        .form-wrapper {
+            width: 100%;
+            max-width: 440px;
         }
 
-        .back-login{
-            margin-top:24px;
-            text-align:center;
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 13.5px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 36px;
+            transition: color 0.2s;
         }
 
-        .back-login a{
-            color:#14b8a6;
-            text-decoration:none;
-            font-weight:600;
+        .back-link:hover { color: var(--accent); }
+
+        .form-wrapper h2 {
+            font-size: 34px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
-        .back-login a:hover{
-            color:#2dd4bf;
+        .form-wrapper .subtitle {
+            font-size: 14.5px;
+            color: var(--text-secondary);
+            margin-bottom: 36px;
+            line-height: 1.6;
         }
 
-        .alert{
-            margin-bottom:20px;
+        /* Alerts */
+        .auth-alert {
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            font-size: 13.5px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
         }
 
-        @media(max-width:991px){
+        .auth-alert-error {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+        }
 
-            .auth-left{
-                display:none;
-            }
+        .auth-alert-success {
+            background: rgba(14,202,180,0.1);
+            border: 1px solid rgba(14,202,180,0.3);
+            color: #5eead4;
+        }
 
-            .auth-right{
-                width:100%;
-            }
+        .auth-alert i {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
 
-            .auth-card h2{
-                font-size:34px;
-            }
+        /* Form elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: 0.1px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 16px;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            padding: 13px 46px;
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 14.5px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .form-control-custom::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-control-custom:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(14,202,180,0.12);
+        }
+
+        .form-control-custom:focus ~ .input-icon,
+        .input-wrap:focus-within .input-icon {
+            color: var(--accent);
+        }
+
+        .form-control-custom.is-invalid {
+            border-color: var(--error);
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+        }
+
+        .invalid-feedback-custom {
+            font-size: 12px;
+            color: #fca5a5;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Button */
+        .btn-primary-custom {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .btn-primary-custom:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(14,202,180,0.3);
+        }
+
+        .btn-primary-custom:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary-custom:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .left-panel  { display: none; }
+            .right-panel { width: 100%; margin-left: 0; padding: 40px 24px; }
         }
     </style>
 </head>
 <body>
 
-<div class="auth-wrapper">
-
-    {{-- KIRI --}}
-    <div class="auth-left">
-
-        <div class="logo-box">
-            <img src="{{ asset('images/Logo-bg.png') }}" alt="Alpha Organizer">
-        </div>
-
-        <div class="left-content">
-            <h1>
-                Atur Ulang Kata Sandi Anda.
-            </h1>
-
-            <p>
-                Masukkan email yang terdaftar untuk menerima tautan reset password
-                dan mendapatkan kembali akses ke akun Anda dengan aman.
-            </p>
-        </div>
-
+<!-- LEFT PANEL -->
+<div class="left-panel">
+    <div class="logo-box">
+        <img src="{{ asset('images/Logo-bg.png') }}" alt="Alpha Organizer"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+        <div class="logo-text" style="display:none;">ALPHA<span>ORGANIZER</span></div>
+        <div class="logo-text">Alpha<span>ORGANIZER</span></div>
     </div>
 
-    {{-- KANAN --}}
-    <div class="auth-right">
+    <div class="left-content">
+        <p class="eyebrow">Keamanan Akun</p>
+        <h1>Atur Ulang <span>Kata Sandi</span> Anda</h1>
+        <p>Masukkan alamat email terdaftar dan kami akan segera mengirimkan tautan untuk mereset kata sandi Anda.</p>
 
-        <div class="auth-card">
-
-            <h2>Lupa Password?</h2>
-
-            <p>
-                Kami akan mengirimkan link reset password ke email Anda.
-            </p>
-
-            @if (session('status'))
-                <div class="alert alert-success">
-                    {{ session('status') }}
+        <div class="steps-list">
+            <div class="step-item">
+                <div class="step-icon"><i class="bi bi-envelope-at"></i></div>
+                <div class="step-text">
+                    <strong>Masukkan Email</strong>
+                    Email yang terdaftar di akun Alpha Organizer Anda.
                 </div>
-            @endif
-
-            <form method="POST" action="{{ route('password.email') }}">
-                @csrf
-
-                <div class="mb-4">
-                    <label class="form-label">
-                        Alamat Email
-                    </label>
-
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-envelope"></i>
-                        </span>
-
-                        <input
-                            type="email"
-                            name="email"
-                            class="form-control"
-                            placeholder="Masukkan email Anda"
-                            value="{{ old('email') }}"
-                            required
-                            autofocus>
-                    </div>
-
-                    @error('email')
-                        <small class="text-danger">
-                            {{ $message }}
-                        </small>
-                    @enderror
+            </div>
+            <div class="step-item">
+                <div class="step-icon"><i class="bi bi-send"></i></div>
+                <div class="step-text">
+                    <strong>Cek Kotak Masuk</strong>
+                    Kami akan mengirim tautan reset dalam beberapa detik.
                 </div>
-
-                <button type="submit" class="btn-alpha">
-                    Kirim Link Reset Password
-                </button>
-
-                <div class="back-login">
-                    <a href="{{ route('login') }}">
-                        ← Kembali ke Login
-                    </a>
+            </div>
+            <div class="step-item">
+                <div class="step-icon"><i class="bi bi-shield-lock"></i></div>
+                <div class="step-text">
+                    <strong>Buat Password Baru</strong>
+                    Klik tautan dan buat kata sandi yang aman dan baru.
                 </div>
-
-            </form>
-
+            </div>
         </div>
-
     </div>
 
+    <div class="left-footer">
+        &copy; {{ date('Y') }} Alpha Organizer. All rights reserved.
+    </div>
 </div>
 
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+    <div class="form-wrapper">
+
+        <a href="{{ route('login') }}" class="back-link">
+            <i class="bi bi-arrow-left"></i>
+            Kembali ke Login
+        </a>
+
+        <h2>Lupa Password?</h2>
+        <p class="subtitle">
+            Tidak perlu khawatir. Masukkan email Anda dan kami akan mengirimkan tautan reset password.
+        </p>
+
+        {{-- Pesan sukses setelah email berhasil dikirim --}}
+        @if (session('status'))
+            <div class="auth-alert auth-alert-success" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <div>
+                    <strong style="display:block; margin-bottom:3px;">Email Berhasil Dikirim!</strong>
+                    {{ session('status') }} Silakan cek folder Inbox atau Spam Anda.
+                </div>
+            </div>
+        @endif
+
+        {{-- Pesan error umum --}}
+        @if ($errors->any() && !$errors->has('email'))
+            <div class="auth-alert auth-alert-error" role="alert">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <div>{{ $errors->first() }}</div>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('password.email') }}" id="forgotForm">
+            @csrf
+
+            <div class="form-group">
+                <label class="form-label" for="email">Alamat Email</label>
+                <div class="input-wrap">
+                    <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        class="form-control-custom {{ $errors->has('email') ? 'is-invalid' : '' }}"
+                        placeholder="Masukkan email yang terdaftar"
+                        value="{{ old('email') }}"
+                        required
+                        autofocus
+                        autocomplete="email">
+                    <i class="bi bi-envelope input-icon"></i>
+                </div>
+                @error('email')
+                    <div class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle"></i>
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
+            <button type="submit" class="btn-primary-custom" id="submitBtn">
+                <i class="bi bi-send"></i>
+                Kirim Link Reset Password
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    // Disable button saat submit untuk mencegah double-click
+    document.getElementById('forgotForm').addEventListener('submit', function () {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Mengirim...';
+    });
+</script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </body>
 </html>
-```
