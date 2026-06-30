@@ -17,7 +17,13 @@ return new class extends Migration
             $table->string('nomor_proposal', 100)->nullable();
             $table->string('file_proposal');
             $table->integer('versi')->default(1);
-            $table->enum('status', ['draft', 'diajukan', 'disetujui', 'ditolak'])->default('draft');
+            $table->enum('status', [
+                'menunggu_konfirmasi',
+                'negosiasi',
+                'direvisi',
+                'diterima',
+                'ditolak',
+            ])->default('menunggu_konfirmasi');
             $table->date('tanggal_proposal');
             $table->timestamps();
         });

@@ -161,34 +161,100 @@ class ClientController extends Controller
     //  PROPOSALS
     // ══════════════════════════════════════════════════
 
+    /**
+     * Daftar surat penawaran — tampilkan HANYA proposal terbaru per event.
+     * Jika admin sudah merevisi, versi lama tidak ditampilkan.
+     */
     public function proposals()
     {
-        $uid      = Auth::id();
-        $eIds     = Event::where('client_id', $uid)->pluck('id');
-        $proposals = Proposal::whereIn('event_id', $eIds)
+        $uid  = Auth::id();
+        $eIds = Event::where('client_id', $uid)->pluck('id');
+
+        // Ambil proposal dengan versi tertinggi per event
+        // Menggunakan latestProposal relation via subquery agar efisien
+        $latestProposals = Proposal::whereIn('event_id', $eIds)
             ->with('event')
-            ->latest()
+            ->where('is_active', true)
+            ->orderByDesc('created_at')
             ->get();
 
-        return view('client.proposals', array_merge(['proposals' => $proposals], $this->notifData()));
+        return view('client.proposals', array_merge(
+            ['latestProposals' => $latestProposals],
+            $this->notifData()
+        ));
     }
 
+    /**
+     * Detail proposal — selalu ambil proposal dengan versi tertinggi untuk event tersebut.
+     * Jika client membuka link proposal lama, redirect ke proposal terbaru.
+     */
+    /**
+     * Detail proposal — selalu ambil proposal dengan versi tertinggi untuk event tersebut.
+     * Jika client membuka link proposal lama, redirect ke proposal terbaru.
+     */
     public function proposalShow(int $id)
     {
-        $uid      = Auth::id();
-        $eIds     = Event::where('client_id', $uid)->pluck('id');
+        $uid  = Auth::id();
+        $eIds = Event::where('client_id', $uid)->pluck('id');
+ 
+        // Cari proposal yang diminta
         $proposal = Proposal::whereIn('event_id', $eIds)
-            ->with(['event.rabs', 'event.contract', 'event.negotiations'])
             ->findOrFail($id);
-
+ 
+        // Cek apakah ini proposal terbaru untuk event ini
+        $latestProposal = Proposal::where('event_id', $proposal->event_id)
+            ->where('is_active', true)
+            ->first();
+ 
+        // Jika bukan proposal terbaru, redirect ke yang terbaru
+        if ($latestProposal && $latestProposal->id !== $proposal->id) {
+            return redirect()
+                ->route('client.proposals.show', $latestProposal->id)
+                ->with('success', 'Menampilkan versi penawaran terbaru (v' . $latestProposal->versi . ').');
+        }
+ 
+        // Load event dengan semua relasi yang dibutuhkan untuk render surat
+        $event = Event::with(['client', 'rabs', 'contract', 'proposals',])->findOrFail($proposal->event_id);
+ 
         // Negosiasi yang sudah dikirim client untuk event ini
         $negotiations = Negotiation::where('event_id', $proposal->event_id)
             ->where('user_id', $uid)
+            ->with('user')
             ->latest()
             ->get();
-
+ 
         return view('client.proposal-show', array_merge(
-            compact('proposal', 'negotiations'),
+            compact('proposal', 'event', 'negotiations'),
+            $this->notifData()
+        ));
+    }
+ 
+    // ──────────────────────────────────────────────────
+    //  Form Negosiasi (halaman terpisah)
+    // ──────────────────────────────────────────────────
+
+    /**
+     * Tampilkan halaman form ajukan negosiasi.
+     * Route: GET /client/proposals/{id}/negosiasi
+     */
+    public function negosiasiForm(int $id)
+    {
+        $uid  = Auth::id();
+        $eIds = Event::where('client_id', $uid)->pluck('id');
+
+        $proposal = Proposal::whereIn('event_id', $eIds)
+            ->with(['event'])
+            ->findOrFail($id);
+
+        // Proposal hanya bisa diterima jika masih menunggu konfirmasi atau sudah direvisi
+        if (!in_array($proposal->status, ['menunggu_konfirmasi', 'direvisi'])) {
+            return redirect()
+                ->route('client.proposals.show', $proposal->id)
+                ->with('error', 'Penawaran ini tidak lagi dapat dinegosiasikan.');
+        }
+
+        return view('client.negosiasi-form', array_merge(
+            compact('proposal'),
             $this->notifData()
         ));
     }
@@ -212,16 +278,14 @@ class ClientController extends Controller
         $eIds     = Event::where('client_id', $uid)->pluck('id');
         $proposal = Proposal::whereIn('event_id', $eIds)->findOrFail($id);
 
-        // Update status proposal
-        $proposal->update(['status' => 'disetujui']);
+        $proposal->update([
+            'status' => 'diterima'
+        ]);
 
         $event = $proposal->event;
 
-        // === AUTO-FILL TIMELINE ===
-        // Jalur A: langsung diterima (cek di dalam service — jika ada negosiasi, tidak jalan)
         TimelineAutoFill::proposalDiterima($event);
 
-        // Notifikasi ke semua admin
         User::where('role', 'admin')->each(function (User $admin) use ($event) {
             Notification::create([
                 'user_id' => $admin->id,
@@ -247,7 +311,6 @@ class ClientController extends Controller
      * → proposal.status = 'draft' (menunggu revisi admin)
      * → event.status_event = 'menunggu'
      * → Notifikasi ke admin
-     * → Timeline BELUM diisi (tunggu sampai selesai negosiasi)
      *
      * Route: POST /proposals/{proposal}/negosiasi
      */
@@ -259,25 +322,32 @@ class ClientController extends Controller
 
         $data = $request->validate([
             'pesan'             => 'required|string|max:2000',
-            'budget_diinginkan' => 'nullable|numeric|min:0',
+            'budget_diinginkan' => 'nullable|string|max:100',
             'catatan_tambahan'  => 'nullable|string|max:1000',
         ]);
 
-        // Simpan negosiasi
-        $negotiation = Negotiation::create([
+        // Konversi budget ke numeric jika diisi (hapus karakter non-angka)
+        $budgetNumeric = null;
+        if (!empty($data['budget_diinginkan'])) {
+            $budgetNumeric = (float) preg_replace('/[^0-9]/', '', $data['budget_diinginkan']);
+            if ($budgetNumeric <= 0) $budgetNumeric = null;
+        }
+
+        Negotiation::create([
             'event_id'          => $proposal->event_id,
             'user_id'           => $uid,
             'pesan'             => $data['pesan'],
-            'budget_diinginkan' => $data['budget_diinginkan'] ?? null,
+            'budget_diinginkan' => $budgetNumeric,
             'catatan_tambahan'  => $data['catatan_tambahan'] ?? null,
         ]);
 
-        // Update status proposal dan event
-        $proposal->update(['status' => 'draft']);
+        $proposal->update([
+            'status' => 'negosiasi'
+        ]);
+
         $proposal->event->update(['status_event' => 'menunggu']);
 
-        // Notifikasi ke admin — tampil tombol "Lihat Negosiasi"
-        User::where('role', 'admin')->each(function (User $admin) use ($proposal, $negotiation) {
+        User::where('role', 'admin')->each(function (User $admin) use ($proposal) {
             Notification::create([
                 'user_id' => $admin->id,
                 'judul'   => 'Negosiasi Baru dari Client',
@@ -298,11 +368,6 @@ class ClientController extends Controller
 
     /**
      * Client menerima revisi penawaran setelah negosiasi.
-     * → proposal.status = disetujui
-     * → event.status_event = diproses
-     * → Timeline otomatis terisi via TimelineAutoFill::negosiasiSelesai()
-     * → Notifikasi ke admin
-     *
      * Route: POST /proposals/{proposal}/terima-setelah-negosiasi
      */
     public function terimaSetelahNegosiasi(Request $request, int $id)
@@ -311,18 +376,16 @@ class ClientController extends Controller
         $eIds     = Event::where('client_id', $uid)->pluck('id');
         $proposal = Proposal::whereIn('event_id', $eIds)->findOrFail($id);
 
-        $proposal->update(['status' => 'disetujui']);
+        $proposal->update([
+            'status' => 'diterima'
+        ]);
 
         $event = $proposal->event;
 
-        // Ambil negosiasi terakhir
         $negotiation = Negotiation::where('event_id', $event->id)->latest()->first();
 
-        // === AUTO-FILL TIMELINE ===
-        // Jalur B: setelah negosiasi selesai
         TimelineAutoFill::negosiasiSelesai($event, $negotiation);
 
-        // Notifikasi ke semua admin
         User::where('role', 'admin')->each(function (User $admin) use ($event) {
             Notification::create([
                 'user_id' => $admin->id,

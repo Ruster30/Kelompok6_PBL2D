@@ -98,6 +98,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         [App\Http\Controllers\Admin\ProposalController::class, 'suratPenawaran'])
         ->name('admin.requests.surat-penawaran');
 
+    // Simpan edit surat penawaran oleh admin
+    Route::patch('/requests/{event}/update-surat-penawaran',
+        [App\Http\Controllers\Admin\ProposalController::class, 'updateSuratPenawaran'])
+        ->name('admin.requests.update-surat-penawaran');
+
     // Kirim penawaran ke client (generate PDF + simpan proposal + notifikasi)
     Route::post('/requests/{event}/kirim-penawaran',
         [App\Http\Controllers\Admin\ProposalController::class, 'kirimPenawaran'])
@@ -119,6 +124,16 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/requests/{event}/negosiasi',
         [App\Http\Controllers\Admin\ClientRequestController::class, 'negosiasi'])
         ->name('admin.requests.negosiasi');
+
+    // Tolak negosiasi client
+    Route::post('/requests/{event}/tolak-negosiasi',
+        [App\Http\Controllers\Admin\ProposalController::class, 'tolakNegosiasi'])
+        ->name('admin.requests.tolak-negosiasi');
+    
+    // Setujui negosiasi client
+    Route::post('/requests/{event}/setujui-negosiasi',
+        [App\Http\Controllers\Admin\ProposalController::class, 'setujuiNegosiasi'])
+        ->name('admin.requests.setujui-negosiasi');
 
     // Events
     Route::get('/events', [App\Http\Controllers\Admin\EventController::class, 'index'])->name('admin.events.index');
@@ -282,6 +297,10 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
          ->name('proposals');
     Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
          ->name('proposals.show');
+
+    Route::get('/proposals/{id}/negosiasi-form',
+        [App\Http\Controllers\Client\ClientController::class, 'negosiasiForm'])
+        ->name('proposals.negosiasi.form');
     
     // ── Terima Penawaran LANGSUNG (tanpa negosiasi) ─────────────────
     Route::post('/proposals/{id}/terima',

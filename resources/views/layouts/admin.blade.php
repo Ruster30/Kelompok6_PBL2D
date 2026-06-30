@@ -139,14 +139,24 @@
 
         /* Status badges */
         .badge {
-            display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px;
-            font-size: 12px; font-weight: 500;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            padding:5px 12px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:600;
+            min-width:120px;
+            width:auto;
+            white-space:nowrap;
         }
         .badge-pending { background: #fef3c7; color: #92400e; }
         .badge-active { background: #dcfce7; color: #166534; }
         .badge-done { background: #dbeafe; color: #1e40af; }
         .badge-cancel { background: #fee2e2; color: #991b1b; }
         .badge-gray { background: #f1f5f9; color: #64748b; }
+        .badge-warning{ background: #FEF3C7; color: #92400E; }
+        .badge-purple{ background: #F3E8FF; color: #7E22CE; }
 
         /* Buttons */
         .btn {
@@ -410,8 +420,10 @@
 
     <main class="page-content">
         @if(session('success'))
-            <div style="background:#dcfce7; color:#166534; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
-                <i class="fas fa-check-circle"></i> {{ session('success') }}
+            <div id="success-alert"
+                style="background:#dcfce7; color:#166534; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
+                <i class="fas fa-check-circle"></i>
+                {{ session('success') }}
             </div>
         @endif
         @if(session('error'))
@@ -425,10 +437,30 @@
             </div>
         @endif
         @yield('content')
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const alert = document.getElementById('success-alert');
+
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.transition = "opacity .3s ease";
+                    alert.style.opacity = "0";
+
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 300);
+                }, 2000);
+            }
+
+        });
+</script>
     </main>
 </div>
 
 <x-logout-confirmation />
 @stack('scripts')
+
 </body>
 </html>
