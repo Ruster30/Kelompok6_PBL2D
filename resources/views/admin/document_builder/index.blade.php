@@ -16,11 +16,6 @@
     <a href="{{ route('admin.document_builder.index') }}" class="tab-link active">Document Builder</a>
 </div>
 
-@if(session('success'))
-    <div class="alert alert-success" style="background:#dcfce7;border:1px solid #bbf7d0;color:#166534;padding:12px 16px;border-radius:8px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
-        <i class="fas fa-check-circle"></i> {{ session('success') }}
-    </div>
-@endif
 
 <div class="tab-content">
 
