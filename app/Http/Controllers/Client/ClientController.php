@@ -60,9 +60,11 @@ class ClientController extends Controller
 
         $eventIds = Event::where('client_id', $uid)->pluck('id');
 
-        $totalDibayar = Invoice::whereIn('event_id', $eventIds)
-            ->where('status_invoice', 'lunas')
-            ->sum('total_invoice');
+        $totalDibayar = Payment::whereHas('invoice', function ($q) use ($eventIds) {
+                $q->whereIn('event_id', $eventIds);
+            })
+            ->where('status_pembayaran', 'diverifikasi')
+            ->sum('nominal');
 
         return view('client.dashboard', array_merge([
             'recentEvents'  => $recentEvents,
@@ -145,10 +147,10 @@ class ClientController extends Controller
         $totalInvoice = $invoices->sum('total_invoice');
 
         $totalDibayar = $payments
-            ->where('status_pembayaran', 'diterima')
+            ->where('status_pembayaran', 'diverifikasi')
             ->sum('nominal');
 
-        $sisaTagihan = $totalInvoice - $totalDibayar;
+        $sisaTagihan = max(0, $totalInvoice - $totalDibayar);
 
         return view('client.invoices', array_merge([
             'invoices'      => $invoices,
@@ -167,6 +169,53 @@ class ClientController extends Controller
      * Daftar surat penawaran — tampilkan HANYA proposal terbaru per event.
      * Jika admin sudah merevisi, versi lama tidak ditampilkan.
      */
+    public function bayar(Request $request, int $id)
+    {
+        $uid = Auth::id();
+        $eventIds = Event::where('client_id', $uid)->pluck('id');
+
+        $invoice = Invoice::whereIn('event_id', $eventIds)->findOrFail($id);
+
+        if ($invoice->status_invoice === 'lunas') {
+            return back()->with('error', 'Invoice ini sudah lunas.');
+        }
+
+        if ($invoice->status_invoice === 'menunggu_verifikasi') {
+            return back()->with('error', 'Bukti pembayaran sebelumnya masih menunggu verifikasi admin.');
+        }
+
+        $data = $request->validate([
+            'jenis_pembayaran' => 'required|in:dp,pelunasan',
+            'nominal' => 'required|numeric|min:1000',
+            'bukti_pembayaran' => 'required|file|max:5120|mimes:jpg,jpeg,png,pdf',
+        ]);
+
+        $path = $request->file('bukti_pembayaran')->store('payments', 'public');
+
+        Payment::create([
+            'invoice_id' => $invoice->id,
+            'nominal' => $data['nominal'],
+            'tanggal_pembayaran' => now()->toDateString(),
+            'status_pembayaran' => 'menunggu',
+            'bukti_pembayaran' => $path,
+            'jenis_pembayaran' => $data['jenis_pembayaran'],
+        ]);
+
+        $invoice->update(['status_invoice' => 'menunggu_verifikasi']);
+
+        User::where('role', 'admin')->each(function (User $admin) use ($invoice) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'judul' => 'Pembayaran Menunggu Verifikasi',
+                'pesan' => 'Client ' . Auth::user()->name . ' mengunggah bukti pembayaran untuk invoice ' . $invoice->nomor_invoice . '.',
+                'tipe' => 'pembayaran',
+                'dibaca' => false,
+            ]);
+        });
+
+        return back()->with('success', 'Bukti pembayaran berhasil diunggah. Menunggu verifikasi admin.');
+    }
+
     public function proposals(Request $request, string $tab = 'penawaran')
     {
         $uid  = Auth::id();

@@ -153,6 +153,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('admin.payments.index');
     Route::get('/payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('admin.payments.show');
     Route::patch('/payments/{payment}/verify', [App\Http\Controllers\Admin\PaymentController::class, 'verify'])->name('admin.payments.verify');
+    Route::post('/payments/{payment}/send-pelunasan', [App\Http\Controllers\Admin\PaymentController::class, 'sendPelunasan'])->name('admin.payments.sendPelunasan');
 
     // Analytics
     Route::get('/analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('admin.analytics.index');
@@ -162,7 +163,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/notifications/mark-all-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('admin.notifications.markAllRead');
     Route::patch('/notifications/{notification}/read', [App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('admin.notifications.markRead');
 
-    // Proposal & Dokumen Umum (Invoice & Kwitansi dihapus)
+    // Dokumen Umum (Invoice & Kwitansi dihapus)
     Route::get('/proposals',                     [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.proposals.index');
     Route::post('/proposals/upload',             [App\Http\Controllers\Admin\ProposalController::class, 'upload'])->name('admin.proposals.upload');
     Route::get('/proposals/{document}/preview',  [App\Http\Controllers\Admin\ProposalController::class, 'preview'])->name('admin.proposals.preview');

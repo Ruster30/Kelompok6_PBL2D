@@ -41,7 +41,7 @@
                     @php
                         $map = ['menunggu'=>'badge-pending','diverifikasi'=>'badge-active','ditolak'=>'badge-cancel'];
                         $cls = $map[$payment->status_pembayaran] ?? 'badge-pending';
-                        $labels = ['menunggu'=>'Menunggu','diverifikasi'=>'Diverifikasi','ditolak'=>'Ditolak'];
+                        $labels = ['menunggu'=>'Menunggu Verifikasi','diverifikasi'=>'Verified','ditolak'=>'Ditolak'];
                     @endphp
                     <span class="badge {{ $cls }}">{{ $labels[$payment->status_pembayaran] }}</span>
                 </td>
@@ -61,7 +61,7 @@
                             @csrf @method('PATCH')
                             <input type="hidden" name="status_pembayaran" value="diverifikasi">
                             <button type="submit" class="btn btn-primary btn-sm">
-                                <i class="fas fa-check"></i> Verifikasi
+                                <i class="fas fa-check"></i> Terima
                             </button>
                         </form>
                         <form action="{{ route('admin.payments.verify', $payment->id) }}" method="POST" style="display:inline;"
@@ -74,9 +74,19 @@
                         </form>
                     </div>
                     @else
-                    <a href="{{ route('admin.payments.show', $payment->id) }}" class="action-btn" title="Detail">
-                        <i class="fas fa-eye" style="font-size:12px;"></i>
-                    </a>
+                    <div class="action-btns">
+                        <a href="{{ route('admin.payments.show', $payment->id) }}" class="action-btn" title="Detail">
+                            <i class="fas fa-eye" style="font-size:12px;"></i>
+                        </a>
+                        @if($payment->status_pembayaran === 'diverifikasi' && $payment->jenis_pembayaran === 'dp' && $payment->invoice->event->invoices()->count() == 1)
+                        <form action="{{ route('admin.payments.sendPelunasan', $payment->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-outline btn-sm" style="margin-left:5px;" title="Kirim Invoice Pelunasan">
+                                <i class="fas fa-file-invoice"></i> Kirim Pelunasan
+                            </button>
+                        </form>
+                        @endif
+                    </div>
                     @endif
                 </td>
             </tr>

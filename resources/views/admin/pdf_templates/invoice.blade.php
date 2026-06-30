@@ -20,6 +20,7 @@
   .status-draft    { background: #fef9c3; color: #713f12; }
   .status-terkirim { background: #dbeafe; color: #1d4ed8; }
   .status-lunas    { background: #dcfce7; color: #166534; }
+  .status-ditolak  { background: #fee2e2; color: #991b1b; }
 
   .divider { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
 
@@ -58,19 +59,30 @@
         <div class="company-sub">Padang, Sumatera Barat</div>
     </div>
     <div class="header-right">
-        <div class="invoice-title">INVOICE</div>
+        <div class="invoice-title">
+            @if($totalItem > $totalInvoice)
+            INVOICE PELUNASAN
+            @else
+            INVOICE
+            @endif
+        </div>
         <div class="invoice-no"># {{ $nomorInvoice }}</div>
         <div>
             @php
                 $statusClass = match($statusInvoice) {
-                    'lunas'    => 'status-lunas',
-                    'terkirim' => 'status-terkirim',
-                    default    => 'status-draft',
+                    'lunas'               => 'status-lunas',
+                    'menunggu_verifikasi' => 'status-terkirim',
+                    'ditolak'             => 'status-ditolak',
+                    'terkirim'            => 'status-terkirim',
+                    default               => 'status-draft',
                 };
                 $statusLabel = match($statusInvoice) {
-                    'lunas'    => '✓ LUNAS',
-                    'terkirim' => '→ TERKIRIM',
-                    default    => '⏳ DRAFT',
+                    'lunas'               => 'LUNAS',
+                    'menunggu_verifikasi' => 'MENUNGGU VERIFIKASI',
+                    'ditolak'             => 'DITOLAK',
+                    'terkirim'            => 'TERKIRIM',
+                    'belum_bayar'         => 'BELUM BAYAR',
+                    default               => 'DRAFT',
                 };
             @endphp
             <span class="status-badge {{ $statusClass }}">{{ $statusLabel }}</span>
@@ -145,8 +157,14 @@
         <td class="label">Pajak (0%)</td>
         <td class="text-right">Rp 0</td>
     </tr>
+    @if($totalItem > $totalInvoice)
+    <tr>
+        <td class="label">Telah Dibayar (DP)</td>
+        <td class="text-right">- Rp {{ number_format($totalItem - $totalInvoice, 0, ',', '.') }}</td>
+    </tr>
+    @endif
     <tr class="total-row">
-        <td>TOTAL</td>
+        <td>TOTAL TAGIHAN</td>
         <td class="text-right">Rp {{ number_format($totalInvoice, 0, ',', '.') }}</td>
     </tr>
 </table>
@@ -171,3 +189,5 @@
 
 </body>
 </html>
+
+

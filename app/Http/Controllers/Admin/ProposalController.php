@@ -10,6 +10,7 @@ use App\Models\Notification;
 use App\Models\Proposal;
 use App\Models\User;
 use App\Models\Negotiation;
+use App\Services\TimelineAutoFill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -45,7 +46,7 @@ class ProposalController extends Controller
         $request->validate([
             'file'     => 'required|file|max:102400|mimes:svg,png,jpg,jpeg,pdf,docx,xlsx',
             'event_id' => 'nullable|exists:events,id',
-            'tipe'     => 'required|in:proposal,kontrak,invoice,rab,lainnya',
+            'tipe'     => 'required|in:proposal,kontrak,invoice,rab,laporan,lainnya',
         ]);
 
         $file = $request->file('file');
@@ -331,6 +332,53 @@ class ProposalController extends Controller
     }
 
     // ─────────────── HELPER ───────────────
+
+    public function setujuiNegosiasi(Event $event)
+    {
+        $proposal = $event->activeProposal ?? $event->latestProposal;
+
+        if ($proposal) {
+            $proposal->update(['status' => 'diterima']);
+        }
+
+        $event->update(['status_event' => 'diproses']);
+
+        TimelineAutoFill::negosiasiSelesai(
+            $event,
+            Negotiation::where('event_id', $event->id)->latest()->first()
+        );
+
+        Notification::create([
+            'user_id' => $event->client_id,
+            'judul'   => 'Negosiasi Disetujui',
+            'pesan'   => 'Negosiasi untuk event "' . $event->nama_event . '" telah disetujui. Timeline event sudah disiapkan.',
+            'tipe'    => 'sukses',
+        ]);
+
+        return redirect()->route('admin.requests.index')
+            ->with('success', 'Negosiasi disetujui dan timeline event telah disiapkan.');
+    }
+
+    public function tolakNegosiasi(Event $event)
+    {
+        $proposal = $event->activeProposal ?? $event->latestProposal;
+
+        if ($proposal) {
+            $proposal->update(['status' => 'ditolak']);
+        }
+
+        $event->update(['status_event' => 'menunggu']);
+
+        Notification::create([
+            'user_id' => $event->client_id,
+            'judul'   => 'Negosiasi Ditolak',
+            'pesan'   => 'Negosiasi untuk event "' . $event->nama_event . '" belum dapat disetujui.',
+            'tipe'    => 'peringatan',
+        ]);
+
+        return redirect()->route('admin.requests.index')
+            ->with('success', 'Negosiasi berhasil ditolak.');
+    }
 
     /**
      * Cek apakah SMTP sudah dikonfigurasi (bukan driver log/array).

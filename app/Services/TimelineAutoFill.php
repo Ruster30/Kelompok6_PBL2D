@@ -30,11 +30,6 @@ class TimelineAutoFill
      */
     public static function proposalDiterima(Event $event): void
     {
-        // Cek jika sudah ada negosiasi — jangan isi sekarang, tunggu negosiasi selesai
-        if (Negotiation::where('event_id', $event->id)->exists()) {
-            return;
-        }
-
         self::isiTimeline($event, 'Proposal Diterima (Langsung)');
     }
 
@@ -52,6 +47,10 @@ class TimelineAutoFill
      */
     private static function isiTimeline(Event $event, string $sumber): void
     {
+        if (Timeline::where('event_id', $event->id)->exists()) {
+            return;
+        }
+
         $tanggalEvent = $event->tanggal_event instanceof Carbon
             ? $event->tanggal_event
             : Carbon::parse($event->tanggal_event);
@@ -59,14 +58,7 @@ class TimelineAutoFill
         $stages = self::buildStages($tanggalEvent, $sumber);
 
         foreach ($stages as $stage) {
-            // Cegah duplikasi: cek nama_kegiatan yang sama untuk event ini
-            $sudahAda = Timeline::where('event_id', $event->id)
-                ->where('nama_kegiatan', $stage['nama_kegiatan'])
-                ->exists();
-
-            if (!$sudahAda) {
-                Timeline::create(array_merge(['event_id' => $event->id], $stage));
-            }
+            Timeline::create(array_merge(['event_id' => $event->id], $stage));
         }
 
         // Update status event → diproses
@@ -85,31 +77,23 @@ class TimelineAutoFill
 
         return [
             [
-                'nama_kegiatan'    => 'Konfirmasi & Penandatanganan Kontrak',
-                'deskripsi'        => "Penawaran diterima ({$sumber}). Lakukan konfirmasi akhir dan penandatanganan kontrak dengan client.",
+                'nama_kegiatan'    => 'Kick Off Meeting',
+                'deskripsi'        => "Penawaran diterima ({$sumber}). Lakukan pertemuan awal untuk menyamakan kebutuhan, PIC, dan jadwal kerja event.",
                 'penanggung_jawab' => 'Admin',
                 'tanggal_kegiatan' => $now,
                 'deadline'         => Carbon::parse($now)->addDays(3)->toDateString(),
                 'status_kegiatan'  => 'belum_mulai',
             ],
             [
-                'nama_kegiatan'    => 'Persiapan & Koordinasi Vendor',
-                'deskripsi'        => 'Koordinasi dengan vendor terpilih, konfirmasi ketersediaan dan jadwal.',
+                'nama_kegiatan'    => 'Persiapan Event',
+                'deskripsi'        => 'Koordinasi vendor, kebutuhan perlengkapan, rundown, dan persiapan teknis sebelum hari event.',
                 'penanggung_jawab' => 'Admin',
                 'tanggal_kegiatan' => $tanggalEvent->copy()->subDays(30)->toDateString(),
                 'deadline'         => $tanggalEvent->copy()->subDays(21)->toDateString(),
                 'status_kegiatan'  => 'belum_mulai',
             ],
             [
-                'nama_kegiatan'    => 'Setup Venue & Dekorasi',
-                'deskripsi'        => 'Persiapan venue: pemasangan dekorasi, sound system, pencahayaan, dan perlengkapan event.',
-                'penanggung_jawab' => 'Tim Lapangan',
-                'tanggal_kegiatan' => $tanggalEvent->copy()->subDays(1)->toDateString(),
-                'deadline'         => $tanggalEvent->copy()->subDays(1)->toDateString(),
-                'status_kegiatan'  => 'belum_mulai',
-            ],
-            [
-                'nama_kegiatan'    => 'Pelaksanaan Event',
+                'nama_kegiatan'    => 'Hari Pelaksanaan',
                 'deskripsi'        => 'Hari pelaksanaan event. Tim profesional Alpha Organizer hadir di lokasi.',
                 'penanggung_jawab' => 'Tim Lapangan',
                 'tanggal_kegiatan' => $tanggalEvent->toDateString(),
@@ -117,8 +101,8 @@ class TimelineAutoFill
                 'status_kegiatan'  => 'belum_mulai',
             ],
             [
-                'nama_kegiatan'    => 'Evaluasi & Laporan Akhir',
-                'deskripsi'        => 'Dokumentasi hasil event, pembersihan venue, dan pembuatan laporan akhir untuk client.',
+                'nama_kegiatan'    => 'Evaluasi Event',
+                'deskripsi'        => 'Evaluasi pelaksanaan, rangkuman dokumentasi, dan penyusunan laporan akhir untuk client.',
                 'penanggung_jawab' => 'Admin',
                 'tanggal_kegiatan' => $tanggalEvent->copy()->addDays(1)->toDateString(),
                 'deadline'         => $tanggalEvent->copy()->addDays(3)->toDateString(),
@@ -127,3 +111,4 @@ class TimelineAutoFill
         ];
     }
 }
+

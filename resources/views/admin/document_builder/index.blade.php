@@ -6,7 +6,7 @@
 @section('content')
 <div class="page-header" style="margin-bottom:16px;">
     <div class="page-header-left">
-        <h1>Proposal &amp; Dokumen</h1>
+        <h1>Dokumen</h1>
     </div>
 </div>
 

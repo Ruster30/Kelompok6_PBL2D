@@ -93,7 +93,7 @@ class DocumentBuilderService
         $nomorInvoice = $invoice?->nomor_invoice
             ?? sprintf('INV-%s-%03d', now()->format('Ymd'), Invoice::whereDate('created_at', today())->count() + 1);
         $totalInvoice = $invoice?->total_invoice ?? $totalItem;
-        $statusInvoice = $invoice?->status_invoice ?? 'draft';
+        $statusInvoice = $invoice?->status_invoice ?? 'belum_bayar';
         $tanggalInvoice = $invoice?->tanggal_invoice?->format('d M Y') ?? now()->format('d M Y');
 
         $pdf = Pdf::loadView('admin.pdf_templates.invoice', compact(
@@ -131,6 +131,10 @@ class DocumentBuilderService
      */
     public function sendToClient(Event $event, string $jenisDokumen): Document
     {
+        if ($jenisDokumen === 'invoice') {
+            $this->ensureInvoice($event);
+        }
+
         $generated = $this->generate($event, $jenisDokumen);
 
         /** @var \Barryvdh\DomPDF\PDF $pdf */
@@ -219,5 +223,27 @@ class DocumentBuilderService
             'rab'           => 'RAB (Rencana Anggaran Biaya)',
             default         => ucfirst($jenis),
         };
+    }
+
+    private function ensureInvoice(Event $event): Invoice
+    {
+        $existing = $event->invoices()
+            ->where('status_invoice', '!=', 'lunas')
+            ->latest()
+            ->first();
+
+        if ($existing) {
+            return $existing;
+        }
+
+        $totalInvoice = Rab::where('event_id', $event->id)->sum('subtotal_biaya');
+
+        return Invoice::create([
+            'event_id' => $event->id,
+            'nomor_invoice' => sprintf('INV-%s-%03d', now()->format('Ymd'), Invoice::whereDate('created_at', today())->count() + 1),
+            'total_invoice' => $totalInvoice,
+            'status_invoice' => 'belum_bayar',
+            'tanggal_invoice' => now()->toDateString(),
+        ]);
     }
 }

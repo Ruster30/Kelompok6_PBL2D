@@ -177,7 +177,7 @@
                             };
                         @endphp
                         <span style="background:{{ $statusColor['bg'] }};color:{{ $statusColor['text'] }};font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">
-                            {{ ucfirst($p->status_pembayaran ?? '-') }}
+                            {{ $p->status_label }}
                         </span>
                     </div>
                 </div>

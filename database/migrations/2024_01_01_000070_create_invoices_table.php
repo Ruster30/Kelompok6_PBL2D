@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('event_id')->constrained()->cascadeOnDelete();
             $table->string('nomor_invoice', 100)->unique();
             $table->decimal('total_invoice', 15, 2)->default(0);
-            $table->enum('status_invoice', ['draft','terkirim','lunas'])->default('draft');
+            $table->string('status_invoice', 50)->default('belum_bayar');
             $table->date('tanggal_invoice');
             $table->timestamps();
         });

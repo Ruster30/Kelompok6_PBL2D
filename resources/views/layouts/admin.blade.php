@@ -370,7 +370,7 @@
             <i class="fas fa-palette"></i> Landing Page CMS
         </a>
         <a href="{{ route('admin.proposals.index') }}" class="nav-item {{ request()->routeIs('admin.proposals.*') ? 'active' : '' }}">
-            <i class="fas fa-file-alt"></i> Proposal &amp; Dokumen
+            <i class="fas fa-file-alt"></i> Dokumen
         </a>
         <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
             <i class="fas fa-folder-open"></i> Pusat Dokumentasi
