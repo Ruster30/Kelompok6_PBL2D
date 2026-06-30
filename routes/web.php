@@ -147,16 +147,13 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/notifications/mark-all-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('admin.notifications.markAllRead');
     Route::patch('/notifications/{notification}/read', [App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('admin.notifications.markRead');
 
-    // Proposal & Dokumen
-    Route::get('/proposals', [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.proposals.index');
-    Route::post('/proposals/upload', [App\Http\Controllers\Admin\ProposalController::class, 'upload'])->name('admin.proposals.upload');
-    Route::delete('/proposals/{document}', [App\Http\Controllers\Admin\ProposalController::class, 'destroy'])->name('admin.proposals.destroy');
-    Route::get('/proposals/invoices', [App\Http\Controllers\Admin\ProposalController::class, 'invoices'])->name('admin.proposals.invoices');
-    Route::post('/proposals/invoices', [App\Http\Controllers\Admin\ProposalController::class, 'storeInvoice'])->name('admin.proposals.storeInvoice');
-    Route::put('/proposals/invoices/{invoice}', [App\Http\Controllers\Admin\ProposalController::class, 'updateInvoice'])->name('admin.proposals.updateInvoice');
-    Route::delete('/proposals/invoices/{invoice}', [App\Http\Controllers\Admin\ProposalController::class, 'destroyInvoice'])->name('admin.proposals.destroyInvoice');
-    Route::get('/proposals/invoices/{invoice}/print', [App\Http\Controllers\Admin\ProposalController::class, 'printInvoice'])->name('admin.proposals.printInvoice');
-    Route::get('/proposals/{proposal}/download', [App\Http\Controllers\Admin\ProposalController::class, 'download'])->name('admin.proposals.download');
+    // Proposal & Dokumen Umum (Invoice & Kwitansi dihapus)
+    Route::get('/proposals',                     [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.proposals.index');
+    Route::post('/proposals/upload',             [App\Http\Controllers\Admin\ProposalController::class, 'upload'])->name('admin.proposals.upload');
+    Route::get('/proposals/{document}/preview',  [App\Http\Controllers\Admin\ProposalController::class, 'preview'])->name('admin.proposals.preview');
+    Route::get('/proposals/{document}/download', [App\Http\Controllers\Admin\ProposalController::class, 'downloadDocument'])->name('admin.proposals.download');
+    Route::post('/proposals/{document}/send',    [App\Http\Controllers\Admin\ProposalController::class, 'sendToClient'])->name('admin.proposals.send');
+    Route::delete('/proposals/{document}',       [App\Http\Controllers\Admin\ProposalController::class, 'destroy'])->name('admin.proposals.destroy');
 
     // Document Builder
     Route::get('/document-builder',
@@ -228,8 +225,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/settings/update', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
     Route::put('/settings/update-password', [App\Http\Controllers\Admin\SettingsController::class, 'updatePassword'])->name('admin.settings.updatePassword');
 
-    // Catatan: admin.proposals.index dan admin.proposals.invoices sudah didefinisikan di atas (baris ~151).
-    // Duplikasi dihapus untuk menghindari route name conflict.
+    // (duplikasi routes sudah dihapus)
 });
 
 require __DIR__.'/auth.php';
@@ -331,8 +327,7 @@ Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'vendor.role'])->g
     // Event Saya
     Route::get('/event-saya', [VendorController::class, 'eventSaya'])->name('event-saya');
 
-    // Jadwal
-    Route::get('/jadwal', [VendorController::class, 'jadwal'])->name('jadwal');
+    // Jadwal dihapus
 
     // Daftar Tugas
     Route::get('/daftar-tugas', [TugasController::class, 'index'])->name('daftar-tugas');
