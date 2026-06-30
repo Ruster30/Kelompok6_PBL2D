@@ -361,7 +361,7 @@
             <i class="fas fa-calendar"></i> Timeline
         </a>
         <a href="{{ route('admin.event-vendors.index') }}" class="nav-item {{ request()->routeIs('admin.event-vendors.*') ? 'active' : '' }}">
-            <i class="fas fa-users-cog"></i> Tugas &amp; Tim
+            <i class="fas fa-users-cog"></i> Penugasan
         </a>
         <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
             <i class="fas fa-users"></i> Vendor

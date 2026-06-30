@@ -1,13 +1,13 @@
 @extends('layouts.admin')
 
-@section('title', 'Tugas & Tim')
-@section('page-title', 'Tugas & Tim')
+@section('title', 'Penugasan')
+@section('page-title', 'Penugasan')
 
 @section('content')
 
 <div class="page-header">
     <div class="page-header-left">
-        <h1>Tugas & Tim</h1>
+        <h1>Penugasan</h1>
         <p>Kelola penugasan vendor untuk setiap event.</p>
     </div>
 
