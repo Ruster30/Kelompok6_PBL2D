@@ -51,7 +51,7 @@ class Payment extends Model
     {
         return match($this->status_pembayaran) {
             'menunggu'     => 'Menunggu Verifikasi',
-            'diverifikasi' => 'Diverifikasi',
+            'diverifikasi' => 'Verified',
             'ditolak'      => 'Ditolak',
             default        => ucfirst($this->status_pembayaran ?? ''),
         };

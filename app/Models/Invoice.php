@@ -47,10 +47,14 @@ class Invoice extends Model
     public function getBadgeClassAttribute(): string
     {
         return match($this->status_invoice) {
-            'lunas'    => 'badge-aktif',
-            'terkirim' => 'badge-mendatang',
-            'draft'    => 'badge-pending',
-            default    => 'badge-pending',
+            'lunas'               => 'badge-aktif',
+            'dp_lunas'            => 'badge-aktif',
+            'menunggu_verifikasi' => 'badge-mendatang',
+            'ditolak'             => 'badge-ditolak',
+            'belum_bayar'         => 'badge-pending',
+            'terkirim'            => 'badge-mendatang',
+            'draft'               => 'badge-pending',
+            default               => 'badge-pending',
         };
     }
 
@@ -58,10 +62,14 @@ class Invoice extends Model
     public function getStatusLabelAttribute(): string
     {
         return match($this->status_invoice) {
-            'draft'    => 'Draft',
-            'terkirim' => 'Terkirim',
-            'lunas'    => 'Lunas',
-            default    => ucfirst($this->status_invoice ?? ''),
+            'belum_bayar'         => 'Belum Bayar',
+            'menunggu_verifikasi' => 'Menunggu Verifikasi',
+            'dp_lunas'            => 'DP Lunas',
+            'lunas'               => 'Lunas',
+            'ditolak'             => 'Ditolak',
+            'draft'               => 'Draft',
+            'terkirim'            => 'Terkirim',
+            default               => ucfirst(str_replace('_', ' ', $this->status_invoice ?? '')),
         };
     }
 

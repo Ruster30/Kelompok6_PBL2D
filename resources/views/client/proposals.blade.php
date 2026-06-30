@@ -167,7 +167,7 @@
             <span class="badge {{ $doc->tipe_badge_class }}">{{ $doc->tipe_label }}</span>
         </div>
 
-        {{-- Aksi: HANYA Lihat & Download — sama persis dengan Admin → Proposal & Dokumen --}}
+        {{-- Aksi: HANYA Lihat & Download, sama persis dengan Admin Dokumen --}}
         <div class="action-btns" style="margin-top:14px;">
             <a href="{{ route('client.proposals.document.preview', $doc->id) }}"
                target="_blank"

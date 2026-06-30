@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Proposal & Dokumen')
-@section('page-title', 'Proposal & Dokumen')
+@section('title', 'Dokumen')
+@section('page-title', 'Dokumen')
 
 @section('content')
 <div class="page-header" style="margin-bottom:16px;">
     <div class="page-header-left">
-        <h1>Proposal &amp; Dokumen</h1>
+        <h1>Dokumen</h1>
     </div>
 </div>
 
@@ -44,10 +44,10 @@
                 <td style="font-weight:600;">Rp {{ number_format($invoice->total_invoice, 0, ',', '.') }}</td>
                 <td>
                     @php
-                        $map = ['draft'=>'badge-gray','terkirim'=>'badge-pending','lunas'=>'badge-active'];
+                        $map = ['draft'=>'badge-gray','terkirim'=>'badge-pending','belum_bayar'=>'badge-pending','menunggu_verifikasi'=>'badge-pending','lunas'=>'badge-active','ditolak'=>'badge-cancel'];
                         $cls = $map[$invoice->status_invoice] ?? 'badge-gray';
                     @endphp
-                    <span class="badge {{ $cls }}">{{ ucfirst($invoice->status_invoice) }}</span>
+                    <span class="badge {{ $cls }}">{{ $invoice->status_label }}</span>
                 </td>
                 <td>
                     <div class="action-btns">
@@ -112,9 +112,10 @@
                     <div class="form-group">
                         <label class="form-label">Status</label>
                         <select name="status_invoice" id="status_invoice" class="form-input">
-                            <option value="draft">Draft</option>
-                            <option value="terkirim">Terkirim</option>
+                            <option value="belum_bayar">Belum Bayar</option>
+                            <option value="menunggu_verifikasi">Menunggu Verifikasi</option>
                             <option value="lunas">Lunas</option>
+                            <option value="ditolak">Ditolak</option>
                         </select>
                     </div>
                 </div>

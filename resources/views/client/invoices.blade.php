@@ -68,15 +68,17 @@
                     <td style="font-weight:700;">{{ $inv->formatted_total }}</td>
                     <td>
                         <span class="badge {{ $inv->badge_class }}">
-                            {{ ucfirst($inv->status_invoice) }}
+                            {{ $inv->status_label }}
                         </span>
                     </td>
                     <td>
-                        @if($inv->status_invoice !== 'lunas')
+                        @if(in_array($inv->status_invoice, ['belum_bayar', 'ditolak', 'draft', 'terkirim']))
                         <button onclick="openPayModal({{ $inv->id }})"
                                 class="btn btn-accent btn-sm">
                             <i class="bi bi-credit-card"></i> Bayar
                         </button>
+                        @elseif($inv->status_invoice === 'menunggu_verifikasi')
+                        <span style="color:var(--text-muted);font-size:12px;">Menunggu Verifikasi</span>
                         @else
                         <span style="color:var(--text-muted);font-size:12px;">Lunas</span>
                         @endif
@@ -128,7 +130,7 @@
                     <td>{{ $pay->tanggal_pembayaran->format('j M Y') }}</td>
                     <td>
                         <span class="badge {{ $pay->badge_class }}">
-                            {{ ucfirst($pay->status_pembayaran) }}
+                            {{ $pay->status_label }}
                         </span>
                     </td>
                     <td>
