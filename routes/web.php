@@ -289,8 +289,10 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
          ->name('invoices.bayar');
  
     // ── Surat Penawaran ──────────────────────────────
-    Route::get('/proposals',                [ClientController::class, 'proposals'])
-         ->name('proposals');
+    Route::get('/proposals/{tab?}',         [ClientController::class, 'proposals'])
+        ->where('tab', 'penawaran|proposal|rab|kontrak|laporan')
+        ->name('proposals');
+
     Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
          ->name('proposals.show');
 
@@ -312,6 +314,12 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::post('/proposals/{id}/terima-setelah-negosiasi',
         [App\Http\Controllers\Client\ClientController::class, 'terimaSetelahNegosiasi'])
         ->name('proposals.terima-setelah-negosiasi');
+
+    Route::get('/proposals/document/{document}/preview', [ClientController::class, 'documentPreview'])
+        ->name('proposals.document.preview');
+
+    Route::get('/proposals/document/{document}/download', [ClientController::class, 'documentDownload'])
+        ->name('proposals.document.download');
  
     // ── Pengaturan Akun ──────────────────────────────
     Route::get('/settings',                 [ClientController::class, 'settings'])

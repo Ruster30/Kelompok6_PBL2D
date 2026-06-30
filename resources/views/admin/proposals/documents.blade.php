@@ -16,13 +16,6 @@
     <a href="{{ route('admin.document_builder.index') }}" class="tab-link">Document Builder</a>
 </div>
 
-@if(session('success'))
-    <div class="alert alert-success" style="margin-bottom:16px; padding:12px 16px; background:#d1fae5; border:1px solid #6ee7b7; border-radius:8px; color:#065f46; display:flex; align-items:center; gap:8px;">
-        <i class="bi bi-check-circle-fill"></i>
-        {{ session('success') }}
-    </div>
-@endif
-
 <div class="tab-content">
     {{-- Upload Zone --}}
     <form action="{{ route('admin.proposals.upload') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
@@ -51,6 +44,7 @@
                     <option value="kontrak">Kontrak</option>
                     <option value="invoice">Invoice</option>
                     <option value="rab">RAB</option>
+                    <option value="laporan">Laporan Akhir</option>
                     <option value="lainnya">Lainnya</option>
                 </select>
             </div>
@@ -79,6 +73,7 @@
             <option value="kontrak"  {{ request('type') == 'kontrak'  ? 'selected' : '' }}>Kontrak</option>
             <option value="invoice"  {{ request('type') == 'invoice'  ? 'selected' : '' }}>Invoice</option>
             <option value="rab"      {{ request('type') == 'rab'      ? 'selected' : '' }}>RAB</option>
+            <option value="laporan"  {{ request('type') == 'laporan'  ? 'selected' : '' }}>Laporan Akhir</option>
             <option value="lainnya"  {{ request('type') == 'lainnya'  ? 'selected' : '' }}>Lainnya</option>
         </select>
     </div>
@@ -121,11 +116,12 @@
                 <td>
                     @php
                         $badgeColor = match($doc->tipe) {
-                            'proposal' => ['bg'=>'#ede9fe','text'=>'#5b21b6'],
-                            'kontrak'  => ['bg'=>'#dbeafe','text'=>'#1e40af'],
-                            'invoice'  => ['bg'=>'#fef3c7','text'=>'#92400e'],
-                            'rab'      => ['bg'=>'#dcfce7','text'=>'#166534'],
-                            default    => ['bg'=>'#f3f4f6','text'=>'#374151'],
+                            'proposal' => ['bg'=>'#EEF2FF','text'=>'#4338CA'],
+                            'kontrak'  => ['bg'=>'#DBEAFE','text'=>'#1D4ED8'],
+                            'invoice'  => ['bg'=>'#FEF3C7','text'=>'#B45309'],
+                            'rab'      => ['bg'=>'#DCFCE7','text'=>'#15803D'],
+                            'laporan'  => ['bg'=>'#F3E8FF','text'=>'#7E22CE'],
+                            default    => ['bg'=>'#F3F4F6','text'=>'#4B5563'],
                         };
                     @endphp
                     <span class="badge" style="background:{{ $badgeColor['bg'] }}; color:{{ $badgeColor['text'] }}; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:500;">

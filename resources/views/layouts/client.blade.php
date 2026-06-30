@@ -34,11 +34,11 @@
             </a>
             <a href="{{ route('client.invoices') }}"
                class="nav-item {{ request()->routeIs('client.invoices*') ? 'active' : '' }}">
-                <i class="bi bi-receipt"></i> Anggaran & Faktur
+                <i class="bi bi-receipt"></i> Tagihan & Pembayaran
             </a>
             <a href="{{ route('client.proposals') }}"
                class="nav-item {{ request()->routeIs('client.proposals*') ? 'active' : '' }}">
-                <i class="bi bi-file-earmark-text"></i> Surat Penawaran
+                <i class="bi bi-file-earmark-text"></i> Dokumen
             </a>
             <a href="{{ route('client.notifications') }}" class="nav-item {{ request()->routeIs('client.notifications*') ? 'active' : '' }}">
                 <i class="bi bi-bell"></i> Notifikasi

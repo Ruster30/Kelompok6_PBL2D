@@ -13,6 +13,8 @@ use App\Services\TimelineAutoFill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Payment;
+use App\Models\Document;
+use Illuminate\Support\Facades\Storage;
 
 class ClientController extends Controller
 {
@@ -165,23 +167,65 @@ class ClientController extends Controller
      * Daftar surat penawaran — tampilkan HANYA proposal terbaru per event.
      * Jika admin sudah merevisi, versi lama tidak ditampilkan.
      */
-    public function proposals()
+    public function proposals(Request $request, string $tab = 'penawaran')
     {
         $uid  = Auth::id();
         $eIds = Event::where('client_id', $uid)->pluck('id');
-
-        // Ambil proposal dengan versi tertinggi per event
-        // Menggunakan latestProposal relation via subquery agar efisien
-        $latestProposals = Proposal::whereIn('event_id', $eIds)
-            ->with('event')
-            ->where('is_active', true)
-            ->orderByDesc('created_at')
-            ->get();
-
-        return view('client.proposals', array_merge(
-            ['latestProposals' => $latestProposals],
-            $this->notifData()
-        ));
+    
+        // Mapping tab → tipe dokumen (untuk tab selain 'penawaran')
+        $tabMap = [
+            'penawaran' => null,        // ditangani khusus, bukan dari tabel documents
+            'proposal'  => 'proposal',
+            'rab'       => 'rab',
+            'kontrak'   => 'kontrak',
+            'laporan'   => 'laporan',
+        ];
+    
+        if (!array_key_exists($tab, $tabMap)) {
+            $tab = 'penawaran';
+        }
+    
+        // ── Tab: Surat Penawaran (logika lama, tidak diubah) ───────────
+        $latestProposals = collect();
+        if ($tab === 'penawaran') {
+            $latestProposals = Proposal::whereIn('event_id', $eIds)
+                ->with('event')
+                ->whereIn('id', function ($sub) use ($eIds) {
+                    $sub->selectRaw('MAX(id)')
+                        ->from('proposals')
+                        ->whereIn('event_id', $eIds)
+                        ->groupBy('event_id');
+                })
+                ->orderByDesc('created_at')
+                ->get();
+        }
+    
+        // ── Tab lainnya: dokumen dari tabel documents ──────────────────
+        $documents = collect();
+        if ($tab !== 'penawaran') {
+            $query = Document::with(['event', 'user'])
+                ->whereIn('event_id', $eIds)
+                ->where('tipe', $tabMap[$tab])
+                ->latest();
+    
+            if ($request->filled('search')) {
+                $query->where('nama_file', 'like', '%' . $request->search . '%');
+            }
+            if ($request->filled('event_id')) {
+                $query->where('event_id', $request->event_id);
+            }
+    
+            $documents = $query->paginate(9)->withQueryString();
+        }
+    
+        $events = Event::where('client_id', $uid)->orderBy('nama_event')->get();
+    
+        return view('client.proposals', array_merge([
+            'activeTab'       => $tab,
+            'latestProposals' => $latestProposals,
+            'documents'       => $documents,
+            'events'          => $events,
+        ], $this->notifData()));
     }
 
     /**
@@ -399,6 +443,30 @@ class ClientController extends Controller
         return redirect()
             ->route('client.proposals.show', $proposal->id)
             ->with('success', 'Penawaran diterima! Timeline event telah disiapkan secara otomatis.');
+    }
+
+    public function documentPreview(Document $document)
+    {
+        $uid  = Auth::id();
+        $eIds = Event::where('client_id', $uid)->pluck('id');
+    
+        abort_unless($eIds->contains($document->event_id), 403);
+        abort_unless(Storage::disk('public')->exists($document->file_path), 404);
+    
+        return Storage::disk('public')->response($document->file_path, $document->nama_file, [
+            'Content-Disposition' => 'inline; filename="' . $document->nama_file . '"',
+        ]);
+    }
+
+    public function documentDownload(Document $document)
+    {
+        $uid  = Auth::id();
+        $eIds = Event::where('client_id', $uid)->pluck('id');
+    
+        abort_unless($eIds->contains($document->event_id), 403);
+        abort_unless(Storage::disk('public')->exists($document->file_path), 404);
+    
+        return Storage::disk('public')->download($document->file_path, $document->nama_file);
     }
 
     // ══════════════════════════════════════════════════

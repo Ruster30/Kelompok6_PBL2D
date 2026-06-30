@@ -22,6 +22,7 @@ class Document extends Model
     public const TIPE_KONTRAK   = 'kontrak';
     public const TIPE_INVOICE   = 'invoice';
     public const TIPE_RAB       = 'rab';
+    public const TIPE_LAPORAN   = 'laporan'; 
     public const TIPE_LAINNYA   = 'lainnya';
 
     // Daftar tipe valid untuk validasi form
@@ -30,6 +31,7 @@ class Document extends Model
         'kontrak'  => 'Kontrak',
         'invoice'  => 'Invoice',
         'rab'      => 'RAB',
+        'laporan'  => 'Laporan Akhir', 
         'lainnya'  => 'Lainnya',
     ];
 
@@ -52,6 +54,7 @@ class Document extends Model
             'kontrak'  => 'Kontrak',
             'invoice'  => 'Invoice',
             'rab'      => 'RAB',
+            'laporan'  => 'Laporan Akhir',   // [TAMBAH]
             default    => 'Lainnya',
         };
     }
@@ -63,6 +66,7 @@ class Document extends Model
             'kontrak'  => 'badge-aktif',
             'invoice'  => 'badge-selesai',
             'rab'      => 'badge-pending',
+            'laporan'  => 'badge-purple',   // [TAMBAH]
             default    => 'badge-pending',
         };
     }
