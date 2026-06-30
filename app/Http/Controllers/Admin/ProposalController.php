@@ -173,17 +173,52 @@ class ProposalController extends Controller
 
     public function suratPenawaran(Event $event)
     {
-        $event->load(['client', 'rabs', 'latestProposal']);
+        $event->load([
+            'client',
+            'rabs',
+            'activeProposal'
+        ]);
 
-        $nomorSurat = sprintf(
-            'PEN-%s-%03d',
-            now()->format('Ymd'),
-            Proposal::whereDate('created_at', today())->count() + 1
-        );
+        // Gunakan override nomor surat jika sudah diset admin, atau generate otomatis
+        $nomorSurat = $event->nomor_surat_override
+            ?? sprintf(
+                'PEN-%s-%03d',
+                now()->format('Ymd'),
+                Proposal::whereDate('created_at', today())->count() + 1
+            );
 
         return view('admin.requests.surat_penawaran', compact('event', 'nomorSurat'));
     }
 
+    /**
+     * Simpan perubahan field surat penawaran yang diedit admin.
+     * Route: PATCH /admin/requests/{event}/update-surat-penawaran
+     */
+    public function updateSuratPenawaran(Request $request, Event $event)
+    {
+        $data = $request->validate([
+            'nomor_surat_override' => 'required|string|max:100',
+            'lokasi_event'         => 'nullable|string|max:255',
+            'jenis_event'          => 'nullable|string|max:100',
+            'tanggal_event'        => 'nullable|date',
+            'tanggal_selesai'      => 'nullable|date|after_or_equal:tanggal_event',
+            'luas_area'            => 'nullable|string|max:100',
+            'rentang_anggaran'     => 'nullable|string|max:100',
+            'terbilang'            => 'nullable|string|max:255',
+            'detail_kebutuhan'     => 'nullable|string',
+        ]);
+
+        $event->update($data);
+
+        return redirect()
+            ->route('admin.requests.surat-penawaran', $event->id)
+            ->with('success', 'Data surat penawaran berhasil diperbarui.');
+    }
+
+    /**
+     * Generate PDF Surat Penawaran & simpan ke proposals, kirim notifikasi ke client.
+     * Route: POST /admin/requests/{event}/kirim-penawaran
+     */
     public function kirimPenawaran(Request $request, Event $event)
     {
         $data = $request->validate([
@@ -200,12 +235,21 @@ class ProposalController extends Controller
 
         Storage::disk('public')->put($path, $pdf->output());
 
+        // Nonaktifkan proposal sebelumnya
+        Proposal::where('event_id', $event->id)
+            ->where('is_active', true)
+            ->update([
+                'is_active' => false,
+            ]);
+
+        // Simpan sebagai Proposal
         Proposal::create([
             'event_id'         => $event->id,
             'nomor_proposal'   => $data['nomor_surat'],
             'file_proposal'    => $path,
             'versi'            => $version,
-            'status'           => 'diajukan',
+            'status'           => 'menunggu_konfirmasi',
+            'is_active'        => true,
             'tanggal_proposal' => $data['tanggal_surat'],
         ]);
 
@@ -224,12 +268,13 @@ class ProposalController extends Controller
 
     public function exportPdf(Event $event)
     {
-        $event->load(['client', 'rabs', 'latestProposal']);
+        $event->load(['client', 'rabs', 'activeProposal']);
 
         $data = [
-            'nomor_surat'   => $event->latestProposal?->nomor_proposal
+            'nomor_surat'   => $event->nomor_surat_override
+                ?? $event->activeProposal?->nomor_proposal
                 ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), Proposal::where('event_id', $event->id)->count()),
-            'tanggal_surat' => $event->latestProposal?->tanggal_proposal?->format('Y-m-d')
+            'tanggal_surat' => $event->activeProposal?->tanggal_proposal?->format('Y-m-d')
                 ?? now()->format('Y-m-d'),
         ];
 
@@ -243,7 +288,6 @@ class ProposalController extends Controller
     public function revisiPenawaran(Event $event)
     {
         $event->load(['client', 'rabs']);
-
         $version  = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
         $nomorRev = sprintf('REV-%s-%03d', now()->format('Ymd'), $version);
 
@@ -259,12 +303,19 @@ class ProposalController extends Controller
         $path     = 'proposals/' . $filename;
         Storage::disk('public')->put($path, $pdf->output());
 
+        Proposal::where('event_id', $event->id)
+            ->where('is_active', true)
+            ->update([
+                'is_active' => false,
+            ]);
+
         Proposal::create([
             'event_id'         => $event->id,
             'nomor_proposal'   => $nomorRev,
             'file_proposal'    => $path,
             'versi'            => $version,
-            'status'           => 'diajukan',
+            'status'           => 'direvisi',
+            'is_active'        => true,
             'tanggal_proposal' => now()->toDateString(),
         ]);
 

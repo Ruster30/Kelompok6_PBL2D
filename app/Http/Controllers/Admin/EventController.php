@@ -50,7 +50,14 @@ class EventController extends Controller
 
     public function show(Event $event)
     {
-        return view('admin.events.show', ['event' => $event->load('client')]);
+        return view('admin.events.show', [
+            'event' => $event->load([
+                'client',
+                'feedbacks' => function ($query) {
+                    $query->with('client')->latest();
+                },
+            ]),
+        ]);
     }
 
     public function edit(Event $event)

@@ -46,12 +46,52 @@
         <tbody>
             @forelse($requests as $req)
             @php
-                $map    = ['menunggu'=>'badge-pending','diproses'=>'badge-active','berjalan'=>'badge-done','selesai'=>'badge-active','dibatalkan'=>'badge-cancel'];
-                $labels = ['menunggu'=>'Menunggu','diproses'=>'Diterima','berjalan'=>'Berjalan','selesai'=>'Selesai','dibatalkan'=>'Dibatalkan'];
-                $status = strtolower($req->status_event);
-                $hasProposal    = $req->latestProposal !== null;
-                $hasNegotiation = $req->negotiations->isNotEmpty();
-            @endphp
+            $proposal = $req->latestProposal;
+
+            $hasProposal = $proposal !== null;
+            $hasNegotiation = $req->negotiations->isNotEmpty();
+
+            if ($proposal) {
+
+                $status = $proposal->status;
+
+                $map = [
+                    'menunggu_konfirmasi' => 'badge-pending',
+                    'negosiasi'           => 'badge-warning',
+                    'direvisi'            => 'badge-purple',
+                    'diterima'            => 'badge-success',
+                    'ditolak'             => 'badge-danger',
+                ];
+
+                $labels = [
+                    'menunggu_konfirmasi' => 'Menunggu Konfirmasi',
+                    'negosiasi'           => 'Negosiasi Diajukan',
+                    'direvisi'            => 'Penawaran Direvisi',
+                    'diterima'            => 'Diterima',
+                    'ditolak'             => 'Ditolak',
+                ];
+
+            } else {
+
+                $status = $req->status_event;
+
+                $map = [
+                    'menunggu' => 'badge-pending',
+                    'diproses' => 'badge-active',
+                    'berjalan' => 'badge-done',
+                    'selesai' => 'badge-active',
+                    'dibatalkan' => 'badge-cancel',
+                ];
+
+                $labels = [
+                    'menunggu' => 'Menunggu',
+                    'diproses' => 'Diproses',
+                    'berjalan' => 'Berjalan',
+                    'selesai' => 'Selesai',
+                    'dibatalkan' => 'Dibatalkan',
+                ];
+            }
+        @endphp
             <tr>
                 <td style="font-weight:600;">{{ $req->client->name ?? '-' }}</td>
                 <td style="font-weight:500;">{{ $req->nama_event }}</td>

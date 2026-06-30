@@ -3,6 +3,16 @@
 @section('page-title','Ajukan Event Baru')
 
 @section('content')
+
+<div class="page-header">
+    <a href="{{ url()->previous() }}"
+       onclick="event.preventDefault(); history.back();"
+       class="back-link">
+        <i class="bi bi-arrow-left"></i>
+        Kembali
+    </a>
+</div>
+
 <div style="max-width:680px;margin:0 auto;">
 
     <div class="page-header">

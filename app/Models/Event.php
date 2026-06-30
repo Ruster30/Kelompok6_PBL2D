@@ -16,9 +16,13 @@ class Event extends Model
         'nama_event',
         'jenis_event',
         'tanggal_event',
+        'tanggal_selesai',          // rentang jadwal event (opsional)
         'lokasi_event',
         'jumlah_tamu',
         'rentang_anggaran',
+        'terbilang',                // price dalam huruf
+        'nomor_surat_override',     // override nomor surat oleh admin
+        'luas_area',                // luas area stand/pameran
         'detail_kebutuhan',
         'status_event',
     ];
@@ -26,7 +30,8 @@ class Event extends Model
     protected function casts(): array
     {
         return [
-            'tanggal_event' => 'date',
+            'tanggal_event'   => 'date',
+            'tanggal_selesai' => 'date',
         ];
     }
 
@@ -76,6 +81,13 @@ class Event extends Model
     public function latestProposal()
     {
         return $this->hasOne(Proposal::class, 'event_id')->latestOfMany();
+    }
+
+    /** Proposal yang sedang aktif */
+    public function activeProposal()
+    {
+        return $this->hasOne(Proposal::class, 'event_id')
+                    ->where('is_active', true);
     }
 
     public function negotiationHistories()

@@ -668,40 +668,43 @@ body {
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 3px 10px;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 12px;
     border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
-.badge-aktif {
-    background: #dcfce7;
-    color: #16a34a;
+.badge-info {
+    background: #DBEAFE;
+    color: #1D4ED8;
 }
 
-.badge-mendatang {
-    background: #dbeafe;
-    color: #2563eb;
+.badge-warning {
+    background: #FEF3C7;
+    color: #92400E;
 }
 
-.badge-diterima {
-    background: #dcfce7;
-    color: #16a34a;
+.badge-secondary {
+    background: #F3E8FF;
+    color: #7E22CE;
 }
 
-.badge-pending {
-    background: #fef9c3;
-    color: #ca8a04;
+.badge-success {
+    background: #DCFCE7;
+    color: #166534;
 }
 
-.badge-ditolak {
-    background: #fee2e2;
-    color: #dc2626;
+.badge-danger {
+    background: #FEE2E2;
+    color: #991B1B;
 }
 
-.badge-selesai {
-    background: #fbfbfb;
-    color: #868a92;
+.badge-light {
+    background: #F1F5F9;
+    color: #475569;
 }
 
 /* ============================================================
@@ -778,6 +781,26 @@ body {
 .btn-lg {
     padding: 12px 24px;
     font-size: 14px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    color: #64748b;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: .2s;
+}
+
+.back-link:hover {
+    color: var(--accent);
+}
+
+.back-link i {
+    font-size: 15px;
 }
 
 /* ============================================================
