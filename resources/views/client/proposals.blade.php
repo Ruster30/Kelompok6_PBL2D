@@ -52,7 +52,7 @@
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
             <span class="badge {{ $proposal->badge_class }}">
-                <i class="bi bi-{{ $proposal->status==='disetujui' ? 'check-circle-fill' : ($proposal->status==='ditolak' ? 'x-circle-fill' : 'clock') }}"
+                <i class="bi bi-{{ $proposal->status==='diterima' ? 'check-circle-fill' : ($proposal->status==='ditolak' ? 'x-circle-fill' : 'clock') }}"
                    style="margin-right:4px;"></i>
                 {{ $proposal->status_label }}
             </span>

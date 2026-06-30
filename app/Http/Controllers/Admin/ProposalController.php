@@ -187,7 +187,11 @@ class ProposalController extends Controller
                 Proposal::whereDate('created_at', today())->count() + 1
             );
 
-        return view('admin.requests.surat_penawaran', compact('event', 'nomorSurat'));
+        // [TAMBAH] Surat terkunci jika proposal aktif sudah berstatus 'diterima'.
+        // Begitu klien menerima, admin tidak bisa lagi Edit / Revisi.
+        $isLocked = $event->activeProposal && $event->activeProposal->status === 'diterima';
+
+        return view('admin.requests.surat_penawaran', compact('event', 'nomorSurat', 'isLocked'));
     }
 
     /**
@@ -196,8 +200,18 @@ class ProposalController extends Controller
      */
     public function updateSuratPenawaran(Request $request, Event $event)
     {
+
+        // [TAMBAH] Guard: tolak perubahan apabila proposal aktif sudah diterima client.
+        $event->load('activeProposal');
+        if ($event->activeProposal && $event->activeProposal->status === 'diterima') {
+            return redirect()
+                ->route('admin.requests.surat-penawaran', $event->id)
+                ->with('error', 'Surat penawaran telah diterima oleh client sehingga tidak dapat direvisi.');
+        }
+
         $data = $request->validate([
             'nomor_surat_override' => 'required|string|max:100',
+            'perihal'              => 'nullable|string|max:255', 
             'lokasi_event'         => 'nullable|string|max:255',
             'jenis_event'          => 'nullable|string|max:100',
             'tanggal_event'        => 'nullable|date',
@@ -209,6 +223,8 @@ class ProposalController extends Controller
         ]);
 
         $event->update($data);
+
+        $isLocked = $event->activeProposal && $event->activeProposal->status === 'diterima';
 
         return redirect()
             ->route('admin.requests.surat-penawaran', $event->id)
@@ -225,6 +241,8 @@ class ProposalController extends Controller
             'nomor_surat'   => 'required|string|max:100',
             'tanggal_surat' => 'required|date',
         ]);
+
+        $data['perihal'] = $event->perihal ?? 'Surat Penawaran Event';
 
         $event->load(['client', 'rabs']);
 
@@ -262,6 +280,8 @@ class ProposalController extends Controller
             'tipe'    => 'info',
         ]);
 
+        $isLocked = $event->activeProposal && $event->activeProposal->status === 'diterima';
+
         return redirect()->route('admin.requests.index')
             ->with('success', 'Surat penawaran berhasil dikirim ke client.');
     }
@@ -287,48 +307,69 @@ class ProposalController extends Controller
 
     public function revisiPenawaran(Event $event)
     {
-        $event->load(['client', 'rabs']);
-        $version  = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
-        $nomorRev = sprintf('REV-%s-%03d', now()->format('Ymd'), $version);
-
-        $pdf      = Pdf::loadView('admin.requests.surat_penawaran_pdf', [
-            'event' => $event,
-            'data'  => [
-                'nomor_surat'   => $nomorRev,
-                'tanggal_surat' => now()->format('Y-m-d'),
-            ],
-        ]);
-
-        $filename = 'revisi-penawaran-' . Str::slug($event->nama_event) . '-v' . $version . '.pdf';
-        $path     = 'proposals/' . $filename;
-        Storage::disk('public')->put($path, $pdf->output());
-
-        Proposal::where('event_id', $event->id)
-            ->where('is_active', true)
-            ->update([
-                'is_active' => false,
-            ]);
-
-        Proposal::create([
-            'event_id'         => $event->id,
-            'nomor_proposal'   => $nomorRev,
-            'file_proposal'    => $path,
-            'versi'            => $version,
-            'status'           => 'direvisi',
-            'is_active'        => true,
-            'tanggal_proposal' => now()->toDateString(),
-        ]);
-
-        Notification::create([
-            'user_id' => $event->client_id,
-            'judul'   => 'Revisi Penawaran Dikirim',
-            'pesan'   => 'Revisi surat penawaran untuk event "' . $event->nama_event . '" telah dikirim.',
-            'tipe'    => 'info',
-        ]);
-
-        return redirect()->route('admin.requests.index')
-            ->with('success', 'Revisi penawaran berhasil dikirim.');
+        return redirect()
+        ->route('admin.requests.surat-penawaran', $event->id)
+        ->with('info', 'Silakan lakukan revisi pada surat penawaran di bawah ini, lalu klik "Kirim Revisi" untuk mengirimkannya ke client.');
     }
+
+    public function kirimRevisiPenawaran(Event $event)
+{
+    // Guard: tidak bisa revisi jika proposal aktif sudah diterima
+    $event->load(['client', 'rabs', 'activeProposal']);
+    if ($event->activeProposal && $event->activeProposal->status === 'diterima') {
+        return redirect()
+            ->route('admin.requests.surat-penawaran', $event->id)
+            ->with('error', 'Surat penawaran telah diterima oleh client sehingga tidak dapat direvisi.');
+    }
+ 
+    $version  = ((int) Proposal::where('event_id', $event->id)->max('versi')) + 1;
+    $nomorRev = $event->nomor_surat_override
+        ?? sprintf('REV-%s-%03d', now()->format('Ymd'), $version);
+ 
+    $data = [
+        'nomor_surat'   => $nomorRev,
+        'tanggal_surat' => now()->format('Y-m-d'),
+        'perihal'       => $event->perihal ?? 'Surat Penawaran Event',
+    ];
+ 
+    $pdf      = Pdf::loadView('admin.requests.surat_penawaran_pdf', compact('event', 'data'));
+    $filename = 'revisi-penawaran-' . Str::slug($event->nama_event) . '-v' . $version . '.pdf';
+    $path     = 'proposals/' . $filename;
+    Storage::disk('public')->put($path, $pdf->output());
+ 
+    Proposal::where('event_id', $event->id)
+        ->where('is_active', true)
+        ->update([
+            'is_active' => false,
+        ]);
+ 
+    Proposal::create([
+        'event_id'         => $event->id,
+        'nomor_proposal'   => $nomorRev,
+        'file_proposal'    => $path,
+        'versi'            => $version,
+        'status'           => 'direvisi',
+        'is_active'        => true,
+        'tanggal_proposal' => now()->toDateString(),
+    ]);
+ 
+    Notification::create([
+        'user_id' => $event->client_id,
+        'judul'   => 'Revisi Penawaran Dikirim',
+        'pesan'   => 'Revisi surat penawaran untuk event "' . $event->nama_event . '" telah dikirim.',
+        'tipe'    => 'info',
+    ]);
+
+    $isLocked = $event->activeProposal && $event->activeProposal->status === 'diterima';
+ 
+    return redirect()
+        ->route('admin.requests.surat-penawaran', $event->id)
+        ->with('success', 'Revisi penawaran berhasil dikirim ke client.');
+}
+ 
+
+
+
 
     // ─────────────── HELPER ───────────────
 

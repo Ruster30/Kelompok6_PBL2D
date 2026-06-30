@@ -21,7 +21,8 @@ class Event extends Model
         'jumlah_tamu',
         'rentang_anggaran',
         'terbilang',                // price dalam huruf
-        'nomor_surat_override',     // override nomor surat oleh admin
+        'nomor_surat_override', 
+        'perihal',                 // override nomor surat oleh admin
         'luas_area',                // luas area stand/pameran
         'detail_kebutuhan',
         'status_event',

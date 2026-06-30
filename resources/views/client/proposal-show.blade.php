@@ -43,7 +43,7 @@
         @endif
 
         {{-- Tombol aksi respon — hanya jika status menunggu konfirmasi --}}
-        @if(!in_array($proposal->status, ['disetujui','ditolak']))
+        @if(!in_array($proposal->status, ['diterima','ditolak']))
 
         <a href="{{ route('client.proposals.negosiasi.form', $proposal->id) }}"
            style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
@@ -83,8 +83,28 @@
                 }}
 
             </button>
-
         </form>
+        @elseif($proposal->status === 'diterima')
+        <button
+            type="button"
+            disabled
+            title="Sudah Diterima"
+            style="
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            padding:9px 18px;
+            background:#e2e8f0;
+            color:#64748b;
+            border:none;
+            border-radius:8px;
+            font-size:13px;
+            font-weight:600;
+            cursor:not-allowed;">
+ 
+            <i class="bi bi-check-circle-fill"></i> Sudah Diterima
+ 
+        </button>
         @endif
     </div>
 </div>
@@ -140,7 +160,7 @@
             <tr>
                 <td style="border:none;padding:1px 4px;">Perihal</td>
                 <td style="border:none;padding:1px 8px 1px 4px;">:</td>
-                <td style="border:none;padding:1px 4px;">Surat Penawaran Pameran Otomotif</td>
+                <td style="border:none;padding:1px 4px;">{{ $event->perihal ?? '-' }}</td>
             </tr>
         </table>
 

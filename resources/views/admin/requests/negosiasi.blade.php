@@ -14,13 +14,9 @@
 
     {{-- Tombol Revisi Penawaran --}}
     @if($event->latestProposal && $event->latestProposal->status === 'negosiasi')
-    <form action="{{ route('admin.requests.revisi-penawaran', $event->id) }}" method="POST">
-        @csrf
-        <button type="submit" class="btn btn-primary"
-                onclick="return confirm('Kirim revisi penawaran ke client {{ $event->client->name ?? '' }}?')">
+        <a href="{{ route('admin.requests.surat-penawaran', $event->id) }}" class="btn btn-primary">
             <i class="fas fa-edit"></i> Revisi Penawaran
-        </button>
-    </form>
+        </a>
     @endif
 </div>
 

@@ -118,6 +118,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         [App\Http\Controllers\Admin\ProposalController::class, 'revisiPenawaran'])
         ->name('admin.requests.revisi-penawaran');
 
+    Route::post('/requests/{event}/kirim-revisi-penawaran',
+        [App\Http\Controllers\Admin\ProposalController::class, 'kirimRevisiPenawaran'])
+        ->name('admin.requests.kirim-revisi-penawaran');
+
     // ─── Negosiasi ──────────────────────────────────────────────────
 
     // Riwayat negosiasi (dari client)

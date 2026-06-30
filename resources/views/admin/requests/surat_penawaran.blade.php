@@ -22,6 +22,36 @@
             <button class="btn btn-outline" onclick="window.print()">
                 <i class="fas fa-print"></i> Print
             </button>
+            @if($isLocked)
+
+            {{-- Surat sudah diterima client --}}
+            <button type="button"
+                    class="btn btn-outline"
+                    disabled
+                    style="border-color:#cbd5e1;
+                        color:#94a3b8;
+                        background:#f8fafc;
+                        cursor:not-allowed;"
+                    title="Surat penawaran telah diterima oleh client sehingga tidak dapat diedit.">
+
+                <i class="fas fa-lock"></i>
+                Edit Surat
+
+            </button>
+
+            <button type="button"
+                    class="btn btn-secondary"
+                    disabled
+                    style="background:#cbd5e1;
+                        border-color:#cbd5e1;
+                        color:#64748b;
+                        cursor:not-allowed;"
+                    title="Surat penawaran telah diterima oleh client sehingga tidak dapat direvisi.">
+
+                <i class="fas fa-lock"></i>
+                Revisi Penawaran
+            </button>
+        @else
             {{-- Tombol Edit Surat --}}
             <button type="button" class="btn btn-outline" id="btn-edit-surat" onclick="toggleEditMode(true)"
                     style="border-color:#f59e0b; color:#b45309;">
@@ -38,7 +68,7 @@
                 </button>
             </form>
             @else
-            <form action="{{ route('admin.requests.revisi-penawaran', $event->id) }}" method="POST" style="display:inline;">
+            <form action="{{ route('admin.requests.kirim-revisi-penawaran', $event->id) }}" method="POST" style="display:inline;">
                 @csrf
                 <button type="submit" class="btn btn-primary"
                         onclick="return confirm('Kirim revisi penawaran ke client?')">
@@ -46,6 +76,7 @@
                 </button>
             </form>
             @endif
+        @endif
         </div>
 
         {{-- Tombol mode EDIT (tersembunyi saat view) --}}
@@ -115,7 +146,22 @@
             <tr>
                 <td style="border:none; padding:1px 4px;">Perihal</td>
                 <td style="border:none; padding:1px 8px 1px 4px;">:</td>
-                <td style="border:none; padding:1px 4px;">Surat Penawaran Pameran Otomotif</td>
+                <td style="border:none; padding:1px 4px;">
+
+                    {{-- VIEW --}}
+                    <span class="field-view" id="view-perihal">
+                        {{ $event->perihal ?? 'Surat Penawaran Pameran Otomotif' }}
+                    </span>
+                    {{-- EDIT --}}
+                    <input
+                        class="field-edit surat-input"
+                        id="edit-perihal"
+                        type="text"
+                        name="perihal"
+                        value="{{ old('perihal', $event->perihal ?? 'Surat Penawaran Pameran Otomotif') }}"
+                        style="display:none;">
+
+                </td>
             </tr>
         </table>
 
