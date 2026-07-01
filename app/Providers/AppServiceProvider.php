@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Interfaces\EventVendorRepositoryInterface;
 use App\Interfaces\FeedbackRepositoryInterface;
 use App\Interfaces\NotificationRepositoryInterface;
 use App\Interfaces\RabRepositoryInterface;
 use App\Interfaces\TaskRepositoryInterface;
 use App\Interfaces\TimelineRepositoryInterface;
+use App\Repositories\EventVendorRepository;
 use App\Repositories\FeedbackRepository;
 use App\Repositories\NotificationRepository;
 use App\Repositories\RabRepository;
@@ -20,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(EventVendorRepositoryInterface::class, EventVendorRepository::class);
         $this->app->bind(FeedbackRepositoryInterface::class, FeedbackRepository::class);
         $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
         $this->app->bind(RabRepositoryInterface::class, RabRepository::class);
