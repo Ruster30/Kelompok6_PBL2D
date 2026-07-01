@@ -14,7 +14,7 @@ class EventController extends Controller
         $query = Event::with('client')->latest();
 
         if ($request->search) {
-            $query->where('nama_event', 'like', '%' . $request->search . '%');
+            $query->where('nama_event', 'like', '%' . $request->search . '%');  
         }
         if ($request->status) {
             $query->where('status_event', $request->status);
