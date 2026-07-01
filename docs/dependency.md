@@ -181,38 +181,7 @@ php artisan make:notification EventNotification
 
 ---
 
-# 6. Laravel Excel
-
-## What
-Package export/import Excel.
-
-## Why
-Digunakan untuk:
-- Export data RAB
-- Export laporan event
-- Rekap pembayaran
-
-## Who
-Digunakan admin.
-
-## When
-Saat membutuhkan laporan dalam format Excel.
-
-## Where
-Digunakan pada menu laporan.
-
-## How
-
-```bash
-composer require maatwebsite/excel
-```
-
-## Referensi
-- https://docs.laravel-excel.com
-
----
-
-# 7. Midtrans PHP SDK
+# 6. Midtrans PHP SDK
 
 ## What
 SDK pembayaran online Midtrans.
@@ -242,39 +211,8 @@ composer require midtrans/midtrans-php
 
 ---
 
-# 8. Laravel File Manager
 
-## What
-Package pengelolaan file Laravel.
-
-## Why
-Digunakan untuk mengelola:
-- Dokumentasi event
-- File proposal
-- Kontrak
-- Invoice
-
-## Who
-Digunakan admin.
-
-## When
-Saat upload dan manajemen file.
-
-## Where
-Digunakan pada dashboard admin.
-
-## How
-
-```bash
-composer require unisharp/laravel-filemanager
-```
-
-## Referensi
-- https://github.com/UniSharp/laravel-filemanager
-
----
-
-# 9. Carbon
+# 7. Carbon
 
 ## What
 Library manipulasi tanggal dan waktu pada Laravel.
