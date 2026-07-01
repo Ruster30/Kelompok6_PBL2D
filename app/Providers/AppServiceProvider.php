@@ -8,12 +8,14 @@ use App\Interfaces\NotificationRepositoryInterface;
 use App\Interfaces\RabRepositoryInterface;
 use App\Interfaces\TaskRepositoryInterface;
 use App\Interfaces\TimelineRepositoryInterface;
+use App\Interfaces\VendorRepositoryInterface;
 use App\Repositories\EventVendorRepository;
 use App\Repositories\FeedbackRepository;
 use App\Repositories\NotificationRepository;
 use App\Repositories\RabRepository;
 use App\Repositories\TaskRepository;
 use App\Repositories\TimelineRepository;
+use App\Repositories\VendorRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Notification;
 use Illuminate\Support\Facades\View;
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(RabRepositoryInterface::class, RabRepository::class);
         $this->app->bind(TaskRepositoryInterface::class, TaskRepository::class);
         $this->app->bind(TimelineRepositoryInterface::class, TimelineRepository::class);
+        $this->app->bind(VendorRepositoryInterface::class, VendorRepository::class);
     }
 
     public function boot(): void
