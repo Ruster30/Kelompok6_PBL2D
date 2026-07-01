@@ -2,41 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreFeedbackRequest;
 use App\Models\Event;
-use App\Models\Feedback;
+use App\Services\FeedbackService;
 
 class FeedbackController extends Controller
 {
+    public function __construct(
+        private FeedbackService $feedbackService
+    ) {}
+
     public function create(Event $event)
     {
-        $cek = Feedback::where('event_id', $event->id)
-            ->where('client_id', auth()->id())
-            ->exists();
+        $clientId = auth()->id();
 
-        if ($cek) {
-            return back()->with('error', 'Feedback sudah diberikan');
+        if ($this->feedbackService->hasGivenFeedback($event, $clientId)) {
+            return back()->with("error", "Feedback sudah diberikan");
         }
 
-        return view('client.feedback', compact('event'));
+        return view("client.feedback", compact("event"));
     }
 
-    public function store(Request $request)
+    public function store(StoreFeedbackRequest $request)
     {
-        $request->validate([
-            'rating' => 'required|integer|min:1|max:5',
-            'ulasan' => 'required|min:10',
-        ]);
-
-        Feedback::create([
-            'event_id'  => $request->event_id,
-            'client_id' => auth()->id(),
-            'rating'    => $request->rating,
-            'ulasan'    => $request->ulasan,
+        $this->feedbackService->createFeedback([
+            "event_id"  => $request->event_id,
+            "client_id" => auth()->id(),
+            "rating"    => $request->rating,
+            "ulasan"    => $request->ulasan,
         ]);
 
         return redirect()
-            ->route('client.events')
-            ->with('success', 'Feedback berhasil dikirim');
+            ->route("client.events")
+            ->with("success", "Feedback berhasil dikirim");
     }
 }
