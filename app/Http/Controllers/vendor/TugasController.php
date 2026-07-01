@@ -3,51 +3,42 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
-use App\Models\Task;
+use App\Http\Requests\UpdateTugasStatusRequest;
+use App\Services\TugasService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TugasController extends Controller
 {
-    /**
-     * Daftar Tugas
-     */
+    public function __construct(
+        private TugasService $tugasService
+    ) {}
+
     public function index(Request $request)
     {
         $vendor = Auth::user()->vendor;
         abort_if(!$vendor, 403);
 
-        $tugas = Task::where('vendor_id', $vendor->id)
-            ->with('event')
-            ->when($request->event, fn($q) => $q->where('event_id', $request->event))
-            ->orderBy('deadline')
-            ->get();
+        $data = $this->tugasService->getTasks(
+            $vendor->id,
+            $request->event
+        );
 
-        return view('vendor.daftar-tugas', compact('tugas'));
+        return view("vendor.daftar-tugas", $data);
     }
 
-    /**
-     * Update Status Tugas
-     */
-    public function update(Request $request)
+    public function update(UpdateTugasStatusRequest $request)
     {
-        $request->validate([
-            'tugas_id' => 'required|exists:tasks,id',
-            'status'   => 'required|in:ditugaskan,dikerjakan,selesai',
-        ]);
-
         $vendor = Auth::user()->vendor;
         abort_if(!$vendor, 403);
 
-        $tugas = Task::where('id', $request->tugas_id)
-            ->where('vendor_id', $vendor->id)
-            ->firstOrFail();
+        $this->tugasService->updateTaskStatus(
+            $vendor->id,
+            $request->tugas_id,
+            $request->status
+        );
 
-        $tugas->update([
-            'status'  => $request->status,
-        ]);
-
-        return redirect()->route('vendor.daftar-tugas')
-            ->with('success', 'Status tugas berhasil diperbarui.');
+        return redirect()->route("vendor.daftar-tugas")
+            ->with("success", "Status tugas berhasil diperbarui.");
     }
 }
