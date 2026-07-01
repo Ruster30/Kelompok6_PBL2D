@@ -103,6 +103,12 @@ Request
 
 Controller
 
+Request
+
+↓
+
+Controller
+
 ├── Validation
 ├── Query Database
 ├── Business Logic
