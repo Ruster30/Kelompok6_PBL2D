@@ -3,92 +3,58 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreEventRequest;
 use App\Models\Event;
-use App\Models\User;
+use App\Services\AdminEventService;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    public function __construct(
+        private AdminEventService $eventService,
+    ) {}
+
     public function index(Request $request)
     {
-        $query = Event::with('client')->latest();
-
-        if ($request->search) {
-            $query->where('nama_event', 'like', '%' . $request->search . '%');
-        }
-        if ($request->status) {
-            $query->where('status_event', $request->status);
-        }
-
-        return view('admin.events.index', [
-            'events' => $query->paginate(10)->withQueryString(),
-        ]);
+        return view('admin.events.index', $this->eventService->getIndexData(
+            $request->search,
+            $request->status
+        ));
     }
 
     public function create()
     {
-        $clients = User::where('role', 'client')->orderBy('name')->get();
-        return view('admin.events.form', ['clients' => $clients]);
+        return view('admin.events.form', $this->eventService->getFormData());
     }
 
-    public function store(Request $request)
+    public function store(StoreEventRequest $request)
     {
-        $data = $request->validate([
-            'nama_event'       => 'required|string|max:255',
-            'client_id'        => 'required|exists:users,id',
-            'jenis_event'      => 'nullable|string|max:100',
-            'tanggal_event'    => 'required|date',
-            'lokasi_event'     => 'nullable|string|max:255',
-            'jumlah_tamu'      => 'nullable|integer|min:0',
-            'detail_kebutuhan' => 'nullable|string',
-            'status_event'     => 'required|in:menunggu,diproses,berjalan,selesai,dibatalkan',
-        ]);
+        $this->eventService->createEvent($request->validated());
 
-        Event::create($data);
         return redirect()->route('admin.events.index')->with('success', 'Event berhasil dibuat.');
     }
 
     public function show(Event $event)
     {
-        return view('admin.events.show', [
-            'event' => $event->load([
-                'client',
-                'feedbacks' => function ($query) {
-                    $query->with('client')->latest();
-                },
-            ]),
-        ]);
+        return view('admin.events.show', $this->eventService->getShowData($event));
     }
 
     public function edit(Event $event)
     {
-        $clients = User::where('role', 'client')->orderBy('name')->get();
-        return view('admin.events.form', [
-            'event'   => $event,
-            'clients' => $clients,
-        ]);
+        return view('admin.events.form', $this->eventService->getFormData($event));
     }
 
-    public function update(Request $request, Event $event)
+    public function update(StoreEventRequest $request, Event $event)
     {
-        $data = $request->validate([
-            'nama_event'       => 'required|string|max:255',
-            'client_id'        => 'required|exists:users,id',
-            'jenis_event'      => 'nullable|string|max:100',
-            'tanggal_event'    => 'required|date',
-            'lokasi_event'     => 'nullable|string|max:255',
-            'jumlah_tamu'      => 'nullable|integer|min:0',
-            'detail_kebutuhan' => 'nullable|string',
-            'status_event'     => 'required|in:menunggu,diproses,berjalan,selesai,dibatalkan',
-        ]);
+        $this->eventService->updateEvent($event, $request->validated());
 
-        $event->update($data);
         return redirect()->route('admin.events.index')->with('success', 'Event berhasil diperbarui.');
     }
 
     public function destroy(Event $event)
     {
-        $event->delete();
+        $this->eventService->deleteEvent($event);
+
         return redirect()->route('admin.events.index')->with('success', 'Event berhasil dihapus.');
     }
 }
