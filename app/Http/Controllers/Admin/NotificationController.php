@@ -4,36 +4,28 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Services\AdminNotificationService;
 
 class NotificationController extends Controller
 {
+    public function __construct(
+        private AdminNotificationService $adminNotificationService
+    ) {}
+
     public function index()
     {
-        $notifications = Notification::where(
-            'user_id',
-            auth()->user()->id
-        )
-        ->latest()
-        ->paginate(15);
+        $data = $this->adminNotificationService->getNotifications(auth()->user()->id);
 
-        return view(
-            'admin.notifications.index',
-            compact('notifications')
-        );
+        return view("admin.notifications.index", $data);
     }
 
     public function markAllRead()
     {
-        Notification::where(
-            'user_id',
-            auth()->user()->id
-        )->update([
-            'dibaca' => true
-        ]);
+        $this->adminNotificationService->markAllAsRead(auth()->user()->id);
 
         return back()->with(
-            'success',
-            'Semua notifikasi ditandai sudah dibaca.'
+            "success",
+            "Semua notifikasi ditandai sudah dibaca."
         );
     }
 
@@ -41,7 +33,10 @@ class NotificationController extends Controller
     {
         abort_unless($notification->user_id === auth()->id(), 403);
 
-        $notification->markAsRead();
+        $this->adminNotificationService->markAsRead(
+            $notification->id,
+            auth()->id()
+        );
 
         return back();
     }
