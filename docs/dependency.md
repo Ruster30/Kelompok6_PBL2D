@@ -181,38 +181,9 @@ php artisan make:notification EventNotification
 
 ---
 
-# 6. Midtrans PHP SDK
-
-## What
-SDK pembayaran online Midtrans.
-
-## Why
-Digunakan untuk mempermudah pembayaran event secara online.
-
-## Who
-Digunakan klien dan admin.
-
-## When
-Saat proses pembayaran event.
-
-## Where
-Digunakan pada:
-- Invoice
-- Pembayaran event
-
-## How
-
-```bash
-composer require midtrans/midtrans-php
-```
-
-## Referensi
-- https://docs.midtrans.com
-
----
 
 
-# 7. Carbon
+# 6. Carbon
 
 ## What
 Library manipulasi tanggal dan waktu pada Laravel.
