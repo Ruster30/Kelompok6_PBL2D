@@ -3,45 +3,39 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UpdatePasswordRequest;
+use App\Http\Requests\UpdateProfileRequest;
+use App\Services\AdminSettingsService;
 
 class SettingsController extends Controller
 {
+    public function __construct(
+        private AdminSettingsService $settingsService
+    ) {}
+
     public function index()
     {
-        return view('admin.settings.index');
+        return view("admin.settings.index");
     }
 
-    public function update(Request $request)
+    public function update(UpdateProfileRequest $request)
     {
-        $user = auth()->user();
+        $this->settingsService->updateProfile($request->validated());
 
-        $data = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-        ]);
-
-        $user->update($data);
-
-        return back()->with('success', 'Profil berhasil diperbarui.');
+        return back()->with("success", "Profil berhasil diperbarui.");
     }
 
-    public function updatePassword(Request $request)
+    public function updatePassword(UpdatePasswordRequest $request)
     {
-        $request->validate([
-            'current_password' => 'required',
-            'password'         => 'required|string|min:8|confirmed',
-        ]);
+        $result = $this->settingsService->updatePassword(
+            $request->current_password,
+            $request->password
+        );
 
-        $user = auth()->user();
-
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Password saat ini salah.']);
+        if (isset($result["error"])) {
+            return back()->withErrors(["current_password" => $result["error"]]);
         }
 
-        $user->update(['password' => Hash::make($request->password)]);
-
-        return back()->with('success', 'Password berhasil diubah.');
+        return back()->with("success", $result["success"]);
     }
 }
