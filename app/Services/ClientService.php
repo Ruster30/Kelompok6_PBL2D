@@ -168,7 +168,12 @@ class ClientService
             ->latest()
             ->get();
 
-        $totalInvoice = $invoices->sum('total_invoice');
+        // Total Invoice diambil dari invoice pertama (invoice utama) saja, bukan SUM seluruh invoice
+        // Invoice pelunasan tidak boleh menambah Total Invoice
+        $totalInvoice = $invoices->groupBy('event_id')->map(function ($eventInvoices) {
+            return $eventInvoices->sortBy('id')->first()->total_invoice ?? 0;
+        })->sum();
+        
         $totalDibayar = $payments->where('status_pembayaran', 'diverifikasi')->sum('nominal');
         $sisaTagihan = max(0, $totalInvoice - $totalDibayar);
 

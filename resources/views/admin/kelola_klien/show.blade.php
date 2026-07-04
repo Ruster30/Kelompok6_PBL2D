@@ -130,10 +130,10 @@
                     </div>
                     <span class="badge badge-{{ $event->badge_class ?? 'gray' }}">{{ $event->status_label }}</span>
                 </div>
-                @if($event->invoices->sum('total_invoice') > 0)
+                @if($event->total_invoice > 0)
                 <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9;font-size:13px;color:#64748b;">
                     <i class="fas fa-file-invoice" style="color:#94a3b8;margin-right:4px;"></i>
-                    Total invoice: <strong style="color:#1e293b;">Rp {{ number_format($event->invoices->sum('total_invoice'), 0, ',', '.') }}</strong>
+                    Total invoice: <strong style="color:#1e293b;">Rp {{ number_format($event->total_invoice, 0, ',', '.') }}</strong>
                 </div>
                 @endif
             </div>
