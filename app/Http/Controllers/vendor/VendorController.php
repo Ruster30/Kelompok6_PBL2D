@@ -3,81 +3,47 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
-use App\Models\Event;
-use App\Models\Task;
-use App\Models\Vendor;
+use App\Services\VendorDashboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Notification;
 
 class VendorController extends Controller
 {
-    /**
-     * Ringkasan (Dashboard)
-     */
+    public function __construct(
+        private VendorDashboardService $dashboardService
+    ) {}
+
     public function ringkasan()
     {
         $vendor = Auth::user()->vendor;
         abort_if(!$vendor, 403);
 
-        $totalEvent   = Event::whereHas('vendors', fn($q) => $q->where('vendor_id', $vendor->id))->count();
-        $tugasAktif   = Task::where('vendor_id', $vendor->id)->whereNotIn('status', ['selesai'])->count();
-        $tugasSelesai = Task::where('vendor_id', $vendor->id)->where('status', 'selesai')->count();
+        $data = $this->dashboardService->getRingkasanData($vendor->id);
 
-        $eventTerdekat = Event::whereHas('vendors', fn($q) => $q->where('vendor_id', $vendor->id))
-            ->where('tanggal_event', '>=', now())
-            ->orderBy('tanggal_event')
-            ->take(3)
-            ->get();
-
-        $tugasMendatang = Task::where('vendor_id', $vendor->id)
-            ->whereNotIn('status', ['selesai'])
-            ->orderBy('deadline')
-            ->take(5)
-            ->with('event')
-            ->get();
-
-        return view('vendor.ringkasan', compact(
-            'totalEvent', 'tugasAktif', 'tugasSelesai',
-            'eventTerdekat', 'tugasMendatang'
-        ));
+        return view("vendor.ringkasan", $data);
     }
 
-    /**
-     * Event Saya
-     */
     public function eventSaya(Request $request)
     {
         $vendor = Auth::user()->vendor;
         abort_if(!$vendor, 403);
 
-        $events = Event::whereHas('vendors', fn($q) => $q->where('vendor_id', $vendor->id))
-            ->with('client')
-            ->when($request->search, fn($q) =>
-                $q->where('nama_event', 'like', '%' . $request->search . '%')
-            )
-            ->orderBy('tanggal_event')
-            ->get();
+        $data = $this->dashboardService->getEventSaya($vendor->id, $request->search);
 
-        return view('vendor.event-saya', compact('events'));
+        return view("vendor.event-saya", $data);
     }
 
-    /**
-     * Pengaturan (Profile Vendor - read only)
-     */
     public function pengaturan()
     {
         $vendor = Auth::user()->vendor;
         abort_if(!$vendor, 403);
-        return view('vendor.pengaturan', compact('vendor'));
+
+        return view("vendor.pengaturan", compact("vendor"));
     }
 
-    /**
-     * Logout
-     */
     public function logout()
     {
         Auth::logout();
-        return redirect('/login');
+        return redirect("/login");
     }
 }

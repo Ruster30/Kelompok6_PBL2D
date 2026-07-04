@@ -3,70 +3,51 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Event;
+use App\Http\Requests\StoreTimelineRequest;
+use App\Http\Requests\UpdateTimelineRequest;
 use App\Models\Timeline;
+use App\Services\TimelineService;
 use Illuminate\Http\Request;
 
 class TimelineController extends Controller
 {
+    public function __construct(
+        private TimelineService $timelineService
+    ) {}
+
     public function index(Request $request)
     {
-        $events = Event::orderBy('nama_event')->get();
-        $selectedEvent = null;
-        $timelines = collect();
+        $data = $this->timelineService->getTimelineData($request->event_id);
 
-        if ($request->event_id) {
-            $selectedEvent = Event::findOrFail($request->event_id);
-            $timelines = Timeline::where('event_id', $request->event_id)->orderBy('tanggal_kegiatan')->get();
-        } elseif ($events->isNotEmpty()) {
-            $selectedEvent = $events->first();
-            $timelines = Timeline::where('event_id', $selectedEvent->id)->orderBy('tanggal_kegiatan')->get();
-        }
-
-        return view('admin.timeline.index', compact('events', 'selectedEvent', 'timelines'));
+        return view("admin.timeline.index", $data);
     }
 
-    public function store(Request $request)
+    public function store(StoreTimelineRequest $request)
     {
-        $data = $request->validate([
-            'event_id'         => 'required|exists:events,id',
-            'nama_kegiatan'    => 'required|string|max:255',
-            'deskripsi'        => 'nullable|string|max:1000',
-            'penanggung_jawab' => 'nullable|string|max:100',
-            'tanggal_kegiatan' => 'required|date',
-            'deadline'         => 'nullable|date',
-            'status_kegiatan'  => 'required|in:belum_mulai,berjalan,selesai',
-        ]);
+        $this->timelineService->createTimeline($request->validated());
 
-        Timeline::create($data);
-
-        return redirect()->route('admin.timeline.index', ['event_id' => $data['event_id']])
-                         ->with('success', 'Timeline berhasil ditambahkan.');
+        return redirect()
+            ->route("admin.timeline.index", ["event_id" => $request->event_id])
+            ->with("success", "Timeline berhasil ditambahkan.");
     }
 
-    public function update(Request $request, Timeline $timeline)
+    public function update(UpdateTimelineRequest $request, Timeline $timeline)
     {
-        $data = $request->validate([
-            'nama_kegiatan'    => 'required|string|max:255',
-            'deskripsi'        => 'nullable|string|max:1000',
-            'penanggung_jawab' => 'nullable|string|max:100',
-            'tanggal_kegiatan' => 'required|date',
-            'deadline'         => 'nullable|date',
-            'status_kegiatan'  => 'required|in:belum_mulai,berjalan,selesai',
-        ]);
+        $this->timelineService->updateTimeline($timeline, $request->validated());
 
-        $timeline->update($data);
-
-        return redirect()->route('admin.timeline.index', ['event_id' => $timeline->event_id])
-                         ->with('success', 'Timeline berhasil diperbarui.');
+        return redirect()
+            ->route("admin.timeline.index", ["event_id" => $timeline->event_id])
+            ->with("success", "Timeline berhasil diperbarui.");
     }
 
     public function destroy(Timeline $timeline)
     {
         $eventId = $timeline->event_id;
-        $timeline->delete();
 
-        return redirect()->route('admin.timeline.index', ['event_id' => $eventId])
-                         ->with('success', 'Timeline berhasil dihapus.');
+        $this->timelineService->deleteTimeline($timeline);
+
+        return redirect()
+            ->route("admin.timeline.index", ["event_id" => $eventId])
+            ->with("success", "Timeline berhasil dihapus.");
     }
 }
