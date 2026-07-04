@@ -53,7 +53,7 @@ class ClientService
         $uid = $this->uid();
 
         $recentEvents = Event::where('client_id', $uid)
-            ->with(['timelines', 'latestProposal'])
+            ->with(['timelines' => fn($q) => $q->orderBy('tanggal_kegiatan')->orderBy('id'), 'latestProposal'])
             ->latest()
             ->take(5)
             ->get();
@@ -137,7 +137,7 @@ class ClientService
         }
 
         if ($selectedEvent) {
-            $timelines = $selectedEvent->timelines()->orderBy('tanggal_kegiatan')->get();
+            $timelines = $selectedEvent->timelines()->orderBy('tanggal_kegiatan')->orderBy('id')->get();
             $totalTask = $timelines->count();
             $doneTask = $timelines->where('status_kegiatan', 'selesai')->count();
             if ($totalTask > 0) {

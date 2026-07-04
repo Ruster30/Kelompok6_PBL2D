@@ -12,6 +12,7 @@ class TimelineRepository implements TimelineRepositoryInterface
     {
         return Timeline::where("event_id", $eventId)
             ->orderBy("tanggal_kegiatan")
+            ->orderBy("id")
             ->get();
     }
 

@@ -28,8 +28,8 @@
             <i class="fas fa-users" style="color:#3b82f6;"></i>
         </div>
         <div class="stat-info">
-            <div class="stat-value">{{ $stats['total'] }}</div>
-            <div class="stat-label">Total Klien</div>
+            <div class="stat-value" style="margin-bottom:10px;">{{ $stats['total'] }}</div>
+            <div class="stat-label" style="margin-bottom:6px;">Total Klien</div>
             <div class="stat-sub">Semua klien terdaftar</div>
         </div>
     </div>
@@ -38,8 +38,8 @@
             <i class="fas fa-user-check" style="color:#22c55e;"></i>
         </div>
         <div class="stat-info">
-            <div class="stat-value">{{ $stats['aktif'] }}</div>
-            <div class="stat-label">Klien Aktif</div>
+            <div class="stat-value" style="margin-bottom:10px;">{{ $stats['aktif'] }}</div>
+            <div class="stat-label" style="margin-bottom:6px;">Klien Aktif</div>
             <div class="stat-sub">Aktif dalam 30 hari</div>
         </div>
     </div>
@@ -48,8 +48,8 @@
             <i class="fas fa-user-times" style="color:#f97316;"></i>
         </div>
         <div class="stat-info">
-            <div class="stat-value">{{ $stats['nonaktif'] }}</div>
-            <div class="stat-label">Klien Nonaktif</div>
+            <div class="stat-value" style="margin-bottom:10px;">{{ $stats['nonaktif'] }}</div>
+            <div class="stat-label" style="margin-bottom:6px;">Klien Nonaktif</div>
             <div class="stat-sub">Tidak aktif > 30 hari</div>
         </div>
     </div>
@@ -58,8 +58,8 @@
             <i class="fas fa-envelope" style="color:#8b5cf6;"></i>
         </div>
         <div class="stat-info">
-            <div class="stat-value">{{ $stats['notif_terkirim'] }}</div>
-            <div class="stat-label">Notifikasi Terkirim</div>
+            <div class="stat-value" style="margin-bottom:10px;">{{ $stats['notif_terkirim'] }}</div>
+            <div class="stat-label" style="margin-bottom:6px;">Notifikasi Terkirim</div>
             <div class="stat-sub">7 hari terakhir</div>
         </div>
     </div>
@@ -73,7 +73,7 @@
               style="display:flex;align-items:center;gap:12px;flex:1;flex-wrap:wrap;">
 
             {{-- Pencarian --}}
-            <div class="search-wrap" style="min-width:240px;">
+            <div class="search-wrap" style="min-width:240px; margin-top:18px;">
                 <i class="fas fa-search"></i>
                 <input type="text" name="search" id="searchInput"
                        placeholder="Cari nama klien, email, atau telepon..."
@@ -204,62 +204,12 @@
                             <i class="fas fa-envelope" style="font-size:13px;"></i>
                         </button>
 
-                        {{-- Edit --}}
-                        <a href="{{ route('admin.kelola-klien.edit', $klien) }}"
-                           title="Edit"
-                           style="width:32px;height:32px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:center;color:#f59e0b;transition:.2s;text-decoration:none;"
-                           onmouseover="this.style.background='#fffbeb'" onmouseout="this.style.background='#fff'">
-                            <i class="fas fa-edit" style="font-size:13px;"></i>
-                        </a>
-
-                        {{-- Dropdown Lainnya --}}
-                        <div style="position:relative;" class="dropdown-wrap">
-                            <button onclick="toggleDropdown({{ $klien->id }})"
-                                    style="width:32px;height:32px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;transition:.2s;"
-                                    onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
-                                <i class="fas fa-ellipsis-v" style="font-size:13px;"></i>
-                            </button>
-
-                            <div id="dropdown-{{ $klien->id }}"
-                                 style="display:none;position:absolute;right:0;top:38px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.10);z-index:999;min-width:180px;overflow:hidden;">
-
-                                {{-- Lihat Detail --}}
-                                <a href="{{ route('admin.kelola-klien.show', $klien) }}"
-                                   style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#334155;text-decoration:none;transition:.15s;"
-                                   onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                                    <i class="fas fa-eye" style="width:14px;color:#14b8a6;"></i> Lihat Detail
-                                </a>
-
-                                <hr style="margin:4px 0;border:none;border-top:1px solid #f1f5f9;">
-
-                                {{-- Toggle Status --}}
-                                <form action="{{ route('admin.kelola-klien.toggle-status', $klien) }}" method="POST">
-                                    @csrf @method('PATCH')
-                                    <button type="submit"
-                                            style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#334155;background:none;border:none;width:100%;cursor:pointer;transition:.15s;"
-                                            onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                                        <i class="fas {{ $isAktif ? 'fa-ban' : 'fa-check-circle' }}" style="width:14px;color:{{ $isAktif ? '#f97316' : '#22c55e' }};"></i>
-                                        {{ $isAktif ? 'Nonaktifkan' : 'Aktifkan' }}
-                                    </button>
-                                </form>
-
-                                <hr style="margin:4px 0;border:none;border-top:1px solid #f1f5f9;">
-
-                                {{-- Hapus --}}
-                                <button onclick="konfirmasiHapus({{ $klien->id }}, '{{ addslashes($klien->name) }}')"
-                                        style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#ef4444;background:none;border:none;width:100%;cursor:pointer;transition:.15s;"
-                                        onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
-                                    <i class="fas fa-trash-alt" style="width:14px;"></i> Hapus Klien
-                                </button>
-                            </div>
-                        </div>
-
-                        {{-- Hidden form hapus --}}
-                        <form id="form-hapus-{{ $klien->id }}"
-                              action="{{ route('admin.kelola-klien.destroy', $klien) }}"
-                              method="POST" style="display:none;">
-                            @csrf @method('DELETE')
-                        </form>
+                        {{-- Lihat Detail --}}
+                        <button onclick="window.location.href='{{ route('admin.kelola-klien.show', $klien) }}'"
+                           class="btn btn-primary"
+                           style="padding:6px 14px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;text-decoration:none;border-radius:8px;white-space:nowrap;">
+                            <i class="fas fa-eye" style="font-size:12px;"></i> Lihat Detail
+                        </button>
                     </div>
                 </td>
             </tr>
@@ -454,48 +404,5 @@ document.getElementById('modalKirimNotif').addEventListener('click', function (e
     if (e.target === this) closeModalKirim();
 });
 
-// ─── Dropdown Aksi ───────────────────────────────────────────────────
-function toggleDropdown(id) {
-    // Tutup semua yang lain dulu
-    document.querySelectorAll('[id^="dropdown-"]').forEach(el => {
-        if (el.id !== 'dropdown-' + id) el.style.display = 'none';
-    });
-    const el = document.getElementById('dropdown-' + id);
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-// Tutup dropdown saat klik di luar
-document.addEventListener('click', function (e) {
-    if (!e.target.closest('.dropdown-wrap')) {
-        document.querySelectorAll('[id^="dropdown-"]').forEach(el => {
-            el.style.display = 'none';
-        });
-    }
-});
-
-// ─── Konfirmasi Hapus (SweetAlert) ──────────────────────────────────
-function konfirmasiHapus(id, nama) {
-    if (typeof Swal === 'undefined') {
-        if (confirm('Hapus klien "' + nama + '"? Tindakan ini tidak bisa dibatalkan.')) {
-            document.getElementById('form-hapus-' + id).submit();
-        }
-        return;
-    }
-    Swal.fire({
-        title: 'Hapus Klien?',
-        html: 'Akun klien <strong>' + nama + '</strong> akan dihapus permanen.<br>Tindakan ini tidak bisa dibatalkan.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: '<i class="fas fa-trash-alt"></i> Ya, Hapus',
-        cancelButtonText: 'Batal',
-        reverseButtons: true,
-    }).then(result => {
-        if (result.isConfirmed) {
-            document.getElementById('form-hapus-' + id).submit();
-        }
-    });
-}
 </script>
 @endsection

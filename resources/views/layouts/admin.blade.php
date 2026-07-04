@@ -157,6 +157,7 @@
         .badge-gray { background: #f1f5f9; color: #64748b; }
         .badge-warning{ background: #FEF3C7; color: #92400E; }
         .badge-purple{ background: #F3E8FF; color: #7E22CE; }
+        .badge-success{ background: #D1FAE5; color: #0f766e; }
 
         /* Buttons */
         .btn {

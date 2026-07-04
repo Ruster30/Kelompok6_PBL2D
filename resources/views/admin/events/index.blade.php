@@ -57,8 +57,8 @@
                         $statusMap = [
                             'menunggu' => 'badge-pending',
                             'diproses' => 'badge-done',
-                            'berjalan' => 'badge-active',
-                            'selesai' => 'badge-done',
+                            'berjalan' => 'badge-purple',
+                            'selesai' => 'badge-success',
                             'dibatalkan' => 'badge-cancel',
                         ];
                         $labelMap = [

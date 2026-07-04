@@ -4,22 +4,26 @@
 @section('page-title', 'Detail Klien')
 
 @section('content')
-<div class="page-header">
-    <div class="page-header-left">
-        <h1>Detail Klien</h1>
-        <p>Profil, riwayat event, pembayaran, dan notifikasi.</p>
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;">
+    <a href="{{ route('admin.kelola-klien.index') }}"
+       style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;
+              border:1px solid #e2e8f0;border-radius:8px;background:#fff;
+              color:#334155;font-size:13px;font-weight:600;text-decoration:none;
+              transition:.15s;line-height:1;"
+       onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+        <i class="fas fa-arrow-left" style="font-size:12px;color:#64748b;"></i>
+        Kembali
+    </a>
+    <div style="flex:1;">
+        <h1 style="font-size:20px;font-weight:700;color:#1e293b;margin:0;">Detail Klien</h1>
+        <p style="font-size:13px;color:#64748b;margin:2px 0 0;">Profil, riwayat event, pembayaran, dan notifikasi.</p>
     </div>
     <div style="display:flex;gap:10px;">
         <button onclick="openModalKirim({{ $klien->id }}, '{{ addslashes($klien->name) }}')"
-                class="btn btn-secondary">
+                class="btn btn-primary">
             <i class="fas fa-paper-plane"></i> Kirim Notifikasi
         </button>
-        <a href="{{ route('admin.kelola-klien.edit', $klien) }}" class="btn btn-primary">
-            <i class="fas fa-edit"></i> Edit Klien
-        </a>
-        <a href="{{ route('admin.kelola-klien.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Kembali
-        </a>
+
     </div>
 </div>
 
