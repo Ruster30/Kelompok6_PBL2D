@@ -130,7 +130,7 @@ class Event extends Model
 
     public function timelines()
     {
-        return $this->hasMany(Timeline::class, 'event_id')->orderBy('tanggal_kegiatan');
+        return $this->hasMany(Timeline::class, 'event_id')->orderBy('tanggal_kegiatan')->orderBy('id');
     }
 
     public function documentations()
@@ -189,7 +189,7 @@ class Event extends Model
             'menunggu'   => 'badge-pending',
             'selesai'    => 'badge-selesai',
             'dibatalkan' => 'badge-ditolak',
-            default      => 'badge-pending',
+            default      => 'badge-gray',
         };
     }
 

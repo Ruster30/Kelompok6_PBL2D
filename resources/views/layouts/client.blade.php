@@ -49,7 +49,7 @@
                 @endif
             </a>
 
-            <div style="height:1px;background:var(--border);margin:12px 4px;"></div>
+            <div style="height:1px;background:var(--text-muted);margin:12px 4px;"></div>
 
             <a href="{{ route('client.event.create') }}"
                class="nav-item {{ request()->routeIs('client.event.create') ? 'active' : '' }}">

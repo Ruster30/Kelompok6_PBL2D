@@ -49,7 +49,7 @@ class DocumentBuilderService
         $services  = Service::where('is_active', true)->orderBy('urutan')->get();
         $teams     = Team::where('is_active', true)->orderBy('urutan')->get();
         $rabItems  = Rab::where('event_id', $event->id)->with('vendor')->get();
-        $timelines = Timeline::where('event_id', $event->id)->orderBy('tanggal_kegiatan')->get();
+        $timelines = Timeline::where('event_id', $event->id)->orderBy('tanggal_kegiatan')->orderBy('id')->get();
         $vendors   = $event->vendors;
         $totalRab  = $rabItems->sum('subtotal_biaya');
 
