@@ -44,7 +44,7 @@
                         <i class="fas fa-edit" style="font-size:12px;"></i>
                     </button>
                     <form action="{{ route('admin.cms.destroyPortfolio', $portfolio->id) }}" method="POST" style="display:inline;"
-                          onsubmit="return confirm('Hapus portfolio ini?')">
+                          onsubmit="return swalDelete(this, {text: 'Portfolio {{ addslashes($portfolio->judul) }} akan dihapus dari landing page.'})">
                         @csrf @method('DELETE')
                         <button type="submit" class="action-btn danger" title="Hapus" style="background:white;">
                             <i class="fas fa-trash" style="font-size:12px;"></i>

@@ -82,7 +82,7 @@
                             <i class="fas fa-edit" style="font-size:12px;"></i>
                         </a>
                         <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" style="display:inline;"
-                              onsubmit="return confirm('Hapus event ini?')">
+                              onsubmit="return swalDelete(this, {text: 'Event {{ addslashes($event->nama_event) }} akan dihapus. Tindakan ini tidak dapat dibatalkan.'})">
                             @csrf @method('DELETE')
                             <button type="submit" class="action-btn danger" title="Hapus">
                                 <i class="fas fa-trash" style="font-size:12px;"></i>

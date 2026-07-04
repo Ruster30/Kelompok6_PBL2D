@@ -34,7 +34,7 @@
                     <i class="fas fa-edit" style="font-size:12px;"></i>
                 </button>
                 <form action="{{ route('admin.cms.destroyClient', $client->id) }}" method="POST" style="display:inline;"
-                      onsubmit="return confirm('Hapus logo ini?')">
+                      onsubmit="return swalDelete(this, {text: 'Logo {{ addslashes($client->nama_client) }} akan dihapus dari landing page.'})">
                     @csrf @method('DELETE')
                     <button type="submit" class="action-btn danger" title="Hapus">
                         <i class="fas fa-trash" style="font-size:12px;"></i>

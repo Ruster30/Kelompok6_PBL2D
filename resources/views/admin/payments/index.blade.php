@@ -57,7 +57,8 @@
                 <td>
                     @if($payment->status_pembayaran === 'menunggu')
                     <div class="action-btns">
-                        <form action="{{ route('admin.payments.verify', $payment->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('admin.payments.verify', $payment->id) }}" method="POST" style="display:inline;"
+                              onsubmit="return swalApprove(this, 'Terima Pembayaran?', 'Pembayaran akan diverifikasi dan dikonfirmasi ke client.')">
                             @csrf @method('PATCH')
                             <input type="hidden" name="status_pembayaran" value="diverifikasi">
                             <button type="submit" class="btn btn-primary btn-sm">
@@ -65,7 +66,7 @@
                             </button>
                         </form>
                         <form action="{{ route('admin.payments.verify', $payment->id) }}" method="POST" style="display:inline;"
-                              onsubmit="return confirm('Tolak pembayaran ini?')">
+                              onsubmit="return swalReject(this, 'Tolak Pembayaran?', 'Pembayaran akan ditolak dan client akan diberitahu.')">
                             @csrf @method('PATCH')
                             <input type="hidden" name="status_pembayaran" value="ditolak">
                             <button type="submit" class="action-btn danger" title="Tolak">
@@ -79,7 +80,8 @@
                             <i class="fas fa-eye" style="font-size:12px;"></i>
                         </a>
                         @if($payment->status_pembayaran === 'diverifikasi' && $payment->jenis_pembayaran === 'dp' && $payment->invoice->event->invoices()->count() == 1)
-                        <form action="{{ route('admin.payments.sendPelunasan', $payment->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('admin.payments.sendPelunasan', $payment->id) }}" method="POST" style="display:inline;"
+                              onsubmit="return swalSend(this, 'Kirim Invoice Pelunasan?', 'Invoice pelunasan akan dikirim ke client.')">
                             @csrf
                             <button type="submit" class="btn btn-outline btn-sm" style="margin-left:5px;" title="Kirim Invoice Pelunasan">
                                 <i class="fas fa-file-invoice"></i> Kirim Pelunasan

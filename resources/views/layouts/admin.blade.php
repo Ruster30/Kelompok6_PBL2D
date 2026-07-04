@@ -459,6 +459,7 @@
     </main>
 </div>
 
+<x-swal-helper />
 <x-logout-confirmation />
 @stack('scripts')
 

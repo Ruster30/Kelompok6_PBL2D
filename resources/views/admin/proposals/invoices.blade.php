@@ -58,7 +58,7 @@
                             <i class="fas fa-edit" style="font-size:12px;"></i>
                         </button>
                         <form action="{{ route('admin.proposals.invoices.destroy', $invoice->id) }}" method="POST" style="display:inline;"
-                              onsubmit="return confirm('Hapus kwitansi ini?')">
+                              onsubmit="return swalDelete(this, {text: 'Kwitansi {{ addslashes($invoice->nomor_invoice) }} akan dihapus permanen.'})">
                             @csrf @method('DELETE')
                             <button type="submit" class="action-btn danger" title="Hapus">
                                 <i class="fas fa-trash" style="font-size:12px;"></i>

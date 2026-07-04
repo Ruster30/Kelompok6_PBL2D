@@ -161,7 +161,7 @@
                         <form action="{{ route('admin.proposals.destroy', $doc->id) }}"
                               method="POST"
                               style="display:inline;"
-                              onsubmit="return confirm('Hapus dokumen \"{{ addslashes($doc->nama_file) }}\"?')">
+                              onsubmit="return swalDelete(this, {text: 'Dokumen {{ addslashes($doc->nama_file) }} akan dihapus permanen.'})">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="action-btn danger" title="Hapus">
