@@ -1,0 +1,221 @@
+/* ============================================================
+   SIDEBAR — shared design system for Admin / Client / Vendor
+   ============================================================ */
+
+/* ---- Variables ---- */
+:root {
+    --sidebar-w: 280px;
+    --sidebar-bg: #0f172a;
+    --sidebar-text: #94a3b8;
+    --sidebar-accent: #2DD4BF;
+    --sidebar-accent-dark: #1aaa99;
+    --sidebar-accent-light: rgba(45, 212, 191, .10);
+    --sidebar-divider: rgba(255, 255, 255, 0.07);
+    --sidebar-radius: 8px;
+    --topbar-h: 64px;
+}
+
+/* ---- Sidebar layout ---- */
+.sidebar {
+    width: var(--sidebar-w);
+    background: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 100;
+    transition: transform .22s ease;
+    border-right: 1px solid var(--sidebar-divider);
+}
+
+/* ---- Brand / Logo ---- */
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 24px;
+    height: var(--topbar-h);
+    border-bottom: 1px solid var(--sidebar-divider);
+    flex-shrink: 0;
+}
+
+.sidebar-brand .brand-name {
+    color: #fff;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.3px;
+}
+
+.sidebar-brand .brand-name span { color: #2DD4BF; }
+
+/* ---- Nav ---- */
+.sidebar-nav {
+    flex: 1;
+    padding: 20px 12px;
+    overflow-y: auto;
+}
+
+.nav-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #9aa5b8;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 12px 12px 6px;
+}
+
+.nav-section:not(:first-of-type) {
+    margin-top: 4px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--sidebar-radius);
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13.5px;
+    transition: all .22s ease;
+    position: relative;
+    margin-bottom: 2px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.nav-item i,
+.nav-item .bi {
+    font-size: 17px;
+    flex-shrink: 0;
+    transition: transform .22s ease;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-item:hover {
+    background: var(--sidebar-accent-light);
+    color: var(--sidebar-accent-dark);
+}
+
+.nav-item:hover i,
+.nav-item:hover .bi {
+    transform: translateX(2px);
+}
+
+.nav-item.active {
+    background: var(--sidebar-accent-light);
+    color: var(--sidebar-accent-dark);
+    font-weight: 700;
+}
+
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    background: var(--sidebar-accent);
+    border-radius: 0 3px 3px 0;
+}
+
+
+/* ---- Logo (Client-style) ---- */
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 24px;
+    height: var(--topbar-h);
+    border-bottom: 1px solid var(--sidebar-divider);
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.sidebar-logo-text {
+    color: #fff;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.3px;
+}
+
+.sidebar-logo-text span {
+    color: #2DD4BF;
+}/* ---- Footer ---- */
+.sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid var(--sidebar-divider);
+}
+
+.sidebar-footer .nav-item.danger {
+    color: var(--sidebar-text);
+}
+
+.sidebar-footer .nav-item.danger:hover {
+    background: rgba(229, 62, 62, 0.10);
+    color: #e53e3e;
+}
+
+.sidebar-footer .nav-item.danger:hover i,
+.sidebar-footer .nav-item.danger:hover .bi {
+    transform: none;
+}
+
+/* ---- Badge ---- */
+.sidebar-notification-badge {
+    margin-left: auto;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+}
+
+/* ---- Overlay ---- */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    opacity: 0;
+    transition: opacity .3s ease;
+}
+.sidebar-overlay.show { opacity: 1; }
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .main-wrapper,
+    .main-area {
+        margin-left: 0 !important;
+    }
+    .mobile-toggle { display: flex !important; }
+}
+
+@media (min-width: 1025px) {
+    .sidebar {
+        transform: translateX(0) !important;
+    }
+    .sidebar-overlay {
+        display: none !important;
+    }
+}

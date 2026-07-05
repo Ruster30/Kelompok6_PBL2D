@@ -8,75 +8,68 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f6fa; display: flex; min-height: 100vh; }
-
-        /* Sidebar */
+        /* Sidebar — redesigned to match Client style */
         .sidebar {
-            width: 255px; min-width: 255px; background: #0f172a; color: #94a3b8;
+            width: 280px; min-width: 280px; background: #0f172a; color: #94a3b8;
             display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; z-index: 100;
+            border-right: 1px solid rgba(255,255,255,0.07);
         }
         .sidebar-brand {
-            display: flex; align-items: center; gap: 12px; padding: 20px 20px;
-            border-bottom: 1px solid #1e293b;
-        }
-        .sidebar-brand .brand-icon {
-            width: 36px; height: 36px; background: #14b8a6; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 700;
-        }
-        .sidebar-brand .brand-name { color: white; font-weight: 700; font-size: 16px; letter-spacing: 1px; }
-        .sidebar-nav { padding: 16px 0; flex: 1; }
+            display: flex; align-items: center;
+            justify-content: flex-start; padding: 0 24px; height: 64px;
+        }   
+        .sidebar-brand .brand-name { color: white; font-weight: 800; font-size: 18px; letter-spacing: -0.3px; }
+        .sidebar-brand .brand-name span { color: #2DD4BF; }
+        .sidebar-nav { flex: 1; padding: 20px 12px; overflow-y: auto; }
         .nav-item {
-            display: flex; align-items: center; gap: 12px; padding: 11px 20px; cursor: pointer;
-            color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;
-            transition: all 0.2s; border-left: 3px solid transparent;
+            display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer;
+            color: #94a3b8; text-decoration: none; font-size: 13.5px; font-weight: 500;
+            transition: all .22s ease; border-radius: 8px; margin-bottom: 2px;
+            position: relative; border-left: none;
         }
-        .sidebar-footer .nav-logout{
-            width:100%;
-            background:transparent;
-            border:none;
-            text-align:left;
-            display:flex;
-            align-items:center;
-            gap:12px;
-            color:#d1d5db;
-            padding:14px 18px;
-            border-radius:10px;
-            transition:.25s;
-            cursor:pointer;
+        .sidebar-footer .nav-logout {
+            width:100%; background:transparent; border:none; text-align:left;
+            display:flex; align-items:center; gap:12px; color:#94a3b8;
+            padding:10px 14px; border-radius:8px; transition:all .22s ease;
+            cursor:pointer; font-size:13.5px; font-weight:500; text-decoration:none;
         }
-        .sidebar-footer .nav-logout:hover{
-            background:#dc2626;
-            color:#fff;
+        .sidebar-footer .nav-logout:hover {
+            background:rgba(229,62,62,0.10); color:#e53e3e;
         }
-        .sidebar-footer .nav-logout:hover i{
-            color:#fff;
-        }
+        .sidebar-footer .nav-logout:hover i { color:#e53e3e; }
 
-        .nav-item:hover { background: #1e293b; color: #e2e8f0; }
-        .nav-item.active { background: #134e4a; color: #2dd4bf; border-left-color: #14b8a6; }
-        .nav-item i { width: 18px; text-align: center; font-size: 15px; }
-        .sidebar-footer { padding: 16px 0; border-top: 1px solid #1e293b; }
+        .nav-item:hover { background: rgba(45,212,191,.10); color: #1aaa99; }
+        .nav-item.active {
+            background: rgba(45,212,191,.10); color: #1aaa99; font-weight: 700;
+        }
+        .nav-item.active::before {
+            content: ''; position: absolute; left: 0; top: 6px; bottom: 6px;
+            width: 3px; background: #2DD4BF; border-radius: 0 3px 3px 0;
+        }
+        .nav-item i { width: 20px; text-align: center; font-size: 17px; flex-shrink: 0; transition: transform .22s ease; }
+        .nav-item:hover i { transform: translateX(2px); }
+        .sidebar-footer { padding: 12px; border-top: 1px solid rgba(255,255,255,0.07); }
 
         /* Main content */
-        .main-wrapper { margin-left: 255px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
         /* Topbar */
         .topbar {
-            background: white; padding: 0 28px; height: 60px; display: flex; align-items: center;
+            background: white; padding: 0 28px; height: 64px; display: flex; align-items: center;
             justify-content: space-between; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50;
         }
-        .topbar-title { font-size: 18px; font-weight: 600; color: #1e293b; }
-        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .topbar-title { font-size: 18px; font-weight: 700; color: #0f172a; }
+        .topbar-right { display: flex; align-items: center; gap: 20px; }
         .topbar-notif {
             position: relative; display: flex; align-items: center; justify-content: center;
-            color: #94a3b8; text-decoration: none; transition: color .2s ease;
+            width: 40px; height: 40px; border-radius: 10px; background: #f8fafc;
+            color: #94a3b8; text-decoration: none; transition: all .2s ease;
         }
-
-        .topbar-notif:hover {
-            color: #2dd4bf;
-        }
+        .topbar-notif:hover { background: #f1f5f9; color: #2DD4BF; }
         .notif-count {
             position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px;
             background: #ef4444; color: white; border-radius: 50%; border: 2px solid white;
@@ -84,13 +77,16 @@
             font-size: 10px; font-weight: 700; z-index: 10;
         }
         .topbar-notif i { font-size: 18px; }
-        .topbar-user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .topbar-user span { font-size: 14px; font-weight: 500; color: #334155; }
-        .avatar {
-            width: 34px; height: 34px; background: #14b8a6; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700;
+        .topbar-user {
+            display: flex; align-items: center; gap: 10px; cursor: pointer;
+            padding: 4px 12px 4px 4px; border-radius: 50px; transition: all 0.2s;
         }
-
+        .topbar-user:hover { background: #f8fafc; }
+        .topbar-user span { font-size: 14px; font-weight: 600; color: #0f172a; }
+        .avatar {
+            width: 36px; height: 36px; background: #2DD4BF; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 700;
+        }
         /* Page content */
         .page-content { padding: 28px; flex: 1; }
 
@@ -321,10 +317,233 @@
         .modal-body { padding:24px; display:grid; gap:16px; }
         .modal-footer { padding:16px 24px; border-top:1px solid #e2e8f0; display:flex; gap:10px; justify-content:flex-end; }
 
-        @media (max-width: 1024px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .dashboard-bottom { grid-template-columns: 1fr; }
-            .cms-grid, .portfolio-grid, .team-grid, .logo-grid { grid-template-columns: repeat(2, 1fr); }
+        /* ============================================================
+           RESPONSIVE DESIGN - Sama seperti Client & Vendor
+           ============================================================ */
+        
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* Mobile Toggle Button */
+        #sidebarToggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f8fafc;
+            color: #64748b;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        #sidebarToggle:hover {
+            background: #f1f5f9;
+            color: #2DD4BF;
+        }
+        
+        #sidebarToggle i {
+            font-size: 20px;
+        }
+
+        /* Desktop (≥769px) - No changes */
+        @media (min-width: 769px) {
+            #sidebarToggle {
+                display: none !important;
+            }
+        }
+
+        /* Tablet (768px - 1199px) */
+        @media (max-width: 1199px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .dashboard-bottom {
+                grid-template-columns: 1fr;
+            }
+            .cms-grid, .portfolio-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .team-grid, .logo-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Mobile (<768px) */
+        @media (max-width: 768px) {
+            /* Sidebar becomes offcanvas - sama seperti Client & Vendor */
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 100;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Main content takes full width */
+            .main-wrapper {
+                margin-left: 0 !important;
+            }
+
+            /* Show hamburger button */
+            #sidebarToggle {
+                display: flex !important;
+            }
+
+            /* Topbar adjustments */
+            .topbar {
+                padding: 0 16px;
+            }
+            .topbar-title {
+                font-size: 15px;
+            }
+            .topbar-user span {
+                display: none;
+            }
+            .avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            /* Page content */
+            .page-content {
+                padding: 20px 16px;
+            }
+
+            /* Stats grid - single column */
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .stat-card {
+                padding: 18px 20px;
+            }
+            .stat-value {
+                font-size: 22px;
+            }
+
+            /* Dashboard sections */
+            .dashboard-bottom {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            /* Grids - single column */
+            .cms-grid,
+            .portfolio-grid,
+            .team-grid,
+            .logo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Cards */
+            .card-header {
+                padding: 14px 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            /* Tables - horizontal scroll */
+            .card {
+                overflow-x: auto;
+            }
+            table {
+                min-width: 700px;
+            }
+            thead th {
+                padding: 10px 12px;
+                font-size: 10px;
+            }
+            tbody td {
+                padding: 12px;
+                font-size: 13px;
+            }
+
+            /* Toolbar */
+            .toolbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .search-wrap input {
+                font-size: 13px;
+            }
+
+            /* Page header */
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .page-header-left h1 {
+                font-size: 18px;
+            }
+
+            /* Buttons */
+            .btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+
+            /* Action buttons */
+            .action-btns {
+                flex-wrap: wrap;
+            }
+
+            /* Modal */
+            .modal-box {
+                width: 100%;
+                max-width: calc(100vw - 30px);
+                margin: 15px;
+            }
+            .modal-body {
+                padding: 20px;
+            }
+
+            /* Tabs */
+            .tabs {
+                overflow-x: auto;
+            }
+            .tab-link {
+                padding: 14px 16px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+        }
+
+        /* Very Small Mobile (<576px) */
+        @media (max-width: 575px) {
+            .topbar-title {
+                font-size: 14px;
+            }
+            .page-content {
+                padding: 16px 12px;
+            }
+            .stat-card {
+                padding: 16px;
+            }
+            .stat-value {
+                font-size: 20px;
+            }
+            .stat-label {
+                font-size: 12px;
+            }
         }
     </style>
     @stack('styles')
@@ -332,76 +551,111 @@
 <body>
 
 {{-- Sidebar --}}
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <div class="brand-icon">A</div>
-        <span class="brand-name">ADMIN</span>
+        <span class="brand-name">ALPHA<span>.</span>CORP</span>
     </div>
 
     <nav class="sidebar-nav">
-        <a href="{{ route('admin.dashboard') }}"  class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <i class="fas fa-home"></i> Ringkasan Dashboard
-        </a>
-        <a href="{{ route('admin.kelola-klien.index') }}"
-            class="nav-item {{ request()->routeIs('admin.kelola-klien.*') ? 'active' : '' }}">
-            <i class="fas fa-user-friends"></i> Kelola Klien
-        </a>
-        <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
-            <i class="fas fa-calendar-alt"></i> Kelola Event
-        </a>
-        <a href="{{ route('admin.requests.index') }}" class="nav-item {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
-            <i class="fas fa-inbox"></i> Request Client
-        </a>
-        <a href="{{ route('admin.rab.index') }}" class="nav-item {{ request()->routeIs('admin.rab.*') ? 'active' : '' }}">
-            <i class="fas fa-calendar-check"></i> Anggaran (RAB)
-        </a>
-        <a href="{{ route('admin.payments.index') }}" class="nav-item {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
-            <i class="fas fa-check-square"></i> Pembayaran
-        </a>
-        <a href="{{ route('admin.timeline.index') }}" class="nav-item {{ request()->routeIs('admin.timeline.*') ? 'active' : '' }}">
-            <i class="fas fa-calendar"></i> Timeline
-        </a>
-        <a href="{{ route('admin.event-vendors.index') }}" class="nav-item {{ request()->routeIs('admin.event-vendors.*') ? 'active' : '' }}">
-            <i class="fas fa-users-cog"></i> Penugasan
-        </a>
-        <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
-            <i class="fas fa-users"></i> Vendor
-        </a>
-        <a href="{{ route('admin.cms.index') }}" class="nav-item {{ request()->routeIs('admin.cms.*') ? 'active' : '' }}">
-            <i class="fas fa-palette"></i> Landing Page CMS
-        </a>
-        <a href="{{ route('admin.proposals.index') }}" class="nav-item {{ request()->routeIs('admin.proposals.*') ? 'active' : '' }}">
-            <i class="fas fa-file-alt"></i> Dokumen
-        </a>
-        <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
-            <i class="fas fa-folder-open"></i> Pusat Dokumentasi
-        </a>
-        <a href="{{ route('admin.analytics.index') }}" class="nav-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
-            <i class="fas fa-chart-bar"></i> Analitik
-        </a>
-        <a href="{{ route('admin.notifications.index') }}" class="nav-item {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
-            <i class="fas fa-bell"></i> Notifikasi
-        </a>
-        <a href="{{ route('admin.settings.index') }}" class="nav-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
-            <i class="fas fa-cog"></i> Pengaturan
-        </a>
+        <div class="nav-section">
+            <div class="nav-section-label">Menu</div>
+            <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <i class="fas fa-home"></i> Ringkasan Dashboard
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Manajemen Event</div>
+            <a href="{{ route('admin.kelola-klien.index') }}" class="nav-item {{ request()->routeIs('admin.kelola-klien.*') ? 'active' : '' }}">
+                <i class="fas fa-user-friends"></i> Kelola Klien
+            </a>
+            <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
+                <i class="fas fa-calendar-alt"></i> Kelola Event
+            </a>
+            <a href="{{ route('admin.requests.index') }}" class="nav-item {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
+                <i class="fas fa-inbox"></i> Request Client
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Operasional Event</div>
+            <a href="{{ route('admin.timeline.index') }}" class="nav-item {{ request()->routeIs('admin.timeline.*') ? 'active' : '' }}">
+                <i class="fas fa-calendar"></i> Timeline
+            </a>
+            <a href="{{ route('admin.event-vendors.index') }}" class="nav-item {{ request()->routeIs('admin.event-vendors.*') ? 'active' : '' }}">
+                <i class="fas fa-users-cog"></i> Penugasan
+            </a>
+            <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
+                <i class="fas fa-users"></i> Vendor
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Keuangan</div>
+            <a href="{{ route('admin.rab.index') }}" class="nav-item {{ request()->routeIs('admin.rab.*') ? 'active' : '' }}">
+                <i class="fas fa-calendar-check"></i> Anggaran (RAB)
+            </a>
+            <a href="{{ route('admin.payments.index') }}" class="nav-item {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
+                <i class="fas fa-check-square"></i> Pembayaran
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Dokumen</div>
+            <a href="{{ route('admin.proposals.index') }}" class="nav-item {{ request()->routeIs('admin.proposals.*') ? 'active' : '' }}">
+                <i class="fas fa-file-alt"></i> Proposal & Dokumen
+            </a>
+            <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
+                <i class="fas fa-folder-open"></i> Pusat Dokumentasi
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Website</div>
+            <a href="{{ route('admin.cms.index') }}" class="nav-item {{ request()->routeIs('admin.cms.*') ? 'active' : '' }}">
+                <i class="fas fa-palette"></i> Landing Page CMS
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Laporan</div>
+            <a href="{{ route('admin.analytics.index') }}" class="nav-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
+                <i class="fas fa-chart-bar"></i> Analitik
+            </a>
+            <a href="{{ route('admin.notifications.index') }}" class="nav-item {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
+                <i class="fas fa-bell"></i> Notifikasi
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Sistem</div>
+            <a href="{{ route('admin.settings.index') }}" class="nav-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                <i class="fas fa-cog"></i> Pengaturan
+            </a>
+        </div>
     </nav>
 
     <div class="sidebar-footer">
         <form id="logout-form" action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="button" onclick="confirmLogout(event)" class="nav-item nav-logout">
+            <button type="button" onclick="confirmLogout(event)" class="nav-item danger">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Keluar</span>
             </button>
         </form>
     </div>
 </aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 {{-- Main --}}
 <div class="main-wrapper">
     <header class="topbar">
-        <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button id="sidebarToggle" aria-label="Toggle sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+            <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
+        </div>
         <div class="topbar-right">
             <a href="{{ route('admin.notifications.index') }}"
                 class="topbar-notif">
@@ -465,4 +719,61 @@
 @stack('scripts')
 
 </body>
+
+<script>
+// Sidebar responsive toggle - Sama seperti Client & Vendor
+document.addEventListener('DOMContentLoaded', function() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    var toggleBtn = document.getElementById('sidebarToggle');
+    
+    if (toggleBtn && sidebar && overlay) {
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        
+        toggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+        
+        overlay.addEventListener('click', closeSidebar);
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                closeSidebar();
+            }
+        });
+        
+        // Close sidebar when clicking nav links on mobile
+        var navLinks = sidebar.querySelectorAll('.nav-item');
+        navLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 768) {
+                    closeSidebar();
+                }
+            });
+        });
+        
+        // Reset sidebar state on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeSidebar();
+            }
+        });
+    }
+});
+</script>
 </html>
