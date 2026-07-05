@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f6fa; display: flex; min-height: 100vh; }
@@ -327,75 +328,111 @@
 <body>
 
 {{-- Sidebar --}}
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <span class="brand-name">ALPHA<span>.</span>CORP</span>
     </div>
 
     <nav class="sidebar-nav">
-        <a href="{{ route('admin.dashboard') }}"  class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <i class="fas fa-home"></i> Ringkasan Dashboard
-        </a>
-        <a href="{{ route('admin.kelola-klien.index') }}"
-            class="nav-item {{ request()->routeIs('admin.kelola-klien.*') ? 'active' : '' }}">
-            <i class="fas fa-user-friends"></i> Kelola Klien
-        </a>
-        <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
-            <i class="fas fa-calendar-alt"></i> Kelola Event
-        </a>
-        <a href="{{ route('admin.requests.index') }}" class="nav-item {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
-            <i class="fas fa-inbox"></i> Request Client
-        </a>
-        <a href="{{ route('admin.rab.index') }}" class="nav-item {{ request()->routeIs('admin.rab.*') ? 'active' : '' }}">
-            <i class="fas fa-calendar-check"></i> Anggaran (RAB)
-        </a>
-        <a href="{{ route('admin.payments.index') }}" class="nav-item {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
-            <i class="fas fa-check-square"></i> Pembayaran
-        </a>
-        <a href="{{ route('admin.timeline.index') }}" class="nav-item {{ request()->routeIs('admin.timeline.*') ? 'active' : '' }}">
-            <i class="fas fa-calendar"></i> Timeline
-        </a>
-        <a href="{{ route('admin.event-vendors.index') }}" class="nav-item {{ request()->routeIs('admin.event-vendors.*') ? 'active' : '' }}">
-            <i class="fas fa-users-cog"></i> Penugasan
-        </a>
-        <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
-            <i class="fas fa-users"></i> Vendor
-        </a>
-        <a href="{{ route('admin.cms.index') }}" class="nav-item {{ request()->routeIs('admin.cms.*') ? 'active' : '' }}">
-            <i class="fas fa-palette"></i> Landing Page CMS
-        </a>
-        <a href="{{ route('admin.proposals.index') }}" class="nav-item {{ request()->routeIs('admin.proposals.*') ? 'active' : '' }}">
-            <i class="fas fa-file-alt"></i> Dokumen
-        </a>
-        <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
-            <i class="fas fa-folder-open"></i> Pusat Dokumentasi
-        </a>
-        <a href="{{ route('admin.analytics.index') }}" class="nav-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
-            <i class="fas fa-chart-bar"></i> Analitik
-        </a>
-        <a href="{{ route('admin.notifications.index') }}" class="nav-item {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
-            <i class="fas fa-bell"></i> Notifikasi
-        </a>
-        <a href="{{ route('admin.settings.index') }}" class="nav-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
-            <i class="fas fa-cog"></i> Pengaturan
-        </a>
+        <div class="nav-section">
+            <div class="nav-section-label">Menu</div>
+            <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <i class="fas fa-home"></i> Ringkasan Dashboard
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Manajemen Event</div>
+            <a href="{{ route('admin.kelola-klien.index') }}" class="nav-item {{ request()->routeIs('admin.kelola-klien.*') ? 'active' : '' }}">
+                <i class="fas fa-user-friends"></i> Kelola Klien
+            </a>
+            <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
+                <i class="fas fa-calendar-alt"></i> Kelola Event
+            </a>
+            <a href="{{ route('admin.requests.index') }}" class="nav-item {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
+                <i class="fas fa-inbox"></i> Request Client
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Operasional Event</div>
+            <a href="{{ route('admin.timeline.index') }}" class="nav-item {{ request()->routeIs('admin.timeline.*') ? 'active' : '' }}">
+                <i class="fas fa-calendar"></i> Timeline
+            </a>
+            <a href="{{ route('admin.event-vendors.index') }}" class="nav-item {{ request()->routeIs('admin.event-vendors.*') ? 'active' : '' }}">
+                <i class="fas fa-users-cog"></i> Penugasan
+            </a>
+            <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
+                <i class="fas fa-users"></i> Vendor
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Keuangan</div>
+            <a href="{{ route('admin.rab.index') }}" class="nav-item {{ request()->routeIs('admin.rab.*') ? 'active' : '' }}">
+                <i class="fas fa-calendar-check"></i> Anggaran (RAB)
+            </a>
+            <a href="{{ route('admin.payments.index') }}" class="nav-item {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
+                <i class="fas fa-check-square"></i> Pembayaran
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Dokumen</div>
+            <a href="{{ route('admin.proposals.index') }}" class="nav-item {{ request()->routeIs('admin.proposals.*') ? 'active' : '' }}">
+                <i class="fas fa-file-alt"></i> Proposal & Dokumen
+            </a>
+            <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
+                <i class="fas fa-folder-open"></i> Pusat Dokumentasi
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Website</div>
+            <a href="{{ route('admin.cms.index') }}" class="nav-item {{ request()->routeIs('admin.cms.*') ? 'active' : '' }}">
+                <i class="fas fa-palette"></i> Landing Page CMS
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Laporan</div>
+            <a href="{{ route('admin.analytics.index') }}" class="nav-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
+                <i class="fas fa-chart-bar"></i> Analitik
+            </a>
+            <a href="{{ route('admin.notifications.index') }}" class="nav-item {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
+                <i class="fas fa-bell"></i> Notifikasi
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Sistem</div>
+            <a href="{{ route('admin.settings.index') }}" class="nav-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                <i class="fas fa-cog"></i> Pengaturan
+            </a>
+        </div>
     </nav>
 
     <div class="sidebar-footer">
         <form id="logout-form" action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="button" onclick="confirmLogout(event)" class="nav-item nav-logout">
+            <button type="button" onclick="confirmLogout(event)" class="nav-item danger">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Keluar</span>
             </button>
         </form>
     </div>
 </aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 {{-- Main --}}
 <div class="main-wrapper">
     <header class="topbar">
-        <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
+        <div class="topbar-left">
+            <button id="mobileToggle" class="mobile-toggle" aria-label="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
+        </div>
         <div class="topbar-right">
             <a href="{{ route('admin.notifications.index') }}"
                 class="topbar-notif">
@@ -459,4 +496,24 @@
 @stack('scripts')
 
 </body>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    var toggleBtn = document.getElementById('mobileToggle');
+    if (toggleBtn && sidebar && overlay) {
+        function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); document.body.style.overflow = 'hidden'; }
+        function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); document.body.style.overflow = ''; }
+        toggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (sidebar.classList.contains('open')) { closeSidebar(); } else { openSidebar(); }
+        });
+        overlay.addEventListener('click', closeSidebar);
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('open')) { closeSidebar(); }
+        });
+    }
+});
+</script>
 </html>

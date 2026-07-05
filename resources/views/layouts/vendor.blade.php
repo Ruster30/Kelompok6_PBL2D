@@ -6,6 +6,7 @@
     <title>Vendor - @yield('title', 'Dashboard')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <style>
         :root {
     --sidebar-width: 280px;
@@ -32,17 +33,6 @@
         }
 
         /* ===== SIDEBAR ===== */
-        .sidebar {
-            position: fixed;
-            top: 0; left: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: var(--sidebar-bg);
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-            overflow-y: auto;
-        }
 
         .sidebar-brand {
             display: flex;
@@ -60,79 +50,14 @@
         }
         .sidebar-brand span span { color: #2DD4BF; }
 
-        .sidebar-nav {
-            flex: 1;
-            padding: 20px 12px;
-            overflow-y: auto;
-        }
 
-        .nav-item-custom {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            color: var(--sidebar-text);
-            text-decoration: none;
-            font-size: 13.5px;
-            font-weight: 500;
-            transition: all .22s ease;
-            margin-bottom: 2px;
-            position: relative;
-        }
 
-        .nav-item-custom i {
-            font-size: 17px;
-            width: 20px;
-            text-align: center;
-            opacity: 1;
-            flex-shrink: 0;
-            transition: transform .22s ease;
-        }
 
-        .nav-item-custom:hover {
-            background: rgba(45,212,191,.10);
-            color: #1aaa99;
-        }
 
-        .nav-item-custom:hover i {
-            transform: translateX(2px);
-        }
 
-        .nav-item-custom.active {
-            background: rgba(45,212,191,.10);
-            color: #1aaa99;
-            font-weight: 700;
-        }
 
-        .nav-item-custom.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 6px;
-            bottom: 6px;
-            width: 3px;
-            background: #2DD4BF;
-            border-radius: 0 3px 3px 0;
-        }
 
-        .sidebar-footer {
-            padding: 12px;
-            border-top: 1px solid rgba(255,255,255,0.07);
-        }
 
-        .sidebar-footer a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            color: var(--sidebar-text);
-            text-decoration: none;
-            font-size: 13.5px;
-            font-weight: 500;
-            transition: all .22s ease;
-        }
 
         .sidebar-footer a:hover {
             background: rgba(229,62,62,0.10);
@@ -225,6 +150,10 @@
         }
 
         .user-info {
+            padding: 4px 12px 4px 4px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -726,53 +655,57 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .main-wrapper { margin-left: 0; }
-        }
     </style>
     @stack('styles')
 </head>
 <body>
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
-    <div class="sidebar-brand">
-        <span>ALPHA<span>.</span>CORP</span>
-    </div>
-
+<aside class="sidebar" id="sidebar">
+    <a href="{{ route('vendor.ringkasan') }}" class="sidebar-logo">
+        <span class="sidebar-logo-text">ALPHA<span>.</span>CORP</span>
+    </a>
     <nav class="sidebar-nav">
-        <a href="{{ route('vendor.ringkasan') }}" class="nav-item-custom {{ request()->routeIs('vendor.ringkasan') ? 'active' : '' }}">
-            <i class="bi bi-grid-1x2"></i>
-            Ringkasan
-        </a>
-        <a href="{{ route('vendor.event-saya') }}" class="nav-item-custom {{ request()->routeIs('vendor.event-saya') ? 'active' : '' }}">
-            <i class="bi bi-calendar3"></i>
-            Event Saya
-        </a>
-        <a href="{{ route('vendor.daftar-tugas') }}" class="nav-item-custom {{ request()->routeIs('vendor.daftar-tugas') ? 'active' : '' }}">
-            <i class="bi bi-check2-square"></i>
-            Daftar Tugas
-        </a>
-        <a href="{{ route('vendor.notifikasi') }}" class="nav-item-custom {{ request()->routeIs('vendor.notifikasi') ? 'active' : '' }}">
-            <i class="bi bi-bell"></i>
-            Notifikasi
-            @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                <span class="notif-count ms-auto" style="position:static;transform:none;font-size:10px;padding:1px 5px;">
-                    {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
-                </span>
-            @endif
-        </a>
-        <a href="{{ route('vendor.pengaturan') }}" class="nav-item-custom {{ request()->routeIs('vendor.pengaturan') ? 'active' : '' }}">
-            <i class="bi bi-gear"></i>
-            Pengaturan
-        </a>
+        <div class="nav-section">
+            <div class="nav-section-label">Dashboard</div>
+            <a href="{{ route('vendor.ringkasan') }}" class="nav-item {{ request()->routeIs('vendor.ringkasan') ? 'active' : '' }}">
+                <i class="bi bi-grid-1x2"></i> Ringkasan
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Pekerjaan</div>
+            <a href="{{ route('vendor.event-saya') }}" class="nav-item {{ request()->routeIs('vendor.event-saya') ? 'active' : '' }}">
+                <i class="bi bi-calendar3"></i> Event Saya
+            </a>
+            <a href="{{ route('vendor.daftar-tugas') }}" class="nav-item {{ request()->routeIs('vendor.daftar-tugas') ? 'active' : '' }}">
+                <i class="bi bi-check2-square"></i> Daftar Tugas
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Komunikasi</div>
+            <a href="{{ route('vendor.notifikasi') }}" class="nav-item {{ request()->routeIs('vendor.notifikasi') ? 'active' : '' }}">
+                <i class="bi bi-bell"></i> Notifikasi
+                @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                    <span class="sidebar-notification-badge">
+                        {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
+                    </span>
+                @endif
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Akun</div>
+            <a href="{{ route('vendor.pengaturan') }}" class="nav-item {{ request()->routeIs('vendor.pengaturan') ? 'active' : '' }}">
+                <i class="bi bi-gear"></i> Pengaturan
+            </a>
+        </div>
     </nav>
 
     <div class="sidebar-footer">
-        <a href="#"
-           onclick="confirmLogout(event)">
-            <i class="bi bi-box-arrow-right" style="font-size:17px; width:20px; text-align:center; opacity:0.8;"></i>
-            Keluar
+        <a href="#" onclick="confirmLogout(event)" class="nav-item danger">
+            <i class="bi bi-box-arrow-right"></i> Keluar
         </a>
         <form id="logout-form" action="{{ route('vendor.logout') }}" method="POST" style="display:none;">
             @csrf
