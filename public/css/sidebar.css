@@ -210,3 +210,12 @@
     }
     .mobile-toggle { display: flex !important; }
 }
+
+@media (min-width: 1025px) {
+    .sidebar {
+        transform: translateX(0) !important;
+    }
+    .sidebar-overlay {
+        display: none !important;
+    }
+}

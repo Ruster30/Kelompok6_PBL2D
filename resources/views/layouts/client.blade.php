@@ -9,6 +9,62 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/client.css') }}">
+    <style>
+        /* Additional responsive fixes */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* Ensure sidebar works properly on mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
+            }
+            
+            #sidebarToggle {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border: none;
+                background: #f8fafc;
+                color: #64748b;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            
+            #sidebarToggle:hover {
+                background: #f1f5f9;
+                color: #2DD4BF;
+            }
+            
+            #sidebarToggle i {
+                font-size: 20px;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            #sidebarToggle {
+                display: none !important;
+            }
+        }
+    </style>
     @stack('styles')
 </head>
 <body>
@@ -88,6 +144,7 @@
             </form>
         </div>
     </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     {{-- ══════ MAIN AREA ══════ --}}
     <div class="main-area">
@@ -168,20 +225,60 @@
 </div>
 
 <script>
-// Sidebar mobile
-const toggle  = document.getElementById('sidebarToggle');
-const sidebar = document.getElementById('sidebar');
-function checkMobile() {
-    toggle.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
-    if (window.innerWidth > 768) sidebar.classList.remove('open');
-}
-toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-document.addEventListener('click', e => {
-    if (!sidebar.contains(e.target) && !toggle.contains(e.target))
-        sidebar.classList.remove('open');
+// Sidebar responsive toggle
+document.addEventListener('DOMContentLoaded', function() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    var toggleBtn = document.getElementById('sidebarToggle');
+    
+    if (toggleBtn && sidebar && overlay) {
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        
+        toggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+        
+        overlay.addEventListener('click', closeSidebar);
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                closeSidebar();
+            }
+        });
+        
+        // Close sidebar when clicking nav links on mobile
+        var navLinks = sidebar.querySelectorAll('.nav-item');
+        navLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 768) {
+                    closeSidebar();
+                }
+            });
+        });
+        
+        // Reset sidebar state on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeSidebar();
+            }
+        });
+    }
 });
-window.addEventListener('resize', checkMobile);
-checkMobile();
 </script>
 <x-swal-helper />
 <x-logout-confirmation />

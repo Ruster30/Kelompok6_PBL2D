@@ -317,10 +317,233 @@
         .modal-body { padding:24px; display:grid; gap:16px; }
         .modal-footer { padding:16px 24px; border-top:1px solid #e2e8f0; display:flex; gap:10px; justify-content:flex-end; }
 
-        @media (max-width: 1024px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .dashboard-bottom { grid-template-columns: 1fr; }
-            .cms-grid, .portfolio-grid, .team-grid, .logo-grid { grid-template-columns: repeat(2, 1fr); }
+        /* ============================================================
+           RESPONSIVE DESIGN - Sama seperti Client & Vendor
+           ============================================================ */
+        
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* Mobile Toggle Button */
+        #sidebarToggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f8fafc;
+            color: #64748b;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        #sidebarToggle:hover {
+            background: #f1f5f9;
+            color: #2DD4BF;
+        }
+        
+        #sidebarToggle i {
+            font-size: 20px;
+        }
+
+        /* Desktop (≥769px) - No changes */
+        @media (min-width: 769px) {
+            #sidebarToggle {
+                display: none !important;
+            }
+        }
+
+        /* Tablet (768px - 1199px) */
+        @media (max-width: 1199px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .dashboard-bottom {
+                grid-template-columns: 1fr;
+            }
+            .cms-grid, .portfolio-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .team-grid, .logo-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Mobile (<768px) */
+        @media (max-width: 768px) {
+            /* Sidebar becomes offcanvas - sama seperti Client & Vendor */
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 100;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Main content takes full width */
+            .main-wrapper {
+                margin-left: 0 !important;
+            }
+
+            /* Show hamburger button */
+            #sidebarToggle {
+                display: flex !important;
+            }
+
+            /* Topbar adjustments */
+            .topbar {
+                padding: 0 16px;
+            }
+            .topbar-title {
+                font-size: 15px;
+            }
+            .topbar-user span {
+                display: none;
+            }
+            .avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            /* Page content */
+            .page-content {
+                padding: 20px 16px;
+            }
+
+            /* Stats grid - single column */
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .stat-card {
+                padding: 18px 20px;
+            }
+            .stat-value {
+                font-size: 22px;
+            }
+
+            /* Dashboard sections */
+            .dashboard-bottom {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            /* Grids - single column */
+            .cms-grid,
+            .portfolio-grid,
+            .team-grid,
+            .logo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Cards */
+            .card-header {
+                padding: 14px 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            /* Tables - horizontal scroll */
+            .card {
+                overflow-x: auto;
+            }
+            table {
+                min-width: 700px;
+            }
+            thead th {
+                padding: 10px 12px;
+                font-size: 10px;
+            }
+            tbody td {
+                padding: 12px;
+                font-size: 13px;
+            }
+
+            /* Toolbar */
+            .toolbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .search-wrap input {
+                font-size: 13px;
+            }
+
+            /* Page header */
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .page-header-left h1 {
+                font-size: 18px;
+            }
+
+            /* Buttons */
+            .btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+
+            /* Action buttons */
+            .action-btns {
+                flex-wrap: wrap;
+            }
+
+            /* Modal */
+            .modal-box {
+                width: 100%;
+                max-width: calc(100vw - 30px);
+                margin: 15px;
+            }
+            .modal-body {
+                padding: 20px;
+            }
+
+            /* Tabs */
+            .tabs {
+                overflow-x: auto;
+            }
+            .tab-link {
+                padding: 14px 16px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+        }
+
+        /* Very Small Mobile (<576px) */
+        @media (max-width: 575px) {
+            .topbar-title {
+                font-size: 14px;
+            }
+            .page-content {
+                padding: 16px 12px;
+            }
+            .stat-card {
+                padding: 16px;
+            }
+            .stat-value {
+                font-size: 20px;
+            }
+            .stat-label {
+                font-size: 12px;
+            }
         }
     </style>
     @stack('styles')
@@ -427,9 +650,9 @@
 {{-- Main --}}
 <div class="main-wrapper">
     <header class="topbar">
-        <div class="topbar-left">
-            <button id="mobileToggle" class="mobile-toggle" aria-label="Toggle sidebar">
-                <i class="fas fa-bars"></i>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button id="sidebarToggle" aria-label="Toggle sidebar">
+                <i class="bi bi-list"></i>
             </button>
             <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
         </div>
@@ -498,20 +721,57 @@
 </body>
 
 <script>
+// Sidebar responsive toggle - Sama seperti Client & Vendor
 document.addEventListener('DOMContentLoaded', function() {
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebarOverlay');
-    var toggleBtn = document.getElementById('mobileToggle');
+    var toggleBtn = document.getElementById('sidebarToggle');
+    
     if (toggleBtn && sidebar && overlay) {
-        function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); document.body.style.overflow = 'hidden'; }
-        function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); document.body.style.overflow = ''; }
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        
         toggleBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (sidebar.classList.contains('open')) { closeSidebar(); } else { openSidebar(); }
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
         });
+        
         overlay.addEventListener('click', closeSidebar);
+        
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && sidebar.classList.contains('open')) { closeSidebar(); }
+            if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                closeSidebar();
+            }
+        });
+        
+        // Close sidebar when clicking nav links on mobile
+        var navLinks = sidebar.querySelectorAll('.nav-item');
+        navLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 768) {
+                    closeSidebar();
+                }
+            });
+        });
+        
+        // Reset sidebar state on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeSidebar();
+            }
         });
     }
 });
