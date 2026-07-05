@@ -14,8 +14,13 @@ class AdminAnalyticsService
 {
     public function getAnalyticsData(array $filters = []): array
     {
-        $year = $filters['year'] ?? now()->year;
-        $month = $filters['month'] ?? null;
+        $year = isset($filters['year'])
+            ? (int) $filters['year']
+            : now()->year;
+
+        $month = !empty($filters['month'])
+            ? (int) $filters['month']
+            : null;
         $statusEvent = $filters['status_event'] ?? null;
         $jenisEvent = $filters['jenis_event'] ?? null;
 

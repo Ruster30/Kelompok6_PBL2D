@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
-            --sidebar-width: 260px;
+    --sidebar-width: 280px;
             --sidebar-bg: #0f1923;
             --sidebar-text: #c9d4df;
             --sidebar-active-bg: #1a8f7e;
@@ -47,66 +47,74 @@
         .sidebar-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 20px 22px;
-            border-bottom: 1px solid rgba(255,255,255,0.07);
-        }
-
-        .sidebar-brand .logo-box {
-            width: 36px; height: 36px;
-            background: var(--teal);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; color: #fff; font-size: 13px;
-            letter-spacing: 0.5px;
+            justify-content: flex-start;
+            padding: 0 24px;
+            height: 64px;
         }
 
         .sidebar-brand span {
             color: #fff;
-            font-weight: 700;
-            font-size: 15px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: -0.3px;
         }
+        .sidebar-brand span span { color: #2DD4BF; }
 
         .sidebar-nav {
             flex: 1;
-            padding: 18px 12px;
+            padding: 20px 12px;
+            overflow-y: auto;
         }
 
         .nav-item-custom {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 11px 14px;
+            padding: 10px 14px;
             border-radius: 8px;
             color: var(--sidebar-text);
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 400;
-            transition: background 0.15s, color 0.15s;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: all .22s ease;
             margin-bottom: 2px;
+            position: relative;
         }
 
         .nav-item-custom i {
             font-size: 17px;
             width: 20px;
             text-align: center;
-            opacity: 0.8;
+            opacity: 1;
+            flex-shrink: 0;
+            transition: transform .22s ease;
         }
 
         .nav-item-custom:hover {
-            background: var(--sidebar-hover-bg);
-            color: #fff;
+            background: rgba(45,212,191,.10);
+            color: #1aaa99;
+        }
+
+        .nav-item-custom:hover i {
+            transform: translateX(2px);
         }
 
         .nav-item-custom.active {
-            background: var(--sidebar-active-bg);
-            color: #fff;
-            font-weight: 500;
+            background: rgba(45,212,191,.10);
+            color: #1aaa99;
+            font-weight: 700;
         }
 
-        .nav-item-custom.active i { opacity: 1; }
+        .nav-item-custom.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            background: #2DD4BF;
+            border-radius: 0 3px 3px 0;
+        }
 
         .sidebar-footer {
             padding: 12px;
@@ -117,19 +125,29 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 11px 14px;
+            padding: 10px 14px;
             border-radius: 8px;
             color: var(--sidebar-text);
             text-decoration: none;
-            font-size: 14px;
-            transition: background 0.15s, color 0.15s;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: all .22s ease;
         }
 
         .sidebar-footer a:hover {
-            background: var(--sidebar-hover-bg);
-            color: #fff;
+            background: rgba(229,62,62,0.10);
+            color: #e53e3e;
         }
 
+        .sidebar-footer a:hover i {
+            color: #e53e3e;
+        }
+
+        .sidebar-footer a i {
+            font-size: 17px;
+            width: 20px;
+            text-align: center;
+        }
         /* ===== MAIN CONTENT ===== */
         .main-wrapper {
             margin-left: var(--sidebar-width);
@@ -153,7 +171,7 @@
 
         .topbar-title {
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 700;
             color: #1a2332;
             margin: 0;
         }
@@ -169,13 +187,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #d1d5db;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #f8fafc;
+            color: #94a3b8;
             text-decoration: none;
             font-size: 18px;
             transition: all .2s ease;
         }
 
         .notif-btn:hover {
+            background: #f1f5f9;
             color: #2dd4bf;
         }
 
@@ -206,17 +229,20 @@
             align-items: center;
             gap: 10px;
         }
+        .user-info:hover {
+            background: #f8fafc;
+        }
 
         .user-info .name-role { text-align: right; }
         .user-info .user-name { font-size: 13px; font-weight: 600; color: #1a2332; line-height: 1.3; }
         .user-info .user-role { font-size: 11px; color: var(--text-muted-custom); }
 
         .avatar {
-            width: 36px; height: 36px;
-            background: #b2e8e2;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 13px; font-weight: 700; color: var(--teal);
+            font-size: 13px; font-weight: 700; color: white; background: #2DD4BF;
         }
 
         /* ===== PAGE CONTENT ===== */
@@ -711,8 +737,7 @@
 <!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="sidebar-brand">
-        <div class="logo-box">A</div>
-        <span>Vendor</span>
+        <span>ALPHA<span>.</span>CORP</span>
     </div>
 
     <nav class="sidebar-nav">
