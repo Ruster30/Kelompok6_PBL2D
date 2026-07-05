@@ -160,10 +160,13 @@ class Event extends Model
         return (float) $this->payments()->where('status_pembayaran', 'diverifikasi')->sum('nominal');
     }
 
-    /** Total nilai semua invoice */
+    /** Total nilai invoice utama (invoice pertama), bukan SUM seluruh invoice */
     public function getTotalInvoiceAttribute(): float
     {
-        return (float) $this->invoices()->sum('total_invoice');
+        // Mengambil invoice pertama (invoice utama) saja
+        // Invoice pelunasan tidak boleh menambah total invoice
+        $firstInvoice = $this->invoices()->orderBy('id', 'asc')->first();
+        return $firstInvoice ? (float) $firstInvoice->total_invoice : 0.0;
     }
 
     /** Sisa tagihan yang belum dibayar */

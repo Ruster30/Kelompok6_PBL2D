@@ -88,7 +88,7 @@
                             <i class="fas fa-edit" style="font-size:12px;"></i>
                         </button>
                         <form action="{{ route('admin.rab.destroy', $item->id) }}" method="POST" style="display:inline;"
-                              onsubmit="return confirm('Hapus item ini?')">
+                              onsubmit="return swalDelete(this, {text: 'Item RAB {{ addslashes($item->nama_biaya) }} akan dihapus.'})">
                             @csrf @method('DELETE')
                             <button type="submit" class="action-btn danger" title="Hapus">
                                 <i class="fas fa-trash" style="font-size:12px;"></i>

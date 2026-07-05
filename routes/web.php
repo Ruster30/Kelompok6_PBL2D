@@ -161,6 +161,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 
     // Analytics
     Route::get('/analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('admin.analytics.index');
+    Route::get('/analytics/export/pdf', [App\Http\Controllers\Admin\AnalyticsController::class, 'exportPdf'])->name('admin.analytics.export.pdf');
+    Route::get('/analytics/export/excel', [App\Http\Controllers\Admin\AnalyticsController::class, 'exportExcel'])->name('admin.analytics.export.excel');
 
     // Notifications
     Route::get('/notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('admin.notifications.index');

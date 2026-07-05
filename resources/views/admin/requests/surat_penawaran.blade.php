@@ -63,7 +63,7 @@
                 <input type="hidden" name="nomor_surat" value="{{ $nomorSurat }}">
                 <input type="hidden" name="tanggal_surat" value="{{ now()->format('Y-m-d') }}">
                 <button type="submit" class="btn btn-primary"
-                        onclick="return confirm('Kirim surat penawaran ini ke client {{ $event->client->name ?? '' }}?')">
+                        onclick="return swalSend(this.form, 'Kirim Surat Penawaran?', 'Surat penawaran akan dikirim ke client {{ addslashes($event->client->name ?? '') }}.'))">
                     <i class="fas fa-paper-plane"></i> Kirim Penawaran
                 </button>
             </form>
@@ -71,7 +71,7 @@
             <form action="{{ route('admin.requests.kirim-revisi-penawaran', $event->id) }}" method="POST" style="display:inline;">
                 @csrf
                 <button type="submit" class="btn btn-primary"
-                        onclick="return confirm('Kirim revisi penawaran ke client?')">
+                        onclick="return swalSend(this.form, 'Kirim Revisi Penawaran?', 'Revisi penawaran akan dikirim ke client.')">
                     <i class="fas fa-sync-alt"></i> Revisi Penawaran
                 </button>
             </form>
@@ -445,9 +445,11 @@ function toggleEditMode(editOn) {
 }
 
 function submitEditForm() {
-    if (confirm('Simpan perubahan data surat penawaran?')) {
-        document.getElementById('form-edit-surat').submit();
-    }
+    swalSave(
+        function() { document.getElementById('form-edit-surat').submit(); },
+        'Simpan Perubahan?',
+        'Perubahan data surat penawaran akan disimpan.'
+    );
 }
 </script>
 @endpush

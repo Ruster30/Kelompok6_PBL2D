@@ -165,6 +165,7 @@ document.addEventListener('click', e => {
 window.addEventListener('resize', checkMobile);
 checkMobile();
 </script>
+<x-swal-helper />
 <x-logout-confirmation />
 @stack('scripts')
 </body>

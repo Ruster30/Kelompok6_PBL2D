@@ -83,7 +83,7 @@
                             <i class="fas fa-edit" style="font-size:12px;"></i>
                         </button>
                         <form action="{{ route('admin.vendors.destroy', $vendor->id) }}" method="POST" style="display:inline;"
-                              onsubmit="return confirm('Hapus vendor ini?')">
+                              onsubmit="return swalDelete(this, {text: 'Vendor {{ addslashes($vendor->nama_vendor) }} akan dihapus. Tindakan ini tidak dapat dibatalkan.'})">
                             @csrf @method('DELETE')
                             <button type="submit" class="action-btn danger" title="Hapus">
                                 <i class="fas fa-trash" style="font-size:12px;"></i>

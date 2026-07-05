@@ -60,7 +60,7 @@
 
             <button
                 type="submit"
-                onclick="return confirm('Yakin menerima penawaran ini? Timeline event akan otomatis dibuat.')"
+                onclick="return swalApprove(this.form, 'Terima Penawaran?', 'Timeline event akan otomatis dibuat setelah Anda menerima penawaran ini.')"
 
                 style="
                 display:inline-flex;

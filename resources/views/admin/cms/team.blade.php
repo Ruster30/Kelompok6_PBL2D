@@ -38,7 +38,7 @@
                         <i class="fas fa-edit" style="font-size:12px;"></i>
                     </button>
                     <form action="{{ route('admin.cms.destroyTeam', $team->id) }}" method="POST" style="display:inline;"
-                          onsubmit="return confirm('Hapus anggota tim ini?')">
+                          onsubmit="return swalDelete(this, {text: 'Anggota tim {{ addslashes($team->nama) }} akan dihapus dari landing page.'})">
                         @csrf @method('DELETE')
                         <button type="submit" class="action-btn danger" title="Hapus" style="background:white;">
                             <i class="fas fa-trash" style="font-size:12px;"></i>

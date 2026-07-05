@@ -316,7 +316,7 @@
     }
 
     function confirmSend() {
-        return confirm('Kirim dokumen ini ke client?\n\nDokumen akan disimpan ke storage, dicatat di database, dan client akan menerima notifikasi (serta email jika dikonfigurasi).');
+        return swalSend(document.getElementById('sendForm'), 'Kirim Dokumen?', 'Dokumen akan disimpan ke storage, dicatat di database, dan client akan menerima notifikasi.');
     }
 
     // Auto-trigger jika ada query params dari redirect

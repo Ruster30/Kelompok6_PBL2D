@@ -69,7 +69,8 @@ class DocumentBuilderService
         $event->load(['client', 'contract', 'invoices']);
 
         $nomorKontrak = sprintf('KTR-%s-%03d', now()->format('Ymd'), Contract::whereDate('created_at', today())->count() + 1);
-        $nilaiKontrak = $event->invoices->sum('total_invoice') ?: $event->rabs()->sum('subtotal_biaya');
+        // Gunakan total_invoice dari Event Model (invoice utama saja) atau total RAB
+        $nilaiKontrak = $event->total_invoice ?: $event->rabs()->sum('subtotal_biaya');
 
         $pdf = Pdf::loadView('admin.pdf_templates.surat_kontrak', compact(
             'event', 'nomorKontrak', 'nilaiKontrak'

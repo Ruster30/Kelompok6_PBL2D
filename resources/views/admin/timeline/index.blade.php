@@ -78,7 +78,7 @@
                         <button type="button" class="action-btn" title="Edit" onclick='editTimeline(@json($item))'>
                             <i class="fas fa-edit" style="font-size:12px;"></i>
                         </button>
-                        <form action="{{ route('admin.timeline.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus kegiatan ini?')">
+                        <form action="{{ route('admin.timeline.destroy', $item) }}" method="POST" onsubmit="return swalDelete(this, {text: 'Kegiatan {{ addslashes($item->nama_kegiatan) }} akan dihapus dari timeline.'})">
                             @csrf @method('DELETE')
                             <button type="submit" class="action-btn danger" title="Hapus"><i class="fas fa-trash" style="font-size:12px;"></i></button>
                         </form>

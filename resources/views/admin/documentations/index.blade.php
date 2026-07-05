@@ -109,7 +109,8 @@
                             <i class="fas fa-eye" style="font-size:12px;"></i>
                         </a>
                         @if($file->status === 'menunggu')
-                        <form action="{{ route('admin.documentation.approve-file', $file->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('admin.documentation.approve-file', $file->id) }}" method="POST" style="display:inline;"
+                              onsubmit="return swalApprove(this, 'Setujui File?', 'File dokumentasi akan disetujui dan vendor akan diberitahu.')">
                             @csrf @method('PATCH')
                             <button type="submit" class="action-btn" title="Setujui"
                                     style="color:#16a34a; border-color:#16a34a;">
@@ -117,7 +118,7 @@
                             </button>
                         </form>
                         <form action="{{ route('admin.documentation.reject-file', $file->id) }}" method="POST" style="display:inline;"
-                              onsubmit="return confirm('Tolak file ini?')">
+                              onsubmit="return swalReject(this, 'Tolak File?', 'File dokumentasi akan ditolak dan vendor akan diberitahu.')">
                             @csrf @method('PATCH')
                             <button type="submit" class="action-btn danger" title="Tolak">
                                 <i class="fas fa-times" style="font-size:12px;"></i>

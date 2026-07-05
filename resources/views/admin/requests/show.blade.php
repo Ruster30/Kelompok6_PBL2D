@@ -57,14 +57,16 @@
 
     @if($request->status_event === 'menunggu')
     <div style="display:flex; gap:10px; margin-top:24px;">
-        <form action="{{ route('admin.requests.approve', $request->id) }}" method="POST">
+        <form action="{{ route('admin.requests.approve', $request->id) }}" method="POST"
+              onsubmit="return swalApprove(this, 'Setujui Request?', 'Request client akan disetujui dan diproses.')">
             @csrf
             @method('PATCH')
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-check"></i> Setujui
             </button>
         </form>
-        <form action="{{ route('admin.requests.reject', $request->id) }}" method="POST" onsubmit="return confirm('Tolak request ini?')">
+        <form action="{{ route('admin.requests.reject', $request->id) }}" method="POST"
+              onsubmit="return swalReject(this, 'Tolak Request?', 'Request client akan ditolak.')">
             @csrf
             @method('PATCH')
             <button type="submit" class="btn btn-outline">

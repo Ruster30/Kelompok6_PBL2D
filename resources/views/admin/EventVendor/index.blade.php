@@ -127,14 +127,14 @@
                         <form
                             action="{{ route('admin.event-vendors.destroy',$item->id) }}"
                             method="POST"
-                            style="display:inline">
+                            style="display:inline"
+                            onsubmit="return swalDelete(this, {text: 'Penugasan vendor {{ addslashes($item->vendor->nama_vendor ?? '') }} akan dihapus.'})">
 
                             @csrf
                             @method('DELETE')
 
                             <button
-                                class="action-btn danger"
-                                onclick="return confirm('Hapus data?')">
+                                class="action-btn danger">
 
                                 <i class="fas fa-trash"></i>
 
