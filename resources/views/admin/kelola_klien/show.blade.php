@@ -132,7 +132,9 @@
                         </div>
                         <div style="font-size:12px;color:#94a3b8;">{{ $event->jenis_event }}</div>
                     </div>
-                    <span class="badge badge-{{ $event->badge_class ?? 'gray' }}">{{ $event->status_label }}</span>
+                    <span class="badge {{ $event->badge_class }}">
+                        {{ $event->status_label }}
+                    </span>
                 </div>
                 @if($event->total_invoice > 0)
                 <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9;font-size:13px;color:#64748b;">

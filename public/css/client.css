@@ -716,7 +716,7 @@ body {
 
 /* Event Berjalan */
 .badge-aktif {
-    background: #DCFCE7;
+    background: #F3E8FF;
     color: #7E22CE;
 }
 
@@ -734,7 +734,7 @@ body {
 
 /* Event Selesai */
 .badge-selesai {
-    background: #F3E8FF;
+    background: #DCFCE7; 
     color: #0f766e;
 }
 

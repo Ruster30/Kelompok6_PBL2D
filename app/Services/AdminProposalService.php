@@ -95,11 +95,20 @@ class AdminProposalService
         Notification::create(['user_id' => $event->client_id, 'judul' => 'Surat Penawaran Dikirim', 'pesan' => 'Surat penawaran untuk event ' . $event->nama_event . ' telah dikirim.', 'tipe' => 'info']);
     }
 
-    public function exportPdfData(Event $event): array
+     public function exportPdfData(Event $event): array
     {
         $event->load(['client', 'rabs', 'activeProposal']);
-        $d = ['nomor_surat' => $event->nomor_surat_override ?? $event->activeProposal?->nomor_proposal ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), $this->proposalRepository->getEventCount($event->id)), 'tanggal_surat' => $event->activeProposal?->tanggal_proposal?->format('Y-m-d') ?? now()->format('Y-m-d')];
-        return compact('event', 'd');
+ 
+        $data = [
+            'nomor_surat'  => $event->nomor_surat_override
+                ?? $event->activeProposal?->nomor_proposal
+                ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), $this->proposalRepository->getEventCount($event->id)),
+            'tanggal_surat' => $event->activeProposal?->tanggal_proposal?->format('Y-m-d')
+                ?? now()->format('Y-m-d'),
+            'perihal'      => $event->perihal ?? 'Surat Penawaran Pameran Otomotif',
+        ];
+ 
+        return compact('event', 'data');
     }
 
     public function kirimRevisiPenawaran(Event $event): void
