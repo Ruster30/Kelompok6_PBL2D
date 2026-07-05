@@ -95,7 +95,7 @@
 
                         'ditugaskan' => 'badge-pending',
                         'dikerjakan' => 'badge-active',
-                        'selesai' => 'badge-done',
+                        'selesai' => 'badge-succes',
 
                         default => 'badge-gray'
                     };

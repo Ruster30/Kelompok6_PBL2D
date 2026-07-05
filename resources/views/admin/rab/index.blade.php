@@ -66,6 +66,7 @@
                 <th>Nama Biaya</th>
                 <th>Kategori</th>
                 <th>Vendor</th>
+                <th>Satuan</th>
                 <th>Qty</th>
                 <th>Harga Satuan</th>
                 <th>Subtotal</th>
@@ -79,6 +80,7 @@
                 <td style="font-weight:500;">{{ $item->nama_biaya }}</td>
                 <td>{{ $item->kategori_biaya ?? '-' }}</td>
                 <td>{{ $item->vendor->nama_vendor ?? '-' }}</td>
+                <td class="text-center">{{ $item->satuan ?? '-' }}</td>
                 <td>{{ $item->jumlah_item }}</td>
                 <td>Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</td>
                 <td style="font-weight:600;">Rp {{ number_format($item->subtotal_biaya, 0, ',', '.') }}</td>
@@ -98,7 +100,7 @@
                 </td>
             </tr>
             @empty
-            <tr class="empty-row"><td colspan="8">Belum ada item RAB. Klik "Tambah Item" untuk mulai.</td></tr>
+            <tr class="empty-row"><td colspan="9">Belum ada item RAB. Klik "Tambah Item" untuk mulai.</td></tr>
             @endforelse
         </tbody>
         @if($rabItems->count())
@@ -148,6 +150,17 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label class="form-label">Satuan (Unit)</label>
+                    <select name="satuan" id="satuan" class="form-input">
+                        <option value="">-- Pilih Satuan --</option>
+                        <option value="Package">Package</option>
+                        <option value="Unit">Unit</option>
+                        <option value="pcs">pcs</option>
+                        <option value="Set">Set</option>
+                        <option value="Org">Org</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label class="form-label">Jumlah Item *</label>
                     <input type="number" name="jumlah_item" id="jumlah_item" class="form-input" min="1" value="1" required
                            oninput="hitungSubtotal()">
@@ -192,6 +205,7 @@ function openEditRab(item) {
     document.getElementById('nama_biaya').value = item.nama_biaya;
     document.getElementById('kategori_biaya').value = item.kategori_biaya ?? '';
     document.getElementById('vendor_id').value = item.vendor_id ?? '';
+    document.getElementById('satuan').value = item.satuan ?? '';
     document.getElementById('jumlah_item').value = item.jumlah_item;
     document.getElementById('harga_satuan').value = item.harga_satuan;
     document.getElementById('rabForm').action = '{{ url("admin/rab") }}/' + item.id;

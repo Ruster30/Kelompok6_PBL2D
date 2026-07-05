@@ -59,7 +59,7 @@
                 <td>{{ $vendor->email ?? $vendor->user->email ?? '-' }}</td>
                 <td>
                     @if($vendor->user_id)
-                        <span class="badge badge-active">Terhubung</span>
+                        <span class="badge badge-done">Terhubung</span>
                     @else
                         <span class="badge badge-gray">Belum ada</span>
                     @endif
@@ -75,7 +75,7 @@
                     @php
                         $busy = ($vendor->active_jobs_count ?? 0) > 0;
                     @endphp
-                    <span class="badge {{ $busy ? 'badge-active' : 'badge-gray' }}">{{ $busy ? 'Bertugas' : 'Tersedia' }}</span>
+                    <span class="badge {{ $busy ? 'badge-active' : 'badge-done' }}">{{ $busy ? 'Bertugas' : 'Tersedia' }}</span>
                 </td>
                 <td>
                     <div class="action-btns">

@@ -53,25 +53,9 @@
                 <td>{{ $event->lokasi_event ?? '-' }}</td>
                 <td>{{ number_format($event->jumlah_tamu ?? 0, 0, ',', '.') }}</td>
                 <td>
-                    @php
-                        $statusMap = [
-                            'menunggu' => 'badge-pending',
-                            'diproses' => 'badge-done',
-                            'berjalan' => 'badge-purple',
-                            'selesai' => 'badge-success',
-                            'dibatalkan' => 'badge-cancel',
-                        ];
-                        $labelMap = [
-                            'menunggu' => 'Menunggu',
-                            'diproses' => 'Diproses',
-                            'berjalan' => 'Berjalan',
-                            'selesai' => 'Selesai',
-                            'dibatalkan' => 'Dibatalkan',
-                        ];
-                        $status = strtolower($event->status_event);
-                        $cls = $statusMap[$status] ?? 'badge-pending';
-                    @endphp
-                    <span class="badge {{ $cls }}">{{ $labelMap[$status] ?? ucfirst($status) }}</span>
+                    <span class="badge {{ $event->badge_class }}">
+                        {{ $event->status_label }}
+                    </span>
                 </td>
                 <td>
                     <div class="action-btns">

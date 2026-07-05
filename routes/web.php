@@ -149,9 +149,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::delete('/events/{event}', [App\Http\Controllers\Admin\EventController::class, 'destroy'])->name('admin.events.destroy');
 
     // RAB
-    Route::get('/rab', [App\Http\Controllers\Admin\RabController::class, 'index'])->name('admin.rab.index');
-    Route::post('/rab', [App\Http\Controllers\Admin\RabController::class, 'store'])->name('admin.rab.store');
-    Route::delete('/rab/{rabItem}', [App\Http\Controllers\Admin\RabController::class, 'destroy'])->name('admin.rab.destroy');
+    Route::get('/rab',          [App\Http\Controllers\Admin\RabController::class, 'index'])  ->name('admin.rab.index');
+    Route::post('/rab',         [App\Http\Controllers\Admin\RabController::class, 'store'])  ->name('admin.rab.store');
+    Route::put('/rab/{rab}',    [App\Http\Controllers\Admin\RabController::class, 'update']) ->name('admin.rab.update');   // [TAMBAH] route PUT yang hilang
+    Route::delete('/rab/{rab}', [App\Http\Controllers\Admin\RabController::class, 'destroy'])->name('admin.rab.destroy'); // [FIX] {rabItem} → {rab}
 
     // Payments
     Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('admin.payments.index');

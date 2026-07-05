@@ -1,199 +1,267 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
-            line-height: 1.7;
-            color: #111827;
-            padding: 30px 40px;
-        }
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Kop Surat */
-        .kop {
-            display: table;
-            width: 100%;
-            border-bottom: 3px solid #14b8a6;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-        }
-        .kop-left  { display: table-cell; width: 60%; vertical-align: middle; }
-        .kop-right { display: table-cell; width: 40%; vertical-align: middle; text-align: right; font-size: 10.5px; color: #475569; line-height: 1.5; }
-        .logo-box {
-            display: inline-block;
-            background: #14b8a6;
-            color: white;
-            font-size: 20px;
-            font-weight: 900;
-            width: 44px;
-            height: 44px;
-            text-align: center;
-            line-height: 44px;
-            border-radius: 6px;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-        .company-name { font-size: 16px; font-weight: 900; color: #0f172a; }
-        .company-sub  { font-size: 10.5px; color: #64748b; }
+body {
+    font-family: DejaVu Sans, Arial, sans-serif;
+    font-size: 11px;
+    color: #1a1a1a;
+    line-height: 1.65;
+    /* Sama persis dengan surat_kontrak.blade.php yang sudah bekerja */
+    padding: 32px 40px;
+    background: #fff;
+}
 
-        /* Info Surat */
-        .info-surat { margin-bottom: 16px; }
-        .info-surat table { border: none; font-size: 12px; }
-        .info-surat td { padding: 2px 0; border: none; }
-        .underline { border-bottom: 1px solid #666; padding: 0 40px; }
+table { border-collapse: collapse; }
+td    { border: none; vertical-align: top; padding: 0; }
 
-        /* Kepada */
-        .kepada { margin-bottom: 14px; }
+p {
+    margin-bottom: 6px;
+    text-align: justify;
+    line-height: 1.65;
+    font-size: 11px;
+}
+.indent { text-indent: 24px; }
 
-        /* Isi */
-        p { margin-bottom: 10px; text-align: justify; }
-
-        /* Tabel Detail */
-        .detail-table { width: 90%; margin: 14px auto; border-collapse: collapse; font-size: 12px; }
-        .detail-table td { padding: 7px 12px; border: 1px solid #d1d5db; }
-        .detail-table tr:nth-child(even) td { background: #f8fafc; }
-
-        /* List */
-        ul { margin: 6px 0 12px 20px; }
-        li { margin-bottom: 3px; }
-
-        /* TTD */
-        .ttd { text-align: right; margin-top: 36px; }
-        .ttd-space { height: 50px; }
-        .ttd-name { font-weight: 700; border-top: 1px solid #374151; display: inline-block; padding-top: 4px; min-width: 120px; }
-    </style>
+.ttd-space { padding-bottom: 50px; }
+.ttd-nama  { font-weight: bold; text-decoration: underline; }
+</style>
 </head>
 <body>
 
-    {{-- KOP --}}
-    <div class="kop">
-        <div class="kop-left">
-            <span class="logo-box">α</span>
-            <span>
-                <div class="company-name">CV. ALPHA MULTI ORGANIZER</div>
-                <div class="company-sub">Event Management &amp; Production</div>
+@php
+    $pdfData      = isset($data) ? $data : (isset($d) ? $d : []);
+    $nomorSurat   = $pdfData['nomor_surat']   ?? '-';
+    $tanggalSurat = $pdfData['tanggal_surat'] ?? now()->format('Y-m-d');
+    $perihal      = $pdfData['perihal']        ?? ($event->perihal ?? 'Surat Penawaran Pameran Otomotif');
+@endphp
+
+{{-- ── KOP ─────────────────────────────────────── --}}
+<table style="width:100%; margin-bottom:8px;">
+    <tr>
+        <td style="width:35%;" valign="middle">
+            <img src="{{ public_path('images/landing/logo.png') }}"
+                 alt="Alpha Organizer" height="58">
+        </td>
+        <td style="width:65%;" valign="middle" align="right"
+            style="font-size:10px; line-height:1.9; color:#1e293b;">
+            <span style="font-size:10px; line-height:1.9; color:#1e293b;">
+                +62 822-3318-1883<br>
+                alphaorganizer1209@gmail.com<br>
+                Jl.Air Dingin No.25 Kec.Koto Tangah, Kota Padang
             </span>
-        </div>
-        <div class="kop-right">
-            Jl. Kenangan Air Dingin No.25, Padang<br>
-            Telp: +62 812-3456-7890<br>
-            Email: hello@alphacorp.events
-        </div>
-    </div>
+        </td>
+    </tr>
+</table>
 
-    {{-- INFO SURAT --}}
-    <div class="info-surat">
-        <table style="width:100%;">
-            <tr>
-                <td style="width:28%;">No. Surat</td>
-                <td style="width:2%;">:</td>
-                <td style="width:35%; border-bottom:1px solid #666; padding-bottom:1px;">{{ $data['nomor_surat'] }}</td>
-                <td style="padding-left:16px;">
-                    Padang, <span class="underline">{{ \Carbon\Carbon::parse($data['tanggal_surat'])->translatedFormat('d F Y') }}</span>
-                </td>
-            </tr>
-            <tr>
-                <td>Lampiran</td>
-                <td>:</td>
-                <td>-</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Perihal</td>
-                <td>:</td>
-                <td><strong>Surat Penawaran Event</strong></td>
-                <td></td>
-            </tr>
-        </table>
-    </div>
+{{-- Garis teal ganda --}}
+<table style="width:100%; margin-bottom:2px;">
+    <tr><td style="border-top:2.5px solid #14b8a6; font-size:1px;">&nbsp;</td></tr>
+</table>
+<table style="width:100%; margin-bottom:14px;">
+    <tr><td style="border-top:1px solid #14b8a6; font-size:1px;">&nbsp;</td></tr>
+</table>
 
-    {{-- KEPADA --}}
-    <div class="kepada">
-        <div>Kepada Yth.</div>
-        <div><strong>{{ $event->client->name ?? 'Bapak/Ibu Client' }}</strong></div>
-        <div>Di,</div>
-        <div style="margin-left:16px;">Tempat</div>
-    </div>
+{{-- ── TANGGAL ──────────────────────────────────── --}}
+<table style="width:100%; margin-bottom:10px;">
+    <tr>
+        <td align="right" style="font-size:11px;">
+            Padang, {{ \Carbon\Carbon::parse($tanggalSurat)->translatedFormat('d F Y') }}
+        </td>
+    </tr>
+</table>
 
-    {{-- PEMBUKA --}}
-    <p>Dengan hormat,</p>
-    <p>
-        Kami dari CV. Alpha Multi Organizer, perusahaan yang bergerak di bidang Event Organizer.
-        Berdasarkan permintaan yang telah diajukan oleh pihak Bapak/Ibu, kami menawarkan kegiatan
-        event dengan detail sebagai berikut:
-    </p>
+{{-- ── INFO SURAT ───────────────────────────────── --}}
+<table style="margin-bottom:10px; font-size:11px;">
+    <tr>
+        <td style="width:72px;">No. Surat</td>
+        <td style="width:14px;">:</td>
+        <td>{{ $nomorSurat }}</td>
+    </tr>
+    <tr>
+        <td>Lampiran</td>
+        <td>:</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>Perihal</td>
+        <td>:</td>
+        <td>{{ $perihal }}</td>
+    </tr>
+</table>
 
-    {{-- DETAIL EVENT --}}
-    <table class="detail-table">
-        <tr>
-            <td style="width:38%;"><strong>I. Nama Event</strong></td>
-            <td>: {{ $event->nama_event }}</td>
-        </tr>
-        <tr>
-            <td><strong>II. Jenis Kegiatan</strong></td>
-            <td>: {{ $event->jenis_event ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td><strong>III. Lokasi</strong></td>
-            <td>: {{ $event->lokasi_event ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td><strong>IV. Jadwal</strong></td>
-            <td>: {{ $event->tanggal_event?->format('Y-m-d') ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td><strong>V. Estimasi Tamu</strong></td>
-            <td>: {{ $event->jumlah_tamu ? $event->jumlah_tamu . ' Orang' : '-' }}</td>
-        </tr>
-        <tr>
-            <td><strong>VI. Estimasi Anggaran</strong></td>
-            <td><strong>: {{ $event->rentang_anggaran ?? '-' }}</strong></td>
-        </tr>
-        @if($event->detail_kebutuhan)
-        <tr>
-            <td style="vertical-align:top;"><strong>VII. Deskripsi Kebutuhan</strong></td>
-            <td>: {{ $event->detail_kebutuhan }}</td>
-        </tr>
-        @endif
-    </table>
+{{-- ── KEPADA ───────────────────────────────────── --}}
+<table style="margin-bottom:3px; font-size:11px;">
+    <tr>
+        <td>
+            Kepada Yth<br>
+            Kepala Cabang Dealer Mobil
+            <strong>{{ $event->client->name ?? 'Bapak/Ibu Client' }}</strong>
+        </td>
+    </tr>
+</table>
+<table style="margin-bottom:10px; font-size:11px;">
+    <tr>
+        <td>Di,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tempat</td>
+    </tr>
+</table>
 
-    {{-- FASILITAS --}}
-    <p><strong>VIII. Fasilitas Standar:</strong></p>
-    <ul>
-        <li>Manajemen acara penuh (Full Event Management)</li>
-        <li>Koordinasi vendor dan logistik</li>
-        <li>Setup dan dekorasi standar sesuai tema</li>
-        <li>Tim lapangan profesional selama acara berlangsung</li>
-    </ul>
+{{-- ── PARAGRAF PEMBUKA ─────────────────────────── --}}
+<p class="indent" style="margin-bottom:10px;">
+    Dengan hormat, kami dari <strong>CV. Alpha Multi Organizer</strong>
+    Perusahaan yang bergerak di bidang Event Organizer.
+    Dengan ini menawarkan kegiatan pameran pameran otomotif mobil kepada
+    <strong>{{ $event->client->name ?? 'Client' }}</strong>
+    di Basko City Mall Padang, maka dengan ini kami mengajukan surat penawaran
+    <strong>"Special Price"</strong> sebagai berikut :
+</p>
 
-    {{-- KETENTUAN --}}
-    <p><strong>IX. Ketentuan:</strong></p>
-    <ul>
-        <li>Pembayaran dilakukan melalui transfer bank ke rekening CV. Alpha Multi Organizer.</li>
-        <li>Ketentuan event mengikuti aturan standar dari Alpha Organizer.</li>
-        <li>Biaya di atas merupakan estimasi awal dan dapat disesuaikan kembali setelah diskusi lebih lanjut.</li>
-        <li>Biaya belum termasuk pajak (jika ada).</li>
-    </ul>
+{{-- ── RINCIAN I - IV ───────────────────────────── --}}
+<table style="width:100%; margin-bottom:8px; font-size:11px;">
 
-    {{-- PENUTUP --}}
-    <p>
-        Apabila ada hal yang ingin ditanyakan atau didiskusikan lebih lanjut mengenai penawaran ini,
-        silakan menghubungi kami melalui telepon atau email yang tertera di atas.
-    </p>
-    <p>Demikian surat penawaran ini kami sampaikan. Atas perhatian dan kerja samanya kami ucapkan terima kasih.</p>
+    {{-- I. Lokasi --}}
+    <tr>
+        <td style="width:22px; font-weight:bold;">I.</td>
+        <td style="width:100px;">Lokasi</td>
+        <td style="width:12px; text-align:center;">:</td>
+        <td>{{ $event->lokasi_event ?? '-' }}</td>
+    </tr>
+    <tr><td colspan="4" style="padding:2px 0;"></td></tr>
 
-    {{-- TTD --}}
-    <div class="ttd">
-        <div>Hormat kami,</div>
-        <div class="ttd-space"></div>
-        <div>
-            <strong>{{ auth()->user()->name ?? 'Admin' }}</strong><br>
-            <span style="font-size:11px; color:#64748b;">Direktur</span>
-        </div>
-    </div>
+    {{-- II. Jenis Kegiatan --}}
+    <tr>
+        <td style="font-weight:bold;">II.</td>
+        <td>Jenis Kegiatan</td>
+        <td style="text-align:center;">:</td>
+        <td>{{ $event->jenis_event ?? '-' }}</td>
+    </tr>
+    <tr><td colspan="4" style="padding:2px 0;"></td></tr>
+
+    {{-- III. Jadwal --}}
+    <tr>
+        <td style="font-weight:bold; vertical-align:top;">III.</td>
+        <td style="vertical-align:top;">Jadwal</td>
+        <td style="text-align:center; vertical-align:top;">:</td>
+        <td>
+            <table style="width:100%; font-size:11px;">
+                <tr>
+                    <td style="width:14px;">a.</td>
+                    <td style="width:70px;">Jadwal</td>
+                    <td style="width:12px; text-align:center;">:</td>
+                    <td>
+                        @if($event->tanggal_event)
+                            {{ $event->tanggal_event->translatedFormat('d F Y') }}
+                            @if($event->tanggal_selesai)
+                                s/d {{ $event->tanggal_selesai->translatedFormat('d F Y') }}
+                                ({{ $event->tanggal_event->diffInDays($event->tanggal_selesai) + 1 }} hari)
+                            @endif
+                        @else
+                            -
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td>b.</td>
+                    <td>Luas Area</td>
+                    <td style="text-align:center;">:</td>
+                    <td>{{ $event->luas_area ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;">c.</td>
+                    <td style="vertical-align:top;">Price</td>
+                    <td style="text-align:center; vertical-align:top;">:</td>
+                    <td>
+                        <strong>{{ $event->rentang_anggaran ?? '-' }}
+                        ( Exclude Ppn &amp; Pph )*</strong>
+                        @if($event->terbilang ?? null)
+                        <br><span style="font-size:10px;">({{ $event->terbilang }})</span>
+                        @endif
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr><td colspan="4" style="padding:2px 0;"></td></tr>
+
+    {{-- IV. Fasilitas --}}
+    <tr>
+        <td style="font-weight:bold; vertical-align:top;">IV.</td>
+        <td style="vertical-align:top;">Fasilitas</td>
+        <td style="text-align:center; vertical-align:top;">:</td>
+        <td>
+            @if($event->detail_kebutuhan ?? null)
+                {!! nl2br(e($event->detail_kebutuhan)) !!}
+            @else
+                1. Manajemen acara penuh (Full Event Management)<br>
+                2. Koordinasi vendor dan logistik<br>
+                3. Setup dan dekorasi standar sesuai tema<br>
+                4. Tim lapangan profesional selama acara berlangsung
+            @endif
+        </td>
+    </tr>
+</table>
+
+{{-- ── V. KETENTUAN LAIN ───────────────────────── --}}
+<p style="font-weight:bold; margin-bottom:3px; font-size:11px;">V.&nbsp;&nbsp;Ketentuan lain :</p>
+<table style="width:100%; margin-bottom:8px; font-size:11px;">
+    <tr>
+        <td style="width:14px; vertical-align:top;">a.</td>
+        <td style="text-align:justify;">Loading In dan Out Barang Jam 22.00 wib sd selesai dan wajib diberitahukan kepada manajemen Alpha Organizer.</td>
+    </tr>
+    <tr><td colspan="2" style="padding:1px 0;"></td></tr>
+    <tr>
+        <td style="vertical-align:top;">b.</td>
+        <td style="text-align:justify;">Segala bentuk izin dan pajak diurus sendiri oleh penyewa.</td>
+    </tr>
+    <tr><td colspan="2" style="padding:1px 0;"></td></tr>
+    <tr>
+        <td style="vertical-align:top;">c.</td>
+        <td style="text-align:justify;">Pembayaran dilakukan melalui Transfer <strong>Bank BRI A.n CV ALPHA MULTI ORGANIZER No Rek. 005801006983568</strong>.</td>
+    </tr>
+    <tr><td colspan="2" style="padding:1px 0;"></td></tr>
+    <tr>
+        <td style="vertical-align:top;">d.</td>
+        <td style="text-align:justify;">Biaya yang tersebut diatas belum termasuk biaya SPSI (jika ada)</td>
+    </tr>
+    <tr><td colspan="2" style="padding:1px 0;"></td></tr>
+    <tr>
+        <td style="vertical-align:top;">e.</td>
+        <td style="text-align:justify;">Pemakai Jasa Penyelenggara wajib mematuhi semua peraturan dan tata tertib yang berlaku di Basko City Mall Padang.</td>
+    </tr>
+    <tr><td colspan="2" style="padding:1px 0;"></td></tr>
+    <tr>
+        <td style="vertical-align:top;">f.</td>
+        <td style="text-align:justify;">Pemakai Jasa Penyelenggara wajib mengasuransikan produknya selama pameran berlangsung. Kerusakan dan kehilangan barang di saat pameran yang diakibatkan oleh human error dan forced majure bukan tanggung jawab dari pemakai jasa penyelenggara.</td>
+    </tr>
+</table>
+
+{{-- ── PARAGRAF PENUTUP ─────────────────────────── --}}
+<p class="indent" style="margin-bottom:10px;">
+    Apabila ada hal-hal yang perlu dipertanyakan, silahkan menghubungi Sdra. Fajar Viliano
+    0895-4013-00022 atau melalui email : alphaorganizer1209@gmail.com. Demikianlah surat
+    penawaran ini kami buat, Atas perhatian dan kerjasamanya kami ucapkan terimakasih.
+</p>
+
+{{-- ── TANDA TANGAN ────────────────────────────── --}}
+<table style="margin-top:12px; font-size:11px;">
+    <tr>
+        <td>
+            Padang, {{ \Carbon\Carbon::parse($tanggalSurat)->translatedFormat('d F Y') }}<br>
+            Hormat kami,<br>
+            <div class="ttd-space"></div>
+            <span class="ttd-nama">Kurnia Fajar Viliano S.Tr.Kom</span><br>
+            Direktur
+        </td>
+    </tr>
+</table>
+
+{{-- Garis teal penutup --}}
+<table style="width:100%; margin-top:20px;">
+    <tr><td style="border-top:2.5px solid #14b8a6; font-size:1px;">&nbsp;</td></tr>
+</table>
 
 </body>
 </html>

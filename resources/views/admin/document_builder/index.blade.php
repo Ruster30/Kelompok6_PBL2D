@@ -105,17 +105,6 @@
             Dokumen Berhasil Di-generate
         </h2>
 
-        {{-- Preview iframe --}}
-        <div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:20px;background:#f1f5f9;">
-            <div style="background:#e2e8f0;padding:8px 14px;font-size:12px;color:#475569;display:flex;align-items:center;gap:6px;">
-                <i class="fas fa-eye"></i> Preview Dokumen
-            </div>
-            <iframe id="pdfPreviewFrame"
-                style="width:100%;height:600px;border:none;display:block;"
-                src="about:blank">
-            </iframe>
-        </div>
-
         {{-- Tombol aksi --}}
         <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
 

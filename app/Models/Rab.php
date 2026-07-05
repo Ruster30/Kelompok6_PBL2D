@@ -17,6 +17,7 @@ class Rab extends Model
         'nama_biaya',
         'kategori_biaya',
         'jumlah_item',
+        'satuan',
         'harga_satuan',
         'subtotal_biaya',
     ];

@@ -159,6 +159,43 @@
         .badge-purple{ background: #F3E8FF; color: #7E22CE; }
         .badge-success{ background: #D1FAE5; color: #0f766e; }
 
+        /* untuk status event */
+
+        /* Event Berjalan */
+        .badge-aktif {
+            background: #F3E8FF;
+            color: #7E22CE;
+        }
+
+        /* Sedang Diproses */
+        .badge-mendatang {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        /* Menunggu */
+        .badge-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        /* Event Selesai */
+        .badge-selesai {
+            background: #DCFCE7; 
+            color: #0f766e;
+        }
+
+        /* Event Dibatalkan */
+        .badge-ditolak {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .badge-gray {
+            background: #F1F5F9;
+            color: #64748B;
+        }
+
         /* Buttons */
         .btn {
             display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px;
