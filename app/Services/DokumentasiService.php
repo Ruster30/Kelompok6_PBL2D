@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Models\Documentation;
 use App\Models\DocumentationFile;
 use App\Models\Task;
+use App\Models\User;
+use App\Models\Notification;
+use App\Models\Vendor;
 use Illuminate\Http\UploadedFile;
 
 class DokumentasiService
@@ -35,5 +38,21 @@ class DokumentasiService
             "tipe_file"        => $tipeFile,
             "status"           => "menunggu",
         ]);
+
+        // Kirim notifikasi ke Admin
+        $vendor = Vendor::find($vendorId);
+        $vendorName = $vendor?->nama_vendor ?? "Vendor";
+        $tugas->load('event');
+        $eventName = $tugas->event?->nama_event ?? "Event";
+
+        User::where('role', 'admin')->each(function (User $admin) use ($vendorName, $tugas, $eventName) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'judul'   => 'Dokumentasi Vendor Diunggah',
+                'pesan'   => 'Vendor "' . $vendorName . '" telah mengunggah dokumentasi untuk tugas "' . $tugas->nama_tugas . '" pada event "' . $eventName . '".',
+                'tipe'    => 'info',
+                'dibaca'  => false,
+            ]);
+        });
     }
 }

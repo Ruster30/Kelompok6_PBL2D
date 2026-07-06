@@ -758,12 +758,27 @@
 </body>
 
 <script>
-// Sidebar responsive toggle - Sama seperti Client & Vendor
+// Sidebar responsive toggle & scroll position persistence
 document.addEventListener('DOMContentLoaded', function() {
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebarOverlay');
     var toggleBtn = document.getElementById('sidebarToggle');
     
+    // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
+    // Restore scroll position from sessionStorage
+    if (sidebar) {
+        var savedScrollPos = sessionStorage.getItem('adminSidebarScrollPosition');
+        if (savedScrollPos !== null) {
+            sidebar.scrollTop = parseInt(savedScrollPos, 10);
+        }
+        
+        // Save scroll position whenever user scrolls the sidebar
+        sidebar.addEventListener('scroll', function() {
+            sessionStorage.setItem('adminSidebarScrollPosition', sidebar.scrollTop);
+        });
+    }
+    
+    // ===== RESPONSIVE TOGGLE =====
     if (toggleBtn && sidebar && overlay) {
         function openSidebar() {
             sidebar.classList.add('open');

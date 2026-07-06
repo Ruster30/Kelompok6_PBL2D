@@ -19,7 +19,7 @@
     --text-main: #1a2540;
     --text-muted: #6b7a99;
     --text-light: #9aa5b8;
-    --font: 'Plus Jakarta Sans', sans-serif;
+    --font: 'Inter', sans-serif;
 
     --sidebar-w: 280px;
     --topbar-h: 64px;
@@ -204,7 +204,7 @@ body {
 }
 
 .topbar-title {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--dark);
 }
@@ -342,7 +342,7 @@ body {
 
 .page-header h1 {
     font-size: 26px;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--dark);
     margin-bottom: 4px;
 }
@@ -387,7 +387,7 @@ body {
 
 .greeting-section h2 {
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--dark);
 }
 
@@ -444,7 +444,7 @@ body {
 
 .stat-number {
     font-size: 28px;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--dark);
     line-height: 1;
 }
@@ -901,7 +901,7 @@ body {
     background: linear-gradient(to top, rgba(10, 14, 26, .85), transparent);
     color: #fff;
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 700;
     text-align: center;
     display: flex;
     justify-content: center;

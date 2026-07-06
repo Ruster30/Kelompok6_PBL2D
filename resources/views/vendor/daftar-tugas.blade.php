@@ -12,7 +12,7 @@
             Daftar Tugas
         </h2>
 
-        <p class="text-muted mb-0">
+        <p class="text-muted mb-0" style="font-size: 14px;">
             Perbarui progres, tambahkan catatan, dan unggah dokumentasi tugas Anda.
         </p>
     </div>
@@ -87,7 +87,7 @@
                                 </div>
                             </div>
 
-                            <small>100%</small>
+                         
 
                         @elseif($t->status == 'dikerjakan')
 
@@ -97,7 +97,7 @@
                                 </div>
                             </div>
 
-                            <small>50%</small>
+                       
 
                         @else
 
@@ -107,7 +107,7 @@
                                 </div>
                             </div>
 
-                            <small>0%</small>
+            
 
                         @endif
 
@@ -133,27 +133,27 @@
 
                     </td>
 
-                    <td>
-
-                        <button
-                            class="btn btn-sm btn-outline-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#updateModal"
-                            data-tugas-id="{{ $t->id }}"
-                            data-tugas-nama="{{ $t->nama_tugas }}"
-                        >
-                            Update
-                        </button>
-                        <button
-                            class="btn btn-sm btn-outline-secondary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#documentationModal"
-                            data-tugas-id="{{ $t->id }}"
-                            data-tugas-nama="{{ $t->nama_tugas }}"
-                        >
-                            Dokumentasi
-                        </button>
-
+                    <td style="white-space: nowrap;">
+                        <div class="d-flex gap-2">
+                            <button
+                                class="action-btn action-btn-teal"
+                                data-bs-toggle="modal"
+                                data-bs-target="#updateModal"
+                                data-tugas-id="{{ $t->id }}"
+                                data-tugas-nama="{{ $t->nama_tugas }}"
+                            >
+                                <i class="bi bi-pencil-square"></i> Update
+                            </button>
+                            <button
+                                class="action-btn action-btn-gray"
+                                data-bs-toggle="modal"
+                                data-bs-target="#documentationModal"
+                                data-tugas-id="{{ $t->id }}"
+                                data-tugas-nama="{{ $t->nama_tugas }}"
+                            >
+                                <i class="bi bi-camera"></i> Dokumentasi
+                            </button>
+                        </div>
                     </td>
 
                 </tr>

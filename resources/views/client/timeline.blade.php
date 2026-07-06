@@ -97,8 +97,8 @@
     box-shadow: 0 0 0 3px rgba(245,158,11,.2);
 }
 .timeline-item.active .timeline-item-inner {
-    border-color: rgba(245,158,11,.3);
-    background: #fffbeb;
+    border-color: rgba(250, 212, 147, 0.3);
+    background: #f9f8f5ff;
 }
 </style>
 @endpush

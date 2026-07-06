@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vendor - @yield('title', 'Dashboard')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <style>
@@ -26,7 +27,7 @@
         * { box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', sans-serif;
             background: var(--body-bg);
             margin: 0;
             min-height: 100vh;
@@ -95,9 +96,9 @@
         }
 
         .topbar-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            color: #1a2332;
+            color: #0f172a;
             margin: 0;
         }
 
@@ -1001,12 +1002,27 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Sidebar responsive toggle
+// Sidebar responsive toggle & scroll position persistence
 document.addEventListener('DOMContentLoaded', function() {
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebarOverlay');
     var toggleBtn = document.getElementById('mobileToggle');
     
+    // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
+    // Restore scroll position from sessionStorage
+    if (sidebar) {
+        var savedScrollPos = sessionStorage.getItem('vendorSidebarScrollPosition');
+        if (savedScrollPos !== null) {
+            sidebar.scrollTop = parseInt(savedScrollPos, 10);
+        }
+        
+        // Save scroll position whenever user scrolls the sidebar
+        sidebar.addEventListener('scroll', function() {
+            sessionStorage.setItem('vendorSidebarScrollPosition', sidebar.scrollTop);
+        });
+    }
+    
+    // ===== RESPONSIVE TOGGLE =====
     if (toggleBtn && sidebar && overlay) {
         function openSidebar() {
             sidebar.classList.add('open');

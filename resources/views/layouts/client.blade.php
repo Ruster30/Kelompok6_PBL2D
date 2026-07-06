@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') — ALPHA.COM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/client.css') }}">
@@ -225,12 +225,27 @@
 </div>
 
 <script>
-// Sidebar responsive toggle
+// Sidebar responsive toggle & scroll position persistence
 document.addEventListener('DOMContentLoaded', function() {
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebarOverlay');
     var toggleBtn = document.getElementById('sidebarToggle');
     
+    // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
+    // Restore scroll position from sessionStorage
+    if (sidebar) {
+        var savedScrollPos = sessionStorage.getItem('clientSidebarScrollPosition');
+        if (savedScrollPos !== null) {
+            sidebar.scrollTop = parseInt(savedScrollPos, 10);
+        }
+        
+        // Save scroll position whenever user scrolls the sidebar
+        sidebar.addEventListener('scroll', function() {
+            sessionStorage.setItem('clientSidebarScrollPosition', sidebar.scrollTop);
+        });
+    }
+    
+    // ===== RESPONSIVE TOGGLE =====
     if (toggleBtn && sidebar && overlay) {
         function openSidebar() {
             sidebar.classList.add('open');

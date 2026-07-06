@@ -27,6 +27,7 @@ class EventVendorService
     public function createAssignment(array $data): EventVendor
     {
         $assignment = $this->eventVendorRepository->create($data);
+        $assignment->load(['event', 'vendor']);
         $this->syncTask($assignment, $data);
         $this->sendNotification($data, "Penugasan Baru", function ($vendor, $event, $data) {
             $jadwalInfo = $data["jadwal_vendor"]
@@ -75,7 +76,7 @@ class EventVendorService
                 "prioritas" => $data["prioritas"] ?? "sedang",
                 "deadline"  => $assignment->jadwal_vendor,
                 "status"    => $assignment->status_vendor,
-                "deskripsi" => $data["deskripsi"] ?: "Tugas otomatis dari penugasan vendor.",
+                "deskripsi" => !empty($data["deskripsi"]) ? $data["deskripsi"] : "Tugas otomatis dari penugasan vendor.",
             ]
         );
     }
