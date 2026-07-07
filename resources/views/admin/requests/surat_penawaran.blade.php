@@ -58,12 +58,12 @@
                 <i class="fas fa-pen"></i> Edit Surat
             </button>
             @if(!$event->latestProposal)
-            <form action="{{ route('admin.requests.kirim-penawaran', $event->id) }}" method="POST" style="display:inline;">
+            <form action="{{ route('admin.requests.kirim-penawaran', $event->id) }}" method="POST" style="display:inline;" id="form-kirim-penawaran">
                 @csrf
                 <input type="hidden" name="nomor_surat" value="{{ $nomorSurat }}">
                 <input type="hidden" name="tanggal_surat" value="{{ now()->format('Y-m-d') }}">
                 <button type="submit" class="btn btn-primary"
-                        onclick="return swalSend(this.form, 'Kirim Surat Penawaran?', 'Surat penawaran akan dikirim ke client {{ addslashes($event->client->name ?? '') }}.'))">
+                        onclick="return confirmKirimPenawaran(this.form)">
                     <i class="fas fa-paper-plane"></i> Kirim Penawaran
                 </button>
             </form>
@@ -412,6 +412,48 @@
 @push('scripts')
 <script>
 /**
+ * Konfirmasi kirim surat penawaran oleh Admin
+ */
+function confirmKirimPenawaran(formEl) {
+    Swal.fire({
+        title: 'Kirim Surat Penawaran',
+        html: 'Apakah Anda yakin ingin mengirim surat penawaran kepada client?<br><br>' +
+              '<small style="color:#64748b;">Client akan menerima notifikasi dan dapat melihat surat penawaran pada dashboard mereka.</small>',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#14b8a6',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: '<i class="fas fa-paper-plane"></i> Ya, Kirim Penawaran',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        customClass: { 
+            popup: 'swal-alpha-popup',
+            confirmButton: 'swal-btn-confirm',
+            cancelButton: 'swal-btn-cancel'
+        },
+        buttonsStyling: false
+    }).then(function(result) {
+        if (result.isConfirmed) {
+            // Disable submit button to prevent double submission
+            const btnSubmit = formEl.querySelector('button[type="submit"]');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="fas fa-hourglass-half"></i> Mengirim...';
+                btnSubmit.style.opacity = '0.6';
+            }
+            
+            // Submit form
+            var origOnsubmit = formEl.onsubmit;
+            formEl.onsubmit = null;
+            formEl.submit();
+            formEl.onsubmit = origOnsubmit;
+        }
+    });
+    
+    return false; // prevent default form submission
+}
+
+/**
  * Toggle mode view ↔ edit pada halaman Preview Surat Penawaran.
  * Hanya mengubah visibilitas elemen — desain surat tidak berubah.
  */
@@ -452,4 +494,41 @@ function submitEditForm() {
     );
 }
 </script>
+
+<style>
+.swal-btn-confirm {
+    background: #14b8a6 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 11px 24px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.swal-btn-confirm:hover {
+    opacity: 0.9 !important;
+}
+
+.swal-btn-cancel {
+    background: white !important;
+    color: #64748b !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 10px 24px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+}
+
+.swal-btn-cancel:hover {
+    background: #f8fafc !important;
+}
+</style>
 @endpush

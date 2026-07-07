@@ -56,6 +56,7 @@
                 </td>
                 <td>
                     @if($payment->status_pembayaran === 'menunggu')
+                    {{-- Status Menunggu: Tombol Terima/Tolak --}}
                     <div class="action-btns">
                         <form action="{{ route('admin.payments.verify', $payment->id) }}" method="POST" style="display:inline;"
                               onsubmit="return swalApprove(this, 'Terima Pembayaran?', 'Pembayaran akan diverifikasi dan dikonfirmasi ke client.')">
@@ -74,21 +75,33 @@
                             </button>
                         </form>
                     </div>
-                    @else
-                    <div class="action-btns">
-                        <a href="{{ route('admin.payments.show', $payment->id) }}" class="action-btn" title="Detail">
-                            <i class="fas fa-eye" style="font-size:12px;"></i>
-                        </a>
-                        @if($payment->status_pembayaran === 'diverifikasi' && $payment->jenis_pembayaran === 'dp' && $payment->invoice->event->invoices()->count() == 1)
+                    @elseif($payment->status_pembayaran === 'diverifikasi')
+                    {{-- Status Diverifikasi --}}
+                    @if($payment->jenis_pembayaran === 'dp')
+                        {{-- Jenis DP: Tampilkan tombol Kirim Pelunasan jika belum ada invoice pelunasan --}}
+                        @if($payment->invoice->event->invoices()->count() == 1)
                         <form action="{{ route('admin.payments.sendPelunasan', $payment->id) }}" method="POST" style="display:inline;"
                               onsubmit="return swalSend(this, 'Kirim Invoice Pelunasan?', 'Invoice pelunasan akan dikirim ke client.')">
                             @csrf
-                            <button type="submit" class="btn btn-outline btn-sm" style="margin-left:5px;" title="Kirim Invoice Pelunasan">
+                            <button type="submit" class="btn btn-primary btn-sm" title="Kirim Invoice Pelunasan">
                                 <i class="fas fa-file-invoice"></i> Kirim Pelunasan
                             </button>
                         </form>
+                        @else
+                        {{-- Sudah kirim pelunasan, tampilkan badge pembayaran Selesai --}}
+                        <span class="badge badge-success" style="background:#d1fae5;color:#065f46;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                            <i class="fas fa-check-circle"></i> Pembayaran Selesai
+                        </span>
                         @endif
-                    </div>
+                    @else
+                        {{-- Jenis Pelunasan: Tampilkan badge pembayaran Selesai --}}
+                        <span class="badge badge-success" style="background:#d1fae5;color:#065f46;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                            <i class="fas fa-check-circle"></i> Pembayaran Selesai
+                        </span>
+                    @endif
+                    @else
+                    {{-- Status Ditolak atau lainnya: Tidak ada aksi --}}
+                    <span style="color:#94a3b8;font-size:13px;">-</span>
                     @endif
                 </td>
             </tr>

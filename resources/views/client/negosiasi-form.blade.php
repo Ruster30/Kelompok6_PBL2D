@@ -65,7 +65,7 @@
         </div>
         @endif
 
-        <form action="{{ route('client.proposals.negosiasi', $proposal->id) }}" method="POST">
+        <form action="{{ route('client.proposals.negosiasi', $proposal->id) }}" method="POST" id="form-negosiasi" onsubmit="return confirmNegosiasiSubmit(this)">
             @csrf
 
             {{-- Pesan Negosiasi --}}
@@ -118,7 +118,7 @@
                    onmouseover="this.style.background='var(--body-bg)'" onmouseout="this.style.background='white'">
                     Batal
                 </a>
-                <button type="submit"
+                <button type="submit" id="btn-submit-negosiasi"
                     style="display:inline-flex;align-items:center;gap:8px;padding:11px 24px;
                            background:var(--accent);color:white;border:none;border-radius:8px;
                            font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s;"
@@ -132,3 +132,86 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+/**
+ * Konfirmasi pengiriman negosiasi oleh client
+ */
+function confirmNegosiasiSubmit(formEl) {
+    Swal.fire({
+        title: 'Kirim Negosiasi',
+        html: 'Apakah Anda yakin ingin mengirim hasil negosiasi ini kepada Admin?<br><br>' +
+              '<small style="color:#64748b;">Setelah dikirim, Admin akan meninjau dan memberikan tindak lanjut.</small>',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#14b8a6',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: '<i class="bi bi-send-fill"></i> Ya, Kirim Negosiasi',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        customClass: { 
+            popup: 'swal-alpha-popup',
+            confirmButton: 'swal-btn-confirm',
+            cancelButton: 'swal-btn-cancel'
+        },
+        buttonsStyling: false
+    }).then(function(result) {
+        if (result.isConfirmed) {
+            // Disable submit button to prevent double submission
+            const btnSubmit = document.getElementById('btn-submit-negosiasi');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="bi bi-hourglass-split"></i> Mengirim...';
+                btnSubmit.style.opacity = '0.6';
+            }
+            
+            // Submit form
+            var origOnsubmit = formEl.onsubmit;
+            formEl.onsubmit = null;
+            formEl.submit();
+            formEl.onsubmit = origOnsubmit;
+        }
+    });
+    
+    return false; // prevent default form submission
+}
+</script>
+
+<style>
+.swal-btn-confirm {
+    background: #14b8a6 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 11px 24px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.swal-btn-confirm:hover {
+    opacity: 0.9 !important;
+}
+
+.swal-btn-cancel {
+    background: white !important;
+    color: #64748b !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 10px 24px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+}
+
+.swal-btn-cancel:hover {
+    background: #f8fafc !important;
+}
+</style>
+@endpush
