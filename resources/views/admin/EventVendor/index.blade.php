@@ -61,8 +61,8 @@
                 <th>Event</th>
                 <th>Vendor</th>
                 <th>Jadwal</th>
+                <th>Deskripsi</th>
                 <th>Status</th>
-                <th>Harga Vendor</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -88,6 +88,10 @@
                 </td>
 
                 <td>
+                    {{ $item->deskripsi ?? '-' }}
+                </td>
+
+                <td>
 
                     @php
 
@@ -106,10 +110,6 @@
                         {{ ucfirst($item->status_vendor) }}
                     </span>
 
-                </td>
-
-                <td>
-                    Rp {{ number_format($item->harga_vendor,0,',','.') }}
                 </td>
 
                 <td>
@@ -151,7 +151,7 @@
         @empty
 
             <tr>
-                <td colspan="6" class="text-center">
+                <td colspan="7" class="text-center">
                     Belum ada penugasan vendor
                 </td>
             </tr>
@@ -294,17 +294,14 @@
                 </div>
 
                 <div class="form-group">
-
-                    <label>Harga Vendor</label>
-
-                    <input
-                        type="number"
-                        name="harga_vendor"
-                        id="harga_vendor"
-                        class="form-input">
-
+                    <label>Deskripsi Tugas</label>
+                    <textarea
+                        name="deskripsi"
+                        id="deskripsi"
+                        class="form-input"
+                        rows="3"
+                        placeholder="Masukkan deskripsi tugas..."></textarea>
                 </div>
-
             </div>
 
             <div class="modal-footer">
@@ -348,7 +345,7 @@ function editData(data)
     document.getElementById('vendor_id').value=data.vendor_id;
     document.getElementById('jadwal_vendor').value=data.jadwal_vendor;
     document.getElementById('status_vendor').value=data.status_vendor;
-    document.getElementById('harga_vendor').value=data.harga_vendor;
+    document.getElementById('deskripsi').value=data.deskripsi || '';
 
     document.getElementById('vendorForm').action =
         '/admin/event-vendors/'+data.id;

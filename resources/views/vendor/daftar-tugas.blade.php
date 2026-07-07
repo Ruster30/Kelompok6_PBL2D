@@ -12,7 +12,7 @@
             Daftar Tugas
         </h2>
 
-        <p class="text-muted mb-0">
+        <p class="text-muted mb-0" style="font-size: 14px;">
             Perbarui progres, tambahkan catatan, dan unggah dokumentasi tugas Anda.
         </p>
     </div>
@@ -87,7 +87,7 @@
                                 </div>
                             </div>
 
-                            <small>100%</small>
+                         
 
                         @elseif($t->status == 'dikerjakan')
 
@@ -97,7 +97,7 @@
                                 </div>
                             </div>
 
-                            <small>50%</small>
+                       
 
                         @else
 
@@ -107,7 +107,7 @@
                                 </div>
                             </div>
 
-                            <small>0%</small>
+            
 
                         @endif
 
@@ -133,27 +133,27 @@
 
                     </td>
 
-                    <td>
-
-                        <button
-                            class="btn btn-sm btn-outline-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#updateModal"
-                            data-tugas-id="{{ $t->id }}"
-                            data-tugas-nama="{{ $t->nama_tugas }}"
-                        >
-                            Update
-                        </button>
-                        <button
-                            class="btn btn-sm btn-outline-secondary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#documentationModal"
-                            data-tugas-id="{{ $t->id }}"
-                            data-tugas-nama="{{ $t->nama_tugas }}"
-                        >
-                            Dokumentasi
-                        </button>
-
+                    <td style="white-space: nowrap;">
+                        <div class="d-flex gap-2">
+                            <button
+                                class="action-btn action-btn-teal"
+                                data-bs-toggle="modal"
+                                data-bs-target="#updateModal"
+                                data-tugas-id="{{ $t->id }}"
+                                data-tugas-nama="{{ $t->nama_tugas }}"
+                            >
+                                <i class="bi bi-pencil-square"></i> Update
+                            </button>
+                            <button
+                                class="action-btn action-btn-gray"
+                                data-bs-toggle="modal"
+                                data-bs-target="#documentationModal"
+                                data-tugas-id="{{ $t->id }}"
+                                data-tugas-nama="{{ $t->nama_tugas }}"
+                            >
+                                <i class="bi bi-camera"></i> Dokumentasi
+                            </button>
+                        </div>
                     </td>
 
                 </tr>
@@ -337,15 +337,22 @@
 
                     <div class="mb-3">
                         <label class="form-label">
-                            File Foto/Video
+                            File Foto/Video <span class="text-muted">(Dapat memilih lebih dari 1 file)</span>
                         </label>
                         <input
                             type="file"
-                            name="file"
+                            name="file[]"
                             class="form-control"
                             accept=".jpg,.jpeg,.png,.mp4,.mov"
+                            multiple
                             required
+                            id="fileInput"
                         >
+                        <small class="text-muted d-block mt-2">
+                            <i class="bi bi-info-circle"></i> 
+                            Anda dapat memilih beberapa file sekaligus. Format: JPG, PNG, MP4, MOV. Maks 20MB per file.
+                        </small>
+                        <div id="filePreview" class="mt-2"></div>
                     </div>
                 </div>
 
@@ -427,6 +434,42 @@ function(event){
     document.getElementById(
     'documentationTitle'
     ).value = 'Dokumentasi ' + tugasNama;
+    
+    // Reset file input dan preview saat modal dibuka
+    document.getElementById('fileInput').value = '';
+    document.getElementById('filePreview').innerHTML = '';
+});
+
+// Preview file yang dipilih
+document.getElementById('fileInput').addEventListener('change', function(e) {
+    const previewContainer = document.getElementById('filePreview');
+    previewContainer.innerHTML = '';
+    
+    const files = Array.from(e.target.files);
+    
+    if (files.length === 0) {
+        return;
+    }
+    
+    const fileList = document.createElement('div');
+    fileList.className = 'alert alert-info py-2 px-3 mb-0';
+    fileList.style.fontSize = '13px';
+    
+    const fileItems = files.map((file, index) => {
+        const fileSize = (file.size / 1024 / 1024).toFixed(2);
+        const fileType = file.type.includes('video') ? '🎥' : '📷';
+        return `<div>${fileType} <strong>${file.name}</strong> (${fileSize} MB)</div>`;
+    }).join('');
+    
+    fileList.innerHTML = `
+        <div style="font-weight:600; margin-bottom:4px;">
+            <i class="bi bi-check-circle-fill text-success"></i> 
+            ${files.length} file dipilih:
+        </div>
+        ${fileItems}
+    `;
+    
+    previewContainer.appendChild(fileList);
 });
 
 </script>

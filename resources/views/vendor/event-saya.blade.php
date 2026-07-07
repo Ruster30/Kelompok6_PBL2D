@@ -24,7 +24,7 @@
 
     <!-- TABLE -->
     <div class="table-responsive">
-        <table class="table align-middle">
+        <table class="table custom-table align-middle mb-0">
 
             <thead>
                 <tr>

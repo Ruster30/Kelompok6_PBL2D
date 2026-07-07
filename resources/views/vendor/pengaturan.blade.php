@@ -9,8 +9,7 @@
 <div class="settings-info-box">
     <i class="bi bi-shield-lock"></i>
     <p>
-        Profil vendor bersifat hanya-baca. Perubahan data hanya dapat dilakukan oleh Admin melalui modul
-        <strong>Vendor &amp; Klien</strong>.
+        <strong>Profil vendor bersifat hanya-baca.</strong>
     </p>
 </div>
 

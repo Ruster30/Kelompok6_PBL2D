@@ -14,6 +14,7 @@ class EventVendor extends Model
         'jadwal_vendor',
         'status_vendor',
         'harga_vendor',
+        'deskripsi',
     ];
 
     public function event()
