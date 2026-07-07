@@ -20,12 +20,17 @@ class DokumentasiController extends Controller
 
         $this->dokumentasiService->storeDokumentasi(
             $request->validated(),
-            $request->file("file"),
+            $request->file("file"), // Sekarang ini array of files
             $vendor->id
         );
 
+        $fileCount = count($request->file("file"));
+        $message = $fileCount === 1 
+            ? "Dokumentasi berhasil diunggah." 
+            : "$fileCount file dokumentasi berhasil diunggah.";
+
         return redirect()
             ->route("vendor.daftar-tugas")
-            ->with("success", "Dokumentasi berhasil diunggah.");
+            ->with("success", $message);
     }
 }
