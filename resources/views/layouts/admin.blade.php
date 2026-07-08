@@ -24,7 +24,7 @@
         }   
         .sidebar-brand .brand-name { color: white; font-weight: 800; font-size: 18px; letter-spacing: -0.3px; }
         .sidebar-brand .brand-name span { color: #2DD4BF; }
-        .sidebar-nav { flex: 1; padding: 20px 12px; overflow-y: auto; }
+        .sidebar-nav { flex: 1; padding: 20px 12px; }
         .nav-item {
             display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer;
             color: #94a3b8; text-decoration: none; font-size: 13.5px; font-weight: 500;
@@ -765,19 +765,25 @@ document.addEventListener('DOMContentLoaded', function() {
     var toggleBtn = document.getElementById('sidebarToggle');
     
     // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    // Restore scroll position from sessionStorage
     if (sidebar) {
-        var savedScrollPos = sessionStorage.getItem('adminSidebarScrollPosition');
-        if (savedScrollPos !== null) {
-            sidebar.scrollTop = parseInt(savedScrollPos, 10);
+        var KEY = 'adminSidebarScrollPosition';
+        var restoreScroll = function() {
+            var saved = sessionStorage.getItem(KEY);
+            if (saved !== null) {
+                sidebar.scrollTop = parseInt(saved, 10);
+            }
+        };
+        restoreScroll();
+        if (window.requestAnimationFrame) {
+            window.requestAnimationFrame(restoreScroll);
         }
-        
-        // Save scroll position whenever user scrolls the sidebar
         sidebar.addEventListener('scroll', function() {
-            sessionStorage.setItem('adminSidebarScrollPosition', sidebar.scrollTop);
+            sessionStorage.setItem(KEY, sidebar.scrollTop);
+        });
+        window.addEventListener('beforeunload', function() {
+            sessionStorage.setItem(KEY, sidebar.scrollTop);
         });
     }
-    
     // ===== RESPONSIVE TOGGLE =====
     if (toggleBtn && sidebar && overlay) {
         function openSidebar() {
