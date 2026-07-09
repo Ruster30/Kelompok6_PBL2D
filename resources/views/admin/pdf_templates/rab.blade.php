@@ -109,12 +109,19 @@ tbody td {
 </div>
 
 @php
-    $grouped    = $rabItems->groupBy('kategori_biaya');
-    $feeEo      = round($total * 0.10);
-    $afterFee   = $total + $feeEo;
-    $ppnPph     = round($afterFee * 0.13);
-    $grandTotal = $afterFee + $ppnPph;
-    $noItem     = 1;
+    $grouped        = $rabItems->groupBy('kategori_biaya');
+    $feeEnabled     = $additionalDetail?->fee_enabled ?? false;
+    $ppnEnabled     = $additionalDetail?->ppn_enabled ?? false;
+    $pphEnabled     = $additionalDetail?->pph_enabled ?? false;
+    $feePercent     = $additionalDetail?->fee_percent ?? 10;
+    $ppnPercent     = $additionalDetail?->ppn_percent ?? 11;
+    $pphPercent     = $additionalDetail?->pph_percent ?? 2;
+    $feeNominal     = $feeEnabled ? round($total * $feePercent / 100) : 0;
+    $dpp            = $total + $feeNominal;
+    $ppnNominal     = $ppnEnabled ? round($dpp * $ppnPercent / 100) : 0;
+    $pphNominal     = $pphEnabled ? round($dpp * $pphPercent / 100) : 0;
+    $grandTotal     = $dpp + $ppnNominal - $pphNominal;
+    $noItem         = 1;
 @endphp
 
 <table>
@@ -158,27 +165,38 @@ tbody td {
 
     @if($rabItems->count())
     <tr class="sum-jumlah">
-        <td colspan="3">JUMLAH</td>
+        <td colspan="3">JUMLAH (Subtotal Vendor)</td>
         <td>Rp</td>
         <td class="text-right">{{ number_format($total, 0, '.', '.') }}</td>
     </tr>
+    @if($feeEnabled)
     <tr class="sum-fee">
-        <td colspan="3">FEE MANAJEMEN EO 10%</td>
+        <td colspan="3">FEE MANAJEMEN EO {{ number_format($feePercent, 0) }}%</td>
         <td>Rp</td>
-        <td class="text-right">{{ number_format($feeEo, 0, '.', '.') }}</td>
+        <td class="text-right">{{ number_format($feeNominal, 0, '.', '.') }}</td>
     </tr>
+    @endif
     <tr class="sum-total">
-        <td colspan="3">TOTAL</td>
+        <td colspan="3">DPP</td>
         <td>Rp</td>
-        <td class="text-right">{{ number_format($afterFee, 0, '.', '.') }}</td>
+        <td class="text-right">{{ number_format($dpp, 0, '.', '.') }}</td>
     </tr>
+    @if($ppnEnabled)
     <tr class="sum-ppn">
-        <td colspan="3">PPN 11% + PPH 2%</td>
+        <td colspan="3">PPN {{ number_format($ppnPercent, 0) }}%</td>
         <td>Rp</td>
-        <td class="text-right">{{ number_format($ppnPph, 0, '.', '.') }}</td>
+        <td class="text-right">{{ number_format($ppnNominal, 0, '.', '.') }}</td>
     </tr>
+    @endif
+    @if($pphEnabled)
+    <tr class="sum-ppn">
+        <td colspan="3">PPh {{ number_format($pphPercent, 0) }}% (Withholding Tax)</td>
+        <td>Rp</td>
+        <td class="text-right">({{ number_format($pphNominal, 0, '.', '.') }})</td>
+    </tr>
+    @endif
     <tr class="sum-grand">
-        <td colspan="3">GRAND TOTAL</td>
+        <td colspan="3">TOTAL DIBAYAR KLIEN</td>
         <td>Rp</td>
         <td class="text-right">{{ number_format($grandTotal, 0, '.', '.') }}</td>
     </tr>

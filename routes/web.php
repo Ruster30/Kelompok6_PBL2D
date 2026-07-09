@@ -153,6 +153,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/rab',         [App\Http\Controllers\Admin\RabController::class, 'store'])  ->name('admin.rab.store');
     Route::put('/rab/{rab}',    [App\Http\Controllers\Admin\RabController::class, 'update']) ->name('admin.rab.update');   // [TAMBAH] route PUT yang hilang
     Route::delete('/rab/{rab}', [App\Http\Controllers\Admin\RabController::class, 'destroy'])->name('admin.rab.destroy'); // [FIX] {rabItem} → {rab}
+    Route::post('/rab/additional-details', [App\Http\Controllers\Admin\RabController::class, 'saveAdditionalDetails'])->name('admin.rab.additional-details');
 
     // Payments
     Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('admin.payments.index');

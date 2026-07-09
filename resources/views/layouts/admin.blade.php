@@ -345,6 +345,7 @@
         }
         .modal-overlay.show { display:flex; }
         .modal-box { background:white; border-radius:12px; width:560px; max-width:95vw; max-height:90vh; overflow-y:auto; }
+        .modal-container { background:white; border-radius:12px; width:560px; max-width:95vw; max-height:90vh; overflow-y:auto; }
         .modal-header {
             padding:20px 24px; border-bottom:1px solid #e2e8f0; display:flex;
             justify-content:space-between; align-items:center; position:sticky; top:0; background:white;
@@ -545,6 +546,11 @@
 
             /* Modal */
             .modal-box {
+                width: 100%;
+                max-width: calc(100vw - 30px);
+                margin: 15px;
+            }
+            .modal-container {
                 width: 100%;
                 max-width: calc(100vw - 30px);
                 margin: 15px;

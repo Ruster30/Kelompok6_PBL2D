@@ -9,6 +9,7 @@ use App\Models\Invoice;
 use App\Models\Notification;
 use App\Models\Proposal;
 use App\Models\Rab;
+use App\Models\RabAdditionalDetail;
 use App\Models\Service;
 use App\Models\Team;
 use App\Models\Timeline;
@@ -51,7 +52,7 @@ class DocumentBuilderService
         $rabItems  = Rab::where('event_id', $event->id)->with('vendor')->get();
         $timelines = Timeline::where('event_id', $event->id)->orderBy('tanggal_kegiatan')->orderBy('id')->get();
         $vendors   = $event->vendors;
-        $totalRab  = $rabItems->sum('subtotal_biaya');
+        $totalRab  = app(RabService::class)->getTotalDibayarKlien($event->id);
 
         $pdf = Pdf::loadView('admin.pdf_templates.proposal', compact(
             'event', 'services', 'teams', 'rabItems', 'timelines', 'vendors', 'totalRab'
@@ -70,7 +71,7 @@ class DocumentBuilderService
 
         $nomorKontrak = sprintf('KTR-%s-%03d', now()->format('Ymd'), Contract::whereDate('created_at', today())->count() + 1);
         // Gunakan total_invoice dari Event Model (invoice utama saja) atau total RAB
-        $nilaiKontrak = $event->total_invoice ?: $event->rabs()->sum('subtotal_biaya');
+        $nilaiKontrak = $event->total_invoice ?: app(RabService::class)->getTotalDibayarKlien($event->id);
 
         $pdf = Pdf::loadView('admin.pdf_templates.surat_kontrak', compact(
             'event', 'nomorKontrak', 'nilaiKontrak'
@@ -90,10 +91,11 @@ class DocumentBuilderService
         $invoice   = $event->invoices()->latest()->first();
         $rabItems  = Rab::where('event_id', $event->id)->with('vendor')->get();
         $totalItem = $rabItems->sum('subtotal_biaya');
+        $totalDibayarKlien = app(RabService::class)->getTotalDibayarKlien($event->id);
 
         $nomorInvoice = $invoice?->nomor_invoice
             ?? sprintf('INV-%s-%03d', now()->format('Ymd'), Invoice::whereDate('created_at', today())->count() + 1);
-        $totalInvoice = $invoice?->total_invoice ?? $totalItem;
+        $totalInvoice = $invoice?->total_invoice ?? $totalDibayarKlien;
         $statusInvoice = $invoice?->status_invoice ?? 'belum_bayar';
         $tanggalInvoice = $invoice?->tanggal_invoice?->format('d M Y') ?? now()->format('d M Y');
 
@@ -115,9 +117,10 @@ class DocumentBuilderService
 
         $rabItems = Rab::where('event_id', $event->id)->with('vendor')->get();
         $total    = $rabItems->sum('subtotal_biaya');
+        $additionalDetail = RabAdditionalDetail::where('event_id', $event->id)->first();
 
         $pdf = Pdf::loadView('admin.pdf_templates.rab', compact(
-            'event', 'rabItems', 'total'
+            'event', 'rabItems', 'total', 'additionalDetail'
         ))->setPaper('a4', 'portrait');
 
         $filename = 'rab-' . Str::slug($event->nama_event) . '-' . now()->format('YmdHis') . '.pdf';
@@ -237,7 +240,7 @@ class DocumentBuilderService
             return $existing;
         }
 
-        $totalInvoice = Rab::where('event_id', $event->id)->sum('subtotal_biaya');
+        $totalInvoice = app(RabService::class)->getTotalDibayarKlien($event->id);
 
         return Invoice::create([
             'event_id' => $event->id,
