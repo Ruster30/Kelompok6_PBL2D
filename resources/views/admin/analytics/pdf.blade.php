@@ -7,74 +7,164 @@
     <style>
         @page {
             size: A4 landscape;
-            margin: 10mm 14mm 20mm 14mm;
+            margin: 20px 36px;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 8.5pt;
-            line-height: 1.5;
+            font-family: 'DejaVu Sans', 'Helvetica', sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
             color: #1e293b;
         }
+
+        /* ===== TYPOGRAPHY ===== */
+        .fw-bold { font-weight: 700; }
+        .fw-normal { font-weight: 400; }
+        .text-muted { color: #64748b; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-teal { color: #14b8a6; }
 
         /* ===== HEADER ===== */
         .pdf-header {
             width: 100%;
-            padding-bottom: 0;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            position: relative;
         }
-        .pdf-header table { width: 100%; border-collapse: collapse; }
-        .pdf-header td { vertical-align: middle; padding: 0; border: none; }
-
-        .header-left { width: 28%; text-align: left; }
-        .header-center { width: 42%; text-align: center; }
-        .header-right { width: 30%; text-align: right; }
-
-        .header-logo-img { width: 42px; height: 42px; }
-        .header-logo-fallback {
-            width: 42px; height: 42px; background: #0f172a;
-            border-radius: 10px; text-align: center; line-height: 42px;
-            color: #14b8a6; font-size: 20pt; font-weight: bold;
+        .pdf-header table {
+            width: 100%;
+            border-collapse: collapse;
         }
-
-        .company-block { display: inline-block; vertical-align: middle; }
-        .company-name { font-size: 16pt; font-weight: bold; color: #0f172a; }
-        .company-tagline { font-size: 6pt; color: #94a3b8; letter-spacing: 2px; text-transform: uppercase; margin-top: 1px; }
-
-        .report-title-main { font-size: 22pt; font-weight: bold; color: #0f172a; letter-spacing: 1.5px; }
-        .report-subtitle { font-size: 8pt; color: #64748b; margin-top: 2px; }
-
-        .info-card {
-            display: inline-block;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 10px 14px;
+        .pdf-header td {
+            vertical-align: middle;
+            padding: 0;
+            border: none;
+        }
+        .header-left {
+            width: 18%;
             text-align: left;
         }
-        .info-card table { width: auto; border-collapse: collapse; }
-        .info-card td { border: none; padding: 2px 0; vertical-align: middle; }
-        .info-card .icon-cell { width: 22px; text-align: center; padding-right: 6px; }
+        .header-center {
+            width: 50%;
+            text-align: center;
+        }
+        .header-right {
+            width: 32%;
+            text-align: right;
+        }
+
+        /* Logo area */
+        .logo-wrapper {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0;
+            padding: 0;
+        }
+        .header-logo-img {
+            width: 80px;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0;
+        }
+        .header-logo-fallback {
+            width: 80px;
+            height: 80px;
+            background: #0f172a;
+            border-radius: 16px;
+            text-align: center;
+            line-height: 80px;
+            color: #14b8a6;
+            font-size: 30pt;
+            font-weight: 700;
+        }
+        
+        
+        
+
+        /* Title */
+        .report-title-main {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .report-subtitle {
+            font-size: 8px;
+            font-weight: 500;
+            color: #64748b;
+            margin-top: 1px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Right info card */
+        .info-card {
+            display: inline-block;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 3px 10px 3px 8px;
+            text-align: left;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        .info-card table {
+            width: auto;
+            border-collapse: collapse;
+        }
+        .info-card td {
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+            line-height: 1.2;
+        }
+        .info-card .icon-cell {
+            width: 20px;
+            text-align: center;
+            padding-right: 6px;
+        }
         .info-icon {
             display: inline-block;
-            width: 20px; height: 20px;
-            border-radius: 6px;
-            text-align: center; line-height: 20px;
-            font-size: 9pt; color: #fff;
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            text-align: center;
+            line-height: 14px;
+            font-size: 6pt;
+            color: #fff;
         }
-        .info-label { font-size: 6pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; }
-        .info-value { font-size: 9pt; font-weight: bold; color: #0f172a; }
-
-        .header-divider-v {
-            width: 1px; height: 50px;
-            background: #e2e8f0;
-            margin: 0 10px;
+        .info-label {
+            font-size: 5pt;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-
-        .header-divider-hr {
+        .info-value {
+            font-size: 6.5pt;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .info-divider {
             border: none;
-            border-top: 3px solid #14b8a6;
-            margin-top: 8px;
+            border-top: 1px solid #e2e8f0;
+            margin: 0;
+        }
+
+        /* Header divider line */
+        .header-divider {
+            border: none;
+            border-top: 1px solid #14b8a6;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .header-divider-shadow {
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 0;
             margin-bottom: 0;
         }
 
@@ -82,169 +172,228 @@
         .stats-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 6px;
-            margin-bottom: 10px;
+            border-spacing: 4px;
+            margin-bottom: 8px;
         }
         .stats-table td {
-            padding: 0; border: none; vertical-align: top;
+            padding: 0;
+            border: none;
+            vertical-align: top;
+            width: 12.5%;
         }
-        .stat-card-inner {
-            border-radius: 14px;
-            padding: 16px 14px;
-            height: 90px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            border: 1px solid rgba(0,0,0,0.04);
+        .stat-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 0;
+            height: 68px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
-        .stat-card-inner table { width: 100%; border-collapse: collapse; }
-        .stat-card-inner td { border: none; padding: 0; vertical-align: top; }
-        .stat-icon-cell { width: 40px; }
-        .stat-icon-box {
-            width: 36px; height: 36px;
-            border-radius: 10px;
-            text-align: center; line-height: 36px;
-            font-size: 14pt; color: #fff; font-weight: bold;
+        .stat-card table.inner {
+            width: 100%;
+            height: 68px;
+            border-collapse: collapse;
         }
-        .stat-text-cell { padding-left: 10px !important; }
-        .stat-label { font-size: 6pt; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
-        .stat-value { font-size: 14pt; font-weight: bold; color: #0f172a; line-height: 1.2; }
-
-        /* ===== SECTION ===== */
-        .section-title {
+        .stat-card table.inner td {
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
+        .stat-card table.inner td.icon-cell {
+            width: 48px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .stat-card table.inner td.text-cell {
+            padding-left: 0;
+            vertical-align: middle;
+        }
+        .stat-label {
+            font-size: 5.5pt;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 1px;
+        }
+        .stat-value {
             font-size: 10pt;
-            font-weight: bold;
+            font-weight: 700;
             color: #0f172a;
-            padding: 7px 12px;
-            margin-bottom: 8px;
-            border-left: 4px solid #14b8a6;
+            line-height: 1.2;
+        }
+        .stat-value-highlight {
+            font-size: 11pt;
+            font-weight: 800;
+            color: #0d9488;
+            line-height: 1.2;
+        }/* ===== SECTION TITLE ===== */
+        .section-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: #0f172a;
+            padding: 5px 12px;
+            margin-bottom: 8px;border-left: 4px solid #14b8a6;
             background: #f1f5f9;
             border-radius: 4px;
         }
 
-        /* ===== CHARTS 2x2 ===== */
+        /* ===== CHARTS 2x2 GRID ===== */
         .charts-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 6px;
-            margin-bottom: 6px;
+            border-spacing: 4px;
+            margin-bottom: 0;
         }
         .charts-table td {
-            padding: 0; border: none; vertical-align: top;
+            padding: 0;
+            border: none;
+            vertical-align: top;
             width: 50%;
         }
         .chart-card {
+            background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 10px;
-            padding: 10px;
-            background: #fff;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            padding: 6px 6px 4px 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
         .chart-card-title {
-            font-size: 9pt;
-            font-weight: bold;
+            font-size: 10px;
+            font-weight: 700;
             color: #0f172a;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
+            padding-left: 2px;
         }
         .chart-card img {
+            display: block;
+        }
+        .chart-card img.chart-line-bar {
             width: 100%;
             height: auto;
+        }
+        .chart-card img.chart-pie-donut {
+            width: 60%;
+            height: auto;
+            margin: 0 auto;
         }
 
         /* ===== TABLES ===== */
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 12px;
-            font-size: 7.5pt;
-            border-radius: 8px;
+            margin-bottom: 14px;
+            font-size: 10px;
+            border-radius: 10px;
             overflow: hidden;
         }
         .data-table thead th {
             background: #0f172a;
             color: #ffffff;
-            padding: 8px 10px;
+            padding: 7px 12px;
             text-align: left;
-            font-weight: bold;
-            font-size: 6.5pt;
+            font-weight: 700;
+            font-size: 9px;
             letter-spacing: 0.8px;
             text-transform: uppercase;
         }
         .data-table tbody td {
-            padding: 6px 10px;
+            padding: 5px 12px;
             border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
         }
-        .data-table tbody tr:nth-child(even) { background: #f8fafc; }
-        .data-table tbody tr:nth-child(odd) { background: #ffffff; }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .no-data { text-align: center; color: #94a3b8; padding: 20px !important; font-style: italic; }
+        .data-table tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        .data-table tbody tr:nth-child(odd) {
+            background: #ffffff;
+        }
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .no-data {
+            text-align: center;
+            color: #94a3b8;
+            padding: 20px !important;
+            font-style: italic;
+        }
 
-        /* ===== BADGES ===== */
+        /* ===== TABLE BADGES ===== */
         .badge {
             display: inline-block;
-            padding: 2px 10px;
+            padding: 3px 10px;
             border-radius: 12px;
-            font-size: 6.5pt;
-            font-weight: bold;
+            font-size: 8px;
+            font-weight: 700;
             letter-spacing: 0.3px;
-            min-width: 55px;
+            min-width: 50px;
             text-align: center;
         }
-        .badge-selesai { background: #d1fae5; color: #065f46; }
-        .badge-berjalan { background: #dbeafe; color: #1e40af; }
-        .badge-menunggu { background: #fef3c7; color: #92400e; }
-        .badge-diproses { background: #e0e7ff; color: #3730a3; }
-        .badge-dibatalkan { background: #fee2e2; color: #991b1b; }
-        .badge-pending { background: #f1f5f9; color: #475569; }
-        .badge-lunas { background: #d1fae5; color: #065f46; }
-        .badge-dp { background: #fef3c7; color: #92400e; }
-        .badge-belum { background: #fee2e2; color: #991b1b; }
+        .badge-selesai   { background: #d1fae5; color: #065f46; }
+        .badge-berjalan  { background: #dbeafe; color: #1e40af; }
+        .badge-menunggu  { background: #fef3c7; color: #92400e; }
+        .badge-diproses  { background: #e0e7ff; color: #3730a3; }
+        .badge-dibatalkan{ background: #fee2e2; color: #991b1b; }
+        .badge-pending   { background: #f1f5f9; color: #475569; }
 
         /* ===== PAGE BREAK ===== */
-        .page-break { page-break-before: always; }
+        .page-break {
+            page-break-before: always;
+        }
 
-        /* ===== MISC ===== */
-        .fw-bold { font-weight: bold; }
-        .fw-normal { font-weight: normal; }
-        .text-muted { color: #64748b; }
-        .text-teal { color: #14b8a6; }
-        .mt-1 { margin-top: 4px; }
-        .mb-1 { margin-bottom: 4px; }
+        /* ===== TABLES CONTAINER ===== */
+        .tables-grid {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 6px;
+        }
+        .tables-grid td {
+            padding: 0;
+            border: none;
+            vertical-align: top;
+            width: 33.33%;
+        }
     </style>
 </head>
 <body>
 
     <!-- ============================================================ -->
-    <!-- HEADER -->
+    <!-- HEADER: 3 Bagian Enterprise -->
     <!-- ============================================================ -->
     <div class="pdf-header">
         <table cellpadding="0" cellspacing="0">
             <tr>
-                <!-- LEFT: Logo + Company -->
+                <!-- KIRI: Logo resmi -->
                 <td class="header-left">
-                    <table cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td style="width: 48px; border: none; padding: 0; vertical-align: middle;">
-                                @if(!empty($companyLogo) && file_exists($companyLogo))
-                                    <img src="{{ $companyLogo }}" alt="Logo" class="header-logo-img" />
-                                @else
-                                    <div class="header-logo-fallback">A</div>
-                                @endif
-                            </td>
-                            <td style="border: none; padding: 0 0 0 8px; vertical-align: middle;">
-                                <div class="company-name">{{ $companyName !== 'Your Company Name' ? $companyName : 'ALPHA.CORP' }}</div>
-                                <div class="company-tagline">Event Organizer</div>
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="logo-wrapper">
+                        @php
+                            $logoPaths = [
+                                public_path('images/landing/logo.png'),
+                                public_path('images/Logo-bg.png'),
+                                public_path('images/logo.png'),
+                            ];
+                            $logoFound = false;
+                            foreach ($logoPaths as $lp) {
+                                if (file_exists($lp)) {
+                                    echo '<img src="' . $lp . '" alt="ALPHA.CORP" class="header-logo-img" />';
+                                    $logoFound = true;
+                                    break;
+                                }
+                            }
+                        @endphp
+                        @if (!$logoFound)
+                            <div class="header-logo-fallback">A</div>
+                        @endif
+                    </div>
                 </td>
 
-                <!-- CENTER: Title -->
+                <!-- TENGAH: Title -->
                 <td class="header-center">
                     <div class="report-title-main">EVENT ANALYTICS REPORT</div>
                     <div class="report-subtitle">Ringkasan Performa Bisnis &amp; Operasional</div>
                 </td>
 
-                <!-- RIGHT: Info Card -->
+                <!-- KANAN: Info Card -->
                 <td class="header-right">
                     <div class="info-card">
                         <table cellpadding="0" cellspacing="0">
@@ -258,7 +407,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="2" style="padding: 4px 0 !important;"><hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;" /></td>
+                                <td colspan="2"><hr class="info-divider" /></td>
                             </tr>
                             <tr>
                                 <td class="icon-cell">
@@ -274,45 +423,42 @@
                 </td>
             </tr>
         </table>
-        <hr class="header-divider-hr" />
+        <hr class="header-divider" />
+        <hr class="header-divider-shadow" />
     </div>
 
     <!-- ============================================================ -->
-    <!-- STATISTICS CARDS (8 cards, single row) -->
+    <!-- 8 CARD STATISTIK -->
     <!-- ============================================================ -->
     @php
         $stats = [
-            ['label' => 'Total Event',    'value' => number_format($totalEvents, 0, ',', '.'),
-             'icon' => '#', 'bg' => 'linear-gradient(135deg, #f0fdfa, #ccfbf1)', 'icobg' => '#14b8a6'],
-            ['label' => 'Event Berjalan', 'value' => number_format($eventsBerjalan, 0, ',', '.'),
-             'icon' => '►', 'bg' => 'linear-gradient(135deg, #fefce8, #fef3c7)', 'icobg' => '#f59e0b'],
-            ['label' => 'Event Selesai',  'value' => number_format($eventsSelesai, 0, ',', '.'),
-             'icon' => '✓', 'bg' => 'linear-gradient(135deg, #f0fdfa, #d1fae5)', 'icobg' => '#10b981'],
-            ['label' => 'Total Client',   'value' => number_format($totalClients, 0, ',', '.'),
-             'icon' => '♦', 'bg' => 'linear-gradient(135deg, #f0f5ff, #e0e7ff)', 'icobg' => '#6366f1'],
-            ['label' => 'Total Vendor',   'value' => number_format($totalVendors, 0, ',', '.'),
-             'icon' => '★', 'bg' => 'linear-gradient(135deg, #faf5ff, #f3e8ff)', 'icobg' => '#8b5cf6'],
-            ['label' => 'Total Invoice',  'value' => number_format($totalInvoices, 0, ',', '.'),
-             'icon' => '□', 'bg' => 'linear-gradient(135deg, #ecfeff, #cffafe)', 'icobg' => '#06b6d4'],
-            ['label' => 'Total Pendapatan','value' => 'Rp' . number_format($totalRevenue, 0, ',', '.'),
-             'icon' => 'Rp', 'bg' => 'linear-gradient(135deg, #f0fdfa, #ccfbf1)', 'icobg' => '#0d9488'],
-            ['label' => 'Pembayaran Lunas','value' => number_format($paidInvoices, 0, ',', '.'),
-             'icon' => '✔', 'bg' => 'linear-gradient(135deg, #fefce8, #fef3c7)', 'icobg' => '#d97706'],
+            ['label' => 'Total Event',    'value' => number_format($totalEvents, 0, ',', '.'),    'icon' => 'event-total'],
+            ['label' => 'Event Berjalan', 'value' => number_format($eventsBerjalan, 0, ',', '.'),'icon' => 'event-berjalan'],
+            ['label' => 'Event Selesai',  'value' => number_format($eventsSelesai, 0, ',', '.'), 'icon' => 'event-selesai'],
+            ['label' => 'Total Client',   'value' => number_format($totalClients, 0, ',', '.'),  'icon' => 'total-client'],
+            ['label' => 'Total Vendor',   'value' => number_format($totalVendors, 0, ',', '.'),  'icon' => 'total-vendor'],
+            ['label' => 'Total Invoice',  'value' => number_format($totalInvoices, 0, ',', '.'), 'icon' => 'total-invoice'],
+            ['label' => 'Total Pendapatan','value' => 'Rp '.number_format($totalRevenue, 0, ',', '.'), 'icon' => 'total-pendapatan'],
+            ['label' => 'Pembayaran Lunas','value' => number_format($paidInvoices, 0, ',', '.'), 'icon' => 'pembayaran-lunas'],
         ];
     @endphp
-    <table class="stats-table" cellpadding="0" cellspacing="6">
+    <table class="stats-table" cellpadding="0" cellspacing="4">
         <tr>
-            @foreach($stats as $s)
+            @foreach($stats as $idx => $s)
             <td>
-                <div class="stat-card-inner" style="background: {{ $s['bg'] }};">
-                    <table cellpadding="0" cellspacing="0">
+                <div class="stat-card">
+                    <table class="inner" cellpadding="0" cellspacing="0">
                         <tr>
-                            <td class="stat-icon-cell">
-                                <div class="stat-icon-box" style="background: {{ $s['icobg'] }};">{{ $s['icon'] }}</div>
+                            <td class="icon-cell">
+                                <img src="{{ public_path('images/icons/'.$s['icon'].'.svg') }}" width="38" height="38" alt="" />
                             </td>
-                            <td class="stat-text-cell">
+                            <td class="text-cell">
                                 <div class="stat-label">{{ $s['label'] }}</div>
-                                <div class="stat-value">{{ $s['value'] }}</div>
+                                @if ($idx === 6)
+                                    <div class="stat-value-highlight">{{ $s['value'] }}</div>
+                                @else
+                                    <div class="stat-value">{{ $s['value'] }}</div>
+                                @endif
                             </td>
                         </tr>
                     </table>
@@ -323,56 +469,59 @@
     </table>
 
     <!-- ============================================================ -->
-    <!-- CHARTS (2x2 grid) -->
+    <!-- GRAFIK 2x2 - Semua muat dalam 1 halaman -->
     <!-- ============================================================ -->
-    <div style="margin-bottom: 4px;">
-        <div class="section-title">&#9670; Analitik Grafik {{ $filters['year'] ?? now()->year }}</div>
+    <div class="chart-section" style="margin-bottom: 0;">
+        <div style="margin-bottom: 10px;">
+            <div class="section-title">&#9670; Analitik Grafik {{ $filters['year'] ?? now()->year }}</div>
+        </div>
+
+        <table class="charts-table" cellpadding="0" cellspacing="10">
+            <tr>
+                <td>
+                    <div class="chart-card">
+                        <div class="chart-card-title">&#9679; Pendapatan per Bulan</div>
+                        @php $c1 = \App\Helpers\ChartHelper::lineChart($monthlyRevenue ?? [], 'Pendapatan per Bulan'); @endphp
+                        <img src="{{ $c1 }}" alt="Revenue Chart" class="chart-full-bar" style="width:100%; height:auto;" />
+                    </div>
+                </td>
+                <td>
+                    <div class="chart-card">
+                        <div class="chart-card-title">&#9679; Event per Bulan</div>
+                        @php $c2 = \App\Helpers\ChartHelper::barChart($monthlyEvents ?? [], 'Event per Bulan'); @endphp
+                        <img src="{{ $c2 }}" alt="Events Chart" class="chart-full-bar" style="width:100%; height:auto;" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="chart-card">
+                        <div class="chart-card-title">&#9679; Status Event</div>
+                        @php $c3 = \App\Helpers\ChartHelper::pieChart($eventsByStatus ?? [], 'Status Event'); @endphp
+                        <img src="{{ $c3 }}" alt="Status Chart" class="chart-pie-donut" style="width:55%; height:auto; display:block; margin:0 auto;" />
+                    </div>
+                </td>
+                <td>
+                    <div class="chart-card">
+                        <div class="chart-card-title">&#9679; Jenis Event</div>
+                        @php $c4 = \App\Helpers\ChartHelper::donutChart($eventsByType ?? [], 'Jenis Event'); @endphp
+                        <img src="{{ $c4 }}" alt="Type Chart" class="chart-pie-donut" style="width:55%; height:auto; display:block; margin:0 auto;" />
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 
-    <table class="charts-table" cellpadding="0" cellspacing="6">
-        <tr>
-            <td>
-                <div class="chart-card">
-                    <div class="chart-card-title">&#9679; Pendapatan per Bulan</div>
-                    @php $c1 = \App\Helpers\ChartHelper::lineChart($monthlyRevenue ?? [], 'Pendapatan per Bulan'); @endphp
-                    <img src="{{ $c1 }}" alt="Revenue Chart" />
-                </div>
-            </td>
-            <td>
-                <div class="chart-card">
-                    <div class="chart-card-title">&#9679; Event per Bulan</div>
-                    @php $c2 = \App\Helpers\ChartHelper::barChart($monthlyEvents ?? [], 'Event per Bulan'); @endphp
-                    <img src="{{ $c2 }}" alt="Events Chart" />
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="chart-card">
-                    <div class="chart-card-title">&#9679; Status Event</div>
-                    @php $c3 = \App\Helpers\ChartHelper::pieChart($eventsByStatus ?? [], 'Status Event'); @endphp
-                    <img src="{{ $c3 }}" alt="Status Chart" />
-                </div>
-            </td>
-            <td>
-                <div class="chart-card">
-                    <div class="chart-card-title">&#9679; Jenis Event</div>
-                    @php $c4 = \App\Helpers\ChartHelper::donutChart($eventsByType ?? [], 'Jenis Event'); @endphp
-                    <img src="{{ $c4 }}" alt="Type Chart" />
-                </div>
-            </td>
-        </tr>
-    </table>
+    <!-- ============================================================ -->
+    <!-- PAGE BREAK menuju halaman tabel -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- 3 TABEL: Top Client, Top Vendor, Top Event -->
+    <!-- ============================================================ -->
 
-    <!-- ============================================================ -->
-    <!-- PAGE BREAK - TABLES PAGE -->
-    <!-- ============================================================ -->
     <div class="page-break"></div>
-
-    <!-- ============================================================ -->
     <!-- TOP CLIENTS -->
-    <!-- ============================================================ -->
-    <div style="margin-bottom: 10px;">
+    <div style="margin-bottom: 16px;">
         <div class="section-title">&#9733; TOP 10 CLIENT &mdash; Berdasarkan Nilai Event</div>
         <table class="data-table">
             <thead>
@@ -400,10 +549,8 @@
         </table>
     </div>
 
-    <!-- ============================================================ -->
     <!-- TOP VENDORS -->
-    <!-- ============================================================ -->
-    <div style="margin-bottom: 10px;">
+    <div style="margin-bottom: 16px;">
         <div class="section-title">&#9733; TOP 10 VENDOR &mdash; Berdasarkan Nilai RAB</div>
         <table class="data-table">
             <thead>
@@ -431,10 +578,8 @@
         </table>
     </div>
 
-    <!-- ============================================================ -->
     <!-- TOP EVENTS -->
-    <!-- ============================================================ -->
-    <div style="margin-bottom: 6px;">
+    <div style="margin-bottom: 16px;">
         <div class="section-title">&#9733; TOP 10 EVENT &mdash; Berdasarkan Nilai Event</div>
         <table class="data-table">
             <thead>
@@ -493,19 +638,38 @@
             $gray = array(148, 163, 184);
             $lineColor = array(226, 232, 240);
 
-            // Footer line
-            $canvas->line(30, 568, 810, 568, $lineColor, 0.5);
+            // Garis footer
+            $canvas->line(30, 570, 822, 570, $lineColor, 0.5);
 
-            // Left
-            $canvas->page_text(30, 572, "Generated by ALPHA.CORP Event Management System", $font, 6.5, $gray);
+            // Kiri
+            $canvas->page_text(30, 575, "Generated by ALPHA.CORP Event Management System", $font, 7, $gray);
 
-            // Center - report name
-            $canvas->page_text(360, 572, "EVENT ANALYTICS REPORT", $font, 6.5, $gray);
+            // Tengah
+            $canvas->page_text(370, 575, "EVENT ANALYTICS REPORT", $font, 7, $gray);
 
-            // Right - page number
-            $canvas->page_text(755, 572, "Page {PAGE_NUM} of {PAGE_COUNT}", $font, 6.5, $gray);
+            // Kanan
+            $canvas->page_text(790, 575, "Page {PAGE_NUM} of {PAGE_COUNT}", $font, 7, $gray);
         }
     </script>
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
