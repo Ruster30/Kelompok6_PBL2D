@@ -97,21 +97,23 @@
         }
 
         .logo-box {
-            background: #fff;
-            border-radius: 10px;
-            width: 72px;
-            height: 72px;
-            display: flex;
+            background: transparent;
+            border-radius: 0;
+            width: auto;
+            height: auto;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            justify-content: flex-start;
+            box-shadow: none;
             position: relative;
             z-index: 1;
+            padding: 0;
         }
 
         .logo-box img {
-            width: 100px;
+            width: 120px;
             height: auto;
+            display: block;
         }
 
         /* Fallback jika tidak ada gambar */
@@ -130,9 +132,10 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 48px 0;
             position: relative;
             z-index: 1;
+
+            transform: translateY(-70px);
         }
 
         .left-content h1 {

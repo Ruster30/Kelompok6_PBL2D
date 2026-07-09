@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRabItemRequest;
 use App\Http\Requests\UpdateRabItemRequest;
+use App\Http\Requests\UpdateRabAdditionalDetailRequest;
 use App\Models\Rab;
 use App\Services\RabService;
 use Illuminate\Http\Request;
@@ -49,5 +50,18 @@ class RabController extends Controller
         return redirect()
             ->route("admin.rab.index", ["event_id" => $eventId])
             ->with("success", "Item RAB berhasil dihapus.");
+    }
+
+    public function saveAdditionalDetails(UpdateRabAdditionalDetailRequest $request)
+    {
+        $request->validated();
+
+        $eventId = $request->event_id;
+
+        $this->rabService->saveAdditionalDetails($eventId, $request->all());
+
+        return redirect()
+            ->route("admin.rab.index", ["event_id" => $eventId])
+            ->with("success", "Rincian tambahan berhasil disimpan.");
     }
 }

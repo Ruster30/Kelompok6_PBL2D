@@ -232,19 +232,25 @@ document.addEventListener('DOMContentLoaded', function() {
     var toggleBtn = document.getElementById('sidebarToggle');
     
     // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    // Restore scroll position from sessionStorage
     if (sidebar) {
-        var savedScrollPos = sessionStorage.getItem('clientSidebarScrollPosition');
-        if (savedScrollPos !== null) {
-            sidebar.scrollTop = parseInt(savedScrollPos, 10);
+        var KEY = 'clientSidebarScrollPosition';
+        var restoreScroll = function() {
+            var saved = sessionStorage.getItem(KEY);
+            if (saved !== null) {
+                sidebar.scrollTop = parseInt(saved, 10);
+            }
+        };
+        restoreScroll();
+        if (window.requestAnimationFrame) {
+            window.requestAnimationFrame(restoreScroll);
         }
-        
-        // Save scroll position whenever user scrolls the sidebar
         sidebar.addEventListener('scroll', function() {
-            sessionStorage.setItem('clientSidebarScrollPosition', sidebar.scrollTop);
+            sessionStorage.setItem(KEY, sidebar.scrollTop);
+        });
+        window.addEventListener('beforeunload', function() {
+            sessionStorage.setItem(KEY, sidebar.scrollTop);
         });
     }
-    
     // ===== RESPONSIVE TOGGLE =====
     if (toggleBtn && sidebar && overlay) {
         function openSidebar() {
