@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Document;
 use App\Models\Event;
 use App\Models\Invoice;
 use App\Models\Negotiation;
@@ -14,6 +13,7 @@ use App\Services\TimelineAutoFill;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Document;
 
 class ClientService
 {
@@ -168,6 +168,11 @@ class ClientService
             ->latest()
             ->get();
 
+        $invoiceDocuments = Document::whereIn('event_id', $eIds)
+            ->where('tipe', 'invoice')
+            ->latest()
+            ->get();
+
         // Total Invoice diambil dari invoice pertama (invoice utama) saja, bukan SUM seluruh invoice
         // Invoice pelunasan tidak boleh menambah Total Invoice
         $totalInvoice = $invoices->groupBy('event_id')->map(function ($eventInvoices) {
@@ -178,11 +183,12 @@ class ClientService
         $sisaTagihan = max(0, $totalInvoice - $totalDibayar);
 
         return $this->mergeNotif([
-            'invoices'     => $invoices,
-            'payments'     => $payments,
+            'invoices' => $invoices,
+            'payments' => $payments,
+            'invoiceDocuments' => $invoiceDocuments,
             'totalInvoice' => $totalInvoice,
             'totalDibayar' => $totalDibayar,
-            'sisaTagihan'  => $sisaTagihan,
+            'sisaTagihan' => $sisaTagihan,
         ]);
     }
 
@@ -193,13 +199,21 @@ class ClientService
 
         $path = request()->file('bukti_pembayaran')->store('payments', 'public');
 
+        // Tentukan jenis pembayaran berdasarkan urutan invoice
+        $firstInvoice = $invoice->event->invoices()
+            ->whereIn('status_invoice', ['belum_bayar', 'menunggu_verifikasi', 'dp_lunas', 'lunas', 'menunggu_dp'])
+            ->orderBy('id', 'asc')
+            ->first();
+        $isDp = $firstInvoice && $firstInvoice->id === $invoice->id
+            && $invoice->event->invoices()->whereIn('status_invoice', ['belum_bayar', 'menunggu_verifikasi', 'dp_lunas', 'lunas'])->count() > 1;
+
         Payment::create([
-            'invoice_id'       => $invoice->id,
-            'nominal'          => $data['nominal'],
-            'tanggal_pembayaran' => now()->toDateString(),
+            'invoice_id'        => $invoice->id,
+            'nominal'           => $data['nominal'],
+            'tanggal_pembayaran'=> now()->toDateString(),
             'status_pembayaran' => 'menunggu',
             'bukti_pembayaran'  => $path,
-            'jenis_pembayaran'  => $data['jenis_pembayaran'],
+            'jenis_pembayaran'  => $isDp ? 'dp' : 'pelunasan',
         ]);
 
         $invoice->update(['status_invoice' => 'menunggu_verifikasi']);

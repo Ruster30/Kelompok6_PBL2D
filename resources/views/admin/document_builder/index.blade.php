@@ -84,6 +84,58 @@
                 <div id="jenisInfoContent"></div>
             </div>
 
+                        {{-- Skema Pembayaran (khusus Invoice) --}}
+            <div id="paymentSchemeSection" style="display:none; background:#f0fdf9; border:1px solid #a7f3d0; border-radius:10px; padding:20px; margin-bottom:24px;">
+                <h3 style="font-size:15px; font-weight:700; color:#065f46; margin-bottom:14px;">
+                    <i class="fas fa-credit-card" style="margin-right:6px;"></i>
+                    Skema Pembayaran
+                </h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+                    <div class="form-group">
+                        <label class="form-label">Jenis Pembayaran</label>
+                        <select name="jenis_pembayaran" id="doc_jenis_pembayaran" class="form-input" onchange="toggleDocPaymentScheme()">
+                            <option value="full_payment">Full Payment</option>
+                            <option value="dp_dan_pelunasan">DP + Pelunasan</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="doc_dp_mode_group" style="display:none;">
+                        <label class="form-label">Mode DP</label>
+                        <select name="mode_dp" id="doc_mode_dp" class="form-input" onchange="toggleDocDpMode()">
+                            <option value="persentase">Persentase (%)</option>
+                            <option value="nominal">Nominal (Rp)</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="doc_dp_persentase_group" style="display:none; margin-bottom:14px;">
+                    <div class="form-group" style="max-width:200px;">
+                        <label class="form-label">Persentase DP (%)</label>
+                        <input type="number" name="persentase_dp" id="doc_persentase_dp" class="form-input" value="30" min="1" max="100" step="0.01" oninput="hitungDocSkema()">
+                    </div>
+                </div>
+                <div id="doc_dp_nominal_group" style="display:none; margin-bottom:14px;">
+                    <div class="form-group" style="max-width:250px;">
+                        <label class="form-label">Nominal DP (Rp)</label>
+                        <input type="number" name="nilai_dp" id="doc_nilai_dp" class="form-input" value="0" min="1" step="1" oninput="hitungDocSkema()">
+                    </div>
+                </div>
+                <div id="doc_preview" style="display:none; background:#fff; border-radius:8px; padding:14px; border:1px solid #d1fae5;">
+                    <div style="font-weight:600; font-size:13px; color:#065f46; margin-bottom:8px;">Preview</div>
+                    <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:13px;">
+                        <span style="color:#64748b;">Total Dibayar Klien</span>
+                        <span id="doc_preview_total" style="font-weight:600;">Rp 0</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:13px; border-top:1px solid #e2e8f0;">
+                        <span style="color:#64748b;">DP</span>
+                        <span id="doc_preview_dp" style="font-weight:600; color:#16a34a;">Rp 0</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:13px; border-top:1px solid #e2e8f0;">
+                        <span style="color:#64748b;">Sisa Pelunasan</span>
+                        <span id="doc_preview_sisa" style="font-weight:600; color:#0f766e;">Rp 0</span>
+                    </div>
+                </div>
+                <input type="hidden" name="has_payment_scheme" id="has_payment_scheme" value="0">
+            </div>
+
             {{-- Tombol Generate --}}
             <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
                 <button type="button" id="btnGenerate"
@@ -188,9 +240,20 @@
 
     document.getElementById('jenis_dokumen').addEventListener('change', function () {
         const card = document.getElementById('jenisInfoCard');
+        const schemeSection = document.getElementById('paymentSchemeSection');
         if (!this.value || !JENIS_DESC[this.value]) {
             card.style.display = 'none';
             return;
+        }
+        // Tampilkan skema pembayaran hanya jika jenis = invoice
+        if (this.value === 'invoice') {
+            schemeSection.style.display = 'block';
+            document.getElementById('has_payment_scheme').value = '1';
+            // Ambil total dari server via data attribute atau API
+            fetchTotalDibayarKlien();
+        } else {
+            schemeSection.style.display = 'none';
+            document.getElementById('has_payment_scheme').value = '0';
         }
         const d = JENIS_DESC[this.value];
         document.getElementById('jenisInfoContent').innerHTML = `
@@ -314,7 +377,148 @@
             document.getElementById('event_id').dispatchEvent(new Event('change'));
             document.getElementById('jenis_dokumen').dispatchEvent(new Event('change'));
         });
-    @endif
+﻿    @endif
+
+    // Payment Scheme Functions (khusus Invoice)
+    let docTotalDibayarKlien = 0;
+
+    async function fetchTotalDibayarKlien() {
+        const eventId = document.getElementById('event_id').value;
+        if (!eventId) return;
+        try {
+            const resp = await fetch('/admin/rab/total-dibayar-klien/' + eventId);
+            const data = await resp.json();
+            docTotalDibayarKlien = data.total || 0;
+            document.getElementById('doc_preview_total').innerText = 'Rp ' + docTotalDibayarKlien.toLocaleString('id-ID');
+            hitungDocSkema();
+            toggleDocPaymentScheme();
+        } catch(e) {
+            console.error('Gagal memuat total:', e);
+        }
+    }
+
+    function toggleDocPaymentScheme() {
+        const jenis = document.getElementById('doc_jenis_pembayaran').value;
+        const dpModeGroup = document.getElementById('doc_dp_mode_group');
+        const preview = document.getElementById('doc_preview');
+        if (jenis === 'dp_dan_pelunasan') {
+            dpModeGroup.style.display = 'block';
+            preview.style.display = 'block';
+            toggleDocDpMode();
+        } else {
+            dpModeGroup.style.display = 'none';
+            document.getElementById('doc_dp_persentase_group').style.display = 'none';
+            document.getElementById('doc_dp_nominal_group').style.display = 'none';
+            preview.style.display = 'none';
+        }
+        hitungDocSkema();
+    }
+
+    function toggleDocDpMode() {
+        const mode = document.getElementById('doc_mode_dp').value;
+        document.getElementById('doc_dp_persentase_group').style.display = mode === 'persentase' ? 'block' : 'none';
+        document.getElementById('doc_dp_nominal_group').style.display = mode === 'nominal' ? 'block' : 'none';
+        hitungDocSkema();
+    }
+
+    function hitungDocSkema() {
+        if (document.getElementById('doc_jenis_pembayaran').value !== 'dp_dan_pelunasan') return;
+        const mode = document.getElementById('doc_mode_dp').value;
+        let dpNominal = 0;
+        if (mode === 'persentase') {
+            const pct = parseFloat(document.getElementById('doc_persentase_dp').value) || 0;
+            dpNominal = docTotalDibayarKlien * pct / 100;
+        } else {
+            dpNominal = parseFloat(document.getElementById('doc_nilai_dp').value) || 0;
+        }
+        const sisa = Math.max(0, docTotalDibayarKlien - dpNominal);
+        document.getElementById('doc_preview_dp').innerText = 'Rp ' + Math.round(dpNominal).toLocaleString('id-ID');
+        document.getElementById('doc_preview_sisa').innerText = 'Rp ' + Math.round(sisa).toLocaleString('id-ID');
+    }
+
+    function appendSchemeFields(form) {
+        if (document.getElementById('has_payment_scheme').value !== '1') return;
+        function add(name, value) {
+            const i = document.createElement('input');
+            i.type = 'hidden'; i.name = name; i.value = value;
+            form.appendChild(i);
+        }
+        add('jenis_pembayaran', document.getElementById('doc_jenis_pembayaran').value);
+        if (document.getElementById('doc_jenis_pembayaran').value === 'dp_dan_pelunasan') {
+            add('mode_dp', document.getElementById('doc_mode_dp').value);
+            if (document.getElementById('doc_mode_dp').value === 'persentase') {
+                add('persentase_dp', document.getElementById('doc_persentase_dp').value);
+            } else {
+                add('nilai_dp', document.getElementById('doc_nilai_dp').value);
+            }
+        }
+    }
+
+    const _origDoGenerate = doGenerate;
+    doGenerate = function() {
+        if (document.getElementById('jenis_dokumen').value === 'invoice') {
+            const eventId = document.getElementById('event_id').value;
+            if (!eventId) { alert('Harap pilih Event terlebih dahulu.'); return; }
+            lastEventId = eventId; lastJenis = 'invoice';
+            const form = document.createElement('form');
+            form.method = 'POST'; form.action = PREVIEW_URL; form.target = 'pdfPreviewFrame';
+            [['_token', CSRF], ['event_id', eventId], ['jenis_dokumen', 'invoice']].forEach(function(p) {
+                var i = document.createElement('input');
+                i.type = 'hidden'; i.name = p[0]; i.value = p[1];
+                form.appendChild(i);
+            });
+            appendSchemeFields(form);
+            document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+            document.getElementById('sendEventId').value = eventId;
+            document.getElementById('sendJenis').value = 'invoice';
+            document.getElementById('resultPanel').style.display = 'block';
+            document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+        }
+        return _origDoGenerate();
+    };
+
+    const _origOpenPreview = openPreview;
+    openPreview = function() {
+        if (lastJenis === 'invoice') {
+            const form = document.createElement('form');
+            form.method = 'POST'; form.action = PREVIEW_URL; form.target = '_blank';
+            [['_token', CSRF], ['event_id', lastEventId], ['jenis_dokumen', 'invoice']].forEach(function(p) {
+                var i = document.createElement('input');
+                i.type = 'hidden'; i.name = p[0]; i.value = p[1];
+                form.appendChild(i);
+            });
+            appendSchemeFields(form);
+            document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+            return;
+        }
+        return _origOpenPreview();
+    };
+
+    const _origDoDownload = doDownload;
+    doDownload = function() {
+        var jenis = document.getElementById('jenis_dokumen').value || lastJenis;
+        if (jenis === 'invoice') {
+            const form = document.createElement('form');
+            form.method = 'POST'; form.action = DOWNLOAD_URL;
+            [['_token', CSRF], ['event_id', lastEventId], ['jenis_dokumen', jenis]].forEach(function(p) {
+                var i = document.createElement('input');
+                i.type = 'hidden'; i.name = p[0]; i.value = p[1];
+                form.appendChild(i);
+            });
+            appendSchemeFields(form);
+            document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+            return;
+        }
+        return _origDoDownload();
+    };
+
+    document.getElementById('sendForm').addEventListener('submit', function(e) {
+        if (document.getElementById('sendJenis').value === 'invoice' && document.getElementById('has_payment_scheme').value === '1') {
+            appendSchemeFields(this);
+        }
+    });
 </script>
+
 @endpush
 @endsection

@@ -64,4 +64,11 @@ class RabController extends Controller
             ->route("admin.rab.index", ["event_id" => $eventId])
             ->with("success", "Rincian tambahan berhasil disimpan.");
     }
+
+    public function getTotalDibayarKlien(int $eventId)
+    {
+        $total = $this->rabService->getTotalDibayarKlien($eventId);
+
+        return response()->json(["total" => $total]);
+    }
 }

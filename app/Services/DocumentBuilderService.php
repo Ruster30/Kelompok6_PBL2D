@@ -88,9 +88,13 @@ class DocumentBuilderService
     {
         $event->load(['client', 'invoices.payments', 'rabs']);
 
-        $invoice   = $event->invoices()->latest()->first();
-        $rabItems  = Rab::where('event_id', $event->id)->with('vendor')->get();
-        $totalItem = $rabItems->sum('subtotal_biaya');
+        // Ambil invoice pertama yang statusnya belum dibayar
+        $invoice   = $event->invoices()
+            ->whereIn("status_invoice", ["belum_bayar", "terkirim", "draft"])
+            ->orderBy("id", "asc")
+            ->first();
+        $rabItems  = Rab::where("event_id", $event->id)->with("vendor")->get();
+        $totalItem = $rabItems->sum("subtotal_biaya");
         $totalDibayarKlien = app(RabService::class)->getTotalDibayarKlien($event->id);
 
         $nomorInvoice = $invoice?->nomor_invoice
@@ -229,23 +233,39 @@ class DocumentBuilderService
         };
     }
 
-    private function ensureInvoice(Event $event): Invoice
+    private function ensureInvoice(Event $event): ?Invoice
     {
+        // Cari invoice yang belum dibayar
         $existing = $event->invoices()
-            ->where('status_invoice', '!=', 'lunas')
-            ->latest()
+            ->whereIn('status_invoice', ['belum_bayar', 'terkirim', 'draft'])
+            ->orderBy('id', 'asc')
             ->first();
 
         if ($existing) {
             return $existing;
         }
 
-        $totalInvoice = app(RabService::class)->getTotalDibayarKlien($event->id);
+        // Jika tidak ada, cek skema pembayaran
+        $scheme = app(PaymentSchemeService::class)->getScheme($event->id);
+        if (!$scheme) {
+            return null;
+        }
 
+        if ($scheme->jenis_pembayaran === 'full_payment') {
+            return Invoice::create([
+                'event_id' => $event->id,
+                'nomor_invoice' => sprintf('INV-%s-%03d', now()->format('Ymd'), Invoice::whereDate('created_at', today())->count() + 1),
+                'total_invoice' => $scheme->sisa_pelunasan,
+                'status_invoice' => 'belum_bayar',
+                'tanggal_invoice' => now()->toDateString(),
+            ]);
+        }
+
+        // DP + Pelunasan: buat invoice DP saja (invoice pelunasan dibuat saat DP diverifikasi)
         return Invoice::create([
             'event_id' => $event->id,
             'nomor_invoice' => sprintf('INV-%s-%03d', now()->format('Ymd'), Invoice::whereDate('created_at', today())->count() + 1),
-            'total_invoice' => $totalInvoice,
+            'total_invoice' => $scheme->dp_nominal,
             'status_invoice' => 'belum_bayar',
             'tanggal_invoice' => now()->toDateString(),
         ]);
