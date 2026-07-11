@@ -26,6 +26,7 @@ class Event extends Model
         'luas_area',                // luas area stand/pameran
         'detail_kebutuhan',
         'status_event',
+        'status_pembayaran',
     ];
 
     protected function casts(): array
@@ -33,6 +34,7 @@ class Event extends Model
         return [
             'tanggal_event'   => 'date',
             'tanggal_selesai' => 'date',
+        'status_pembayaran' => 'string',
         ];
     }
 

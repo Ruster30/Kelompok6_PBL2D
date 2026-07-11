@@ -8,10 +8,14 @@ use Illuminate\Support\Facades\DB;
 
 class AdminPaymentService
 {
+    public function __construct(
+        private PaymentSchemeService $paymentSchemeService,
+    ) {}
+
     public function getIndexData(): array
     {
         return [
-            'payments' => Payment::with(['invoice.event'])
+            "payments" => Payment::with(["invoice.event"])
                 ->latest()
                 ->paginate(15),
         ];
@@ -19,66 +23,101 @@ class AdminPaymentService
 
     public function getShowData(Payment $payment): array
     {
-        $payment->load('invoice.event');
-        return compact('payment');
+        $payment->load("invoice.event");
+        return compact("payment");
     }
 
     public function verifyPayment(Payment $payment, string $status): void
     {
         DB::transaction(function () use ($payment, $status) {
-            $payment->update(['status_pembayaran' => $status]);
+            $payment->update(["status_pembayaran" => $status]);
 
-            if ($status === 'diverifikasi') {
-                if ($payment->jenis_pembayaran === 'dp') {
-                    $payment->invoice?->update(['status_invoice' => 'dp_lunas']);
+            if ($status === "diverifikasi") {
+                $invoice = $payment->invoice;
+                $event = $invoice->event;
+                $scheme = $this->paymentSchemeService->getScheme($event->id);
+
+                if ($scheme && $scheme->jenis_pembayaran === "dp_dan_pelunasan") {
+                    $isFirstInvoice = $event->invoices()
+                        ->where("status_invoice", "!=", "menunggu_dp")
+                        ->orderBy("id", "asc")
+                        ->first()?->id === $invoice->id;
+
+                    if ($isFirstInvoice) {
+                        // DP diverifikasi: jangan auto-buat pelunasan & kwitansi
+                        // Admin akan kirim manual lewat tombol Kirim Pelunasan & Kirim Kwitansi
+                        $invoice->update(["status_invoice" => "dp_lunas"]);
+                    } else {
+                        // Pelunasan diverifikasi
+                        $invoice->update(["status_invoice" => "lunas"]);
+                        $event->update(["status_event" => "selesai"]);
+                    }
                 } else {
-                    $payment->invoice?->update(['status_invoice' => 'lunas']);
-                    $payment->invoice?->event?->update(['status_event' => 'selesai']);
+                    // Full payment diverifikasi
+                    $invoice->update(["status_invoice" => "lunas"]);
+                    $event->update(["status_event" => "selesai"]);
                 }
+
                 return;
             }
 
-            $payment->invoice?->update(['status_invoice' => 'ditolak']);
+            $payment->invoice?->update(["status_invoice" => "ditolak"]);
         });
     }
 
+    /**
+     * Cek apakah pelunasan bisa dikirim.
+     * Returns error message string jika tidak bisa, null jika bisa.
+     */
     public function canSendPelunasan(Payment $payment): ?string
     {
-        $payment->load('invoice.event');
+        $payment->load("invoice.event");
 
-        if ($payment->jenis_pembayaran !== 'dp' || $payment->status_pembayaran !== 'diverifikasi') {
-            return 'Hanya pembayaran DP yang sudah diverifikasi yang dapat dibuatkan invoice pelunasan.';
+        if (!$payment->invoice || !$payment->invoice->event) {
+            return "Data pembayaran tidak valid.";
         }
 
-        if ($payment->invoice?->event?->invoices()->count() > 1) {
-            return 'Invoice pelunasan sudah pernah dibuat untuk event ini.';
+        $event = $payment->invoice->event;
+        $scheme = $this->paymentSchemeService->getScheme($event->id);
+
+        if (!$scheme || $scheme->jenis_pembayaran !== "dp_dan_pelunasan") {
+            return "Skema pembayaran bukan DP + Pelunasan.";
+        }
+
+        $invoicePelunasan = $event->invoices()
+            ->whereIn("status_invoice", ["belum_bayar", "terkirim", "draft"])
+            ->where("id", "!=", $payment->invoice_id)
+            ->first();
+
+        if ($invoicePelunasan) {
+            return "Invoice pelunasan sudah ada dan belum dibayar.";
         }
 
         return null;
     }
 
+    /**
+     * Kirim invoice pelunasan ke client.
+     */
     public function sendPelunasan(Payment $payment): void
     {
-        $payment->load('invoice.event');
-        $invoice = $payment->invoice;
-        $event = $invoice->event;
-        $sisaPembayaran = max(0, $invoice->total_invoice - $payment->nominal);
+        $payment->load("invoice.event");
+        $event = $payment->invoice->event;
 
-        DB::transaction(function () use ($event, $sisaPembayaran) {
-            Invoice::create([
-                'event_id' => $event->id,
-                'nomor_invoice' => sprintf(
-                    'INV-%s-%03d',
-                    now()->format('Ymd'),
-                    Invoice::whereDate('created_at', today())->count() + 1
-                ),
-                'total_invoice' => $sisaPembayaran,
-                'status_invoice' => 'belum_bayar',
-                'tanggal_invoice' => now()->toDateString(),
-            ]);
+        DB::transaction(function () use ($event) {
+            // Buat invoice pelunasan
+            $this->paymentSchemeService->createInvoicePelunasan($event->id);
 
-            $documentBuilder = new DocumentBuilderService();
-            $documentBuilder->sendToClient($event, 'invoice');
+            // Kirim notifikasi ke client
+            if ($event->client) {
+                \App\Models\Notification::create([
+                    'user_id' => $event->client_id,
+                    'judul'   => 'Invoice Pelunasan Tersedia',
+                    'pesan'   => 'Invoice pelunasan untuk event "' . $event->nama_event . '" telah diterbitkan. Silakan cek tagihan & pembayaran Anda.',
+                    'tipe'    => 'info',
+                    'dibaca'  => false,
+                ]);
+            }
         });
     }
 }

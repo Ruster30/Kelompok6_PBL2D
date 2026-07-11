@@ -56,6 +56,7 @@
                     <th>Tanggal</th>
                     <th>Total</th>
                     <th>Status</th>
+                    <th>File</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -72,8 +73,21 @@
                         </span>
                     </td>
                     <td>
+                        @php
+                            $doc = $invoiceDocuments->firstWhere('event_id', $inv->event_id);
+                        @endphp
+                        @if($doc)
+                        <a href="{{ route('client.proposals.document.preview', $doc->id) }}" target="_blank"
+                           class="btn btn-ghost-accent btn-sm" title="Lihat Invoice">
+                            <i class="bi bi-file-pdf"></i>
+                        </a>
+                        @else
+                        <span style="color:var(--text-light);font-size:12px;">-</span>
+                        @endif
+                    </td>
+                    <td>
                         @if(in_array($inv->status_invoice, ['belum_bayar', 'ditolak', 'draft', 'terkirim']))
-                        <button onclick="openPayModal({{ $inv->id }})"
+                        <button onclick="openPayModal({{ $inv->id }}, {{ $inv->total_invoice }})"
                                 class="btn btn-accent btn-sm">
                             <i class="bi bi-credit-card"></i> Bayar
                         </button>
@@ -86,7 +100,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6">
+                    <td colspan="7">
                         <div class="invoice-empty">
                             <i class="bi bi-receipt"></i>
                             Belum ada tagihan
@@ -146,7 +160,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6">
+                    <td colspan="7">
                         <div class="invoice-empty">
                             <i class="bi bi-wallet2"></i>
                             Belum ada riwayat pembayaran
@@ -173,17 +187,13 @@
         </p>
         <form id="payForm" method="POST" enctype="multipart/form-data">
             @csrf
-            <div class="form-group">
-                <label class="form-label">Jenis Pembayaran</label>
-                <select name="jenis_pembayaran" class="form-control" required>
-                    <option value="dp">DP (Down Payment)</option>
-                    <option value="pelunasan">Pelunasan</option>
-                </select>
+
+            <div class="form-group" style="margin-bottom:16px;">
+                <label class="form-label" style="font-size:14px; font-weight:600;">Total yang Harus Dibayar</label>
+                <div id="payTotalDisplay" style="font-size:24px; font-weight:800; color:#0f766e;">Rp 0</div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Nominal (Rp)</label>
-                <input type="number" name="nominal" class="form-control"
-                       placeholder="mis. 25000000" min="1000" required>
+            <div style="margin-top:8px; font-size:12px; color:#94a3b8; margin-bottom:16px;">
+                <i class="bi bi-info-circle"></i> Nominal pembayaran sudah ditentukan oleh sistem.
             </div>
             <div class="form-group">
                 <label class="form-label">File Bukti Pembayaran</label>
@@ -205,8 +215,18 @@
 
 @push('scripts')
 <script>
-function openPayModal(invoiceId) {
+function openPayModal(invoiceId, total) {
     document.getElementById('payForm').action = '/client/invoices/' + invoiceId + '/bayar';
+    document.getElementById('payTotalDisplay').innerText = 'Rp ' + Number(total).toLocaleString('id-ID');
+    var nomInput = document.getElementById('payNominal');
+    if (!nomInput) {
+        nomInput = document.createElement('input');
+        nomInput.type = 'hidden';
+        nomInput.name = 'nominal';
+        nomInput.id = 'payNominal';
+        document.getElementById('payForm').appendChild(nomInput);
+    }
+    nomInput.value = total;
     document.getElementById('payModal').style.display = 'flex';
 }
 function closePayModal() {

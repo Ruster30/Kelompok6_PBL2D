@@ -2,18 +2,19 @@
 
 namespace App\Services;
 
-use App\Models\Document;
 use App\Models\Event;
 use App\Models\Invoice;
 use App\Models\Negotiation;
 use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Proposal;
+use App\Services\RabService;
 use App\Models\User;
 use App\Services\TimelineAutoFill;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Document;
 
 class ClientService
 {
@@ -168,21 +169,27 @@ class ClientService
             ->latest()
             ->get();
 
-        // Total Invoice diambil dari invoice pertama (invoice utama) saja, bukan SUM seluruh invoice
-        // Invoice pelunasan tidak boleh menambah Total Invoice
-        $totalInvoice = $invoices->groupBy('event_id')->map(function ($eventInvoices) {
-            return $eventInvoices->sortBy('id')->first()->total_invoice ?? 0;
-        })->sum();
+        $invoiceDocuments = Document::whereIn('event_id', $eIds)
+            ->where('tipe', 'invoice')
+            ->latest()
+            ->get();
+
+        // Total Tagihan dihitung dari total RAB (bukan invoice pertama)
+        // agar untuk DP+pelunasan sisa tagihan = total tagihan (bukan hanya DP)
+        $totalInvoice = Event::whereIn('id', $eIds)->get()->sum(function ($event) {
+            return app(RabService::class)->getTotalDibayarKlien($event->id);
+        });
         
         $totalDibayar = $payments->where('status_pembayaran', 'diverifikasi')->sum('nominal');
         $sisaTagihan = max(0, $totalInvoice - $totalDibayar);
 
         return $this->mergeNotif([
-            'invoices'     => $invoices,
-            'payments'     => $payments,
+            'invoices' => $invoices,
+            'payments' => $payments,
+            'invoiceDocuments' => $invoiceDocuments,
             'totalInvoice' => $totalInvoice,
             'totalDibayar' => $totalDibayar,
-            'sisaTagihan'  => $sisaTagihan,
+            'sisaTagihan' => $sisaTagihan,
         ]);
     }
 
@@ -193,13 +200,21 @@ class ClientService
 
         $path = request()->file('bukti_pembayaran')->store('payments', 'public');
 
+        // Tentukan jenis pembayaran berdasarkan urutan invoice
+        $firstInvoice = $invoice->event->invoices()
+            ->whereIn('status_invoice', ['belum_bayar', 'menunggu_verifikasi', 'dp_lunas', 'lunas', 'menunggu_dp'])
+            ->orderBy('id', 'asc')
+            ->first();
+        $isDp = $firstInvoice && $firstInvoice->id === $invoice->id
+            && $invoice->event->invoices()->whereIn('status_invoice', ['belum_bayar', 'menunggu_verifikasi', 'dp_lunas', 'lunas'])->count() > 1;
+
         Payment::create([
-            'invoice_id'       => $invoice->id,
-            'nominal'          => $data['nominal'],
-            'tanggal_pembayaran' => now()->toDateString(),
+            'invoice_id'        => $invoice->id,
+            'nominal'           => $data['nominal'],
+            'tanggal_pembayaran'=> now()->toDateString(),
             'status_pembayaran' => 'menunggu',
             'bukti_pembayaran'  => $path,
-            'jenis_pembayaran'  => $data['jenis_pembayaran'],
+            'jenis_pembayaran'  => $isDp ? 'dp' : 'pelunasan',
         ]);
 
         $invoice->update(['status_invoice' => 'menunggu_verifikasi']);
@@ -228,6 +243,7 @@ class ClientService
             'rab'       => 'rab',
             'kontrak'   => 'kontrak',
             'laporan'   => 'laporan',
+            'kwitansi'  => 'kwitansi',
         ];
 
         if (!array_key_exists($tab, $tabMap)) {
@@ -435,3 +451,5 @@ class ClientService
             ->update(['dibaca' => true]);
     }
 }
+
+

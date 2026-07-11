@@ -32,6 +32,7 @@ class DocumentBuilderService
             'surat_kontrak'  => $this->generateSuratKontrak($event),
             'invoice'        => $this->generateInvoice($event),
             'rab'            => $this->generateRab($event),
+            'kwitansi'       => $this->generateKwitansi($event),
             default          => throw new \InvalidArgumentException("Jenis dokumen tidak dikenal: {$jenisDokumen}"),
         };
     }
@@ -84,34 +85,66 @@ class DocumentBuilderService
 
     // ─── INVOICE ────────────────────────────────────────────────────────────
 
-    private function generateInvoice(Event $event): array
+        private function generateInvoice(Event $event): array
     {
         $event->load(['client', 'invoices.payments', 'rabs']);
 
-        $invoice   = $event->invoices()->latest()->first();
-        $rabItems  = Rab::where('event_id', $event->id)->with('vendor')->get();
-        $totalItem = $rabItems->sum('subtotal_biaya');
+        // Ambil invoice pertama yang statusnya belum dibayar
+        $invoice   = $event->invoices()
+            ->whereIn("status_invoice", ["belum_bayar", "terkirim", "draft"])
+            ->orderBy("id", "asc")
+            ->first();
+        $rabItems  = Rab::where("event_id", $event->id)->with("vendor")->get();
+        $subtotalVendor = (float) $rabItems->sum("subtotal_biaya");
         $totalDibayarKlien = app(RabService::class)->getTotalDibayarKlien($event->id);
 
-        $nomorInvoice = $invoice?->nomor_invoice
-            ?? sprintf('INV-%s-%03d', now()->format('Ymd'), Invoice::whereDate('created_at', today())->count() + 1);
-        $totalInvoice = $invoice?->total_invoice ?? $totalDibayarKlien;
-        $statusInvoice = $invoice?->status_invoice ?? 'belum_bayar';
-        $tanggalInvoice = $invoice?->tanggal_invoice?->format('d M Y') ?? now()->format('d M Y');
+        // Client info
+        $client = $event->client;
+
+        // Additional details (Fee EO, PPN, PPh)
+        $additional = \App\Models\RabAdditionalDetail::where('event_id', $event->id)->first();
+        $feeEoAktif = (bool) ($additional?->fee_enabled ?? false);
+        $feeEoNominal = $feeEoAktif ? ($subtotalVendor * ($additional->fee_percent / 100)) : 0;
+        $dpp = $subtotalVendor + $feeEoNominal;
+        $ppnAktif = (bool) ($additional?->ppn_enabled ?? false);
+        $ppnNominal = $ppnAktif ? ($dpp * ($additional->ppn_percent / 100)) : 0;
+        $pphAktif = (bool) ($additional?->pph_enabled ?? false);
+        $pphNominal = $pphAktif ? ($dpp * ($additional->pph_percent / 100)) : 0;
+        $grandTotal = (float) $totalDibayarKlien;
+
+        // Payment scheme data
+        $scheme = app(PaymentSchemeService::class)->getScheme($event->id);
+        $paymentScheme = $scheme?->jenis_pembayaran ?? 'full_payment';
+        $dpPersen = (float) ($scheme?->persentase_dp ?? 0);
+        $dpNominal = (float) ($scheme?->dp_nominal ?? 0);
+        $sisaPelunasan = (float) ($scheme?->sisa_pelunasan ?? $totalDibayarKlien);
+
+        // Company info from LandingSection
+        $companyAddress = \App\Models\LandingSection::getByKey('alamat')?->content ?? '';
+        $companyPhone = \App\Models\LandingSection::getByKey('telepon')?->content ?? '';
+        $companyEmail = \App\Models\LandingSection::getByKey('email')?->content ?? '';
+
+        // Bank info (fallback object)
+        $bankData = \App\Models\LandingSection::getByKey('bank')?->content;
+        $bank = $bankData ? json_decode($bankData) : (object) [
+            'nama_bank' => '-',
+            'nomor_rekening' => '-',
+            'atas_nama' => '-',
+        ];
 
         $pdf = Pdf::loadView('admin.pdf_templates.invoice', compact(
-            'event', 'invoice', 'rabItems', 'totalItem', 'totalInvoice',
-            'nomorInvoice', 'statusInvoice', 'tanggalInvoice'
+            'event', 'invoice', 'client', 'rabItems', 'subtotalVendor',
+            'feeEoAktif', 'feeEoNominal', 'ppnAktif', 'ppnNominal',
+            'pphAktif', 'pphNominal', 'grandTotal',
+            'paymentScheme', 'dpPersen', 'dpNominal', 'sisaPelunasan',
+            'companyAddress', 'companyPhone', 'companyEmail', 'bank',
         ))->setPaper('a4', 'portrait');
 
         $filename = 'invoice-' . Str::slug($event->nama_event) . '-' . now()->format('YmdHis') . '.pdf';
 
         return ['pdf' => $pdf, 'filename' => $filename, 'jenis' => 'invoice'];
     }
-
-    // ─── RAB ────────────────────────────────────────────────────────────────
-
-    private function generateRab(Event $event): array
+private function generateRab(Event $event): array
     {
         $event->load(['client']);
 
@@ -156,6 +189,7 @@ class DocumentBuilderService
             'surat_kontrak' => 'kontrak',
             'invoice'       => 'invoice',
             'rab'           => 'rab',
+            'kwitansi'      => 'kwitansi',
             default         => 'lainnya',
         };
 
@@ -225,29 +259,126 @@ class DocumentBuilderService
             'surat_kontrak' => 'Surat Kontrak',
             'invoice'       => 'Invoice',
             'rab'           => 'RAB (Rencana Anggaran Biaya)',
+            'kwitansi'      => 'Kwitansi',
             default         => ucfirst($jenis),
         };
     }
 
-    private function ensureInvoice(Event $event): Invoice
+    private function ensureInvoice(Event $event): ?Invoice
     {
+        // Cari invoice yang belum dibayar
         $existing = $event->invoices()
-            ->where('status_invoice', '!=', 'lunas')
-            ->latest()
+            ->whereIn('status_invoice', ['belum_bayar', 'terkirim', 'draft'])
+            ->orderBy('id', 'asc')
             ->first();
 
         if ($existing) {
             return $existing;
         }
 
-        $totalInvoice = app(RabService::class)->getTotalDibayarKlien($event->id);
+        // Jika tidak ada, cek skema pembayaran
+        $scheme = app(PaymentSchemeService::class)->getScheme($event->id);
+        if (!$scheme) {
+            return null;
+        }
 
+        if ($scheme->jenis_pembayaran === 'full_payment') {
+            return Invoice::create([
+                'event_id' => $event->id,
+                'nomor_invoice' => sprintf('INV-%s-%03d', now()->format('Ymd'), Invoice::whereDate('created_at', today())->count() + 1),
+                'total_invoice' => $scheme->sisa_pelunasan,
+                'status_invoice' => 'belum_bayar',
+                'tanggal_invoice' => now()->toDateString(),
+            ]);
+        }
+
+        // DP + Pelunasan: buat invoice DP saja (invoice pelunasan dibuat saat DP diverifikasi)
         return Invoice::create([
             'event_id' => $event->id,
             'nomor_invoice' => sprintf('INV-%s-%03d', now()->format('Ymd'), Invoice::whereDate('created_at', today())->count() + 1),
-            'total_invoice' => $totalInvoice,
+            'total_invoice' => $scheme->dp_nominal,
             'status_invoice' => 'belum_bayar',
             'tanggal_invoice' => now()->toDateString(),
         ]);
     }
+    /**
+     * Generate Kwitansi via generate() dispatch.
+     */
+    private function generateKwitansiWithLabel(Event $event, ?string $labelOverride = null): array
+    {
+        $generated = $this->generate($event, 'kwitansi');
+        return $generated;
+    }
+
+    private function generateKwitansi(Event $event, ?string $labelOverride = null): array
+    {
+        $event->load(['client', 'invoices.payments']);
+
+        $invoice = $event->invoices()
+            ->whereIn("status_invoice", ["dibayar", "lunas", "dp_lunas"])
+            ->orderBy("id", "desc")
+            ->first();
+
+        $nomorKwitansi = sprintf('KW-%s-%03d',
+            now()->format('Ymd'),
+            Document::where('tipe', 'kwitansi')->whereDate('created_at', today())->count() + 1
+        );
+
+        $companyLogo = public_path('images/logo.png');
+        $companyName = 'CV. Alpha Multi Organizer';
+
+        $payment = $event->payments()
+            ->where('status_pembayaran', 'diverifikasi')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $jenisPembayaran = $payment?->jenis_pembayaran ?? 'full_payment';
+        $jenisPembayaranLabel = $labelOverride ?? match ($jenisPembayaran) {
+            'dp'        => 'DP (Down Payment)',
+            'pelunasan' => 'Pelunasan',
+            default     => 'Full Payment',
+        };
+
+        $nominal = $payment?->nominal ?? $invoice?->total_invoice ?? 0;
+        $tanggalKwitansi = $payment?->tanggal_pembayaran ?? now();
+
+        $companyAddress = \App\Models\LandingSection::getByKey('alamat')?->content ?? '';
+        $companyPhone = \App\Models\LandingSection::getByKey('telepon')?->content ?? '';
+        $companyEmail = \App\Models\LandingSection::getByKey('email')?->content ?? '';
+
+        $pdf = Pdf::loadView('admin.pdf_templates.kwitansi', compact(
+            'event', 'invoice', 'nomorKwitansi', 'companyLogo', 'companyName',
+            'companyAddress', 'companyPhone', 'companyEmail',
+            'jenisPembayaranLabel', 'nominal', 'tanggalKwitansi',
+        ))->setPaper('a4', 'portrait');
+
+        $filename = 'kwitansi-' . Str::slug($event->nama_event) . '-' . now()->format('YmdHis') . '.pdf';
+
+        return ['pdf' => $pdf, 'filename' => $filename, 'jenis' => 'kwitansi'];
+    }
+
+    /**
+     * Generate Kwitansi dan simpan ke storage.
+     * Dipanggil dari AdminPaymentService saat verifikasi pembayaran.
+     */
+    public function generateAndSaveKwitansi(Event $event, ?string $labelOverride = null): Document
+    {
+        $generated = $this->generateKwitansiWithLabel($event, $labelOverride);
+        $pdf = $generated['pdf'];
+        $filename = $generated['filename'];
+
+        $path = 'documents/' . $filename;
+        Storage::disk('public')->put($path, $pdf->output());
+
+        $document = Document::create([
+            'event_id'  => $event->id,
+            'user_id'   => auth()->id() ?? 1,
+            'nama_file' => 'Kwitansi - ' . $event->nama_event,
+            'file_path' => $path,
+            'tipe'      => 'kwitansi',
+        ]);
+
+        return $document;
+    }
+
 }

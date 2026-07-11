@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ClientController;
@@ -64,7 +64,7 @@ Route::middleware('auth')->group(function () {
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
 
-    // ─── Kelola Klien ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€ Kelola Klien â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Route ini mengelola akun user dengan role='client'.
     // Tidak bentrok dengan /admin/clients (yang mengelola tabel 'clients' / logo klien CMS).
     Route::prefix('kelola-klien')->name('admin.kelola-klien.')->group(function () {
@@ -92,7 +92,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/requests/{clientRequest}/approve', [App\Http\Controllers\Admin\ClientRequestController::class, 'approve'])->name('admin.requests.approve');
     Route::patch('/requests/{clientRequest}/reject', [App\Http\Controllers\Admin\ClientRequestController::class, 'reject'])->name('admin.requests.reject');
 
-    // ─── Surat Penawaran ────────────────────────────────────────────
+    // â”€â”€â”€ Surat Penawaran â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Preview surat penawaran (tampilan admin sebelum kirim)
     Route::get('/requests/{event}/surat-penawaran',
         [App\Http\Controllers\Admin\ProposalController::class, 'suratPenawaran'])
@@ -122,7 +122,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         [App\Http\Controllers\Admin\ProposalController::class, 'kirimRevisiPenawaran'])
         ->name('admin.requests.kirim-revisi-penawaran');
 
-    // ─── Negosiasi ──────────────────────────────────────────────────
+    // â”€â”€â”€ Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // Riwayat negosiasi (dari client)
     Route::get('/requests/{event}/negosiasi',
@@ -152,14 +152,17 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/rab',          [App\Http\Controllers\Admin\RabController::class, 'index'])  ->name('admin.rab.index');
     Route::post('/rab',         [App\Http\Controllers\Admin\RabController::class, 'store'])  ->name('admin.rab.store');
     Route::put('/rab/{rab}',    [App\Http\Controllers\Admin\RabController::class, 'update']) ->name('admin.rab.update');   // [TAMBAH] route PUT yang hilang
-    Route::delete('/rab/{rab}', [App\Http\Controllers\Admin\RabController::class, 'destroy'])->name('admin.rab.destroy'); // [FIX] {rabItem} → {rab}
+    Route::delete('/rab/{rab}', [App\Http\Controllers\Admin\RabController::class, 'destroy'])->name('admin.rab.destroy'); // [FIX] {rabItem} â†’ {rab}
     Route::post('/rab/additional-details', [App\Http\Controllers\Admin\RabController::class, 'saveAdditionalDetails'])->name('admin.rab.additional-details');
+    Route::get('/rab/total-dibayar-klien/{eventId}', [App\Http\Controllers\Admin\RabController::class, 'getTotalDibayarKlien'])->name('admin.rab.total-dibayar-klien');
+
 
     // Payments
     Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('admin.payments.index');
     Route::get('/payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('admin.payments.show');
     Route::patch('/payments/{payment}/verify', [App\Http\Controllers\Admin\PaymentController::class, 'verify'])->name('admin.payments.verify');
     Route::post('/payments/{payment}/send-pelunasan', [App\Http\Controllers\Admin\PaymentController::class, 'sendPelunasan'])->name('admin.payments.sendPelunasan');
+    Route::post('/payments/{payment}/send-kwitansi', [App\Http\Controllers\Admin\PaymentController::class, 'sendKwitansi'])->name('admin.payments.sendKwitansi');
 
     // Analytics
     Route::get('/analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('admin.analytics.index');
@@ -255,12 +258,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 require __DIR__.'/auth.php';
 
 /*
-|─────────────────────────────────────────────────────────
+|â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 |  CLIENT DASHBOARD ROUTES
 |  Semua dilindungi middleware 'auth'
 |  Prefix URL  : /client/...
 |  Prefix name : client....
-|─────────────────────────────────────────────────────────
+|â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 */
 
 
@@ -271,35 +274,35 @@ Route::post('/feedback', [FeedbackController::class, 'store'])
     ->name('feedback.store');
 
 Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->group(function () {
-    // ── Ringkasan / Dashboard ────────────────────────
+    // â”€â”€ Ringkasan / Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Route::get('/',                         [ClientController::class, 'dashboard'])
          ->name('dashboard');
  
-    // ── Event Terdaftar ──────────────────────────────
+    // â”€â”€ Event Terdaftar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Route::get('/events',                   [ClientController::class, 'events'])
          ->name('events');
  
-    // ── Ajukan Event Baru ────────────────────────────
+    // â”€â”€ Ajukan Event Baru â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Route::get('/event/create',             [ClientController::class, 'eventCreate'])
          ->name('event.create');
     Route::post('/event',                   [ClientController::class, 'eventStore'])
          ->name('event.store');
  
-    // ── Timeline ─────────────────────────────────────
+    // â”€â”€ Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Route::get('/timeline',                 [ClientController::class, 'timeline'])
          ->name('timeline');
     Route::get('/timeline/{id}',            [ClientController::class, 'timeline'])
          ->name('timeline.show');
  
-    // ── Anggaran & Faktur ────────────────────────────
+    // â”€â”€ Anggaran & Faktur â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Route::get('/invoices',                 [ClientController::class, 'invoices'])
          ->name('invoices');
     Route::post('/invoices/{id}/bayar',     [ClientController::class, 'bayar'])
          ->name('invoices.bayar');
  
-    // ── Surat Penawaran ──────────────────────────────
+    // â”€â”€ Surat Penawaran â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Route::get('/proposals/{tab?}',         [ClientController::class, 'proposals'])
-        ->where('tab', 'penawaran|proposal|rab|kontrak|laporan')
+        ->where('tab', 'penawaran|proposal|rab|kontrak|laporan|kwitansi')
         ->name('proposals');
 
     Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
@@ -309,17 +312,17 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
         [App\Http\Controllers\Client\ClientController::class, 'negosiasiForm'])
         ->name('proposals.negosiasi.form');
     
-    // ── Terima Penawaran LANGSUNG (tanpa negosiasi) ─────────────────
+    // â”€â”€ Terima Penawaran LANGSUNG (tanpa negosiasi) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Route::post('/proposals/{id}/terima',
         [App\Http\Controllers\Client\ClientController::class, 'terimaProposal'])
         ->name('proposals.terima');
 
-    // ── Ajukan Negosiasi ────────────────────────────────────────────
+    // â”€â”€ Ajukan Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Route::post('/proposals/{id}/negosiasi',
         [App\Http\Controllers\Client\ClientController::class, 'submitNegosiasi'])
         ->name('proposals.negosiasi');
 
-    // ── Terima Penawaran Revisi SETELAH Negosiasi ───────────────────
+    // â”€â”€ Terima Penawaran Revisi SETELAH Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Route::post('/proposals/{id}/terima-setelah-negosiasi',
         [App\Http\Controllers\Client\ClientController::class, 'terimaSetelahNegosiasi'])
         ->name('proposals.terima-setelah-negosiasi');
@@ -330,7 +333,7 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::get('/proposals/document/{document}/download', [ClientController::class, 'documentDownload'])
         ->name('proposals.document.download');
  
-    // ── Pengaturan Akun ──────────────────────────────
+    // â”€â”€ Pengaturan Akun â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Route::get('/settings',                 [ClientController::class, 'settings'])
          ->name('settings');
     Route::put('/settings/profile',         [ClientController::class, 'settingsProfile'])
@@ -338,7 +341,7 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::put('/settings/password',        [ClientController::class, 'settingsPassword'])
          ->name('settings.password');
  
-    // ── Notifikasi ───────────────────────────────────
+    // â”€â”€ Notifikasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
      Route::get('/notifications', [ClientController::class, 'notifications'])
     ->name('notifications');
 
@@ -386,3 +389,5 @@ Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'vendor.role'])->g
     Route::redirect('/', '/vendor/ringkasan');
 
 });
+
+

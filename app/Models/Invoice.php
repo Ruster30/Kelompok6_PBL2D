@@ -48,6 +48,7 @@ class Invoice extends Model
     {
         return match($this->status_invoice) {
             'lunas'               => 'badge-aktif',
+            'dibayar'             => 'badge-aktif',
             'dp_lunas'            => 'badge-aktif',
             'menunggu_verifikasi' => 'badge-mendatang',
             'ditolak'             => 'badge-ditolak',
@@ -66,6 +67,7 @@ class Invoice extends Model
             'menunggu_verifikasi' => 'Menunggu Verifikasi',
             'dp_lunas'            => 'DP Lunas',
             'lunas'               => 'Lunas',
+            'dibayar'             => 'Dibayar',
             'ditolak'             => 'Ditolak',
             'draft'               => 'Draft',
             'terkirim'            => 'Terkirim',
