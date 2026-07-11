@@ -8,8 +8,26 @@
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
         </testsuite>
+        <testsuite name="Models">
+            <directory>tests/Unit/Models</directory>
+        </testsuite>
+        <testsuite name="Services">
+            <directory>tests/Unit/Services</directory>
+        </testsuite>
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Admin">
+            <directory>tests/Feature/Admin</directory>
+        </testsuite>
+        <testsuite name="Client">
+            <directory>tests/Feature/Client</directory>
+        </testsuite>
+        <testsuite name="Vendor">
+            <directory>tests/Feature/Vendor</directory>
+        </testsuite>
+        <testsuite name="Auth">
+            <directory>tests/Feature/Auth</directory>
         </testsuite>
     </testsuites>
     <source>
@@ -34,3 +52,4 @@
         <env name="NIGHTWATCH_ENABLED" value="false"/>
     </php>
 </phpunit>
+
