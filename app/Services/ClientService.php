@@ -8,6 +8,7 @@ use App\Models\Negotiation;
 use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Proposal;
+use App\Services\RabService;
 use App\Models\User;
 use App\Services\TimelineAutoFill;
 use Illuminate\Support\Collection;
@@ -173,11 +174,11 @@ class ClientService
             ->latest()
             ->get();
 
-        // Total Invoice diambil dari invoice pertama (invoice utama) saja, bukan SUM seluruh invoice
-        // Invoice pelunasan tidak boleh menambah Total Invoice
-        $totalInvoice = $invoices->groupBy('event_id')->map(function ($eventInvoices) {
-            return $eventInvoices->sortBy('id')->first()->total_invoice ?? 0;
-        })->sum();
+        // Total Tagihan dihitung dari total RAB (bukan invoice pertama)
+        // agar untuk DP+pelunasan sisa tagihan = total tagihan (bukan hanya DP)
+        $totalInvoice = Event::whereIn('id', $eIds)->get()->sum(function ($event) {
+            return app(RabService::class)->getTotalDibayarKlien($event->id);
+        });
         
         $totalDibayar = $payments->where('status_pembayaran', 'diverifikasi')->sum('nominal');
         $sisaTagihan = max(0, $totalInvoice - $totalDibayar);
@@ -242,6 +243,7 @@ class ClientService
             'rab'       => 'rab',
             'kontrak'   => 'kontrak',
             'laporan'   => 'laporan',
+            'kwitansi'  => 'kwitansi',
         ];
 
         if (!array_key_exists($tab, $tabMap)) {
@@ -449,3 +451,5 @@ class ClientService
             ->update(['dibaca' => true]);
     }
 }
+
+

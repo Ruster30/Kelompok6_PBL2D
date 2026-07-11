@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Pembayaran')
 @section('page-title', 'Pembayaran')
@@ -76,29 +76,39 @@
                         </form>
                     </div>
                     @elseif($payment->status_pembayaran === 'diverifikasi')
-                    {{-- Status Diverifikasi --}}
-                    @if($payment->jenis_pembayaran === 'dp')
-                        {{-- Jenis DP: Tampilkan tombol Kirim Pelunasan jika belum ada invoice pelunasan --}}
-                        @if($payment->invoice->event->invoices()->count() == 1)
-                        <form action="{{ route('admin.payments.sendPelunasan', $payment->id) }}" method="POST" style="display:inline;"
-                              onsubmit="return swalSend(this, 'Kirim Invoice Pelunasan?', 'Invoice pelunasan akan dikirim ke client.')">
+                    {{-- Status Diverifikasi: 3 aksi (Kirim Kwitansi, Kirim Pelunasan, atau badge Selesai) --}}
+                    <div class="action-btns" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                        {{-- Tombol Kirim Kwitansi (untuk semua jenis pembayaran yang sudah diverifikasi) --}}
+                        <form action="{{ route('admin.payments.sendKwitansi', $payment->id) }}" method="POST" style="display:inline;"
+                              onsubmit="return swalSend(this, 'Kirim Kwitansi?', 'Kwitansi akan dibuat dan dikirim ke client.')">
                             @csrf
-                            <button type="submit" class="btn btn-primary btn-sm" title="Kirim Invoice Pelunasan">
-                                <i class="fas fa-file-invoice"></i> Kirim Pelunasan
+                            <button type="submit" class="btn btn-sm" style="background:#0f766e;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:600;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                                <i class="fas fa-file-invoice"></i> Kirim Kwitansi
                             </button>
                         </form>
+
+                        @if($payment->jenis_pembayaran === 'dp')
+                            {{-- Jenis DP: Tambah tombol Kirim Pelunasan jika belum ada invoice pelunasan --}}
+                            @if($payment->invoice->event->invoices()->whereIn('status_invoice', ['belum_bayar', 'terkirim', 'draft'])->count() == 0)
+                            <form action="{{ route('admin.payments.sendPelunasan', $payment->id) }}" method="POST" style="display:inline;"
+                                  onsubmit="return swalSend(this, 'Kirim Invoice Pelunasan?', 'Invoice pelunasan akan dikirim ke client.')">
+                                @csrf
+                                <button type="submit" class="btn btn-sm" style="background:#f59e0b;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:600;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                                    <i class="fas fa-file-invoice"></i> Kirim Pelunasan
+                                </button>
+                            </form>
+                            @else
+                            <span class="badge badge-success" style="background:#d1fae5;color:#065f46;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                                <i class="fas fa-check-circle"></i> Pelunasan Terkirim
+                            </span>
+                            @endif
                         @else
-                        {{-- Sudah kirim pelunasan, tampilkan badge pembayaran Selesai --}}
-                        <span class="badge badge-success" style="background:#d1fae5;color:#065f46;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
-                            <i class="fas fa-check-circle"></i> Pembayaran Selesai
-                        </span>
+                            {{-- Full payment atau Pelunasan sudah diverifikasi --}}
+                            <span class="badge badge-success" style="background:#d1fae5;color:#065f46;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                                <i class="fas fa-check-circle"></i> Pembayaran Selesai
+                            </span>
                         @endif
-                    @else
-                        {{-- Jenis Pelunasan: Tampilkan badge pembayaran Selesai --}}
-                        <span class="badge badge-success" style="background:#d1fae5;color:#065f46;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
-                            <i class="fas fa-check-circle"></i> Pembayaran Selesai
-                        </span>
-                    @endif
+                    </div>
                     @else
                     {{-- Status Ditolak atau lainnya: Tidak ada aksi --}}
                     <span style="color:#94a3b8;font-size:13px;">-</span>
@@ -118,3 +128,4 @@
     @endif
 </div>
 @endsection
+

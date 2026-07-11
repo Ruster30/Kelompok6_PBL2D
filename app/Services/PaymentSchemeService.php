@@ -41,7 +41,7 @@ class PaymentSchemeService
     {
         $totalDibayarKlien = $this->rabService->getTotalDibayarKlien($eventId);
         Invoice::where("event_id", $eventId)
-            ->whereNotIn("status_invoice", ["lunas", "dp_lunas"])
+            ->whereNotIn("status_invoice", ["lunas", "dp_lunas", "dibayar"])
             ->delete();
 
         if ($scheme->jenis_pembayaran === "full_payment") {
@@ -54,21 +54,12 @@ class PaymentSchemeService
             ]);
         } else {
             $dpNominal = $scheme->dp_nominal;
-            $sisaNominal = $scheme->sisa_pelunasan;
 
             Invoice::create([
                 "event_id"        => $eventId,
                 "nomor_invoice"   => $this->generateNomorInvoice(),
                 "total_invoice"   => $dpNominal,
                 "status_invoice"  => "belum_bayar",
-                "tanggal_invoice" => now()->toDateString(),
-            ]);
-
-            Invoice::create([
-                "event_id"        => $eventId,
-                "nomor_invoice"   => $this->generateNomorInvoice(),
-                "total_invoice"   => $sisaNominal,
-                "status_invoice"  => "menunggu_dp",
                 "tanggal_invoice" => now()->toDateString(),
             ]);
         }
@@ -97,10 +88,22 @@ class PaymentSchemeService
         return compact("scheme", "totalDibayarKlien", "dpNominal", "sisaNominal");
     }
 
-    public function activatePelunasan(int $eventId): void
+    public function createInvoicePelunasan(int $eventId): Invoice
     {
-        Invoice::where("event_id", $eventId)
-            ->where("status_invoice", "menunggu_dp")
-            ->update(["status_invoice" => "belum_bayar"]);
+        $scheme = $this->getScheme($eventId);
+        $sisaNominal = $scheme?->sisa_pelunasan ?? 0;
+
+        return Invoice::create([
+            "event_id"        => $eventId,
+            "nomor_invoice"   => $this->generateNomorInvoice(),
+            "total_invoice"   => $sisaNominal,
+            "status_invoice"  => "belum_bayar",
+            "tanggal_invoice" => now()->toDateString(),
+        ]);
+    }
+
+    public function activatePelunasan(int $eventId): Invoice
+    {
+        return $this->createInvoicePelunasan($eventId);
     }
 }

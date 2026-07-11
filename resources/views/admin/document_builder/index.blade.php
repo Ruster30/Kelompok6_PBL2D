@@ -212,6 +212,11 @@
         document.getElementById('infoLokasi').textContent  = opt.dataset.lokasi  || '-';
         document.getElementById('infoStatus').textContent  = opt.dataset.status  || '-';
         document.getElementById('eventInfoCard').style.display = 'block';
+        // Re-fetch total jika jenis dokumen sudah dipilih sebagai invoice
+        const docJenis = document.getElementById('jenis_dokumen').value;
+        if (docJenis === 'invoice') {
+            fetchTotalDibayarKlien();
+        }
     });
 
     // ─── Info jenis dokumen ─────────────────────────────────────

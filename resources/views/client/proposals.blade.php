@@ -1,4 +1,4 @@
-@extends('layouts.client')
+﻿@extends('layouts.client')
 @section('title','Dokumen')
 @section('page-title','Dokumen')
 
@@ -17,7 +17,7 @@
 </div>
 @endif
 
-{{-- ── Tab navigasi (style identik Landing Page CMS) ── --}}
+{{-- â”€â”€ Tab navigasi (style identik Landing Page CMS) â”€â”€ --}}
 <div class="tabs">
     <a href="{{ route('client.proposals', 'penawaran') }}"
        class="tab-link {{ $activeTab === 'penawaran' ? 'active' : '' }}">Surat Penawaran</a>
@@ -29,16 +29,18 @@
        class="tab-link {{ $activeTab === 'kontrak' ? 'active' : '' }}">Surat Kontrak</a>
     <a href="{{ route('client.proposals', 'laporan') }}"
        class="tab-link {{ $activeTab === 'laporan' ? 'active' : '' }}">Laporan Akhir</a>
+    <a href="{{ route('client.proposals', 'kwitansi') }}"
+       class="tab-link {{ $activeTab === 'kwitansi' ? 'active' : '' }}">Kwitansi</a>
 </div>
 
 <div class="tab-content">
 
 @if($activeTab === 'penawaran')
-{{-- ═══════════════════════════════════════════════════════════
-     TAB: SURAT PENAWARAN — logika & tampilan LAMA, tidak diubah.
+{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     TAB: SURAT PENAWARAN â€” logika & tampilan LAMA, tidak diubah.
      Tetap menampilkan proposal terbaru per event + tombol
-     "Lihat Surat Penawaran" → alur Terima/Negosiasi yang sudah ada.
-═══════════════════════════════════════════════════════════ --}}
+     "Lihat Surat Penawaran" â†’ alur Terima/Negosiasi yang sudah ada.
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
 
 @forelse($latestProposals as $proposal)
 <div class="penawaran-card" style="margin-bottom:16px;">
@@ -113,10 +115,10 @@
 @endforelse
 
 @else
-{{-- ═══════════════════════════════════════════════════════════
+{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      TAB: PROPOSAL / RAB / SURAT KONTRAK / LAPORAN AKHIR
      Grid card ala Landing Page CMS, data dari tabel `documents`.
-═══════════════════════════════════════════════════════════ --}}
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
 
 {{-- Toolbar: Search + Filter Event --}}
 <form method="GET" action="{{ route('client.proposals', $activeTab) }}" class="toolbar">
@@ -192,6 +194,7 @@
                 @case('rab')      RAB akan tampil di sini setelah dikirim oleh tim kami. @break
                 @case('kontrak')  Surat kontrak akan tampil di sini setelah dikirim oleh tim kami. @break
                 @case('laporan')  Laporan akhir akan tampil di sini setelah event Anda selesai. @break
+              @case('kwitansi')  Kwitansi akan tampil di sini setelah dikirim oleh admin. @break
             @endswitch
         </p>
     </div>
@@ -214,7 +217,7 @@
 /*
   Style berikut direplikasi dari layouts/admin.blade.php (Landing Page CMS)
   agar tab Proposal/RAB/Kontrak/Laporan tampil konsisten dengan desain admin.
-  Class .penawaran-* (tab Surat Penawaran) TIDAK disentuh — sudah ada di client.css.
+  Class .penawaran-* (tab Surat Penawaran) TIDAK disentuh â€” sudah ada di client.css.
 */
 .tabs {
     display: flex; gap: 0; border-bottom: 1px solid var(--border, #e2e8f0);
@@ -297,3 +300,4 @@
 }
 </style>
 @endpush
+
