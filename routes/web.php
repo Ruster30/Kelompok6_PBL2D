@@ -64,7 +64,7 @@ Route::middleware('auth')->group(function () {
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
 
-    // â”€â”€â”€ Kelola Klien â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // --- Kelola Klien ---
     // Route ini mengelola akun user dengan role='client'.
     // Tidak bentrok dengan /admin/clients (yang mengelola tabel 'clients' / logo klien CMS).
     Route::prefix('kelola-klien')->name('admin.kelola-klien.')->group(function () {
@@ -92,7 +92,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/requests/{clientRequest}/approve', [App\Http\Controllers\Admin\ClientRequestController::class, 'approve'])->name('admin.requests.approve');
     Route::patch('/requests/{clientRequest}/reject', [App\Http\Controllers\Admin\ClientRequestController::class, 'reject'])->name('admin.requests.reject');
 
-    // â”€â”€â”€ Surat Penawaran â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ---- Surat Penawaran ----
     // Preview surat penawaran (tampilan admin sebelum kirim)
     Route::get('/requests/{event}/surat-penawaran',
         [App\Http\Controllers\Admin\ProposalController::class, 'suratPenawaran'])
@@ -122,7 +122,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         [App\Http\Controllers\Admin\ProposalController::class, 'kirimRevisiPenawaran'])
         ->name('admin.requests.kirim-revisi-penawaran');
 
-    // â”€â”€â”€ Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // --- Negosiasi ---
 
     // Riwayat negosiasi (dari client)
     Route::get('/requests/{event}/negosiasi',
