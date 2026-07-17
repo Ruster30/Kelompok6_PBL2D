@@ -96,27 +96,29 @@
         }
 
         .logo-box {
-            background: #fff;
-            border-radius: 10px;
-            width: 66px;
-            height: 66px;
-            display: flex;
+            background: transparent;
+            border-radius: 0;
+            width: auto;
+            height: auto;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            justify-content: flex-start;
+            box-shadow: none;
             position: relative;
             z-index: 1;
+            padding: 0;
         }
 
         .logo-box img {
-            width: 100px;
+            width: 120px;
             height: auto;
+            display: block;
         }
 
         .logo-box .logo-text {
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 800;
-            font-size: 12px;
+            font-size: 13px;
             color: var(--accent);
             letter-spacing: 0.5px;
             text-align: center;
@@ -128,9 +130,10 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 40px 0 32px;
             position: relative;
             z-index: 1;
+
+            transform: translateY(-70px);
         }
 
         .left-content h1 {
