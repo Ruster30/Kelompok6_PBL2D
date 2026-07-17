@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -38,7 +38,7 @@
             overflow: hidden;
         }
 
-        /* ── LEFT PANEL ── */
+        /* â”€â”€ LEFT PANEL â”€â”€ */
         .left-panel {
             width: 42%;
             height: 100vh;
@@ -173,7 +173,7 @@
             color: var(--text-muted);
         }
 
-        /* ── RIGHT PANEL ── */
+        /* â”€â”€ RIGHT PANEL â”€â”€ */
         .right-panel {
             margin-left: 42%;
             width: 58%;
@@ -485,6 +485,5 @@
     });
 </script>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </body>
 </html>

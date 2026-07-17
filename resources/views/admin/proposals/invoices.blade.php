@@ -24,7 +24,7 @@
         </button>
     </div>
 
-    <table>
+    <div class="table-responsive-wrap"><table>
         <thead>
             <tr>
                 <th>No Kwitansi</th>
@@ -122,7 +122,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline" onclick="document.getElementById('invoiceModal').classList.remove('show')">Batal</button>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
+                <button type="submit" class="btn btn-primary" id="invoiceSubmitBtn" onclick="this.disabled=true; this.innerHTML='<i class=\"fas fa-spinner fa-spin\"></i> Menyimpan...';"><i class="fas fa-save"></i> Simpan</button>
             </div>
         </form>
     </div>

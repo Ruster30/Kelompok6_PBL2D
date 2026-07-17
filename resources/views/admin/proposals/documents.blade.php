@@ -51,14 +51,37 @@
         </div>
 
         {{-- Drop Zone --}}
-        <label for="fileInput" class="upload-zone">
+        <label for="fileInput" class="upload-zone" id="uploadZoneLabel">
             <i class="bi bi-cloud-upload" style="font-size:2rem;"></i>
             <h3>Klik untuk upload atau seret file ke sini</h3>
             <p>SVG, PNG, JPG, PDF, DOCX atau XLSX (maks. 100MB)</p>
             <input type="file" name="file" id="fileInput" style="display:none;"
-                   accept=".svg,.png,.jpg,.jpeg,.pdf,.docx,.xlsx"
-                   onchange="submitUpload()">
+                   accept=".svg,.png,.jpg,.jpeg,.pdf,.docx,.xlsx">
         </label>
+
+        {{-- File Preview (hidden until file selected) --}}
+        <div id="filePreview" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-top:12px;">
+            <div style="display:flex; align-items:flex-start; gap:14px;">
+                <div id="fileIcon" style="width:44px; height:44px; border-radius:10px; background:#e0f2fe; display:flex; align-items:center; justify-content:center; color:#0284c7; font-size:20px; flex-shrink:0;">
+                    <i class="bi bi-file-earmark"></i>
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div id="fileName" style="font-weight:600; color:#0f172a; font-size:14px; word-break:break-all;"></div>
+                    <div id="fileSize" style="font-size:12px; color:#94a3b8; margin-top:2px;"></div>
+                    <div id="fileSizeWarning" style="display:none; font-size:12px; color:#ef4444; margin-top:2px;">
+                        <i class="bi bi-exclamation-circle"></i> File terlalu besar. Maksimal 100MB.
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:14px; justify-content:flex-end; border-top:1px solid #f1f5f9; padding-top:14px;">
+                <button type="button" onclick="cancelUpload()" class="btn btn-outline" style="padding:8px 18px; border:1px solid #e2e8f0; border-radius:8px; background:#fff; cursor:pointer; font-size:13px; color:#64748b;">
+                    <i class="bi bi-x"></i> Batal
+                </button>
+                <button type="button" onclick="confirmUpload()" class="btn btn-primary" style="padding:8px 18px; border:none; border-radius:8px; background:#14b8a6; cursor:pointer; font-size:13px; font-weight:600; color:#fff;">
+                    <i class="bi bi-cloud-upload"></i> Upload File
+                </button>
+            </div>
+        </div>
     </form>
 
     {{-- Toolbar --}}
@@ -79,7 +102,7 @@
     </div>
 
     {{-- Tabel Dokumen --}}
-    <table style="margin-top:16px;">
+    <div class="table-responsive-wrap"><table style="margin-top:16px;">
         <thead>
             <tr>
                 <th>Nama File</th>
@@ -253,19 +276,77 @@
 
 @push('scripts')
 <script>
-// ─── Validasi & Submit upload ──────────────────────────
-function submitUpload() {
+// ─── File Preview sebelum upload ────────────────
+document.getElementById('fileInput').addEventListener('change', function() {
+    const file = this.files[0];
+    const preview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileSizeWarning = document.getElementById('fileSizeWarning');
+    const fileIcon = document.getElementById('fileIcon');
+
+    if (!file) {
+        preview.style.display = 'none';
+        return;
+    }
+
+    // Validasi tipe dokumen sudah dipilih
+    const tipe = document.getElementById('tipeUpload').value;
+    if (!tipe) {
+        alert('Harap pilih Jenis Dokumen sebelum memilih file.');
+        this.value = '';
+        return;
+    }
+
+    // Tampilkan preview
+    const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+    fileName.textContent = file.name;
+    fileSize.textContent = sizeMB + ' MB';
+
+    // Validasi ukuran file (maks 100MB)
+    if (file.size > 100 * 1024 * 1024) {
+        fileSizeWarning.style.display = 'block';
+    } else {
+        fileSizeWarning.style.display = 'none';
+    }
+
+    // Icon berdasarkan tipe file
+    const ext = file.name.split('.').pop().toLowerCase();
+    const iconMap = {
+        pdf: ['bi-file-earmark-pdf', '#f43f5e'],
+        doc: ['bi-file-earmark-word', '#2563eb'],
+        docx: ['bi-file-earmark-word', '#2563eb'],
+        xls: ['bi-file-earmark-excel', '#16a34a'],
+        xlsx: ['bi-file-earmark-excel', '#16a34a'],
+        png: ['bi-file-earmark-image', '#0284c7'],
+        jpg: ['bi-file-earmark-image', '#0284c7'],
+        jpeg: ['bi-file-earmark-image', '#0284c7'],
+        svg: ['bi-file-earmark-image', '#0284c7'],
+    };
+    const iconInfo = iconMap[ext] || ['bi-file-earmark', '#64748b'];
+    fileIcon.innerHTML = '<i class="bi ' + iconInfo[0] + '"></i>';
+    fileIcon.style.color = iconInfo[1];
+    fileIcon.style.background = iconInfo[1] + '15';
+
+    preview.style.display = 'block';
+});
+
+function confirmUpload() {
     var nav = document.getElementById('sidebarNav');
     if (nav) {
         sessionStorage.setItem('adminSidebarScrollPosition', nav.scrollTop);
     }
-    const tipe = document.getElementById('tipeUpload').value;
-    if (!tipe) {
-        alert('Harap pilih Jenis Dokumen sebelum mengunggah file.');
-        document.getElementById('fileInput').value = '';
+    const file = document.getElementById('fileInput').files[0];
+    if (file && file.size > 100 * 1024 * 1024) {
+        alert('File terlalu besar! Maksimal 100MB.');
         return;
     }
     document.getElementById('uploadForm').submit();
+}
+
+function cancelUpload() {
+    document.getElementById('fileInput').value = '';
+    document.getElementById('filePreview').style.display = 'none';
 }
 
 // ─── Filter pencarian ──────────────────────────
@@ -273,7 +354,6 @@ document.getElementById('searchInput').addEventListener('input', debounce(filter
 document.getElementById('typeFilter').addEventListener('change', filterTable);
 
 function filterTable() {
-    // Save sidebar scroll before navigating
     var nav = document.getElementById('sidebarNav');
     if (nav) {
         sessionStorage.setItem('adminSidebarScrollPosition', nav.scrollTop);
@@ -281,7 +361,6 @@ function filterTable() {
     const search = document.getElementById('searchInput').value;
     const type   = document.getElementById('typeFilter').value;
     window.location.href = `{{ route('admin.proposals.index') }}?search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`;
-}}?search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`;
 }
 
 function debounce(fn, delay) {
@@ -291,7 +370,7 @@ function debounce(fn, delay) {
 
 // ─── Modal Kirim ke Client ─────────────────────
 function bukaModalKirim(docId, docName) {
-    document.getElementById('formKirim').action = `/admin/proposals/${docId}/send`;
+    document.getElementById('formKirim').action = '/admin/proposals/' + docId + '/send';
     document.querySelector('#modalDocName span').textContent = docName;
     const modal = document.getElementById('modalKirim');
     modal.style.display = 'flex';

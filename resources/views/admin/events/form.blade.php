@@ -85,7 +85,7 @@
             </div>
 
             <div style="display:flex; gap:12px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="submitBtn" onclick="this.disabled=true; this.innerHTML='<i class=\"fas fa-spinner fa-spin\"></i> Menyimpan...'; this.form.submit();">
                     <i class="fas fa-save"></i> {{ isset($event) ? 'Simpan Perubahan' : 'Buat Event' }}
                 </button>
                 <a href="{{ route('admin.events.index') }}" class="btn btn-outline">Batal</a>
