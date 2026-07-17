@@ -100,7 +100,13 @@
                 </td>
             </tr>
             @empty
-            <tr class="empty-row"><td colspan="9">Belum ada item RAB. Klik &quot;Tambah Item&quot; untuk mulai.</td></tr>
+            <tr class="empty-row"><td colspan="5">
+                    <div class="empty-state" style="padding:40px 20px;">
+                        <div class="empty-state-icon"><i class="bi bi-calculator" style="font-size:40px;"></i></div>
+                        <h3 class="empty-state-title">Belum ada item RAB. Klik &quot;Tambah Item&quot; untuk mulai.</h3>
+                        <p class="empty-state-text">Tambahkan item biaya untuk menyusun RAB event.</p>
+                    </div>
+                </td></tr>
             @endforelse
         </tbody>
         @if($rabItems->count())
@@ -221,7 +227,7 @@
                 </table>
             </div>
             <div style="padding:12px 20px; text-align:right; border-top:1px solid #e2e8f0;">
-                <button type="submit" class="btn btn-primary" style="padding:8px 20px; font-size:13px;">
+                <button type="submit" class="btn btn-primary" id="rabSubmitBtn" onclick="this.disabled=true; this.classList.add('btn-loading'); this.form.submit();" style="padding:8px 20px; font-size:13px;">
                     <i class="fas fa-save"></i> Simpan Rincian
                 </button>
             </div>

@@ -535,11 +535,11 @@
         @endif
 
         <!-- Toggle Email / Nomor Telepon -->
-        <div class="login-type-toggle">
-            <button type="button" class="active" id="btn-email-toggle" onclick="switchLoginType('email')">
+        <div class="login-type-toggle" role="tablist" aria-label="Pilih metode login">
+            <button type="button" class="active" id="btn-email-toggle" onclick="switchLoginType('email')" role="tab" aria-selected="true" aria-controls="field-email">
                 <i class="bi bi-envelope"></i> Email
             </button>
-            <button type="button" id="btn-phone-toggle" onclick="switchLoginType('phone')">
+            <button type="button" id="btn-phone-toggle" onclick="switchLoginType('phone')" role="tab" aria-selected="false" aria-controls="field-phone">
                 <i class="bi bi-telephone"></i> No. Telepon
             </button>
         </div>
@@ -550,7 +550,7 @@
             <input type="hidden" name="login" id="login">
 
             <!-- Field Email -->
-            <div class="form-group" id="field-email">
+            <div class="form-group form-field-group" id="field-email" aria-hidden="false">
                 <label class="form-label" for="email">Alamat Email</label>
                 <div class="input-wrap">
                     <input
@@ -571,7 +571,7 @@
             </div>
 
             <!-- Field Nomor Telepon (tersembunyi secara default) -->
-            <div class="form-group" id="field-phone" style="display:none;">
+            <div class="form-group form-field-group" id="field-phone" aria-hidden="true" style="display:none;">
                 <label class="form-label" for="phone">Nomor Telepon</label>
                 <div class="input-wrap">
                     <input
@@ -671,17 +671,25 @@
 
         if (type === 'email') {
             emailField.style.display = 'block';
+            emailField.setAttribute('aria-hidden', 'false');
             phoneField.style.display = 'none';
+            phoneField.setAttribute('aria-hidden', 'true');
             emailToggle.classList.add('active');
+            emailToggle.setAttribute('aria-selected', 'true');
             phoneToggle.classList.remove('active');
+            phoneToggle.setAttribute('aria-selected', 'false');
             document.getElementById('email').required = true;
             document.getElementById('phone').required = false;
             loginTypeInput.value = 'email';
         } else {
             emailField.style.display = 'none';
+            emailField.setAttribute('aria-hidden', 'true');
             phoneField.style.display = 'block';
+            phoneField.setAttribute('aria-hidden', 'false');
             emailToggle.classList.remove('active');
+            emailToggle.setAttribute('aria-selected', 'false');
             phoneToggle.classList.add('active');
+            phoneToggle.setAttribute('aria-selected', 'true');
             document.getElementById('email').required = false;
             document.getElementById('phone').required = true;
             loginTypeInput.value = 'phone';

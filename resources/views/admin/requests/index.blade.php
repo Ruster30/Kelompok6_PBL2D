@@ -140,7 +140,13 @@
                 </td>
             </tr>
             @empty
-            <tr class="empty-row"><td colspan="8">Belum ada request.</td></tr>
+            <tr class="empty-row"><td colspan="6">
+                    <div class="empty-state" style="padding:40px 20px;">
+                        <div class="empty-state-icon"><i class="bi bi-envelope-open" style="font-size:40px;"></i></div>
+                        <h3 class="empty-state-title">Belum ada request.</h3>
+                        <p class="empty-state-text">Request dari klien akan muncul di sini ketika ada pengajuan baru.</p>
+                    </div>
+                </td></tr>
             @endforelse
         </tbody>
     </table>

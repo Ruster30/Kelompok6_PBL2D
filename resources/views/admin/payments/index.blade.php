@@ -155,7 +155,13 @@
                 </td>
             </tr>
             @empty
-            <tr class="empty-row"><td colspan="8">Belum ada data pembayaran</td></tr>
+            <tr class="empty-row"><td colspan="8">
+                    <div class="empty-state" style="padding:40px 20px;">
+                        <div class="empty-state-icon"><i class="bi bi-credit-card" style="font-size:40px;"></i></div>
+                        <h3 class="empty-state-title">Belum ada data pembayaran</h3>
+                        <p class="empty-state-text">Pembayaran akan muncul setelah klien melakukan pembayaran.</p>
+                    </div>
+                </td></tr>
             @endforelse
         </tbody>
     </table>

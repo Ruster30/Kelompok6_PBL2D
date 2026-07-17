@@ -120,6 +120,22 @@
             z-index: 100;
         }
 
+        .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
         .topbar-title {
             font-size: 18px;
             font-weight: 700;
@@ -767,7 +783,23 @@
             .topbar {
                 padding: 0 16px;
             }
-            .topbar-title {
+            .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
+        .topbar-title {
                 font-size: 15px;
             }
             .user-info .name-role {
@@ -910,7 +942,58 @@
 
         /* Very Small Mobile (<576px) */
         @media (max-width: 575px) {
-            .topbar-title {
+            div[style*='grid-template-columns:repeat(4,1fr)'],
+            div[style*='grid-template-columns: repeat(4, 1fr)'] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            div[style*='grid-template-columns:repeat(3,1fr)'],
+            div[style*='grid-template-columns: repeat(3, 1fr)'] {
+                grid-template-columns: repeat(1, 1fr) !important;
+            }
+            .page-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 12px !important;
+            }
+            .topbar {
+                padding: 0 16px !important;
+            }
+            .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
+        .topbar-title {
+                font-size: 14px !important;
+            }
+            .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
+        .topbar-title {
                 font-size: 14px;
             }
             .page-content {
@@ -929,6 +1012,10 @@
 
         /* Responsive helper */
         @media (max-width: 768px) {
+            div[style*='grid-template-columns:repeat(4,1fr)'],
+            div[style*='grid-template-columns: repeat(4, 1fr)'] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
     </style>
     @stack('styles')
 </head>
@@ -998,6 +1085,11 @@
                 <i class="bi bi-list"></i>
             </button>
             <h1 class="topbar-title">@yield('page-title')</h1>
+              @hasSection('breadcrumbs')
+              <div class="breadcrumbs">
+                  @yield('breadcrumbs')
+              </div>
+              @endif
         </div>
         <div class="topbar-right">
             <a href="{{ route('vendor.notifikasi') }}" class="notif-btn">
@@ -1019,8 +1111,45 @@
     </header>
 
     <!-- PAGE CONTENT -->
-    <main class="page-content">
-        @yield('content')
+     <main class="page-content">
+
+        @if(session('success'))
+            <div id="success-alert" style="background:#dcfce7;border:1px solid #86efac;color:#15803d;
+                        padding:12px 18px;border-radius:8px;margin-bottom:20px;
+                        font-size:13.5px;display:flex;align-items:center;gap:8px;">
+                <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div id="error-alert" style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;
+                        padding:12px 18px;border-radius:8px;margin-bottom:20px;
+                        font-size:13.5px;display:flex;align-items:center;gap:8px;">
+                <i class="bi bi-exclamation-circle-fill"></i> {{ session('error') }}
+            </div>
+        @endif
+
+        @yield('content')>
+        document.addEventListener('DOMContentLoaded', function () {
+            const successAlert = document.getElementById('success-alert');
+            const errorAlert = document.getElementById('error-alert');
+
+            if (successAlert) {
+                setTimeout(() => {
+                    successAlert.style.transition = "opacity .3s ease";
+                    successAlert.style.opacity = "0";
+                    setTimeout(() => { successAlert.remove(); }, 300);
+                }, 2000);
+            }
+
+            if (errorAlert) {
+                setTimeout(() => {
+                    errorAlert.style.transition = "opacity .5s ease";
+                    errorAlert.style.opacity = "0";
+                    setTimeout(() => { errorAlert.remove(); }, 500);
+                }, 4000);
+            }
+        });
+    </script>
     </main>
 
 </div>
@@ -1032,10 +1161,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebarOverlay');
     var toggleBtn = document.getElementById('mobileToggle');
-    
+    var sidebarNav = document.getElementById('sidebarNav');
+    var KEY = 'vendorSidebarScrollPosition';
+
     // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
     if (sidebarNav) {
-        var KEY = 'vendorSidebarScrollPosition';
         var restoreScroll = function() {
             var saved = sessionStorage.getItem(KEY);
             if (saved !== null) {
@@ -1046,13 +1176,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.requestAnimationFrame) {
             window.requestAnimationFrame(restoreScroll);
         }
-        sidebar.addEventListener('scroll', function() {
+        sidebarNav.addEventListener('scroll', function() {
             sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
         window.addEventListener('beforeunload', function() {
             sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
-        // Also save on any link/form click that navigates away
         document.addEventListener('click', function(e) {
             var target = e.target.closest('a, button[type="submit"]');
             if (target && sidebarNav) {
@@ -1060,12 +1189,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, true);
     }
+
     // ===== RESPONSIVE TOGGLE =====
-    
-    var sidebarNav = document.getElementById('sidebarNav');
-    
-    // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    if (sidebarNav) {
     if (toggleBtn && sidebar && overlay) {
         function openSidebar() {
             sidebar.classList.add('open');
@@ -1096,17 +1221,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Close sidebar when clicking nav links on mobile
         var navLinks = sidebar.querySelectorAll('.nav-item');
         navLinks.forEach(function(link) {
             link.addEventListener('click', function() {
                 if (window.innerWidth < 768) {
-                    // Save sidebar scroll position BEFORE closing
                     if (sidebarNav) {
                         sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-                    						closeSidebar();
+                    }
+                    closeSidebar();
                 }
             });
+        });
+        
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeSidebar();
+            }
         });
     }
 });
@@ -1116,4 +1246,6 @@ document.addEventListener('DOMContentLoaded', function() {
 @stack('scripts')
 </body>
 </html>
+
+
 

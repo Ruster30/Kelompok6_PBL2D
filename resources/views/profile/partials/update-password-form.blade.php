@@ -1,4 +1,4 @@
-﻿<section>
+<section>
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ __('Update Password') }}
@@ -33,7 +33,7 @@
                     <i class="bi bi-eye-slash"></i>
                 </button>
             </div>
-            <x-input-error :messages="\->updatePassword->get('current_password')" class="mt-2" />
+            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
         </div>
 
         <div>
@@ -44,7 +44,7 @@
                     <i class="bi bi-eye-slash"></i>
                 </button>
             </div>
-            <x-input-error :messages="\->updatePassword->get('password')" class="mt-2" />
+            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
         </div>
 
         <div>
@@ -55,7 +55,7 @@
                     <i class="bi bi-eye-slash"></i>
                 </button>
             </div>
-            <x-input-error :messages="\->updatePassword->get('password_confirmation')" class="mt-2" />
+            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
         </div>
 
         <div class="flex items-center gap-4">
@@ -88,3 +88,4 @@ function togglePw(fieldId, btn) {
     }
 }
 </script>
+

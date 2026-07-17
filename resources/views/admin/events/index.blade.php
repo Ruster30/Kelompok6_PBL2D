@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <table>
+    <div class="table-responsive-wrap"><table>
         <thead>
             <tr>
                 <th>Nama Event</th>
@@ -76,10 +76,16 @@
                 </td>
             </tr>
             @empty
-            <tr class="empty-row"><td colspan="7">Belum ada event.</td></tr>
+            <tr class="empty-row"><td colspan="7">
+                    <div class="empty-state" style="padding:40px 20px;">
+                        <div class="empty-state-icon"><i class="bi-calendar-event" style="font-size:40px;"></i></div>
+                        <h3 class="empty-state-title">Belum ada event.</h3>
+                        <p class="empty-state-text">Data akan muncul setelah Anda menambahkan data baru.</p>
+                    </div>
+                </td></tr>
             @endforelse
         </tbody>
-    </table>
+    </table></div>
 
     @if($events->hasPages())
     <div style="padding:16px 24px; border-top:1px solid #f1f5f9;">

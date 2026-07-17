@@ -2,6 +2,9 @@
 
 @section('title', 'Daftar Tugas')
 @section('page-title', 'Daftar Tugas')
+@section('breadcrumbs')
+    <a href="{{ route('vendor.ringkasan') }}">Dashboard</a><span class="separator">/</span><span>Daftar Tugas</span>
+@endsection
 
 @section('content')
 

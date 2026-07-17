@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - @yield('title', 'Dashboard')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -35,9 +36,49 @@
           scrollbar-color: #94a3b8 #e8ecf1;
         }
 
+                /* ---- Loading States ---- */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .btn-loading::after {
+            content: '';
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-left: 8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .search-loading {
+            position: relative;
+        }
+        .search-loading .spinner {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #14b8a6;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: none;
+        }
+        .search-loading.loading .spinner {
+            display: block;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f6fa; display: flex; min-height: 100vh; }
-        /* Sidebar — redesigned to match Client style */
+        /* Sidebar Ã¢â‚¬â€ redesigned to match Client style */
         .sidebar {
             width: 280px; min-width: 280px; background: #0f172a; color: #94a3b8;
             display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
@@ -418,7 +459,7 @@
             font-size: 20px;
         }
 
-        /* Desktop (≥769px) - No changes */
+        /* Desktop (Ã¢â€°Â¥769px) - No changes */
         @media (min-width: 769px) {
             #sidebarToggle {
                 display: none !important;
@@ -443,6 +484,10 @@
 
         /* Mobile (<768px) */
         @media (max-width: 768px) {
+            div[style*='grid-template-columns:repeat(4,1fr)'],
+            div[style*='grid-template-columns: repeat(4, 1fr)'] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
             /* Sidebar becomes offcanvas - sama seperti Client & Vendor */
             .sidebar {
                 transform: translateX(-100%);
@@ -592,6 +637,27 @@
 
         /* Very Small Mobile (<576px) */
         @media (max-width: 575px) {
+            /* ---- Responsive Grids ---- */
+            .stats-grid, .stats-grid-dash,
+            div[style*='grid-template-columns:repeat(4,1fr)'],
+            div[style*='grid-template-columns: repeat(4, 1fr)'] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            div[style*='grid-template-columns:repeat(3,1fr)'],
+            div[style*='grid-template-columns: repeat(3, 1fr)'] {
+                grid-template-columns: repeat(1, 1fr) !important;
+            }
+            .page-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 12px !important;
+            }
+            .topbar {
+                padding: 0 16px !important;
+            }
+            .topbar-title {
+                font-size: 14px !important;
+            }
             .topbar-title {
                 font-size: 14px;
             }
@@ -608,7 +674,111 @@
                 font-size: 12px;
             }
         }
-    </style>
+            
+        /* ---- Empty State ---- */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #475569;
+            margin: 0 0 8px 0;
+        }
+        .empty-state-text {
+            font-size: 14px;
+            color: #94a3b8;
+            max-width: 360px;
+            margin: 0;
+            line-height: 1.5;
+        }
+        .empty-row td {
+            padding: 40px 20px !important;
+            text-align: center !important;
+            color: #94a3b8 !important;
+            font-size: 14px !important;
+        }
+        /* ---- Responsive Tables ---- */
+        table:not(.table-no-responsive) {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-responsive-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-responsive-wrap table {
+            min-width: 700px;
+        }
+        @media (max-width: 768px) {
+            div[style*='grid-template-columns:repeat(4,1fr)'],
+            div[style*='grid-template-columns: repeat(4, 1fr)'] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .page-header h1 {
+                font-size: 18px;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+            .search-wrap {
+                min-width: unset !important;
+            }
+            .stats-grid,
+            .stats-grid-dash {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 12px;
+            }
+            .dash-bottom {
+                grid-template-columns: 1fr !important;
+            }
+            .card-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .action-btns {
+                justify-content: flex-start;
+            }
+        }
+        @media (max-width: 480px) {
+            .stats-grid,
+            .stats-grid-dash {
+                grid-template-columns: 1fr !important;
+            }
+            .topbar {
+                padding: 0 16px;
+            }
+            .page-content {
+                padding: 16px 12px;
+            }
+            table {
+                font-size: 12px;
+            }
+            thead th,
+            tbody td {
+                padding: 8px 10px !important;
+            }
+        }
+</style>
     @stack('styles')
 </head>
 <body>
@@ -745,7 +915,7 @@
             </div>
         @endif
         @if(session('error'))
-            <div style="background:#fee2e2; color:#991b1b; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
+            <div id="error-alert" style="background:#fee2e2; color:#991b1b; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
                 <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
             </div>
         @endif
@@ -759,24 +929,35 @@
         <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            const alert = document.getElementById('success-alert');
+            const successAlert = document.getElementById('success-alert');
+            const errorAlert = document.getElementById('error-alert');
 
-            if (alert) {
+            if (successAlert) {
                 setTimeout(() => {
-                    alert.style.transition = "opacity .3s ease";
-                    alert.style.opacity = "0";
+                    successAlert.style.transition = "opacity .3s ease";
+                    successAlert.style.opacity = "0";
 
                     setTimeout(() => {
-                        alert.remove();
+                        successAlert.remove();
                     }, 300);
                 }, 2000);
             }
 
+        
+
+            if (errorAlert) {
+                setTimeout(() => {
+                    errorAlert.style.transition = "opacity .5s ease";
+                    errorAlert.style.opacity = "0";
+                    setTimeout(() => { errorAlert.remove(); }, 500);
+                }, 4000);
+            }
         });
 </script>
     </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <x-swal-helper />
 <x-logout-confirmation />
 @stack('scripts')
@@ -872,6 +1053,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </html>
+
+
+
+
+
 
 
 
