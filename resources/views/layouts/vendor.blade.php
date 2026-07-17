@@ -9,6 +9,31 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <style>
+        /* ---- Custom Scrollbar ---- */
+        ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #e8ecf1;
+          border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #94a3b8;
+          border-radius: 4px;
+          transition: all 0.2s;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #64748b;
+        }
+        ::-webkit-scrollbar-thumb:active {
+          background: #2DD4BF;
+        }
+        * {
+          scrollbar-width: thin;
+          scrollbar-color: #94a3b8 #e8ecf1;
+        }
+
         :root {
     --sidebar-width: 280px;
             --sidebar-bg: #0f1923;
@@ -914,7 +939,7 @@
     <a href="{{ route('vendor.ringkasan') }}" class="sidebar-logo">
         <span class="sidebar-logo-text">ALPHA<span>.</span>CORP</span>
     </a>
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" id="sidebarNav">
         <div class="nav-section">
             <div class="nav-section-label">Dashboard</div>
             <a href="{{ route('vendor.ringkasan') }}" class="nav-item {{ request()->routeIs('vendor.ringkasan') ? 'active' : '' }}">
@@ -1009,12 +1034,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var toggleBtn = document.getElementById('mobileToggle');
     
     // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    if (sidebar) {
+    if (sidebarNav) {
         var KEY = 'vendorSidebarScrollPosition';
         var restoreScroll = function() {
             var saved = sessionStorage.getItem(KEY);
             if (saved !== null) {
-                sidebar.scrollTop = parseInt(saved, 10);
+                sidebarNav.scrollTop = parseInt(saved, 10);
             }
         };
         restoreScroll();
@@ -1022,13 +1047,25 @@ document.addEventListener('DOMContentLoaded', function() {
             window.requestAnimationFrame(restoreScroll);
         }
         sidebar.addEventListener('scroll', function() {
-            sessionStorage.setItem(KEY, sidebar.scrollTop);
+            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
         window.addEventListener('beforeunload', function() {
-            sessionStorage.setItem(KEY, sidebar.scrollTop);
+            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
+        // Also save on any link/form click that navigates away
+        document.addEventListener('click', function(e) {
+            var target = e.target.closest('a, button[type="submit"]');
+            if (target && sidebarNav) {
+                sessionStorage.setItem(KEY, sidebarNav.scrollTop);
+            }
+        }, true);
     }
     // ===== RESPONSIVE TOGGLE =====
+    
+    var sidebarNav = document.getElementById('sidebarNav');
+    
+    // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
+    if (sidebarNav) {
     if (toggleBtn && sidebar && overlay) {
         function openSidebar() {
             sidebar.classList.add('open');
@@ -1064,7 +1101,10 @@ document.addEventListener('DOMContentLoaded', function() {
         navLinks.forEach(function(link) {
             link.addEventListener('click', function() {
                 if (window.innerWidth < 768) {
-                    closeSidebar();
+                    // Save sidebar scroll position BEFORE closing
+                    if (sidebarNav) {
+                        sessionStorage.setItem(KEY, sidebarNav.scrollTop);
+                    						closeSidebar();
                 }
             });
         });
@@ -1076,3 +1116,4 @@ document.addEventListener('DOMContentLoaded', function() {
 @stack('scripts')
 </body>
 </html>
+

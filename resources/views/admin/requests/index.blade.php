@@ -18,7 +18,7 @@
                 <i class="fas fa-search"></i>
                 <input type="text" name="search" placeholder="Cari request..." value="{{ request('search') }}">
             </div>
-            <select class="select-filter" name="status" onchange="this.form.submit()">
+            <select class="select-filter" name="status" onchange="saveScrollAndSubmit(this.form)">
                 <option value="">Semua Status</option>
                 <option value="menunggu"   @selected(request('status') === 'menunggu')>Menunggu</option>
                 <option value="diproses"   @selected(request('status') === 'diproses')>Diterima</option>
@@ -149,4 +149,13 @@
     <div style="padding:16px 24px; border-top:1px solid #f1f5f9;">{{ $requests->links() }}</div>
     @endif
 </div>
+<script>
+function saveScrollAndSubmit(form) {
+    var nav = document.getElementById('sidebarNav');
+    if (nav) {
+        sessionStorage.setItem('adminSidebarScrollPosition', nav.scrollTop);
+    }
+    form.submit();
+}
+</script>
 @endsection

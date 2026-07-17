@@ -335,7 +335,7 @@
 @push('scripts')
 <script>
 function changeEvent(id) {
-    window.location.href = '{{ route("admin.rab.index") }}' + (id ? '?event_id=' + id : '');
+    var nav = document.getElementById('sidebarNav'); if (nav) { sessionStorage.setItem('adminSidebarScrollPosition', nav.scrollTop); } window.location.href = '{{ route("admin.rab.index") }}' + (id ? '?event_id=' + id : '');
 }
 
 function openAddRab() {

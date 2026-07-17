@@ -1,4 +1,4 @@
-<section>
+﻿<section>
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ __('Update Password') }}
@@ -13,22 +13,49 @@
         @csrf
         @method('put')
 
+        <style>
+            .pw-input-wrap { position: relative; }
+            .pw-input-wrap input { padding-right: 44px; }
+            .pw-toggle {
+                position: absolute; right: 2px; top: 50%; transform: translateY(-50%);
+                background: none; border: none; cursor: pointer; padding: 8px 12px;
+                color: #9ca3af; font-size: 18px; display: flex; align-items: center;
+                transition: color 0.2s; line-height: 1;
+            }
+            .pw-toggle:hover { color: #6b7280; }
+        </style>
+
         <div>
             <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+            <div class="pw-input-wrap mt-1">
+                <x-text-input id="update_password_current_password" name="current_password" type="password" class="block w-full" autocomplete="current-password" />
+                <button type="button" class="pw-toggle" onclick="togglePw('update_password_current_password', this)" tabindex="-1">
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+            </div>
+            <x-input-error :messages="\->updatePassword->get('current_password')" class="mt-2" />
         </div>
 
         <div>
             <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+            <div class="pw-input-wrap mt-1">
+                <x-text-input id="update_password_password" name="password" type="password" class="block w-full" autocomplete="new-password" />
+                <button type="button" class="pw-toggle" onclick="togglePw('update_password_password', this)" tabindex="-1">
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+            </div>
+            <x-input-error :messages="\->updatePassword->get('password')" class="mt-2" />
         </div>
 
         <div>
             <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+            <div class="pw-input-wrap mt-1">
+                <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="block w-full" autocomplete="new-password" />
+                <button type="button" class="pw-toggle" onclick="togglePw('update_password_password_confirmation', this)" tabindex="-1">
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+            </div>
+            <x-input-error :messages="\->updatePassword->get('password_confirmation')" class="mt-2" />
         </div>
 
         <div class="flex items-center gap-4">
@@ -46,3 +73,18 @@
         </div>
     </form>
 </section>
+
+<script>
+function togglePw(fieldId, btn) {
+    var field = document.getElementById(fieldId);
+    var icon = btn.querySelector('i');
+    if (!field) return;
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    } else {
+        field.type = 'password';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    }
+}
+</script>

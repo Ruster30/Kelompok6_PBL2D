@@ -10,21 +10,41 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <style>
+        /* ---- Custom Scrollbar ---- */
+        ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #e8ecf1;
+          border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #94a3b8;
+          border-radius: 4px;
+          transition: all 0.2s;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #64748b;
+        }
+        ::-webkit-scrollbar-thumb:active {
+          background: #2DD4BF;
+        }
+        * {
+          scrollbar-width: thin;
+          scrollbar-color: #94a3b8 #e8ecf1;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f6fa; display: flex; min-height: 100vh; }
         /* Sidebar — redesigned to match Client style */
         .sidebar {
             width: 280px; min-width: 280px; background: #0f172a; color: #94a3b8;
-            display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; z-index: 100;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
             border-right: 1px solid rgba(255,255,255,0.07);
         }
-        .sidebar-brand {
-            display: flex; align-items: center;
-            justify-content: flex-start; padding: 0 24px; height: 64px;
-        }   
-        .sidebar-brand .brand-name { color: white; font-weight: 800; font-size: 18px; letter-spacing: -0.3px; }
-        .sidebar-brand .brand-name span { color: #2DD4BF; }
-        .sidebar-nav { flex: 1; padding: 20px 12px; }
+        
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 20px 12px; }
         .nav-item {
             display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer;
             color: #94a3b8; text-decoration: none; font-size: 13.5px; font-weight: 500;
@@ -88,12 +108,12 @@
             display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 700;
         }
         /* Page content */
-        .page-content { padding: 28px; flex: 1; }
+        .page-content { padding: 20px; flex: 1; }
 
         /* Cards */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
         .stat-card {
-            background: white; border-radius: 12px; padding: 22px; border: 1px solid #e2e8f0;
+            background: white; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0;
             display: flex; flex-direction: column; gap: 8px;
         }
         .stat-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
@@ -113,9 +133,9 @@
         .plain-stat-value { font-size: 24px; font-weight: 700; color: #0f172a; }
 
         /* Table */
-        .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow-x: auto; }
         .card-header {
-            padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
             border-bottom: 1px solid #f1f5f9;
         }
         .card-title { font-size: 16px; font-weight: 600; color: #0f172a; }
@@ -125,12 +145,12 @@
         table { width: 100%; border-collapse: collapse; }
         thead tr { border-bottom: 1px solid #f1f5f9; }
         thead th {
-            padding: 12px 24px; text-align: left; font-size: 11px; font-weight: 600;
+            padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600;
             color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase;
         }
         tbody tr { border-bottom: 1px solid #f8fafc; transition: background 0.15s; }
         tbody tr:hover { background: #f8fafc; }
-        tbody td { padding: 14px 24px; font-size: 14px; color: #334155; }
+        tbody td { padding: 10px 14px; font-size: 13px; color: #334155; }
         .empty-row td { text-align: center; color: #94a3b8; padding: 40px; font-size: 14px; }
 
         /* Status badges */
@@ -595,11 +615,11 @@
 
 {{-- Sidebar --}}
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <span class="brand-name">ALPHA<span>.</span>CORP</span>
-    </div>
+    <a href="{{ route('admin.dashboard') }}" class="sidebar-logo">
+            <span class="sidebar-logo-text">ALPHA<span>.</span>CORP</span>
+        </a>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" id="sidebarNav">
         <div class="nav-section">
             <div class="nav-section-label">Menu</div>
             <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -771,12 +791,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var toggleBtn = document.getElementById('sidebarToggle');
     
     // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    if (sidebar) {
+    if (sidebarNav) {
         var KEY = 'adminSidebarScrollPosition';
         var restoreScroll = function() {
             var saved = sessionStorage.getItem(KEY);
             if (saved !== null) {
-                sidebar.scrollTop = parseInt(saved, 10);
+                sidebarNav.scrollTop = parseInt(saved, 10);
             }
         };
         restoreScroll();
@@ -784,11 +804,18 @@ document.addEventListener('DOMContentLoaded', function() {
             window.requestAnimationFrame(restoreScroll);
         }
         sidebar.addEventListener('scroll', function() {
-            sessionStorage.setItem(KEY, sidebar.scrollTop);
+            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
         window.addEventListener('beforeunload', function() {
-            sessionStorage.setItem(KEY, sidebar.scrollTop);
+            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
+        // Also save on any link/form click that navigates away
+        document.addEventListener('click', function(e) {
+            var target = e.target.closest('a, button[type="submit"]');
+            if (target && sidebarNav) {
+                sessionStorage.setItem(KEY, sidebarNav.scrollTop);
+            }
+        }, true);
     }
     // ===== RESPONSIVE TOGGLE =====
     if (toggleBtn && sidebar && overlay) {
@@ -826,6 +853,10 @@ document.addEventListener('DOMContentLoaded', function() {
         navLinks.forEach(function(link) {
             link.addEventListener('click', function() {
                 if (window.innerWidth < 768) {
+                    // Save sidebar scroll position BEFORE closing
+                    if (sidebarNav) {
+                        sessionStorage.setItem('adminSidebarScrollPosition', sidebarNav.scrollTop);
+                    }
                     closeSidebar();
                 }
             });
@@ -841,3 +872,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </html>
+
+
+
+

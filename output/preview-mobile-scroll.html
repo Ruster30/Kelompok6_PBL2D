@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview Fix Mobile Sidebar Scroll</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:"Inter",sans-serif; background:#f5f6fa; display:flex; min-height:100vh; }
+
+.sidebar { width:280px; min-width:280px; background:#0f172a; color:#94a3b8; display:flex; flex-direction:column; position:fixed; height:100vh; z-index:100; border-right:1px solid rgba(255,255,255,0.07); transition:transform .22s ease; }
+.sidebar-logo { display:flex; align-items:center; gap:12px; padding:0 24px; height:64px; border-bottom:1px solid rgba(255,255,255,0.07); flex-shrink:0; color:#fff; text-decoration:none; }
+.sidebar-logo span { color:#2DD4BF; }
+.sidebar-nav { flex:1; overflow-y:auto; padding:20px 12px; scrollbar-width:thin; }
+.sidebar-nav::-webkit-scrollbar { width:5px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background:#2DD4BF; border-radius:3px; }
+.nav-section-label { font-size:10px; font-weight:700; color:#9aa5b8; text-transform:uppercase; padding:12px 12px 6px; }
+.nav-item { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:8px; color:#94a3b8; text-decoration:none; font-weight:500; font-size:13.5px; transition:all .22s ease; margin-bottom:2px; }
+.nav-item:hover { background:rgba(45,212,191,.10); color:#1aaa99; }
+.nav-item.active { background:rgba(45,212,191,.10); color:#1aaa99; font-weight:700; }
+.nav-item.active::before { content:""; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:#2DD4BF; border-radius:0 3px 3px 0; }
+.nav-item i { width:20px; text-align:center; font-size:17px; flex-shrink:0; }
+
+.main-wrapper { margin-left:280px; flex:1; display:flex; flex-direction:column; min-height:100vh; }
+.page-content { padding:20px; flex:1; }
+
+/* Overlay mobile */
+.sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99; }
+
+@media (max-width:768px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); box-shadow:2px 0 20px rgba(0,0,0,0.3); }
+  .sidebar-overlay.show { display:block; }
+  .main-wrapper { margin-left:0; }
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <a href="#" class="sidebar-logo">ALPHA<span>.</span>CORP</a>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <div class="nav-section-label">Menu</div>
+    <a href="#" class="nav-item active"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="#" class="nav-item"><i class="fas fa-calendar-alt"></i> Events</a>
+    <a href="#" class="nav-item"><i class="fas fa-credit-card"></i> Pembayaran</a>
+    <a href="#" class="nav-item"><i class="fas fa-file-alt"></i> Request Client</a>
+    <a href="#" class="nav-item"><i class="fas fa-folder"></i> Dokumen</a>
+    <a href="#" class="nav-item"><i class="fas fa-calculator"></i> RAB</a>
+    <a href="#" class="nav-item"><i class="fas fa-users"></i> Vendor</a>
+    <a href="#" class="nav-item"><i class="fas fa-chart-bar"></i> Laporan</a>
+    <a href="#" class="nav-item"><i class="fas fa-cog"></i> Pengaturan</a>
+    <a href="#" class="nav-item"><i class="fas fa-bell"></i> Notifikasi</a>
+    <a href="#" class="nav-item"><i class="fas fa-file-invoice"></i> Invoice</a>
+    <a href="#" class="nav-item"><i class="fas fa-tasks"></i> Timeline</a>
+    <a href="#" class="nav-item"><i class="fas fa-file-contract"></i> Kontrak</a>
+    <a href="#" class="nav-item"><i class="fas fa-image"></i> Portofolio</a>
+    <a href="#" class="nav-item"><i class="fas fa-concierge-bell"></i> Layanan</a>
+    <a href="#" class="nav-item"><i class="fas fa-users-cog"></i> Tim</a>
+    <a href="#" class="nav-item"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="#" class="nav-item"><i class="fas fa-envelope"></i> Email</a>
+    <a href="#" class="nav-item"><i class="fas fa-file-export"></i> Export</a>
+    <a href="#" class="nav-item"><i class="fas fa-shield-alt"></i> Keamanan</a>
+    <a href="#" class="nav-item"><i class="fas fa-history"></i> Riwayat</a>
+    <a href="#" class="nav-item"><i class="fas fa-database"></i> Backup</a>
+    <a href="#" class="nav-item"><i class="fas fa-code"></i> Pengembang</a>
+    <a href="#" class="nav-item"><i class="fas fa-life-ring"></i> Bantuan</a>
+  </nav>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="main-wrapper">
+  <div class="page-content">
+    <h1 style="font-size:22px;font-weight:700;">Preview Fix Mobile Sidebar Scroll</h1>
+    <p style="font-size:13px;color:#64748b;margin-bottom:20px;">
+      Pada mode HP (resize < 768px), scroll sidebar ke bawah, klik menu di bagian bawah &mdash; 
+      posisi scroll akan tetap, tidak balik ke atas.
+    </p>
+
+    <div style="background:white;border-radius:12px;padding:24px;border:1px solid #e2e8f0;">
+      <h2 style="font-size:15px;font-weight:700;margin-bottom:10px;">Masalah</h2>
+      <p style="font-size:13px;color:#334155;margin-bottom:16px;">
+        Ketika sidebar offcanvas di mobile, scroll position sudah disimpan via <code>sessionStorage</code> 
+        saat <em>scroll</em> dan <em>beforeunload</em>. Tapi ketika pengguna klik nav link, 
+        <code>closeSidebar()</code> dipanggil dulu <strong>sebelum</strong> navigasi halaman, 
+        dan kadang scroll position <strong>belum sempat tersimpan</strong>.
+      </p>
+
+      <h2 style="font-size:15px;font-weight:700;margin-bottom:10px;">Perbaikan</h2>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-family:monospace;font-size:13px;line-height:1.6;">
+        <div style="color:#991b1b;text-decoration:line-through;margin-bottom:8px;">
+          // LAMA: scroll tersimpan pasif (hanya via scroll & beforeunload event)<br>
+          sidebarNav.addEventListener('scroll', fn);<br>
+          window.addEventListener('beforeunload', fn);
+        </div>
+        <div style="color:#166534;">
+          // BARU: scroll TERSIMPAN AKTIF saat klik nav link, SEBELUM sidebar ditutup<br>
+          navLinks.forEach(function(link) {<br>
+          &nbsp;&nbsp;link.addEventListener('click', function() {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;if (window.innerWidth &lt; 768) {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>sessionStorage.setItem('adminSidebarScrollPosition', sidebarNav.scrollTop);</strong><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;closeSidebar();<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+          &nbsp;&nbsp;});<br>
+          });
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;padding:16px;background:#0f172a;border-radius:10px;color:#e2e8f0;font-size:12px;">
+      <i class="fas fa-mobile-alt"></i> <strong>Coba di mode mobile:</strong> Resize browser &lt; 768px, 
+      buka sidebar (klik ☰), scroll ke bawah, klik menu paling bawah &mdash; 
+      lihat scroll position tetap setelah reload.
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var sidebarNav = document.getElementById('sidebarNav');
+
+  // Restore scroll position
+  if (sidebarNav) {
+    var saved = sessionStorage.getItem('adminSidebarScrollPosition');
+    if (saved !== null) {
+      sidebarNav.scrollTop = parseInt(saved, 10);
+    }
+    sidebarNav.addEventListener('scroll', function() {
+      sessionStorage.setItem('adminSidebarScrollPosition', sidebarNav.scrollTop);
+    });
+    window.addEventListener('beforeunload', function() {
+      sessionStorage.setItem('adminSidebarScrollPosition', sidebarNav.scrollTop);
+    });
+  }
+
+  // Toggle
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  // Mobile nav links - save scroll BEFORE closing
+  var navLinks = sidebar.querySelectorAll('.nav-item');
+  navLinks.forEach(function(link) {
+    link.addEventListener('click', function() {
+      if (window.innerWidth < 768) {
+        // *** FIX: Simpan scroll position SEBELUM menutup sidebar ***
+        if (sidebarNav) {
+          sessionStorage.setItem('adminSidebarScrollPosition', sidebarNav.scrollTop);
+        }
+        closeSidebar();
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

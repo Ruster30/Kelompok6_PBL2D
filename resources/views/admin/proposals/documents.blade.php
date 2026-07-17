@@ -255,6 +255,10 @@
 <script>
 // ─── Validasi & Submit upload ──────────────────────────
 function submitUpload() {
+    var nav = document.getElementById('sidebarNav');
+    if (nav) {
+        sessionStorage.setItem('adminSidebarScrollPosition', nav.scrollTop);
+    }
     const tipe = document.getElementById('tipeUpload').value;
     if (!tipe) {
         alert('Harap pilih Jenis Dokumen sebelum mengunggah file.');
@@ -269,9 +273,15 @@ document.getElementById('searchInput').addEventListener('input', debounce(filter
 document.getElementById('typeFilter').addEventListener('change', filterTable);
 
 function filterTable() {
+    // Save sidebar scroll before navigating
+    var nav = document.getElementById('sidebarNav');
+    if (nav) {
+        sessionStorage.setItem('adminSidebarScrollPosition', nav.scrollTop);
+    }
     const search = document.getElementById('searchInput').value;
     const type   = document.getElementById('typeFilter').value;
     window.location.href = `{{ route('admin.proposals.index') }}?search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`;
+}}?search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`;
 }
 
 function debounce(fn, delay) {
