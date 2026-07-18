@@ -1,8 +1,16 @@
-<?php
+﻿<?php
 
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Client\ClientController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CompanyProfileController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\Vendor\VendorController;
+use App\Http\Controllers\Vendor\TugasController;
+use App\Http\Controllers\Vendor\DokumentasiController;
+use App\Http\Controllers\Vendor\NotifikasiController;
 
-Route::get('/', function () {
+Route::get('/d', function () {
     return view('welcome');
 });
 
@@ -10,3 +18,376 @@ Route::get('/profil', function () {
     echo '<h1>Profil</h1>';
     return '<p>Jurusan Teknologi Informasi - Politeknik Negeri Padang</p>';
 });
+
+Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
+
+/*
+|--------------------------------------------------------------------------
+| Company Profile PDF Export
+|--------------------------------------------------------------------------
+| Route ini men-generate PDF dari data landing page terkini secara
+| real-time. Setiap kali admin mengubah konten landing page (di
+| CompanyProfileController), PDF yang diunduh akan otomatis diperbarui.
+*/
+Route::get('/company-profile/pdf', [CompanyProfileController::class, 'downloadPdf'])
+    ->name('company-profile.pdf');
+
+Route::get('/dashboard', function () {
+    $role = request()->user()->role;
+    if ($role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    } elseif ($role === 'vendor') {
+        return redirect()->route('vendor.ringkasan');
+    }
+    return app(ClientController::class)->dashboard();
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/vendor/dashboard', function () {
+        if (request()->user()->role !== 'vendor') {
+            abort(403);
+        }
+        return view('vendor.ringkasan');
+    })->name('vendor.dashboard');
+});
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// ========================================
+// Admin Routes
+// ========================================
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+
+    // --- Kelola Klien ---
+    // Route ini mengelola akun user dengan role='client'.
+    // Tidak bentrok dengan /admin/clients (yang mengelola tabel 'clients' / logo klien CMS).
+    Route::prefix('kelola-klien')->name('admin.kelola-klien.')->group(function () {
+        Route::get('/',                              [\App\Http\Controllers\Admin\KelolKlienController::class, 'index'])           ->name('index');
+        Route::get('/{user}',                        [\App\Http\Controllers\Admin\KelolKlienController::class, 'show'])            ->name('show');
+        Route::get('/{user}/edit',                   [\App\Http\Controllers\Admin\KelolKlienController::class, 'edit'])            ->name('edit');
+        Route::put('/{user}',                        [\App\Http\Controllers\Admin\KelolKlienController::class, 'update'])          ->name('update');
+        Route::post('/kirim-notifikasi',             [\App\Http\Controllers\Admin\KelolKlienController::class, 'kirimNotifikasi']) ->name('kirim-notifikasi');
+        Route::patch('/{user}/toggle-status',        [\App\Http\Controllers\Admin\KelolKlienController::class, 'toggleStatus'])    ->name('toggle-status');
+        Route::delete('/{user}',                     [\App\Http\Controllers\Admin\KelolKlienController::class, 'destroy'])         ->name('destroy');
+    });
+
+    // Clients
+    Route::get('/clients', [App\Http\Controllers\Admin\ClientController::class, 'index'])->name('admin.clients.index');
+    Route::get('/clients/create', [App\Http\Controllers\Admin\ClientController::class, 'create'])->name('admin.clients.create');
+    Route::post('/clients', [App\Http\Controllers\Admin\ClientController::class, 'store'])->name('admin.clients.store');
+    Route::get('/clients/{client}', [App\Http\Controllers\Admin\ClientController::class, 'show'])->name('admin.clients.show');
+    Route::get('/clients/{client}/edit', [App\Http\Controllers\Admin\ClientController::class, 'edit'])->name('admin.clients.edit');
+    Route::put('/clients/{client}', [App\Http\Controllers\Admin\ClientController::class, 'update'])->name('admin.clients.update');
+    Route::delete('/clients/{client}', [App\Http\Controllers\Admin\ClientController::class, 'destroy'])->name('admin.clients.destroy');
+
+    // Requests
+    Route::get('/requests', [App\Http\Controllers\Admin\ClientRequestController::class, 'index'])->name('admin.requests.index');
+    Route::get('/requests/{clientRequest}', [App\Http\Controllers\Admin\ClientRequestController::class, 'show'])->name('admin.requests.show');
+    Route::patch('/requests/{clientRequest}/approve', [App\Http\Controllers\Admin\ClientRequestController::class, 'approve'])->name('admin.requests.approve');
+    Route::patch('/requests/{clientRequest}/reject', [App\Http\Controllers\Admin\ClientRequestController::class, 'reject'])->name('admin.requests.reject');
+
+    // ---- Surat Penawaran ----
+    // Preview surat penawaran (tampilan admin sebelum kirim)
+    Route::get('/requests/{event}/surat-penawaran',
+        [App\Http\Controllers\Admin\ProposalController::class, 'suratPenawaran'])
+        ->name('admin.requests.surat-penawaran');
+
+    // Simpan edit surat penawaran oleh admin
+    Route::patch('/requests/{event}/update-surat-penawaran',
+        [App\Http\Controllers\Admin\ProposalController::class, 'updateSuratPenawaran'])
+        ->name('admin.requests.update-surat-penawaran');
+
+    // Kirim penawaran ke client (generate PDF + simpan proposal + notifikasi)
+    Route::post('/requests/{event}/kirim-penawaran',
+        [App\Http\Controllers\Admin\ProposalController::class, 'kirimPenawaran'])
+        ->name('admin.requests.kirim-penawaran');
+
+    // Export PDF langsung (download)
+    Route::get('/requests/{event}/export-pdf',
+        [App\Http\Controllers\Admin\ProposalController::class, 'exportPdf'])
+        ->name('admin.requests.export-pdf');
+
+    // Revisi penawaran
+    Route::post('/requests/{event}/revisi-penawaran',
+        [App\Http\Controllers\Admin\ProposalController::class, 'revisiPenawaran'])
+        ->name('admin.requests.revisi-penawaran');
+
+    Route::post('/requests/{event}/kirim-revisi-penawaran',
+        [App\Http\Controllers\Admin\ProposalController::class, 'kirimRevisiPenawaran'])
+        ->name('admin.requests.kirim-revisi-penawaran');
+
+    // --- Negosiasi ---
+
+    // Riwayat negosiasi (dari client)
+    Route::get('/requests/{event}/negosiasi',
+        [App\Http\Controllers\Admin\ClientRequestController::class, 'negosiasi'])
+        ->name('admin.requests.negosiasi');
+
+    // Tolak negosiasi client
+    Route::post('/requests/{event}/tolak-negosiasi',
+        [App\Http\Controllers\Admin\ProposalController::class, 'tolakNegosiasi'])
+        ->name('admin.requests.tolak-negosiasi');
+    
+    // Setujui negosiasi client
+    Route::post('/requests/{event}/setujui-negosiasi',
+        [App\Http\Controllers\Admin\ProposalController::class, 'setujuiNegosiasi'])
+        ->name('admin.requests.setujui-negosiasi');
+
+    // Events
+    Route::get('/events', [App\Http\Controllers\Admin\EventController::class, 'index'])->name('admin.events.index');
+    Route::get('/events/create', [App\Http\Controllers\Admin\EventController::class, 'create'])->name('admin.events.create');
+    Route::post('/events', [App\Http\Controllers\Admin\EventController::class, 'store'])->name('admin.events.store');
+    Route::get('/events/{event}', [App\Http\Controllers\Admin\EventController::class, 'show'])->name('admin.events.show');
+    Route::get('/events/{event}/edit', [App\Http\Controllers\Admin\EventController::class, 'edit'])->name('admin.events.edit');
+    Route::put('/events/{event}', [App\Http\Controllers\Admin\EventController::class, 'update'])->name('admin.events.update');
+    Route::delete('/events/{event}', [App\Http\Controllers\Admin\EventController::class, 'destroy'])->name('admin.events.destroy');
+
+    // RAB
+    Route::get('/rab',          [App\Http\Controllers\Admin\RabController::class, 'index'])  ->name('admin.rab.index');
+    Route::post('/rab',         [App\Http\Controllers\Admin\RabController::class, 'store'])  ->name('admin.rab.store');
+    Route::put('/rab/{rab}',    [App\Http\Controllers\Admin\RabController::class, 'update']) ->name('admin.rab.update');   // [TAMBAH] route PUT yang hilang
+    Route::delete('/rab/{rab}', [App\Http\Controllers\Admin\RabController::class, 'destroy'])->name('admin.rab.destroy'); // [FIX] {rabItem} â†’ {rab}
+    Route::post('/rab/additional-details', [App\Http\Controllers\Admin\RabController::class, 'saveAdditionalDetails'])->name('admin.rab.additional-details');
+    Route::get('/rab/total-dibayar-klien/{eventId}', [App\Http\Controllers\Admin\RabController::class, 'getTotalDibayarKlien'])->name('admin.rab.total-dibayar-klien');
+
+
+    // Payments
+    Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('admin.payments.index');
+    Route::get('/payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('admin.payments.show');
+    Route::patch('/payments/{payment}/verify', [App\Http\Controllers\Admin\PaymentController::class, 'verify'])->name('admin.payments.verify');
+    Route::post('/payments/{payment}/send-pelunasan', [App\Http\Controllers\Admin\PaymentController::class, 'sendPelunasan'])->name('admin.payments.sendPelunasan');
+    Route::post('/payments/{payment}/send-kwitansi', [App\Http\Controllers\Admin\PaymentController::class, 'sendKwitansi'])->name('admin.payments.sendKwitansi');
+
+    // Analytics
+    Route::get('/analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('admin.analytics.index');
+    Route::get('/analytics/export/pdf', [App\Http\Controllers\Admin\AnalyticsController::class, 'exportPdf'])->name('admin.analytics.export.pdf');
+    Route::get('/analytics/export/excel', [App\Http\Controllers\Admin\AnalyticsController::class, 'exportExcel'])->name('admin.analytics.export.excel');
+
+    // Notifications
+    Route::get('/notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('admin.notifications.index');
+    Route::post('/notifications/mark-all-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('admin.notifications.markAllRead');
+    Route::patch('/notifications/{notification}/read', [App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('admin.notifications.markRead');
+
+    // Dokumen Umum (Invoice & Kwitansi dihapus)
+    Route::get('/proposals',                     [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.proposals.index');
+    Route::post('/proposals/upload',             [App\Http\Controllers\Admin\ProposalController::class, 'upload'])->name('admin.proposals.upload');
+    Route::get('/proposals/{document}/preview',  [App\Http\Controllers\Admin\ProposalController::class, 'preview'])->name('admin.proposals.preview');
+    Route::get('/proposals/{document}/download', [App\Http\Controllers\Admin\ProposalController::class, 'downloadDocument'])->name('admin.proposals.download');
+    Route::post('/proposals/{document}/send',    [App\Http\Controllers\Admin\ProposalController::class, 'sendToClient'])->name('admin.proposals.send');
+    Route::delete('/proposals/{document}',       [App\Http\Controllers\Admin\ProposalController::class, 'destroy'])->name('admin.proposals.destroy');
+
+    // Document Builder
+    Route::get('/document-builder',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'index'])
+        ->name('admin.document_builder.index');
+
+    Route::post('/document-builder/preview',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'preview'])
+        ->name('admin.document_builder.preview');
+
+    Route::post('/document-builder/download',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'download'])
+        ->name('admin.document_builder.download');
+
+    Route::post('/document-builder/print',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'print'])
+        ->name('admin.document_builder.print');
+
+    Route::post('/document-builder/send',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'sendToClient'])
+        ->name('admin.document_builder.send');
+
+    // Documentation
+    Route::get('/documentation', [App\Http\Controllers\Admin\DocumentationController::class, 'index'])->name('admin.documentation.index');
+    Route::patch('/documentation/files/{file}/approve', [App\Http\Controllers\Admin\DocumentationController::class, 'approveFile'])->name('admin.documentation.approve-file');
+    Route::patch('/documentation/files/{file}/reject', [App\Http\Controllers\Admin\DocumentationController::class, 'rejectFile'])->name('admin.documentation.reject-file');
+
+    // Timeline
+    Route::get('/timeline', [App\Http\Controllers\Admin\TimelineController::class, 'index'])->name('admin.timeline.index');
+    Route::post('/timeline', [App\Http\Controllers\Admin\TimelineController::class, 'store'])->name('admin.timeline.store');
+    Route::put('/timeline/{timeline}', [App\Http\Controllers\Admin\TimelineController::class, 'update'])->name('admin.timeline.update');
+    Route::delete('/timeline/{timeline}', [App\Http\Controllers\Admin\TimelineController::class, 'destroy'])->name('admin.timeline.destroy');
+
+    // EventVendor
+    Route::get('/event-vendors', [App\Http\Controllers\Admin\EventVendorController::class, 'index'])->name('admin.event-vendors.index');
+    Route::post('/event-vendors', [App\Http\Controllers\Admin\EventVendorController::class, 'store'])->name('admin.event-vendors.store');
+    Route::put('/event-vendors/{task}', [App\Http\Controllers\Admin\EventVendorController::class, 'update'])->name('admin.event-vendors.update');
+    Route::delete('/event-vendors/{task}', [App\Http\Controllers\Admin\EventVendorController::class, 'destroy'])->name('admin.event-vendors.destroy');
+
+    // Vendors
+    Route::get('/vendors', [App\Http\Controllers\Admin\VendorController::class, 'index'])->name('admin.vendors.index');
+    Route::post('/vendors', [App\Http\Controllers\Admin\VendorController::class, 'store'])->name('admin.vendors.store');
+    Route::put('/vendors/{vendor}', [App\Http\Controllers\Admin\VendorController::class, 'update'])->name('admin.vendors.update');
+    Route::delete('/vendors/{vendor}', [App\Http\Controllers\Admin\VendorController::class, 'destroy'])->name('admin.vendors.destroy');
+
+    // CMS (Landing Page)
+    Route::get('/cms/services', [App\Http\Controllers\Admin\CmsController::class, 'services'])->name('admin.cms.index'); // as index default
+    Route::post('/cms/services', [App\Http\Controllers\Admin\CmsController::class, 'storeService'])->name('admin.cms.storeService');
+    Route::put('/cms/services/{service}', [App\Http\Controllers\Admin\CmsController::class, 'updateService'])->name('admin.cms.updateService');
+    Route::delete('/cms/services/{service}', [App\Http\Controllers\Admin\CmsController::class, 'destroyService'])->name('admin.cms.destroyService');
+
+    Route::get('/cms/portfolio', [App\Http\Controllers\Admin\CmsController::class, 'portfolio'])->name('admin.cms.portfolio');
+    Route::post('/cms/portfolio', [App\Http\Controllers\Admin\CmsController::class, 'storePortfolio'])->name('admin.cms.storePortfolio');
+    Route::put('/cms/portfolio/{portfolio}', [App\Http\Controllers\Admin\CmsController::class, 'updatePortfolio'])->name('admin.cms.updatePortfolio');
+    Route::delete('/cms/portfolio/{portfolio}', [App\Http\Controllers\Admin\CmsController::class, 'destroyPortfolio'])->name('admin.cms.destroyPortfolio');
+
+    Route::get('/cms/team', [App\Http\Controllers\Admin\CmsController::class, 'team'])->name('admin.cms.team');
+    Route::post('/cms/team', [App\Http\Controllers\Admin\CmsController::class, 'storeTeam'])->name('admin.cms.storeTeam');
+    Route::put('/cms/team/{team}', [App\Http\Controllers\Admin\CmsController::class, 'updateTeam'])->name('admin.cms.updateTeam');
+    Route::delete('/cms/team/{team}', [App\Http\Controllers\Admin\CmsController::class, 'destroyTeam'])->name('admin.cms.destroyTeam');
+
+    Route::get('/cms/clients', [App\Http\Controllers\Admin\CmsController::class, 'clients'])->name('admin.cms.clients');
+    Route::post('/cms/clients', [App\Http\Controllers\Admin\CmsController::class, 'storeClient'])->name('admin.cms.storeClient');
+    Route::put('/cms/clients/{client}', [App\Http\Controllers\Admin\CmsController::class, 'updateClient'])->name('admin.cms.updateClient');
+    Route::delete('/cms/clients/{client}', [App\Http\Controllers\Admin\CmsController::class, 'destroyClient'])->name('admin.cms.destroyClient');
+    
+    // Settings
+    Route::get('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
+    Route::put('/settings/update', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
+    Route::put('/settings/update-password', [App\Http\Controllers\Admin\SettingsController::class, 'updatePassword'])->name('admin.settings.updatePassword');
+
+    // (duplikasi routes sudah dihapus)
+});
+
+require __DIR__.'/auth.php';
+
+/*
+|â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+|  CLIENT DASHBOARD ROUTES
+|  Semua dilindungi middleware 'auth'
+|  Prefix URL  : /client/...
+|  Prefix name : client....
+|â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+*/
+
+
+Route::get('/feedback/{event}', [FeedbackController::class, 'create'])
+    ->name('feedback.create');
+
+Route::post('/feedback', [FeedbackController::class, 'store'])
+    ->name('feedback.store');
+
+Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->group(function () {
+    // â”€â”€ Ringkasan / Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Route::get('/',                         [ClientController::class, 'dashboard'])
+         ->name('dashboard');
+ 
+    // â”€â”€ Event Terdaftar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Route::get('/events',                   [ClientController::class, 'events'])
+         ->name('events');
+ 
+    // â”€â”€ Ajukan Event Baru â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Route::get('/event/create',             [ClientController::class, 'eventCreate'])
+         ->name('event.create');
+    Route::post('/event',                   [ClientController::class, 'eventStore'])
+         ->name('event.store');
+ 
+    // â”€â”€ Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Route::get('/timeline',                 [ClientController::class, 'timeline'])
+         ->name('timeline');
+    Route::get('/timeline/{id}',            [ClientController::class, 'timeline'])
+         ->name('timeline.show');
+ 
+    // â”€â”€ Anggaran & Faktur â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Route::get('/invoices',                 [ClientController::class, 'invoices'])
+         ->name('invoices');
+    Route::post('/invoices/{id}/bayar',     [ClientController::class, 'bayar'])
+         ->name('invoices.bayar');
+ 
+    // â”€â”€ Surat Penawaran â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Route::get('/proposals/{tab?}',         [ClientController::class, 'proposals'])
+        ->where('tab', 'penawaran|proposal|rab|kontrak|laporan|kwitansi')
+        ->name('proposals');
+
+    Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
+         ->name('proposals.show');
+
+    Route::get('/proposals/{id}/negosiasi-form',
+        [App\Http\Controllers\Client\ClientController::class, 'negosiasiForm'])
+        ->name('proposals.negosiasi.form');
+    
+    // â”€â”€ Terima Penawaran LANGSUNG (tanpa negosiasi) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Route::post('/proposals/{id}/terima',
+        [App\Http\Controllers\Client\ClientController::class, 'terimaProposal'])
+        ->name('proposals.terima');
+
+    // â”€â”€ Ajukan Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Route::post('/proposals/{id}/negosiasi',
+        [App\Http\Controllers\Client\ClientController::class, 'submitNegosiasi'])
+        ->name('proposals.negosiasi');
+
+    // â”€â”€ Terima Penawaran Revisi SETELAH Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Route::post('/proposals/{id}/terima-setelah-negosiasi',
+        [App\Http\Controllers\Client\ClientController::class, 'terimaSetelahNegosiasi'])
+        ->name('proposals.terima-setelah-negosiasi');
+
+    Route::get('/proposals/document/{document}/preview', [ClientController::class, 'documentPreview'])
+        ->name('proposals.document.preview');
+
+    Route::get('/proposals/document/{document}/download', [ClientController::class, 'documentDownload'])
+        ->name('proposals.document.download');
+ 
+    // â”€â”€ Pengaturan Akun â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Route::get('/settings',                 [ClientController::class, 'settings'])
+         ->name('settings');
+    Route::put('/settings/profile',         [ClientController::class, 'settingsProfile'])
+         ->name('settings.profile');
+    Route::put('/settings/password',        [ClientController::class, 'settingsPassword'])
+         ->name('settings.password');
+ 
+    // â”€â”€ Notifikasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+     Route::get('/notifications', [ClientController::class, 'notifications'])
+    ->name('notifications');
+
+    Route::post('/notifications/read', [ClientController::class, 'notifRead'])
+    ->name('notif.read');
+
+});
+   
+/*
+|--------------------------------------------------------------------------
+| Vendor Routes
+|--------------------------------------------------------------------------
+| Semua route ini dilindungi oleh middleware 'auth' dan 'role:vendor'
+| Sesuaikan middleware dengan sistem autentikasi yang Anda gunakan.
+*/
+
+Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'vendor.role'])->group(function () {
+
+    // Ringkasan (Dashboard)
+    Route::get('/ringkasan', [VendorController::class, 'ringkasan'])->name('ringkasan');
+
+    // Event Saya
+    Route::get('/event-saya', [VendorController::class, 'eventSaya'])->name('event-saya');
+
+    // Jadwal dihapus
+
+    // Daftar Tugas
+    Route::get('/daftar-tugas', [TugasController::class, 'index'])->name('daftar-tugas');
+    Route::put('/tugas/update', [TugasController::class, 'update'])->name('tugas.update');
+
+    // Dokumentasi
+    Route::post('/dokumentasi/store', [DokumentasiController::class, 'store'])->name('dokumentasi.store');
+
+    // Notifikasi
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi');
+    Route::post('/notifikasi/read-all', [NotifikasiController::class, 'readAll'])->name('notifikasi.read-all');
+
+    // Pengaturan
+    Route::get('/pengaturan', [VendorController::class, 'pengaturan'])->name('pengaturan');
+
+    // Logout
+    Route::post('/logout', [VendorController::class, 'logout'])->name('logout');
+
+    // Redirect root /vendor ke ringkasan
+    Route::redirect('/', '/vendor/ringkasan');
+
+});
+
+

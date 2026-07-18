@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview Layout Pembayaran</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f5f6fa; padding: 32px; color: #0f172a; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  .subtitle { color: #64748b; margin-bottom: 24px; font-size: 13px; }
+  
+  .row { display: flex; gap: 32px; flex-wrap: wrap; }
+  .col { flex: 1; min-width: 500px; }
+  
+  /* Common admin styles */
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .page-header-left h1 { font-size: 22px; font-weight: 800; color: #0f172a; }
+  .page-header-left p { font-size: 13px; color: #64748b; margin-top: 4px; }
+  
+  .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
+  .stat-card .icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 12px; }
+  .stat-card .value { font-size: 22px; font-weight: 800; color: #0f172a; }
+  .stat-card .label { font-size: 12px; color: #64748b; margin-top: 2px; }
+  
+  .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .card-header { padding: 16px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 12px 16px; border-bottom: 2px solid #e2e8f0; color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  tbody td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; }
+  
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .badge-pending { background: #fef3c7; color: #92400e; }
+  .badge-active { background: #dbeafe; color: #1e40af; }
+  .badge-cancel { background: #fee2e2; color: #991b1b; }
+  .badge-done { background: #d1fae5; color: #065f46; }
+  
+  .action-btns { display: flex; gap: 6px; }
+  .action-btn {
+    width: 32px; height: 32px; border-radius: 6px; border: 1px solid #e2e8f0;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    background: white; transition: all 0.15s; color: #64748b; text-decoration:none;
+  }
+  .action-btn:hover { border-color: #14b8a6; color: #14b8a6; }
+  .action-btn.danger:hover { border-color: #f43f5e; color: #f43f5e; }
+  
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; text-decoration: none; }
+  .btn-primary { background: #14b8a6; color: #fff; }
+  .btn-outline { background: white; border: 1px solid #e2e8f0; color: #64748b; }
+  
+  .tag { display: inline-block; background: #2DD4BF; color: white; padding: 1px 10px; border-radius: 999px; font-size: 10px; font-weight: 600; }
+  
+  .version-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; padding: 6px 12px; border-radius: 6px; display: inline-block; }
+  
+  .note { margin-top: 20px; padding: 14px 18px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; color: #475569; line-height: 1.7; }
+  .check { color: #16a34a; font-weight: bold; }
+  .arrow { color: #f59e0b; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>?? Layout Halaman Pembayaran</h1>
+<p class="subtitle">Samakan layout dengan halaman lain (RAB, Kelola Klien, Events)</p>
+
+<div class="row">
+  <div class="col">
+    {{-- SEBELUM --}}
+    <div style="border:2px solid #fecaca; border-radius:14px; overflow:hidden; margin-bottom:24px;">
+      <div style="background:#fef2f2; padding:10px 18px; border-bottom:1px solid #fecaca;">
+        <span class="version-label" style="background:#fef2f2;color:#dc2626;">?? LAYOUT SAAT INI</span>
+      </div>
+      <div style="padding:20px; background:#fff;">
+        {{-- Page header tanpa action btn --}}
+        <div style="margin-bottom:20px;">
+          <h1 style="font-size:20px;font-weight:800;">Verifikasi Pembayaran</h1>
+          <p style="font-size:13px;color:#64748b;">Kelola dan verifikasi bukti pembayaran dari klien</p>
+        </div>
+        {{-- Langsung tabel tanpa stats, tanpa card-header --}}
+        <div style="background:white; border:1px solid #e2e8f0; border-radius:10px; overflow-x:auto;">
+          <table>
+            <thead><tr><th>Tanggal</th><th>Invoice</th><th>Event</th><th>Jenis</th><th>Nominal</th><th>Status</th><th>Bukti</th><th>Aksi</th></tr></thead>
+            <tbody>
+              <tr><td>15 Jul</td><td>INV-001</td><td>Wedding Anna</td><td><span class="badge badge-active">DP</span></td><td>Rp 108jt</td><td><span class="badge badge-pending">Menunggu</span></td><td><span style="color:#94a3b8;">-</span></td><td><div class="action-btns"><span class="action-btn"><i class="fas fa-check"></i></span><span class="action-btn danger"><i class="fas fa-times"></i></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:#94a3b8;">
+          ? Tidak ada <strong>stats cards</strong> seperti halaman lain<br>
+          ? Tidak ada <strong>card-header</strong> di atas tabel<br>
+          ? Tidak ada <strong>action button</strong> di page-header
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    {{-- SESUDAH --}}
+    <div style="border:2px solid #86efac; border-radius:14px; overflow:hidden;">
+      <div style="background:#f0fdf4; padding:10px 18px; border-bottom:1px solid #86efac;">
+        <span class="version-label" style="background:#dcfce7;color:#16a34a;">? LAYOUT YANG DIUSULKAN</span>
+      </div>
+      <div style="padding:20px; background:#fff;">
+        {{-- Page header dengan action btn --}}
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1>Verifikasi Pembayaran</h1>
+            <p>Kelola dan verifikasi bukti pembayaran dari klien</p>
+          </div>
+          <button class="btn btn-outline" style="padding:8px 16px;">
+            <i class="fas fa-download"></i> Export
+          </button>
+        </div>
+
+        {{-- Stats Cards seperti RAB/Kelola Klien --}}
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="icon" style="background:#eff6ff;"><i class="fas fa-credit-card" style="color:#3b82f6;"></i></div>
+            <div class="value">12</div>
+            <div class="label">Total Pembayaran</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon" style="background:#f0fdf4;"><i class="fas fa-check-circle" style="color:#22c55e;"></i></div>
+            <div class="value">Rp 480jt</div>
+            <div class="label">Total Diverifikasi</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon" style="background:#fef3c7;"><i class="fas fa-clock" style="color:#f59e0b;"></i></div>
+            <div class="value">3</div>
+            <div class="label">Menunggu Verifikasi</div>
+          </div>
+        </div>
+
+        {{-- Tabel dengan card-header --}}
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Daftar Pembayaran</span>
+            <span style="font-size:12px;color:#94a3b8;">Total: 12 transaksi</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead><tr><th>Tanggal</th><th>Invoice</th><th>Event</th><th>Jenis</th><th>Nominal</th><th>Status</th><th>Bukti</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td>15 Jul</td><td>INV-001</td><td>Wedding Anna</td><td><span class="badge badge-active">DP</span></td><td>Rp 108jt</td><td><span class="badge badge-pending">Menunggu</span></td><td><span style="color:#94a3b8;">-</span></td><td><div class="action-btns"><span class="action-btn"><i class="fas fa-check"></i></span><span class="action-btn danger"><i class="fas fa-times"></i></span></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; font-size:12px; color:#94a3b8;">
+          ? Ada <strong>stats cards</strong> seperti halaman RAB/Kelola Klien<br>
+          ? Ada <strong>card-header</strong> di atas tabel<br>
+          ? Ada <strong>action button</strong> di page-header (Export)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="note">
+  <strong>? Perubahan Layout yang Diusulkan:</strong><br>
+  <span class="check">?</span> Menambahkan <strong>stats cards</strong> di atas tabel (Total Pembayaran, Total Diverifikasi, Menunggu Verifikasi)<br>
+  <span class="check">?</span> Menambahkan <strong>card-header</strong> "Daftar Pembayaran" di atas tabel<br>
+  <span class="check">?</span> Menambahkan <strong>tombol Export</strong> di page-header (seperti halaman lain)<br>
+  <span class="check">?</span> Layout jadi konsisten dengan halaman <span class="tag">RAB</span>, <span class="tag">Kelola Klien</span>, <span class="tag">Events</span>
+</div>
+
+</body>
+</html>

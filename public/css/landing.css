@@ -1,0 +1,1317 @@
+/* ============================================
+   ALPHA.COM Landing Page — landing.css
+   Place in: public/css/landing.css
+   ============================================ */
+
+/* ---- Google Fonts already loaded via layout ---- */
+
+/* ---- CSS Variables ---- */
+:root {
+    --accent: #2DD4BF;
+    /* teal/mint */
+    --accent-dark: #0F9D8A;
+    --bg-dark: #0A0E1A;
+    /* deep navy-black */
+    --bg-card: #111827;
+    --bg-card-hover: #151f2e;
+    --bg-card-border: #1e2d40;
+    --text-muted: #8A9BB5;
+    --white: #ffffff;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-display: 'Playfair Display', serif;
+}
+
+/* ---- Base ---- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--white);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+}
+
+.font-plusjakartasans {
+    font-family: var(--font-body);
+}
+
+.font-playfair {
+    font-family: var(--font-display);
+}
+
+.text-accent {
+    color: var(--accent) !important;
+}
+
+.text-light-muted {
+    color: var(--text-muted) !important;
+}
+
+.tracking-wide {
+    letter-spacing: .12em;
+}
+
+.py-6 {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+.z-1 {
+    z-index: 1;
+}
+
+.label-line {
+    display: inline-block;
+    width: 36px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+#mainNavbar {
+    background: transparent;
+    transition: background .35s ease, box-shadow .35s ease;
+    padding: .9rem 0;
+}
+
+#mainNavbar.scrolled {
+    background: rgba(10, 14, 26, .95);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 24px rgba(0, 0, 0, .4);
+}
+
+#mainNavbar .nav-link {
+    color: rgba(255, 255, 255, .75);
+    font-size: .9rem;
+    font-weight: 500;
+    transition: color .2s;
+    padding: .5rem .75rem;
+}
+
+#mainNavbar .nav-link:hover {
+    color: var(--accent);
+}
+
+.btn-accent {
+    background: var(--accent);
+    color: #0A0E1A !important;
+    border: none;
+    font-weight: 700;
+    transition: background .2s, transform .2s, box-shadow .2s;
+}
+
+.btn-accent:hover {
+    background: var(--accent-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(45, 212, 191, .3);
+}
+
+.btn-outline-accent {
+    border: 1.5px solid var(--accent);
+    color: var(--accent) !important;
+    background: transparent;
+    font-weight: 600;
+    transition: all .2s;
+}
+
+.btn-outline-accent:hover {
+    background: var(--accent);
+    color: var(--bg-dark) !important;
+}
+
+.navbar-logo {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    transition: .3s;
+}
+
+.navbar-logo:hover {
+    transform: scale(1.05);
+}
+
+/* ============================================
+   HERO — FIXED VERSION
+   Background tetap gelap, semua konten terang
+   ============================================ */
+
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    /* Pastikan overflow tidak memotong child */
+    overflow: hidden;
+}
+
+/* ── CAROUSEL (layer 1 — paling bawah) ──────── */
+.hero-carousel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.hero-carousel .carousel-inner,
+.hero-carousel .carousel-item {
+    height: 100vh;
+}
+
+.hero-bg-img {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+    /* Sedikit scale supaya ada efek Ken Burns opsional */
+    display: block;
+}
+
+/* ── OVERLAY GELAP (layer 2 — di atas foto) ─── */
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    /* top/right/bottom/left: 0 */
+    z-index: 2;
+    pointer-events: none;
+
+    /* Gradient: sangat gelap di kiri-bawah, agak transparan di kanan-atas
+       Sesuaikan opacity jika perlu lebih/kurang gelap               */
+    background:
+        linear-gradient(135deg,
+            rgba(5, 10, 20, 0.92) 0%,
+            rgba(5, 10, 20, 0.78) 40%,
+            rgba(5, 10, 20, 0.65) 100%);
+}
+
+/* ── KONTEN (layer 3 — di atas overlay) ──────── */
+.hero-content {
+    position: relative;
+    z-index: 3;
+    /* WAJIB lebih tinggi dari overlay */
+
+    /* Paksa SEMUA teks di dalam hero-content jadi terang */
+    color: #ffffff !important;
+}
+
+/* Heading utama */
+.hero-content h1,
+.hero-content h2,
+.hero-content h3 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Accent span (kata "Sempurna" dll) */
+.hero-content h1 span,
+.hero-content h2 span {
+    color: var(--accent, #2DD4BF) !important;
+}
+
+/* Paragraf / subheading */
+.hero-content p,
+.hero-content .hero-tagline,
+.hero-content .lead {
+    color: rgba(255, 255, 255, 0.82) !important;
+}
+
+/* Label kecil di atas heading */
+.hero-content .hero-label,
+.hero-content .section-label-hero {
+    color: var(--accent, #2DD4BF) !important;
+    letter-spacing: 0.12em;
+}
+
+/* ── TOMBOL ─────────────────────────────────── */
+/* Tombol primary (teal) */
+.hero-content .btn-accent,
+.hero-content .btn-primary-hero {
+    background: var(--accent, #2DD4BF);
+    color: #0A0E1A !important;
+    border: none;
+    font-weight: 700;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.hero-content .btn-accent:hover,
+.hero-content .btn-primary-hero:hover {
+    background: #1aaa99;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(45, 212, 191, 0.35);
+    color: #0A0E1A !important;
+}
+
+/* Tombol outline (putih border) */
+.hero-content .btn-outline-light,
+.hero-content .btn-secondary-hero {
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.55);
+    color: #ffffff !important;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.hero-content .btn-outline-light:hover,
+.hero-content .btn-secondary-hero:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.9);
+    color: #ffffff !important;
+    transform: translateY(-2px);
+}
+
+/* ── SCROLL INDICATOR ───────────────────────── */
+.scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    /* sama dengan hero-content */
+
+    width: 24px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    padding-top: 6px;
+}
+
+.scroll-dot {
+    width: 4px;
+    height: 8px;
+    background: var(--accent, #2DD4BF);
+    border-radius: 2px;
+    animation: scrollBounce 1.6s infinite;
+}
+
+/* ── HEADING LAYOUT ─────────────────────────── */
+.hero-section h1 {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.hero-section h1 span:first-child {
+    white-space: nowrap;
+}
+
+/* ── ANIMASI ─────────────────────────────────── */
+@keyframes scrollBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(10px);
+        opacity: 0.4;
+    }
+}
+
+/* ============================================
+   ABOUT
+   ============================================ */
+.about-section {
+    background: var(--bg-dark);
+}
+
+.about-img-wrap {
+    position: relative;
+    margin-top: 60px;
+
+}
+
+.about-main-img {
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .5);
+}
+
+.about-float-card {
+    position: absolute;
+    bottom: -1.5rem;
+    left: -1.5rem;
+    left: 3px;
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    width: 260px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .4);
+}
+
+.float-avatar {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--bg-card);
+    object-fit: cover;
+}
+
+.award-icon i {
+    color: var(--accent);
+    font-size: 20px;
+}
+
+.award-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.award-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.award-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #4b5563;
+    margin: 0;
+}
+
+.float-avatar+.float-avatar {
+    margin-left: -8px;
+}
+
+.progress-bar.bg-accent {
+    background-color: var(--accent) !important;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    transition: border-color .2s;
+}
+
+.stat-card:hover {
+    border-color: var(--accent);
+}
+
+/* ============================================
+   VISI & MISI SECTION
+   ============================================ */
+.visi-misi-section {
+    background: #f0f4f8;
+    /* light grey-blue bg seperti screenshot */
+}
+
+/* ---- Card Visi (kiri — gradient teal) ---- */
+.visi-card {
+    background: linear-gradient(145deg, #2ccdc0 0%, #1a9e94 55%, #127f78 100%);
+    box-shadow: 0 20px 60px rgba(45, 212, 191, .30);
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.visi-icon-wrap {
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, .18);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    backdrop-filter: blur(4px);
+}
+
+.visi-text {
+    color: rgba(255, 255, 255, .88);
+    font-size: 1rem;
+    line-height: 1.75;
+    font-style: italic;
+}
+
+/* ---- Ikon judul Misi ---- */
+.misi-title-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(45, 212, 191, .12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2ccdc0;
+    border: 1.5px solid rgba(45, 212, 191, .25);
+}
+
+/* ---- Icon tiap item misi ---- */
+.misi-item-icon {
+    width: 38px;
+    height: 38px;
+    background: rgba(45, 212, 191, .10);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2ccdc0;
+    margin-top: 2px;
+    flex-shrink: 0;
+    transition: background .2s, transform .2s;
+}
+
+.misi-item:hover .misi-item-icon {
+    background: rgba(45, 212, 191, .22);
+    transform: scale(1.1);
+}
+
+/* ---- Garis pemisah antar item ---- */
+.misi-divider {
+    height: 1px;
+    background: rgba(26, 37, 64, .08);
+    margin-left: 0;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .visi-misi-section {
+        background: #f0f4f8;
+    }
+
+    .visi-card {
+        min-height: auto;
+    }
+}
+
+/* ============================================
+   WHY US
+   ============================================ */
+.why-section {
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(45, 212, 191, .05) 0%, transparent 60%),
+        var(--bg-dark);
+}
+
+.feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    transition: all .3s;
+}
+
+.feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(45, 212, 191, .1);
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(45, 212, 191, .08);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================================
+   SERVICES
+   ============================================ */
+.services-section {
+    background: #f0f4f8;
+}
+
+.services-label-text {
+    color: var(--accent);
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.services-title {
+    font-size: 2.4rem;
+    color: #1a2540;
+}
+
+.services-subtitle {
+    color: #6b7a99;
+    font-size: .97rem;
+    line-height: 1.7;
+    max-width: 600px;
+}
+
+.svc-card {
+    background: #ffffff;
+    border: 1px solid #e4eaf3;
+    border-radius: 16px;
+    transition: all .3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.svc-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .35s ease;
+}
+
+.svc-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px rgba(45, 212, 191, .14);
+    border-color: rgba(45, 212, 191, .3);
+}
+
+.svc-card:hover::after {
+    transform: scaleX(1);
+}
+
+.svc-icon-wrap {
+    width: 56px;
+    height: 56px;
+    background: rgba(45, 212, 191, .10);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .3s;
+}
+
+.svc-icon-wrap i {
+    font-size: 1.5rem;
+    color: var(--accent);
+    transition: transform .3s;
+}
+
+.svc-card:hover .svc-icon-wrap {
+    background: rgba(45, 212, 191, .18);
+}
+
+.svc-card:hover .svc-icon-wrap i {
+    transform: scale(1.15);
+}
+
+.svc-title {
+    font-size: 1.15rem;
+    color: #1a2540;
+}
+
+.svc-desc {
+    color: #6b7a99;
+    font-size: .9rem;
+    line-height: 1.7;
+}
+
+/* ============================================
+   TEAM
+   ============================================ */
+.team-section {
+    background:
+        radial-gradient(ellipse at 50% 100%, rgba(45, 212, 191, .05) 0%, transparent 60%),
+        var(--bg-dark);
+}
+
+.team-card {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    transition: all .3s;
+}
+
+.team-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, .4);
+    border-color: var(--accent);
+}
+
+.team-img {
+    transition: transform .4s;
+}
+
+.team-card:hover .team-img {
+    transform: scale(1.05);
+}
+
+.team-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 14, 26, .7);
+    opacity: 0;
+    transition: opacity .3s;
+}
+
+.team-card:hover .team-overlay {
+    opacity: 1;
+}
+
+.team-social-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    color: var(--bg-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: .9rem;
+    transition: transform .2s;
+}
+
+.team-social-btn:hover {
+    transform: scale(1.1);
+    color: var(--bg-dark);
+}
+
+.team-info {
+    background: var(--bg-card);
+}
+
+/* ============================================
+   PORTFOLIO
+   ============================================ */
+.portfolio-section {
+    background: #ffffff;
+}
+
+/* Header label */
+.pf-label-line {
+    display: inline-block;
+    width: 28px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+.pf-label-text {
+    color: var(--accent);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.pf-title {
+    font-size: 2.2rem;
+    color: #1a2540;
+}
+
+/* Filter pills */
+.pf-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: .45rem 1.1rem;
+    border-radius: 999px;
+    border: 1.5px solid #d1dae8;
+    background: transparent;
+    color: #4a5568;
+    font-size: .85rem;
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all .22s ease;
+    white-space: nowrap;
+}
+
+.pf-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.pf-btn.active {
+    background: #1a2540;
+    border-color: #1a2540;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Cards */
+.pf-card {
+    cursor: pointer;
+    background: #eee;
+}
+
+.pf-img {
+    transition: transform .45s ease;
+}
+
+.pf-card:hover .pf-img {
+    transform: scale(1.06);
+}
+
+/* Gradient overlay on hover */
+.pf-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 14, 26, .85) 0%, rgba(10, 14, 26, .15) 55%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.25rem;
+    opacity: 0;
+    transition: opacity .3s ease;
+}
+
+.pf-card:hover .pf-overlay {
+    opacity: 1;
+}
+
+.pf-badge {
+    display: inline-block;
+    padding: .25rem .75rem;
+    background: var(--accent);
+    color: #0a0e1a;
+    font-size: .72rem;
+    font-weight: 700;
+    border-radius: 999px;
+    margin-bottom: .5rem;
+    width: fit-content;
+}
+
+.pf-overlay-title {
+    color: #fff;
+    font-size: .95rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Filter hide/show */
+.pf-item {
+    transition: opacity .3s ease, transform .3s ease;
+}
+
+.pf-item.pf-hidden {
+    opacity: 0;
+    transform: scale(.96);
+    pointer-events: none;
+    display: none !important;
+}
+
+/* CTA Button */
+.pf-cta-btn {
+    display: inline-block;
+    padding: .75rem 2.2rem;
+    border: 1.5px solid #1a2540;
+    color: #1a2540;
+    background: transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: .95rem;
+    text-decoration: none;
+    transition: all .22s;
+    font-family: var(--font-body);
+}
+
+.pf-cta-btn:hover {
+    background: #1a2540;
+    color: #fff;
+}
+
+/* ============================================
+   CLIENTS
+   ============================================ */
+.clients-section {
+    border-top: 1px solid var(--bg-card-border);
+    border-bottom: 1px solid var(--bg-card-border);
+    background: var(--bg-card);
+}
+
+.clients-track-wrap {
+    position: relative;
+    overflow: hidden;
+}
+
+.clients-track-wrap::before,
+.clients-track-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    z-index: 2;
+}
+
+.clients-track-wrap::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg-card), transparent);
+}
+
+.clients-track-wrap::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg-card), transparent);
+}
+
+.clients-track {
+    display: flex !important;
+    align-items: center;
+    gap: 3rem;
+    animation: marquee 50s linear infinite;
+    width: max-content;
+}
+
+.client-logo-item {
+    flex-shrink: 0;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.client-logo-img {
+    opacity: .5;
+    filter: grayscale(100%) brightness(2);
+    transition: opacity .2s, filter .2s;
+}
+
+.client-logo-img:hover {
+    opacity: 1;
+    filter: none;
+    transform: scale(1.1);
+}
+
+.clients-track-wrap:hover .clients-track {
+    animation-play-state: paused;
+}
+
+/* ============================================
+   CONTACT
+   ============================================ */
+.contact-section {
+    background:
+        radial-gradient(ellipse at 0% 50%, rgba(45, 212, 191, .06) 0%, transparent 50%),
+        var(--bg-dark);
+}
+
+.contact-icon-wrap {
+    width: 44px;
+    height: 44px;
+    background: rgba(45, 212, 191, .08);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.contact-form-card {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+}
+
+.form-control-dark,
+.form-select-dark,
+select.form-control-dark {
+    background: rgba(255, 255, 255, .04) !important;
+    border: 1px solid var(--bg-card-border) !important;
+    color: var(--white) !important;
+    border-radius: 8px;
+    padding: .7rem 1rem;
+    font-family: var(--font-body);
+    transition: border-color .2s;
+}
+
+.form-control-dark::placeholder {
+    color: var(--text-muted);
+}
+
+.form-control-dark:focus,
+select.form-control-dark:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, .12) !important;
+    background: rgba(255, 255, 255, .06) !important;
+    outline: none;
+}
+
+select.form-control-dark option {
+    background: var(--bg-card);
+    color: var(--white);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer-main {
+    background: #070B15;
+    border-top: 1px solid var(--bg-card-border);
+}
+
+.footer-cta-band {
+    background: linear-gradient(135deg, #111827 0%, #0f1e2e 100%);
+    border: 1px solid var(--bg-card-border);
+}
+
+.footer-divider {
+    border-color: var(--bg-card-border);
+}
+
+.footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: .875rem;
+    line-height: 2.2;
+    transition: color .2s;
+    display: block;
+}
+
+.footer-links a:hover {
+    color: var(--accent);
+}
+
+.footer-contact li {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    margin-bottom: .75rem;
+}
+
+.social-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: .9rem;
+    transition: all .2s;
+}
+
+.social-icon:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-dark);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   RESPONSIVE — Tablet & Mobile
+   ============================================ */
+
+/* ── Global fix: cegah overflow horizontal ── */
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+    max-width: 100%;
+}
+
+/* ── Tablet (≤ 991px) ── */
+@media (max-width: 991px) {
+    .py-6 {
+        padding-top: 3.5rem;
+        padding-bottom: 3.5rem;
+    }
+
+    /* Hero */
+    h1.display-3 {
+        font-size: 2.4rem;
+    }
+
+    .hero-section {
+        min-height: 100svh;
+    }
+
+    /* About */
+    .about-float-card {
+        left: 0;
+        bottom: -1rem;
+        width: 200px;
+    }
+
+    /* Visi Misi */
+    .visi-misi-section .col-lg-5,
+    .visi-misi-section .col-lg-7 {
+        width: 100%;
+    }
+
+    .visi-card {
+        min-height: auto;
+    }
+
+    /* Services */
+    .services-title {
+        font-size: 2rem;
+    }
+
+    /* Portfolio header: stack vertikal */
+    .pf-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .pf-filters {
+        justify-content: flex-start;
+    }
+
+    /* Contact */
+    .contact-form-card {
+        padding: 2rem !important;
+    }
+}
+
+/* ── Mobile (≤ 767px) ── */
+@media (max-width: 767px) {
+
+    /* Navbar */
+    #mainNavbar {
+        padding: .7rem 0;
+    }
+
+    #mainNavbar .navbar-collapse {
+        background: rgba(10, 14, 26, .97);
+        border-top: 1px solid #1e2d40;
+        padding: 1rem;
+        margin-top: .5rem;
+        border-radius: 0 0 12px 12px;
+    }
+
+    /* Hero — kunci utama fix overflow */
+    .hero-section {
+        min-height: 100svh;
+        padding-top: 80px;
+        text-align: center;
+    }
+
+    .hero-section .col-lg-7 {
+        width: 100%;
+        padding: 0 !important;
+    }
+
+    h1.display-3 {
+        font-size: 2rem;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+    }
+
+    .hero-section p.fs-5 {
+        font-size: 1rem !important;
+    }
+
+    .hero-section .d-flex.gap-3 {
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-section .btn {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    /* Scroll indicator disembunyikan di mobile kecil */
+    .scroll-indicator {
+        display: none;
+    }
+
+    /* About */
+    .about-float-card {
+        display: none;
+    }
+
+    .stat-card {
+        padding: .75rem .5rem !important;
+    }
+
+    .stat-card h3 {
+        font-size: 1.5rem !important;
+    }
+
+    /* Visi Misi */
+    .visi-misi-section {
+        background: #f0f4f8;
+    }
+
+    .visi-card {
+        min-height: auto;
+        border-radius: 12px;
+    }
+
+    .misi-cell {
+        padding-left: 0 !important;
+        padding-top: 1.5rem;
+    }
+
+    /* Services */
+    .services-title {
+        font-size: 1.75rem;
+    }
+
+    .svc-card {
+        padding: 1.25rem !important;
+    }
+
+    /* Team */
+    .team-img {
+        height: 200px !important;
+    }
+
+    /* Portfolio */
+    .pf-title {
+        font-size: 1.75rem;
+    }
+
+    .pf-filters {
+        gap: .4rem !important;
+    }
+
+    .pf-btn {
+        font-size: .78rem;
+        padding: .35rem .85rem;
+    }
+
+    .pf-item .pf-img {
+        height: 200px !important;
+    }
+
+    /* Clients marquee lebih lambat */
+    .clients-track {
+        animation-duration: 18s;
+    }
+
+    /* Contact */
+    .contact-form-card {
+        padding: 1.25rem !important;
+    }
+
+    /* Footer */
+    .footer-cta-band {
+        padding: 2rem 1.25rem !important;
+    }
+
+    .footer-cta-band h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* ── Small Mobile (≤ 575px) ── */
+@media (max-width: 575px) {
+
+    /* Spacing */
+    .py-6 {
+        padding-top: 2.5rem;
+        padding-bottom: 2.5rem;
+    }
+
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /* Hero */
+    h1.display-3 {
+        font-size: 1.8rem;
+        line-height: 1.2;
+    }
+
+    .hero-section p {
+        font-size: .95rem !important;
+    }
+
+    /* Headings */
+    .display-5 {
+        font-size: 1.6rem !important;
+    }
+
+    .services-title {
+        font-size: 1.6rem;
+    }
+
+    .pf-title {
+        font-size: 1.6rem;
+    }
+
+    /* Stats — 2 kolom */
+    .stat-card {
+        min-width: 0;
+    }
+
+    /* About image */
+    .about-main-img {
+        height: 260px !important;
+    }
+
+    /* Visi Misi */
+    .visi-card {
+        padding: 1.5rem !important;
+    }
+
+    /* Service cards */
+    .svc-card {
+        padding: 1rem !important;
+    }
+
+    .svc-icon-wrap {
+        width: 44px;
+        height: 44px;
+    }
+
+    .svc-title {
+        font-size: 1rem;
+    }
+
+    /* Team: 2 kolom */
+    .team-section .col-6 {
+        width: 50% !important;
+    }
+
+    .team-img {
+        height: 160px !important;
+    }
+
+    /* Portfolio: 1 kolom di mobile kecil */
+    .portfolio-section .col-md-6,
+    .portfolio-section .col-lg-4 {
+        width: 100% !important;
+    }
+
+    .pf-item .pf-img {
+        height: 220px !important;
+    }
+
+    /* Contact form */
+    .contact-form-card {
+        padding: 1rem !important;
+    }
+
+    .contact-form-card .row>div {
+        width: 100% !important;
+    }
+
+    /* Footer */
+    .footer-cta-band .d-flex {
+        flex-direction: column;
+    }
+
+    .footer-cta-band .btn {
+        width: 100%;
+    }
+
+    .footer-main .col-6 {
+        width: 50% !important;
+    }
+}

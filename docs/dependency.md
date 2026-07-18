@@ -181,8 +181,6 @@ php artisan make:notification EventNotification
 
 ---
 
-
-
 # 6. Carbon
 
 ## What

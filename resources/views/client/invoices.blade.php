@@ -1,0 +1,239 @@
+@extends('layouts.client')
+@section('title','Anggaran & Faktur')
+@section('page-title','Anggaran & Faktur')
+
+@section('content')
+
+<div class="page-header">
+    <h1 style="font-size:26px;font-weight:800;color:var(--dark);margin-bottom:4px;">Tagihan & Pembayaran</h1>
+    <p style="color:var(--text-muted);">Kelola tagihan dan unggah bukti pembayaran Anda.</p>
+</div>
+
+{{-- Ringkasan keuangan --}}
+<div class="stat-cards" style="margin-bottom:24px;">
+    <div class="stat-card">
+        <div class="stat-icon"><i class="bi bi-file-earmark-text"></i></div>
+        <div class="stat-info">
+            <div class="stat-number" style="font-size:20px;">
+                Rp {{ number_format($totalInvoice,0,',','.') }}
+            </div>
+            <div class="stat-label">Total Invoice</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(34,197,94,.1);">
+            <i class="bi bi-check-circle" style="color:#16a34a;"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-number" style="font-size:20px;">
+                Rp {{ number_format($totalDibayar,0,',','.') }}
+            </div>
+            <div class="stat-label">Sudah Dibayar</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(239,68,68,.1);">
+            <i class="bi bi-exclamation-circle" style="color:#dc2626;"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-number" style="font-size:20px;">
+                Rp {{ number_format($sisaTagihan,0,',','.') }}
+            </div>
+            <div class="stat-label">Sisa Tagihan</div>
+        </div>
+    </div>
+</div>
+
+{{-- Tabel Invoice --}}
+<div style="margin-bottom:28px;">
+    <h3 style="font-size:17px;font-weight:700;color:var(--dark);margin-bottom:14px;">Daftar Invoice</h3>
+    <div class="invoice-table-wrap">
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>No. Invoice</th>
+                    <th>Event</th>
+                    <th>Tanggal</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>File</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($invoices as $inv)
+                <tr>
+                    <td style="font-weight:700;">{{ $inv->nomor_invoice }}</td>
+                    <td>{{ $inv->event->nama_event ?? '-' }}</td>
+                    <td>{{ $inv->tanggal_invoice->format('j M Y') }}</td>
+                    <td style="font-weight:700;">{{ $inv->formatted_total }}</td>
+                    <td>
+                        <span class="badge {{ $inv->badge_class }}">
+                            {{ $inv->status_label }}
+                        </span>
+                    </td>
+                    <td>
+                        @php
+                            $doc = $invoiceDocuments->firstWhere('event_id', $inv->event_id);
+                        @endphp
+                        @if($doc)
+                        <a href="{{ route('client.proposals.document.preview', $doc->id) }}" target="_blank"
+                           class="btn btn-ghost-accent btn-sm" title="Lihat Invoice">
+                            <i class="bi bi-file-pdf"></i>
+                        </a>
+                        @else
+                        <span style="color:var(--text-light);font-size:12px;">-</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if(in_array($inv->status_invoice, ['belum_bayar', 'ditolak', 'draft', 'terkirim']))
+                        <button onclick="openPayModal({{ $inv->id }}, {{ $inv->total_invoice }})"
+                                class="btn btn-accent btn-sm">
+                            <i class="bi bi-credit-card"></i> Bayar
+                        </button>
+                        @elseif($inv->status_invoice === 'menunggu_verifikasi')
+                        <span style="color:var(--text-muted);font-size:12px;">Menunggu Verifikasi</span>
+                        @else
+                        <span style="color:var(--text-muted);font-size:12px;">Lunas</span>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7">
+                        <div class="invoice-empty">
+                            <i class="bi bi-receipt"></i>
+                            Belum ada tagihan
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+
+{{-- Riwayat Pembayaran --}}
+<div>
+    <h3 style="font-size:17px;font-weight:700;color:var(--dark);margin-bottom:14px;">
+        Riwayat Pembayaran
+    </h3>
+    <div class="invoice-table-wrap">
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Jenis</th>
+                    <th>Nominal</th>
+                    <th>Tanggal</th>
+                    <th>Status</th>
+                    <th>Bukti</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($payments as $pay)
+                <tr>
+                    <td>{{ $pay->invoice->event->nama_event ?? '-' }}</td>
+                    <td>
+                        <span class="badge {{ $pay->jenis_pembayaran === 'dp' ? 'badge-mendatang' : 'badge-aktif' }}">
+                            {{ strtoupper($pay->jenis_pembayaran) }}
+                        </span>
+                    </td>
+                    <td style="font-weight:700;">{{ $pay->formatted_nominal }}</td>
+                    <td>{{ $pay->tanggal_pembayaran->format('j M Y') }}</td>
+                    <td>
+                        <span class="badge {{ $pay->badge_class }}">
+                            {{ $pay->status_label }}
+                        </span>
+                    </td>
+                    <td>
+                        @if($pay->bukti_url)
+                        <a href="{{ $pay->bukti_url }}" target="_blank"
+                           class="btn btn-ghost-accent btn-sm">
+                            <i class="bi bi-eye"></i> Lihat
+                        </a>
+                        @else
+                        <span style="color:var(--text-light);font-size:12px;">-</span>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7">
+                        <div class="invoice-empty">
+                            <i class="bi bi-wallet2"></i>
+                            Belum ada riwayat pembayaran
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{-- Modal Upload Bukti Bayar --}}
+<div id="payModal"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+            z-index:999;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:14px;padding:28px;
+                width:100%;max-width:440px;margin:20px;box-shadow:var(--shadow-lg);">
+        <h5 style="font-weight:700;color:var(--dark);margin-bottom:4px;">
+            Upload Bukti Pembayaran
+        </h5>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">
+            Upload bukti transfer (JPG, PNG, atau PDF, maks 5MB)
+        </p>
+        <form id="payForm" method="POST" enctype="multipart/form-data">
+            @csrf
+
+            <div class="form-group" style="margin-bottom:16px;">
+                <label class="form-label" style="font-size:14px; font-weight:600;">Total yang Harus Dibayar</label>
+                <div id="payTotalDisplay" style="font-size:24px; font-weight:800; color:#0f766e;">Rp 0</div>
+            </div>
+            <div style="margin-top:8px; font-size:12px; color:#94a3b8; margin-bottom:16px;">
+                <i class="bi bi-info-circle"></i> Nominal pembayaran sudah ditentukan oleh sistem.
+            </div>
+            <div class="form-group">
+                <label class="form-label">File Bukti Pembayaran</label>
+                <input type="file" name="bukti_pembayaran" class="form-control"
+                       accept=".jpg,.jpeg,.png,.pdf" required>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:20px;">
+                <button type="button" onclick="closePayModal()"
+                        class="btn btn-outline" style="flex:1;">Batal</button>
+                <button type="submit" class="btn btn-accent" style="flex:1;">
+                    <i class="bi bi-upload"></i> Upload
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@endsection
+
+@push('scripts')
+<script>
+function openPayModal(invoiceId, total) {
+    document.getElementById('payForm').action = '/client/invoices/' + invoiceId + '/bayar';
+    document.getElementById('payTotalDisplay').innerText = 'Rp ' + Number(total).toLocaleString('id-ID');
+    var nomInput = document.getElementById('payNominal');
+    if (!nomInput) {
+        nomInput = document.createElement('input');
+        nomInput.type = 'hidden';
+        nomInput.name = 'nominal';
+        nomInput.id = 'payNominal';
+        document.getElementById('payForm').appendChild(nomInput);
+    }
+    nomInput.value = total;
+    document.getElementById('payModal').style.display = 'flex';
+}
+function closePayModal() {
+    document.getElementById('payModal').style.display = 'none';
+}
+document.getElementById('payModal').addEventListener('click', function(e) {
+    if (e.target === this) closePayModal();
+});
+</script>
+@endpush
