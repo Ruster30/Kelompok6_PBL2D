@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Landing Page CMS')
 @section('page-title', 'Landing Page CMS')
@@ -19,7 +19,7 @@
 </div>
 
 <div class="tab-content">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div class="page-header" style="margin-bottom:18px;">
         <h2 style="font-size:17px; font-weight:700; color:#0f172a;">Daftar Portfolio</h2>
         <button class="btn btn-primary" onclick="openPortfolioModal()">
             <i class="fas fa-plus"></i> Tambah Portfolio
@@ -92,7 +92,7 @@
         <form id="portfolioForm" action="{{ route('admin.cms.storePortfolio') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="_method" id="portfolioFormMethod" value="POST">
-            <div class="modal-body" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="modal-body form-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div class="form-group" style="grid-column:1/-1;">
                     <label class="form-label">Judul *</label>
                     <input type="text" name="judul" id="judul" class="form-input" required>
@@ -190,3 +190,5 @@ document.getElementById('gambar').addEventListener('change', function(e) {
 });
 </script>
 @endpush
+
+

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Landing Page CMS')
 @section('page-title', 'Landing Page CMS')
@@ -19,7 +19,7 @@
 </div>
 
 <div class="tab-content">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div class="page-header" style="margin-bottom:18px;">
         <h2 style="font-size:17px; font-weight:700; color:#0f172a;">Daftar Layanan</h2>
         <button class="btn btn-primary" onclick="openServiceModal()">
             <i class="fas fa-plus"></i> Tambah Layanan
@@ -89,7 +89,7 @@
                     <label class="form-label">Deskripsi *</label>
                     <textarea name="deskripsi" id="deskripsi" class="form-input" rows="3" required></textarea>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="form-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                     <div class="form-group">
                         <label class="form-label">Urutan</label>
                         <input type="number" name="urutan" id="urutan" class="form-input" value="0" min="0">
@@ -135,3 +135,4 @@ function openServiceModal(service = null) {
 }
 </script>
 @endpush
+

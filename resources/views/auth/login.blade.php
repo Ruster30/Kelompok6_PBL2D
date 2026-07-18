@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk — Alpha Organizer</title>
+    <title>Masuk Alpha Organizer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -37,7 +37,7 @@
             overflow: hidden;
         }
 
-        /* ── LEFT PANEL ── */
+        /* â”€â”€ LEFT PANEL â”€â”€ */
         .left-panel {
             width: 42%;
             height: 100vh;
@@ -177,7 +177,7 @@
         .avatar-stack .avatar:nth-child(2) { background: linear-gradient(135deg, #f093fb, #f5576c); }
         .avatar-stack .avatar:nth-child(3) { background: linear-gradient(135deg, #4facfe, #00f2fe); }
 
-        /* ── RIGHT PANEL ── */
+        /* â”€â”€ RIGHT PANEL â”€â”€ */
         .right-panel {
             width: 58%;
             min-height: 100vh;
@@ -489,7 +489,48 @@
             .left-panel { display: none; }
             .right-panel { width: 100%; margin-left: 0; padding: 40px 24px; }
         }
-    </style>
+    
+        /* ===== RESPONSIVE: Login Page ===== */
+        @media (max-width: 991px) {
+            .left-panel {
+                display: none !important;
+            }
+            .right-panel {
+                width: 100% !important;
+                margin-left: 0 !important;
+                padding: 40px 24px !important;
+                height: 100vh;
+                overflow-y: auto;
+            }
+            .right-panel-inner {
+                max-width: 400px !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+            }
+            .login-header h2 {
+                font-size: 24px !important;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .right-panel {
+                padding: 24px 16px !important;
+            }
+            .right-panel-inner {
+                max-width: 100% !important;
+            }
+            .login-header h2 {
+                font-size: 20px !important;
+            }
+            .social-buttons .btn-social {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+            .auth-footer {
+                font-size: 13px !important;
+            }
+        }
+        </style>
 </head>
 <body>
 
@@ -535,11 +576,11 @@
         @endif
 
         <!-- Toggle Email / Nomor Telepon -->
-        <div class="login-type-toggle">
-            <button type="button" class="active" id="btn-email-toggle" onclick="switchLoginType('email')">
+        <div class="login-type-toggle" role="tablist" aria-label="Pilih metode login">
+            <button type="button" class="active" id="btn-email-toggle" onclick="switchLoginType('email')" role="tab" aria-selected="true" aria-controls="field-email">
                 <i class="bi bi-envelope"></i> Email
             </button>
-            <button type="button" id="btn-phone-toggle" onclick="switchLoginType('phone')">
+            <button type="button" id="btn-phone-toggle" onclick="switchLoginType('phone')" role="tab" aria-selected="false" aria-controls="field-phone">
                 <i class="bi bi-telephone"></i> No. Telepon
             </button>
         </div>
@@ -550,7 +591,7 @@
             <input type="hidden" name="login" id="login">
 
             <!-- Field Email -->
-            <div class="form-group" id="field-email">
+            <div class="form-group form-field-group" id="field-email" aria-hidden="false">
                 <label class="form-label" for="email">Alamat Email</label>
                 <div class="input-wrap">
                     <input
@@ -571,7 +612,7 @@
             </div>
 
             <!-- Field Nomor Telepon (tersembunyi secara default) -->
-            <div class="form-group" id="field-phone" style="display:none;">
+            <div class="form-group form-field-group" id="field-phone" aria-hidden="true" style="display:none;">
                 <label class="form-label" for="phone">Nomor Telepon</label>
                 <div class="input-wrap">
                     <input
@@ -606,7 +647,7 @@
                         name="password"
                         id="password"
                         class="form-control-custom {{ $errors->has('password') ? 'is-invalid' : '' }}"
-                        placeholder="••••••••"
+                        placeholder="+62 800-0000-0000"
                         autocomplete="current-password">
                     <i class="bi bi-lock input-icon"></i>
                     <button type="button" class="toggle-password" onclick="togglePassword('password', this)">
@@ -671,17 +712,25 @@
 
         if (type === 'email') {
             emailField.style.display = 'block';
+            emailField.setAttribute('aria-hidden', 'false');
             phoneField.style.display = 'none';
+            phoneField.setAttribute('aria-hidden', 'true');
             emailToggle.classList.add('active');
+            emailToggle.setAttribute('aria-selected', 'true');
             phoneToggle.classList.remove('active');
+            phoneToggle.setAttribute('aria-selected', 'false');
             document.getElementById('email').required = true;
             document.getElementById('phone').required = false;
             loginTypeInput.value = 'email';
         } else {
             emailField.style.display = 'none';
+            emailField.setAttribute('aria-hidden', 'true');
             phoneField.style.display = 'block';
+            phoneField.setAttribute('aria-hidden', 'false');
             emailToggle.classList.remove('active');
+            emailToggle.setAttribute('aria-selected', 'false');
             phoneToggle.classList.add('active');
+            phoneToggle.setAttribute('aria-selected', 'true');
             document.getElementById('email').required = false;
             document.getElementById('phone').required = true;
             loginTypeInput.value = 'phone';

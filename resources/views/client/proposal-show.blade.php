@@ -1,4 +1,4 @@
-@extends('layouts.client')
+﻿@extends('layouts.client')
 @section('title','Surat Penawaran')
 @section('page-title','Surat Penawaran')
 
@@ -15,12 +15,12 @@
 @if($proposal->versi > 1)
 <div style="background:#eff6ff;border:1px solid #93c5fd;color:#1e40af;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:14px;display:flex;align-items:center;gap:8px;">
     <i class="bi bi-info-circle-fill"></i>
-    Ini adalah <strong>Revisi v{{ $proposal->versi }}</strong> — penawaran terbaru yang telah diperbarui oleh tim kami.
+    Ini adalah <strong>Revisi v{{ $proposal->versi }}</strong> â€” penawaran terbaru yang telah diperbarui oleh tim kami.
 </div>
 @endif
 
 {{-- Action Bar --}}
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+<div class="page-header" style="margin-bottom:24px;">
     <a href="{{ route('client.proposals') }}"
        class="back-link">
         <i class="bi bi-arrow-left"></i> Kembali ke Penawaran
@@ -42,7 +42,7 @@
         </a>
         @endif
 
-        {{-- Tombol aksi respon — hanya jika status menunggu konfirmasi --}}
+        {{-- Tombol aksi respon â€” hanya jika status menunggu konfirmasi --}}
         @if(!in_array($proposal->status, ['diterima','ditolak']))
 
         <a href="{{ route('client.proposals.negosiasi.form', $proposal->id) }}"
@@ -109,9 +109,9 @@
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════════
-     SURAT PENAWARAN — format identik dengan tampilan admin
-     ══════════════════════════════════════════════════════════ --}}
+{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     SURAT PENAWARAN â€” format identik dengan tampilan admin
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
 <div style="background:#f1f5f9;padding:24px;border-radius:12px;margin-bottom:24px;">
 <div style="background:white;max-width:820px;margin:0 auto;padding:0;border-radius:8px;
             box-shadow:0 2px 12px rgba(0,0,0,0.08);font-family:'Times New Roman',serif;
@@ -290,7 +290,7 @@
 </div>{{-- /surat --}}
 </div>{{-- /bg-wrapper --}}
 
-{{-- ── Riwayat Proposal ──────────────────────────── --}}
+{{-- â”€â”€ Riwayat Proposal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 @if($proposal->event->proposals->count() > 1)
 
 <div style="max-width:820px;margin:0 auto 24px;">
@@ -356,7 +356,7 @@
 
 @endif
 
-{{-- ── Riwayat Negosiasi ──────────────────────────── --}}
+{{-- â”€â”€ Riwayat Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 @if($negotiations->isNotEmpty())
 <div style="max-width:820px;margin:0 auto 24px;">
     <div class="settings-card">
@@ -393,7 +393,7 @@
 </div>
 @endif
 
-{{-- ── Kontrak ───────────────────────────────────── --}}
+{{-- â”€â”€ Kontrak â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 @if($event->contract)
 <div style="max-width:820px;margin:0 auto;">
     <div class="settings-card">

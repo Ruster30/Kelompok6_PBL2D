@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Kelola Klien')
 @section('page-title', 'Kelola Klien')
@@ -14,15 +14,15 @@
     </button>
 </div>
 
-{{-- ─── Flash Messages ─────────────────────────────────────────────── --}}
+{{-- â”€â”€â”€ Flash Messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 @if(session('success'))
 <div class="alert alert-success" style="display:flex;align-items:center;gap:10px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:10px;padding:14px 18px;margin-bottom:20px;color:#065f46;font-size:14px;">
     <i class="fas fa-check-circle"></i> {{ session('success') }}
 </div>
 @endif
 
-{{-- ─── Stats Cards ─────────────────────────────────────────────────── --}}
-<div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+{{-- â”€â”€â”€ Stats Cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+<div class="stats-grid">
     <div class="stat-card">
         <div class="stat-icon" style="background:#eff6ff;">
             <i class="fas fa-users" style="color:#3b82f6;"></i>
@@ -65,7 +65,7 @@
     </div>
 </div>
 
-{{-- ─── Table Card ──────────────────────────────────────────────────── --}}
+{{-- â”€â”€â”€ Table Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div class="card">
     {{-- Toolbar --}}
     <div class="card-header" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #f1f5f9;padding-bottom:16px;margin-bottom:0;">
@@ -98,8 +98,8 @@
                         style="border:1px solid #e2e8f0;border-radius:8px;padding:8px 32px 8px 12px;font-size:13px;color:#334155;background:#fff;cursor:pointer;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center;">
                     <option value="terbaru" {{ ($filters['sort'] ?? 'terbaru') === 'terbaru' ? 'selected' : '' }}>Terbaru</option>
                     <option value="terlama" {{ ($filters['sort'] ?? '') === 'terlama' ? 'selected' : '' }}>Terlama</option>
-                    <option value="nama_az" {{ ($filters['sort'] ?? '') === 'nama_az' ? 'selected' : '' }}>Nama A–Z</option>
-                    <option value="nama_za" {{ ($filters['sort'] ?? '') === 'nama_za' ? 'selected' : '' }}>Nama Z–A</option>
+                    <option value="nama_az" {{ ($filters['sort'] ?? '') === 'nama_az' ? 'selected' : '' }}>Nama Aâ€“Z</option>
+                    <option value="nama_za" {{ ($filters['sort'] ?? '') === 'nama_za' ? 'selected' : '' }}>Nama Zâ€“A</option>
                 </select>
             </div>
 
@@ -116,7 +116,7 @@
     </div>
 
     {{-- Tabel --}}
-    <table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th style="width:40px;">NO</th>
@@ -135,11 +135,10 @@
                 $isAktif    = $tanggal && $tanggal->diffInDays(now()) <= 30;
                 $initials   = $klien->initials;
             @endphp
-            <tr>
-                <td style="color:#94a3b8;font-size:13px;">{{ $kliens->firstItem() + $loop->index }}</td>
+            <td data-label="No" style="color:#94a3b8;font-size:13px;">{{ $kliens->firstItem() + $loop->index }}</td>
 
                 {{-- Avatar + Nama --}}
-                <td>
+                <td> data-label="Nama Klien"
                     <div style="display:flex;align-items:center;gap:12px;">
                         <div style="width:38px;height:38px;border-radius:50%;background:#14b8a6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;">
                             {{ $initials }}
@@ -154,7 +153,7 @@
                 </td>
 
                 {{-- Kontak --}}
-                <td>
+                <td> data-label="Kontak"
                     <div style="display:flex;flex-direction:column;gap:3px;">
                         <span style="font-size:13px;color:#334155;display:flex;align-items:center;gap:6px;">
                             <i class="fas fa-envelope" style="color:#94a3b8;font-size:11px;"></i>
@@ -170,19 +169,19 @@
                 </td>
 
                 {{-- Status --}}
-                <td>
+                <td> data-label="Status"
                     <span class="badge {{ $isAktif ? 'badge-active' : 'badge-gray' }}">
                         {{ $isAktif ? 'Aktif' : 'Nonaktif' }}
                     </span>
                 </td>
 
                 {{-- Total Event --}}
-                <td style="text-align:center;">
+                <td style="text-align:center;"> data-label="Total Event"
                     <span style="font-weight:600;color:#1e293b;">{{ $klien->events_count }}</span>
                 </td>
 
                 {{-- Terakhir Aktif --}}
-                <td>
+                <td> data-label="Terakhir Aktif"
                     <div style="font-size:13px;color:#334155;">
                         {{ $tanggal ? $tanggal->format('d/m/Y') : '-' }}
                     </div>
@@ -194,7 +193,7 @@
                 </td>
 
                 {{-- Aksi --}}
-                <td>
+                <td> data-label="Aksi"
                     <div style="display:flex;align-items:center;gap:6px;justify-content:center;">
                         {{-- Kirim Notifikasi --}}
                         <button onclick="openModalKirim({{ $klien->id }}, '{{ addslashes($klien->name) }}')"
@@ -222,7 +221,7 @@
             </tr>
             @endforelse
         </tbody>
-    </table>
+    </table></div>
 
     {{-- Pagination --}}
     @if($kliens->hasPages())
@@ -266,7 +265,7 @@
     @endif
 </div>
 
-{{-- ─── Notifikasi Terkirim Terbaru ─────────────────────────────────── --}}
+{{-- â”€â”€â”€ Notifikasi Terkirim Terbaru â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 @php
     $recentNotifs = \App\Models\AdminClientNotification::with('recipient')
         ->where('sender_id', auth()->id())
@@ -305,7 +304,7 @@
 </div>
 @endif
 
-{{-- ─── Modal Kirim Notifikasi ──────────────────────────────────────── --}}
+{{-- â”€â”€â”€ Modal Kirim Notifikasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div id="modalKirimNotif"
      style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;">
     <div style="background:#fff;border-radius:16px;width:100%;max-width:480px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.2);margin:20px;">
@@ -329,12 +328,12 @@
                 </label>
                 <select name="tipe" required
                         style="width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;color:#334155;">
-                    <option value="info">📢 Info Umum</option>
-                    <option value="promo">🎉 Promo</option>
-                    <option value="pengingat">⏰ Pengingat</option>
-                    <option value="pembayaran">💳 Pembayaran</option>
-                    <option value="event">📅 Event</option>
-                    <option value="peringatan">⚠️ Peringatan</option>
+                    <option value="info">ðŸ“¢ Info Umum</option>
+                    <option value="promo">ðŸŽ‰ Promo</option>
+                    <option value="pengingat">â° Pengingat</option>
+                    <option value="pembayaran">ðŸ’³ Pembayaran</option>
+                    <option value="event">ðŸ“… Event</option>
+                    <option value="peringatan">âš ï¸ Peringatan</option>
                 </select>
             </div>
 
@@ -371,14 +370,14 @@
 </div>
 
 <script>
-// ─── Search dengan debounce ──────────────────────────────────────────
+// â”€â”€â”€ Search dengan debounce â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let searchTimer;
 document.getElementById('searchInput').addEventListener('input', function () {
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => document.getElementById('filterForm').submit(), 600);
 });
 
-// ─── Modal Notifikasi ────────────────────────────────────────────────
+// â”€â”€â”€ Modal Notifikasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function openModalKirim(id, nama) {
     document.getElementById('modalRecipientId').value = id;
     document.getElementById('modalKirimSubtitle').textContent = 'Kepada: ' + nama;
@@ -387,7 +386,7 @@ function openModalKirim(id, nama) {
 }
 
 function openModalKirimAll() {
-    // Kosongkan recipient_id → semua klien
+    // Kosongkan recipient_id â†’ semua klien
     document.getElementById('modalRecipientId').value = '';
     document.getElementById('modalKirimSubtitle').textContent = 'Pilih klien tertentu atau kosongkan untuk semua.';
     document.getElementById('modalKirimNotif').style.display = 'flex';
@@ -406,3 +405,6 @@ document.getElementById('modalKirimNotif').addEventListener('click', function (e
 
 </script>
 @endsection
+
+
+

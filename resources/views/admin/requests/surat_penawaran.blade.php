@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Surat Penawaran')
 @section('page-title', 'Surat Penawaran')
@@ -7,7 +7,7 @@
 
 
 {{-- Action Bar --}}
-<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+<div class="page-header" style="margin-bottom:24px;">
     <a href="{{ route('admin.requests.index') }}"
        style="display:inline-flex; align-items:center; gap:6px; color:#64748b; font-size:14px; text-decoration:none;">
         <i class="fas fa-arrow-left"></i> Kembali ke Request
@@ -351,7 +351,7 @@
 
 @push('styles')
 <style>
-/* ── Input dalam surat ── */
+/* â”€â”€ Input dalam surat â”€â”€ */
 .surat-input {
     font-family: 'Times New Roman', serif;
     font-size: 13px;
@@ -454,8 +454,8 @@ function confirmKirimPenawaran(formEl) {
 }
 
 /**
- * Toggle mode view ↔ edit pada halaman Preview Surat Penawaran.
- * Hanya mengubah visibilitas elemen — desain surat tidak berubah.
+ * Toggle mode view â†” edit pada halaman Preview Surat Penawaran.
+ * Hanya mengubah visibilitas elemen â€” desain surat tidak berubah.
  */
 function toggleEditMode(editOn) {
     const viewEls   = document.querySelectorAll('.field-view');

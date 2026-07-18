@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'judul',
@@ -19,48 +22,31 @@ class Notification extends Model
         'dibaca' => 'boolean',
     ];
 
-    // ─── Relasi ──────────────────────────────────────────────
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    // ─── Helpers ─────────────────────────────────────────────
-
-    /** Tandai notifikasi ini sebagai sudah dibaca */
     public function markAsRead(): void
     {
         $this->update(['dibaca' => true]);
     }
 
-    /** Icon sesuai tipe notifikasi (untuk tampilan di view) */
     public function getIconAttribute(): string
     {
         return match($this->tipe) {
-            'proposal'   => 'fa-file-alt',
-            'pembayaran' => 'fa-credit-card',
-            'invoice'    => 'fa-file-invoice',
-            'kontrak'    => 'fa-file-contract',
-            'event'      => 'fa-calendar',
-            'sukses'     => 'fa-check-circle',
-            'peringatan' => 'fa-exclamation-triangle',
-            'info'       => 'fa-info-circle',
-            default      => 'fa-bell',
+            'sukses'     => 'bi-check-circle-fill',
+            'peringatan' => 'bi-exclamation-triangle-fill',
+            default      => 'bi-info-circle-fill',
         };
     }
 
-    /** CSS class warna icon sesuai tipe */
-    public function getIconColorAttribute(): string
+    public function getWarnaAttribute(): string
     {
         return match($this->tipe) {
-            'proposal'   => 'text-blue-500',
-            'pembayaran' => 'text-green-500',
-            'invoice'    => 'text-yellow-500',
-            'kontrak'    => 'text-purple-500',
-            'event'      => 'text-teal-500',
-            'info'       => 'text-blue-400',
-            default      => 'text-gray-500',
+            'sukses'     => '#10b981',
+            'peringatan' => '#f59e0b',
+            default      => '#3b82f6',
         };
     }
 }

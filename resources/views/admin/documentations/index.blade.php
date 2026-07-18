@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Pusat Dokumentasi')
 @section('page-title', 'Pusat Dokumentasi')
@@ -11,7 +11,7 @@
     </div>
 </div>
 
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
+<div class="doc-grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
     <div class="plain-stat">
         <div class="plain-stat-label">Total Dokumentasi</div>
         <div class="plain-stat-value">{{ $totalDocs }}</div>
@@ -162,3 +162,4 @@ function debounce(fn, delay) {
 }
 </script>
 @endpush
+

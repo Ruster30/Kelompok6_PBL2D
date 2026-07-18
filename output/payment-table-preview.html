@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview Tabel Pembayaran</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f5f6fa; padding: 32px; color: #0f172a; }
+  h1 { font-size: 20px; margin-bottom: 6px; }
+  .subtitle { color: #64748b; margin-bottom: 24px; font-size: 13px; }
+  
+  .card { border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 32px; }
+  .card-header { padding: 12px 20px; font-weight: 700; font-size: 13px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 6px; }
+  .card-body { padding: 0; overflow-x: auto; }
+  
+  table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+  thead th { text-align: left; padding: 10px 10px; border-bottom: 2px solid #e2e8f0; color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; }
+  tbody td { padding: 11px 10px; border-bottom: 1px solid #f1f5f9; }
+  
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .badge-dp { background: #dbeafe; color: #1e40af; }
+  .badge-lunas { background: #fef3c7; color: #92400e; }
+  .badge-verified { background: #dcfce7; color: #166534; }
+  .badge-pending { background: #fef3c7; color: #92400e; }
+  .badge-danger { background: #fee2e2; color: #991b1b; }
+  
+  .btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; }
+  .btn-primary { background: #0f766e; color: #fff; }
+  .btn-outline { background: transparent; border: 1px solid #e2e8f0; color: #64748b; }
+  .btn-sm { padding: 4px 8px; font-size: 11px; }
+  .btn-danger { background: #dc2626; color: #fff; }
+  
+  .row-highlight { background: #fef3c7; }
+  .row-fixed { background: #f0fdf4; }
+  
+  .tag { display: inline-block; background: #2DD4BF; color: white; padding: 1px 10px; border-radius: 999px; font-size: 10px; font-weight: 600; }
+  
+  .row-wrap { display: flex; gap: 24px; flex-wrap: wrap; }
+  .col-table { flex: 1; min-width: 500px; }
+  
+  .footer-note { margin-top: 20px; padding: 12px 16px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 12px; color: #475569; line-height: 1.6; }
+  .check { color: #16a34a; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>?? Tabel Pembayaran</h1>
+<p class="subtitle">Perbaiki tampilan <strong>"Pelunasan 100%"</strong> agar konsisten dengan <span class="tag">DP 90%</span> lainnya</p>
+
+<div class="row-wrap">
+  <div class="col-table">
+    <div class="card">
+      <div class="card-header" style="background:#fef2f2;color:#dc2626;">?? Saat Ini — Pelunasan 100% tampil beda</div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr><th>Invoice</th><th>Event</th><th>Jenis</th><th>Status</th><th>Aksi</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600;">INV-001</td>
+              <td>Wedding Anna</td>
+              <td><span class="badge badge-dp">DP 90%</span></td>
+              <td><span class="badge badge-verified">? Diverifikasi</span></td>
+              <td><button class="btn btn-primary btn-sm">Kirim Kwitansi</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">INV-002</td>
+              <td>Seminar AI</td>
+              <td><span class="badge badge-dp">DP 90%</span></td>
+              <td><span class="badge badge-verified">? Diverifikasi</span></td>
+              <td><button class="btn btn-primary btn-sm">Kirim Kwitansi</button></td>
+            </tr>
+            <tr class="row-highlight">
+              <td style="font-weight:600;">INV-003</td>
+              <td>Company Gathering</td>
+              <td><span class="badge badge-lunas">Pelunasan 100%</span></td>
+              <td><span class="badge badge-pending">? Menunggu</span></td>
+              <td>
+                <button class="btn btn-primary btn-sm">Terima</button>
+                <button class="btn btn-danger btn-sm">Tolak</button>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">INV-004</td>
+              <td>Birthday Party</td>
+              <td><span class="badge badge-dp">DP 75%</span></td>
+              <td><span class="badge badge-verified">? Diverifikasi</span></td>
+              <td><button class="btn btn-primary btn-sm">Kirim Kwitansi</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="footer-note">
+      <span class="check">?</span> <strong>Issue:</strong> "Pelunasan 100%" menggunakan badge kuning berbeda dari DP lainnya (biru).<br>
+      <span class="check">?</span> <strong>Akibat:</strong> Tampilan tidak konsisten dan bisa menyebabkan tabel terpotong jika ada banyak aksi.
+    </div>
+  </div>
+
+  <div class="col-table">
+    <div class="card" style="border-color:#22c55e;">
+      <div class="card-header" style="background:#f0fdf4;color:#16a34a;">? Setelah Diperbaiki — Semua konsisten</div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr><th>Invoice</th><th>Event</th><th>Jenis</th><th>Status</th><th>Aksi</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600;">INV-001</td>
+              <td>Wedding Anna</td>
+              <td><span class="badge badge-dp">DP 90%</span></td>
+              <td><span class="badge badge-verified">? Diverifikasi</span></td>
+              <td><button class="btn btn-primary btn-sm">Kirim Kwitansi</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">INV-002</td>
+              <td>Seminar AI</td>
+              <td><span class="badge badge-dp">DP 90%</span></td>
+              <td><span class="badge badge-verified">? Diverifikasi</span></td>
+              <td><button class="btn btn-primary btn-sm">Kirim Kwitansi</button></td>
+            </tr>
+            <tr class="row-fixed">
+              <td style="font-weight:600;">INV-003</td>
+              <td>Company Gathering</td>
+              <td><span class="badge badge-dp">DP 90%</span></td>
+              <td><span class="badge badge-pending">? Menunggu</span></td>
+              <td>
+                <button class="btn btn-primary btn-sm">Terima</button>
+                <button class="btn btn-danger btn-sm">Tolak</button>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">INV-004</td>
+              <td>Birthday Party</td>
+              <td><span class="badge badge-dp">DP 75%</span></td>
+              <td><span class="badge badge-verified">? Diverifikasi</span></td>
+              <td><button class="btn btn-primary btn-sm">Kirim Kwitansi</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:#64748b;">INV-003b</td>
+              <td style="color:#64748b;">Company Gathering</td>
+              <td><span class="badge badge-dp">Pelunasan 10%</span></td>
+              <td><span class="badge badge-pending">? Menunggu</span></td>
+              <td>
+                <button class="btn btn-primary btn-sm">Terima</button>
+                <button class="btn btn-danger btn-sm">Tolak</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <span class="check">?</span> <strong>Perbaikan:</strong> "Pelunasan 100%" diubah menjadi "DP 90%" + "Pelunasan 10%" (baris tambahan).<br>
+      <span class="check">?</span> <strong>Hasil:</strong> Semua baris konsisten, tidak ada pemotongan tabel.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/vendor.css') }}">
     <style>
+        /* ---- Custom Scrollbar ---- */
+        ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #e8ecf1;
+          border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #94a3b8;
+          border-radius: 4px;
+          transition: all 0.2s;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #64748b;
+        }
+        ::-webkit-scrollbar-thumb:active {
+          background: #2DD4BF;
+        }
+        * {
+          scrollbar-width: thin;
+          scrollbar-color: #94a3b8 #e8ecf1;
+        }
+
         :root {
     --sidebar-width: 280px;
             --sidebar-bg: #0f1923;
@@ -95,6 +122,22 @@
             z-index: 100;
         }
 
+        .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
         .topbar-title {
             font-size: 18px;
             font-weight: 700;
@@ -701,7 +744,7 @@
             opacity: 1;
         }
 
-        /* Desktop (≥1200px) - No changes */
+        /* Desktop (â‰¥1200px) - No changes */
         @media (min-width: 1200px) {
             .mobile-toggle {
                 display: none !important;
@@ -742,7 +785,23 @@
             .topbar {
                 padding: 0 16px;
             }
-            .topbar-title {
+            .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
+        .topbar-title {
                 font-size: 15px;
             }
             .user-info .name-role {
@@ -885,7 +944,58 @@
 
         /* Very Small Mobile (<576px) */
         @media (max-width: 575px) {
-            .topbar-title {
+            div[style*='grid-template-columns:repeat(4,1fr)'],
+            div[style*='grid-template-columns: repeat(4, 1fr)'] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            div[style*='grid-template-columns:repeat(3,1fr)'],
+            div[style*='grid-template-columns: repeat(3, 1fr)'] {
+                grid-template-columns: repeat(1, 1fr) !important;
+            }
+            .page-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 12px !important;
+            }
+            .topbar {
+                padding: 0 16px !important;
+            }
+            .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
+        .topbar-title {
+                font-size: 14px !important;
+            }
+            .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
+        .topbar-title {
                 font-size: 14px;
             }
             .page-content {
@@ -904,6 +1014,10 @@
 
         /* Responsive helper */
         @media (max-width: 768px) {
+            div[style*='grid-template-columns:repeat(4,1fr)'],
+            div[style*='grid-template-columns: repeat(4, 1fr)'] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
     </style>
     @stack('styles')
 </head>
@@ -914,7 +1028,7 @@
     <a href="{{ route('vendor.ringkasan') }}" class="sidebar-logo">
         <span class="sidebar-logo-text">ALPHA<span>.</span>CORP</span>
     </a>
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" id="sidebarNav">
         <div class="nav-section">
             <div class="nav-section-label">Dashboard</div>
             <a href="{{ route('vendor.ringkasan') }}" class="nav-item {{ request()->routeIs('vendor.ringkasan') ? 'active' : '' }}">
@@ -973,6 +1087,11 @@
                 <i class="bi bi-list"></i>
             </button>
             <h1 class="topbar-title">@yield('page-title')</h1>
+              @hasSection('breadcrumbs')
+              <div class="breadcrumbs">
+                  @yield('breadcrumbs')
+              </div>
+              @endif
         </div>
         <div class="topbar-right">
             <a href="{{ route('vendor.notifikasi') }}" class="notif-btn">
@@ -994,8 +1113,45 @@
     </header>
 
     <!-- PAGE CONTENT -->
-    <main class="page-content">
-        @yield('content')
+     <main class="page-content">
+
+        @if(session('success'))
+            <div id="success-alert" style="background:#dcfce7;border:1px solid #86efac;color:#15803d;
+                        padding:12px 18px;border-radius:8px;margin-bottom:20px;
+                        font-size:13.5px;display:flex;align-items:center;gap:8px;">
+                <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div id="error-alert" style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;
+                        padding:12px 18px;border-radius:8px;margin-bottom:20px;
+                        font-size:13.5px;display:flex;align-items:center;gap:8px;">
+                <i class="bi bi-exclamation-circle-fill"></i> {{ session('error') }}
+            </div>
+        @endif
+
+        @yield('content')>
+        document.addEventListener('DOMContentLoaded', function () {
+            const successAlert = document.getElementById('success-alert');
+            const errorAlert = document.getElementById('error-alert');
+
+            if (successAlert) {
+                setTimeout(() => {
+                    successAlert.style.transition = "opacity .3s ease";
+                    successAlert.style.opacity = "0";
+                    setTimeout(() => { successAlert.remove(); }, 300);
+                }, 2000);
+            }
+
+            if (errorAlert) {
+                setTimeout(() => {
+                    errorAlert.style.transition = "opacity .5s ease";
+                    errorAlert.style.opacity = "0";
+                    setTimeout(() => { errorAlert.remove(); }, 500);
+                }, 4000);
+            }
+        });
+    </script>
     </main>
 
 </div>
@@ -1007,27 +1163,35 @@ document.addEventListener('DOMContentLoaded', function() {
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebarOverlay');
     var toggleBtn = document.getElementById('mobileToggle');
-    
+    var sidebarNav = document.getElementById('sidebarNav');
+    var KEY = 'vendorSidebarScrollPosition';
+
     // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    if (sidebar) {
-        var KEY = 'vendorSidebarScrollPosition';
+    if (sidebarNav) {
         var restoreScroll = function() {
             var saved = sessionStorage.getItem(KEY);
             if (saved !== null) {
-                sidebar.scrollTop = parseInt(saved, 10);
+                sidebarNav.scrollTop = parseInt(saved, 10);
             }
         };
         restoreScroll();
         if (window.requestAnimationFrame) {
             window.requestAnimationFrame(restoreScroll);
         }
-        sidebar.addEventListener('scroll', function() {
-            sessionStorage.setItem(KEY, sidebar.scrollTop);
+        sidebarNav.addEventListener('scroll', function() {
+            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
         window.addEventListener('beforeunload', function() {
-            sessionStorage.setItem(KEY, sidebar.scrollTop);
+            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
+        document.addEventListener('click', function(e) {
+            var target = e.target.closest('a, button[type="submit"]');
+            if (target && sidebarNav) {
+                sessionStorage.setItem(KEY, sidebarNav.scrollTop);
+            }
+        }, true);
     }
+
     // ===== RESPONSIVE TOGGLE =====
     if (toggleBtn && sidebar && overlay) {
         function openSidebar() {
@@ -1059,14 +1223,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Close sidebar when clicking nav links on mobile
         var navLinks = sidebar.querySelectorAll('.nav-item');
         navLinks.forEach(function(link) {
             link.addEventListener('click', function() {
                 if (window.innerWidth < 768) {
+                    if (sidebarNav) {
+                        sessionStorage.setItem(KEY, sidebarNav.scrollTop);
+                    }
                     closeSidebar();
                 }
             });
+        });
+        
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeSidebar();
+            }
         });
     }
 });
@@ -1076,3 +1248,7 @@ document.addEventListener('DOMContentLoaded', function() {
 @stack('scripts')
 </body>
 </html>
+
+
+
+

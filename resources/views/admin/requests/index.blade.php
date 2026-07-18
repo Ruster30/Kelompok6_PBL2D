@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Request Client')
 @section('page-title', 'Request Client')
@@ -18,7 +18,7 @@
                 <i class="fas fa-search"></i>
                 <input type="text" name="search" placeholder="Cari request..." value="{{ request('search') }}">
             </div>
-            <select class="select-filter" name="status" onchange="this.form.submit()">
+            <select class="select-filter" name="status" onchange="saveScrollAndSubmit(this.form)">
                 <option value="">Semua Status</option>
                 <option value="menunggu"   @selected(request('status') === 'menunggu')>Menunggu</option>
                 <option value="diproses"   @selected(request('status') === 'diproses')>Diterima</option>
@@ -30,7 +30,7 @@
         </form>
     </div>
 
-    <table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th>Nama Client</th>
@@ -93,14 +93,13 @@
             }
         @endphp
             <tr>
-                <td style="font-weight:600;">{{ $req->client->name ?? '-' }}</td>
-                <td style="font-weight:500;">{{ $req->nama_event }}</td>
-                <td>{{ $req->jenis_event ?? '-' }}</td>
-                <td>{{ $req->tanggal_event?->format('Y-m-d') ?? '-' }}</td>
-                <td>{{ $req->lokasi_event ?? '-' }}</td>
+                <td data-label="Nama Client" style="font-weight:600;">{{ $req->client->name ?? '-' }}</td>
+                <td data-label="Nama Event" style="font-weight:500;">{{ $req->nama_event }}</td>
+                <td data-label="Jenis Event">{{ $req->jenis_event ?? '-' }}</td>
+                <td data-label="Tanggal">{{ $req->tanggal_event?->format('Y-m-d') ?? '-' }}</td>
+                <td data-label="Lokasi">{{ $req->lokasi_event ?? '-' }}</td>
                 <td>{{ $req->rentang_anggaran ?? '-' }}</td>
-                <td>
-                    <span class="badge {{ $map[$status] ?? 'badge-pending' }}">
+                <td data-label="Status"><span class="badge {{ $map[$status] ?? 'badge-pending' }}">
                         {{ $labels[$status] ?? ucfirst($status) }}
                     </span>
                 </td>
@@ -140,13 +139,30 @@
                 </td>
             </tr>
             @empty
-            <tr class="empty-row"><td colspan="8">Belum ada request.</td></tr>
+            <tr class="empty-row"><td colspan="6">
+                    <div class="empty-state" style="padding:40px 20px;">
+                        <div class="empty-state-icon"><i class="bi bi-envelope-open" style="font-size:40px;"></i></div>
+                        <h3 class="empty-state-title">Belum ada request.</h3>
+                        <p class="empty-state-text">Request dari klien akan muncul di sini ketika ada pengajuan baru.</p>
+                    </div>
+                </td></tr>
             @endforelse
         </tbody>
-    </table>
+    </table></div>
 
     @if($requests->hasPages())
     <div style="padding:16px 24px; border-top:1px solid #f1f5f9;">{{ $requests->links() }}</div>
     @endif
 </div>
+<script>
+function saveScrollAndSubmit(form) {
+    var nav = document.getElementById('sidebarNav');
+    if (nav) {
+        sessionStorage.setItem('adminSidebarScrollPosition', nav.scrollTop);
+    }
+    form.submit();
+}
+</script>
 @endsection
+
+

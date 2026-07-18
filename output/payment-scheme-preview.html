@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview Ubah Skema Pembayaran</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f5f6fa; padding: 32px; color: #0f172a; }
+  h1 { font-size: 22px; margin-bottom: 8px; }
+  .subtitle { color: #64748b; margin-bottom: 32px; font-size: 14px; }
+  
+  .card { border-radius: 14px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+  .card-header { padding: 14px 24px; font-weight: 700; font-size: 14px; border-bottom: 1px solid #e2e8f0; }
+  
+  .row { display: flex; gap: 32px; flex-wrap: wrap; }
+  .col { flex: 1; min-width: 380px; }
+  
+  .card-body { padding: 24px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+  .form-group select, .form-group input { 
+    width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px;
+    font-size: 14px; color: #334155; background: white; outline: none;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: #2DD4BF; }
+  .form-hint { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+  
+  .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .badge-warning { background: #fef3c7; color: #92400e; }
+  .badge-success { background: #dcfce7; color: #16a34a; }
+  
+  .highlight-box {
+    background: #fef3c7; border: 2px dashed #f59e0b; border-radius: 8px; padding: 16px;
+    margin: 16px 0;
+  }
+  .highlight-box.green { background: #f0fdf4; border-color: #22c55e; }
+  
+  .preview-container { display: flex; gap: 32px; flex-wrap: wrap; }
+  .preview-card { flex: 1; min-width: 420px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+  .preview-card .head { padding: 14px 24px; font-weight: 700; font-size: 14px; text-align: center; }
+  
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .info-item label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600; }
+  .info-item .value { font-size: 14px; font-weight: 600; color: #0f172a; margin-top: 2px; }
+  
+  .payment-option { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
+  .payment-option:hover { border-color: #2DD4BF; }
+  .payment-option .radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #cbd5e1; flex-shrink: 0; }
+  .payment-option.selected .radio { border-color: #2DD4BF; background: #2DD4BF; box-shadow: inset 0 0 0 3px white; }
+  .payment-option.selected { border-color: #2DD4BF; background: #f0fdf9; }
+  
+  .summary { background: #f8fafc; border-radius: 8px; padding: 16px; }
+  .summary-row { display: flex; justify-content: space-between; padding: 8px 0; }
+  .summary-row.total { border-top: 1px solid #e2e8f0; margin-top: 8px; padding-top: 12px; font-weight: 700; }
+  
+  .arrow-icon { font-size: 32px; color: #2DD4BF; display: flex; align-items: center; justify-content: center; }
+  
+  .footer-note { margin-top: 24px; padding: 16px 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 13px; color: #475569; line-height: 1.8; }
+  .check { color: #2DD4BF; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>?? Preview Ubah Skema Pembayaran (100% ? 90%)</h1>
+<p class="subtitle">Menyesuaikan nilai persentase pembayaran agar konsisten dengan yang lain</p>
+
+<div class="preview-container">
+
+  {{-- SEBELUM --}}
+  <div class="preview-card">
+    <div class="head" style="background:#fee2e2;color:#dc2626;">
+      ? SEBELUM — Persentase 100%
+    </div>
+    <div style="padding:24px;">
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Total Anggaran</label>
+          <div class="value">Rp 120.000.000</div>
+        </div>
+        <div class="info-item">
+          <label>Status</label>
+          <div><span class="badge badge-warning">Skema Aktif</span></div>
+        </div>
+      </div>
+      
+      <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:12px;">Jenis Pembayaran</div>
+      
+      <div class="payment-option">
+        <div class="radio"></div>
+        <div><strong>Full Payment</strong><br><span style="font-size:12px;color:#64748b;">Bayar lunas 1x</span></div>
+      </div>
+      
+      <div class="payment-option selected">
+        <div class="radio"></div>
+        <div>
+          <strong>DP + Pelunasan</strong><br>
+          <span style="font-size:12px;color:#64748b;">Bayar DP di muka, sisanya lunas</span>
+        </div>
+      </div>
+      
+      <div class="highlight-box">
+        <div style="font-size:13px;font-weight:600;color:#92400e;margin-bottom:8px;">?? Pengaturan DP</div>
+        <div class="form-group">
+          <label>Persentase DP (%)</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="number" value="100" style="flex:1;border-color:#f59e0b;background:#fffbeb;font-weight:700;color:#92400e;">
+            <span style="font-size:13px;color:#64748b;">%</span>
+          </div>
+          <div class="form-hint">?? Nilai 100% tidak sama dengan skema lainnya (normalnya 90%)</div>
+        </div>
+        <div class="summary">
+          <div class="summary-row">
+            <span>Total Anggaran</span>
+            <span>Rp 120.000.000</span>
+          </div>
+          <div class="summary-row">
+            <span>DP (100%)</span>
+            <span style="color:#dc2626;">Rp 120.000.000</span>
+          </div>
+          <div class="summary-row total">
+            <span>Sisa Pelunasan</span>
+            <span>Rp 0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {{-- ARROW --}}
+  <div class="arrow-icon">?</div>
+  
+  {{-- SESUDAH --}}
+  <div class="preview-card">
+    <div class="head" style="background:#dcfce7;color:#16a34a;">
+      ? SESUDAH — Persentase 90%
+    </div>
+    <div style="padding:24px;">
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Total Anggaran</label>
+          <div class="value">Rp 120.000.000</div>
+        </div>
+        <div class="info-item">
+          <label>Status</label>
+          <div><span class="badge badge-success">Skema Aktif</span></div>
+        </div>
+      </div>
+      
+      <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:12px;">Jenis Pembayaran</div>
+      
+      <div class="payment-option">
+        <div class="radio"></div>
+        <div><strong>Full Payment</strong><br><span style="font-size:12px;color:#64748b;">Bayar lunas 1x</span></div>
+      </div>
+      
+      <div class="payment-option selected">
+        <div class="radio"></div>
+        <div>
+          <strong>DP + Pelunasan</strong><br>
+          <span style="font-size:12px;color:#64748b;">Bayar DP di muka, sisanya lunas</span>
+        </div>
+      </div>
+      
+      <div class="highlight-box green">
+        <div style="font-size:13px;font-weight:600;color:#16a34a;margin-bottom:8px;">? Pengaturan DP (Diperbaiki)</div>
+        <div class="form-group">
+          <label>Persentase DP (%)</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="number" value="90" style="flex:1;border-color:#22c55e;background:#f0fdf4;font-weight:700;color:#16a34a;">
+            <span style="font-size:13px;color:#64748b;">%</span>
+          </div>
+          <div class="form-hint">? Konsisten dengan skema pembayaran lainnya (90%)</div>
+        </div>
+        <div class="summary">
+          <div class="summary-row">
+            <span>Total Anggaran</span>
+            <span>Rp 120.000.000</span>
+          </div>
+          <div class="summary-row">
+            <span>DP (90%)</span>
+            <span style="color:#16a34a;">Rp 108.000.000</span>
+          </div>
+          <div class="summary-row total">
+            <span>Sisa Pelunasan</span>
+            <span>Rp 12.000.000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-note">
+  <strong>? Ringkasan Perubahan:</strong><br>
+  <span class="check">?</span> <strong>Persentase DP:</strong> 100% ? 90% (konsisten dengan skema lainnya)<br>
+  <span class="check">?</span> <strong>DP:</strong> Rp 120.000.000 ? Rp 108.000.000<br>
+  <span class="check">?</span> <strong>Sisa Pelunasan:</strong> Rp 0 ? Rp 12.000.000 (otomatis terbit invoice pelunasan)<br>
+  <span class="check">?</span> <strong>Skema pembayaran jadi konsisten:</strong> DP 90% + Pelunasan 10%
+</div>
+
+</body>
+</html>

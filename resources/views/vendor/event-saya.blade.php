@@ -2,6 +2,9 @@
 
 @section('title', 'Event Saya')
 @section('page-title', 'Event Saya')
+@section('breadcrumbs')
+    <a href="{{ route('vendor.ringkasan') }}">Dashboard</a><span class="separator">/</span><span>Event Saya</span>
+@endsection
 
 @section('content')
 

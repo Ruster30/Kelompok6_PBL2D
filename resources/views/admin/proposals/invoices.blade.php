@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Dokumen')
 @section('page-title', 'Dokumen')
@@ -17,14 +17,14 @@
 </div>
 
 <div class="tab-content">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div class="page-header" style="margin-bottom:18px;">
         <h2 style="font-size:17px; font-weight:700; color:#0f172a;">Daftar Kwitansi</h2>
         <button class="btn btn-primary" onclick="document.getElementById('invoiceModal').classList.add('show')">
             <i class="fas fa-plus"></i> Buat Kwitansi Baru
         </button>
     </div>
 
-    <table>
+    <div class="table-responsive-wrap"><table>
         <thead>
             <tr>
                 <th>No Kwitansi</th>
@@ -122,7 +122,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline" onclick="document.getElementById('invoiceModal').classList.remove('show')">Batal</button>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
+                <button type="submit" class="btn btn-primary" id="invoiceSubmitBtn" onclick="this.disabled=true; this.innerHTML='<i class=\"fas fa-spinner fa-spin\"></i> Menyimpan...';"><i class="fas fa-save"></i> Simpan</button>
             </div>
         </form>
     </div>
@@ -144,3 +144,4 @@ function editInvoice(invoice) {
 }
 </script>
 @endpush
+

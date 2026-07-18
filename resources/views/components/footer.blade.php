@@ -31,7 +31,7 @@
                 <p class="text-light-muted small mb-3">Kami adalah perusahaan event organizer profesional yang berdedikasi menghadirkan pengalaman tak terlupakan untuk setiap momen spesial Anda.</p>
                 <div class="d-flex gap-2">
                     <a href="https://www.instagram.com/alphaorganizer.co?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="social-icon"><i class="bi bi-instagram"></i></a>
-                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=alphaorganizer@gmail.com" class="social-icon" target="_blank" rel="noopener noreferrer">
+                    <a href="mailto:alphaorganizer@gmail.com" class="social-icon" target="_blank" rel="noopener noreferrer">
                         <i class="bi bi-envelope-fill"></i>
                     </a>
                     <a href="https://api.whatsapp.com/send?phone=6282233181883" class="social-icon" target="_blank" rel="noopener noreferrer">

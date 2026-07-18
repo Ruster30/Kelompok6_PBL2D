@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Kelola Event')
 @section('page-title', 'Kelola Event')
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th>Nama Event</th>
@@ -47,18 +47,16 @@
         <tbody>
             @forelse($events as $event)
             <tr>
-                <td style="font-weight:500;">{{ $event->nama_event }}</td>
+                <td data-label="Nama Event" style="font-weight:500;">{{ $event->nama_event }}</td>
                 <td>{{ $event->client->name ?? '-' }}</td>
                 <td>{{ $event->tanggal_event ? $event->tanggal_event->format('d M Y') : '-' }}</td>
                 <td>{{ $event->lokasi_event ?? '-' }}</td>
                 <td>{{ number_format($event->jumlah_tamu ?? 0, 0, ',', '.') }}</td>
-                <td>
-                    <span class="badge {{ $event->badge_class }}">
+                <td data-label="Status"><span class="badge {{ $event->badge_class }}">
                         {{ $event->status_label }}
                     </span>
                 </td>
-                <td>
-                    <div class="action-btns">
+                <td data-label="Aksi"><div class="action-btns">
                         <a href="{{ route('admin.events.show', $event->id) }}" class="action-btn" title="Lihat">
                             <i class="fas fa-eye" style="font-size:12px;"></i>
                         </a>
@@ -76,10 +74,16 @@
                 </td>
             </tr>
             @empty
-            <tr class="empty-row"><td colspan="7">Belum ada event.</td></tr>
+            <tr class="empty-row"><td colspan="7">
+                    <div class="empty-state" style="padding:40px 20px;">
+                        <div class="empty-state-icon"><i class="bi-calendar-event" style="font-size:40px;"></i></div>
+                        <h3 class="empty-state-title">Belum ada event.</h3>
+                        <p class="empty-state-text">Data akan muncul setelah Anda menambahkan data baru.</p>
+                    </div>
+                </td></tr>
             @endforelse
         </tbody>
-    </table>
+    </table></div>
 
     @if($events->hasPages())
     <div style="padding:16px 24px; border-top:1px solid #f1f5f9;">
@@ -106,3 +110,4 @@
     }
 </script>
 @endpush
+
