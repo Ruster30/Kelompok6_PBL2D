@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <style>
         /* ---- Custom Scrollbar ---- */
         ::-webkit-scrollbar {
@@ -78,7 +79,7 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f6fa; display: flex; min-height: 100vh; }
-        /* Sidebar Ã¢â‚¬â€ redesigned to match Client style */
+        /* Sidebar ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â redesigned to match Client style */
         .sidebar {
             width: 280px; min-width: 280px; background: #0f172a; color: #94a3b8;
             display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
@@ -459,7 +460,7 @@
             font-size: 20px;
         }
 
-        /* Desktop (Ã¢â€°Â¥769px) - No changes */
+        /* Desktop (ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥769px) - No changes */
         @media (min-width: 769px) {
             #sidebarToggle {
                 display: none !important;
@@ -1053,6 +1054,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </html>
+
+
 
 
 

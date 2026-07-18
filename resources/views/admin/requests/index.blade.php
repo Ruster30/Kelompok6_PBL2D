@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Request Client')
 @section('page-title', 'Request Client')
@@ -30,7 +30,7 @@
         </form>
     </div>
 
-    <table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th>Nama Client</th>
@@ -93,14 +93,13 @@
             }
         @endphp
             <tr>
-                <td style="font-weight:600;">{{ $req->client->name ?? '-' }}</td>
-                <td style="font-weight:500;">{{ $req->nama_event }}</td>
-                <td>{{ $req->jenis_event ?? '-' }}</td>
-                <td>{{ $req->tanggal_event?->format('Y-m-d') ?? '-' }}</td>
-                <td>{{ $req->lokasi_event ?? '-' }}</td>
+                <td data-label="Nama Client" style="font-weight:600;">{{ $req->client->name ?? '-' }}</td>
+                <td data-label="Nama Event" style="font-weight:500;">{{ $req->nama_event }}</td>
+                <td data-label="Jenis Event">{{ $req->jenis_event ?? '-' }}</td>
+                <td data-label="Tanggal">{{ $req->tanggal_event?->format('Y-m-d') ?? '-' }}</td>
+                <td data-label="Lokasi">{{ $req->lokasi_event ?? '-' }}</td>
                 <td>{{ $req->rentang_anggaran ?? '-' }}</td>
-                <td>
-                    <span class="badge {{ $map[$status] ?? 'badge-pending' }}">
+                <td data-label="Status"><span class="badge {{ $map[$status] ?? 'badge-pending' }}">
                         {{ $labels[$status] ?? ucfirst($status) }}
                     </span>
                 </td>
@@ -149,7 +148,7 @@
                 </td></tr>
             @endforelse
         </tbody>
-    </table>
+    </table></div>
 
     @if($requests->hasPages())
     <div style="padding:16px 24px; border-top:1px solid #f1f5f9;">{{ $requests->links() }}</div>
@@ -165,3 +164,5 @@ function saveScrollAndSubmit(form) {
 }
 </script>
 @endsection
+
+

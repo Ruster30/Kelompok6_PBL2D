@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk — Alpha Organizer</title>
+    <title>Masuk Alpha Organizer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -37,7 +37,7 @@
             overflow: hidden;
         }
 
-        /* ── LEFT PANEL ── */
+        /* â”€â”€ LEFT PANEL â”€â”€ */
         .left-panel {
             width: 42%;
             height: 100vh;
@@ -177,7 +177,7 @@
         .avatar-stack .avatar:nth-child(2) { background: linear-gradient(135deg, #f093fb, #f5576c); }
         .avatar-stack .avatar:nth-child(3) { background: linear-gradient(135deg, #4facfe, #00f2fe); }
 
-        /* ── RIGHT PANEL ── */
+        /* â”€â”€ RIGHT PANEL â”€â”€ */
         .right-panel {
             width: 58%;
             min-height: 100vh;
@@ -489,7 +489,48 @@
             .left-panel { display: none; }
             .right-panel { width: 100%; margin-left: 0; padding: 40px 24px; }
         }
-    </style>
+    
+        /* ===== RESPONSIVE: Login Page ===== */
+        @media (max-width: 991px) {
+            .left-panel {
+                display: none !important;
+            }
+            .right-panel {
+                width: 100% !important;
+                margin-left: 0 !important;
+                padding: 40px 24px !important;
+                height: 100vh;
+                overflow-y: auto;
+            }
+            .right-panel-inner {
+                max-width: 400px !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+            }
+            .login-header h2 {
+                font-size: 24px !important;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .right-panel {
+                padding: 24px 16px !important;
+            }
+            .right-panel-inner {
+                max-width: 100% !important;
+            }
+            .login-header h2 {
+                font-size: 20px !important;
+            }
+            .social-buttons .btn-social {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+            .auth-footer {
+                font-size: 13px !important;
+            }
+        }
+        </style>
 </head>
 <body>
 
@@ -606,7 +647,7 @@
                         name="password"
                         id="password"
                         class="form-control-custom {{ $errors->has('password') ? 'is-invalid' : '' }}"
-                        placeholder="••••••••"
+                        placeholder="+62 800-0000-0000"
                         autocomplete="current-password">
                     <i class="bi bi-lock input-icon"></i>
                     <button type="button" class="toggle-password" onclick="togglePassword('password', this)">

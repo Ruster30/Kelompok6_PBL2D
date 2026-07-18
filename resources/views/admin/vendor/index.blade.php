@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Vendor')
 @section('page-title', 'Vendor')
@@ -14,7 +14,7 @@
     </button>
 </div>
 
-<div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+<div class="stats-grid-3">
     <div class="plain-stat">
         <div class="plain-stat-label">Total Vendor</div>
         <div class="plain-stat-value">{{ $totalVendors }}</div>
@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th>Nama Vendor</th>
@@ -54,31 +54,26 @@
         <tbody>
             @forelse($vendors as $vendor)
             <tr>
-                <td style="font-weight:500;">{{ $vendor->nama_vendor }}</td>
+                <td data-label="Nama Vendor" style="font-weight:500;">{{ $vendor->nama_vendor }}</td>
                 <td>{{ $vendor->jenis_vendor ?? '-' }}</td>
                 <td>{{ $vendor->email ?? $vendor->user->email ?? '-' }}</td>
-                <td>
-                    @if($vendor->user_id)
+                <td data-label="Akun">@if($vendor->user_id)
                         <span class="badge badge-done">Terhubung</span>
                     @else
                         <span class="badge badge-gray">Belum ada</span>
                     @endif
                 </td>
-                <td>
-                    @if($vendor->rating)
+                <td data-label="Rating">@if($vendor->rating)
                         <i class="fas fa-star" style="color:#fbbf24; font-size:12px;"></i> {{ number_format($vendor->rating, 1) }}
                     @else
                         <span style="color:#94a3b8;">-</span>
                     @endif
                 </td>
-                <td>
-                    @php
-                        $busy = ($vendor->active_jobs_count ?? 0) > 0;
+                <td data-label="Status">@php $busy = ($vendor->active_jobs_count ?? 0) > 0;
                     @endphp
                     <span class="badge {{ $busy ? 'badge-active' : 'badge-done' }}">{{ $busy ? 'Bertugas' : 'Tersedia' }}</span>
                 </td>
-                <td>
-                    <div class="action-btns">
+                <td data-label="Aksi"><div class="action-btns">
                         <button class="action-btn" title="Edit" onclick='editVendor({{ json_encode($vendor) }})'>
                             <i class="fas fa-edit" style="font-size:12px;"></i>
                         </button>
@@ -102,7 +97,7 @@
                 </td></tr>
             @endforelse
         </tbody>
-    </table>
+    </table></div>
 
     @if($vendors->hasPages())
     <div style="padding:16px 24px; border-top:1px solid #f1f5f9;">
@@ -221,3 +216,5 @@ function editVendor(vendor) {
 }
 </script>
 @endpush
+
+

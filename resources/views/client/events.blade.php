@@ -1,10 +1,10 @@
-@extends('layouts.client')
+﻿@extends('layouts.client')
 @section('title','Event Terdaftar')
 @section('page-title','Event Terdaftar')
 
 @section('content')
 
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+<div class="page-header" style="margin-bottom:28px;">
     <h1 style="font-size:26px;font-weight:800;color:var(--dark);">Event Terdaftar</h1>
     <a href="{{ route('client.event.create') }}" class="btn btn-accent">
         <i class="bi bi-plus-lg"></i> Ajukan Event Baru

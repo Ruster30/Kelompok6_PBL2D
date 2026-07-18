@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Analitik')
 @section('page-title', 'Analitik')
@@ -418,7 +418,7 @@
 <!-- Top Tables -->
 <div class="table-card">
     <h3><i class="fas fa-trophy"></i> Top 10 Klien (Berdasarkan Nilai Event)</h3>
-    <table class="analytics-table">
+    <div class="table-responsive-wrap"><table class="analytics-table">
         <thead>
             <tr>
                 <th>No</th>
@@ -443,12 +443,11 @@
             </tr>
             @endforelse
         </tbody>
-    </table>
-</div>
+    </table></div></div>
 
 <div class="table-card">
     <h3><i class="fas fa-star"></i> Top 10 Vendor (Berdasarkan Nilai RAB)</h3>
-    <table class="analytics-table">
+    <div class="table-responsive-wrap"><table class="analytics-table">
         <thead>
             <tr>
                 <th>No</th>
@@ -475,12 +474,11 @@
             </tr>
             @endforelse
         </tbody>
-    </table>
-</div>
+    </table></div></div>
 
 <div class="table-card">
     <h3><i class="fas fa-medal"></i> Top 10 Event (Berdasarkan Nilai)</h3>
-    <table class="analytics-table">
+    <div class="table-responsive-wrap"><table class="analytics-table">
         <thead>
             <tr>
                 <th>No</th>
@@ -511,8 +509,7 @@
             </tr>
             @endforelse
         </tbody>
-    </table>
-</div>
+    </table></div></div>
 
 <!-- Chart.js Library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -642,3 +639,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 @endsection
+
+
+

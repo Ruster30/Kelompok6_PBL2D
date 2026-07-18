@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Document Builder')
 @section('page-title', 'Document Builder')
@@ -19,7 +19,7 @@
 
 <div class="tab-content">
 
-    {{-- ─── FORM GENERATE ─────────────────────────────────────── --}}
+    {{-- â”€â”€â”€ FORM GENERATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:28px 32px;margin-bottom:24px;">
         <h2 style="font-size:17px;font-weight:700;color:#0f172a;margin-bottom:6px;">
             <i class="fas fa-file-alt" style="color:#6366f1;margin-right:6px;"></i>
@@ -62,16 +62,16 @@
                     </label>
                     <select name="jenis_dokumen" id="jenis_dokumen" class="form-input" required>
                         <option value="">-- Pilih Jenis Dokumen --</option>
-                        <option value="surat_kontrak" @selected($selectedJenis === 'surat_kontrak')>📑 Surat Kontrak</option>
-                        <option value="invoice"       @selected($selectedJenis === 'invoice')>🧾 Invoice</option>
-                        <option value="rab"           @selected($selectedJenis === 'rab')>📊 RAB (Rencana Anggaran Biaya)</option>
+                        <option value="surat_kontrak" @selected($selectedJenis === 'surat_kontrak')>ðŸ“‘ Surat Kontrak</option>
+                        <option value="invoice"       @selected($selectedJenis === 'invoice')>ðŸ§¾ Invoice</option>
+                        <option value="rab"           @selected($selectedJenis === 'rab')>ðŸ“Š RAB (Rencana Anggaran Biaya)</option>
                     </select>
                 </div>
             </div>
 
             {{-- Info Card Event (muncul setelah pilih event) --}}
             <div id="eventInfoCard" style="display:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 18px;margin-bottom:24px;">
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px;">
+                <div class="stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px;">
                     <div><span style="color:#64748b;">Client</span><br><strong id="infoClient">-</strong></div>
                     <div><span style="color:#64748b;">Tanggal Event</span><br><strong id="infoTanggal">-</strong></div>
                     <div><span style="color:#64748b;">Lokasi</span><br><strong id="infoLokasi">-</strong></div>
@@ -150,7 +150,7 @@
         </form>
     </div>
 
-    {{-- ─── AREA HASIL / AKSI ─────────────────────────────────── --}}
+    {{-- â”€â”€â”€ AREA HASIL / AKSI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div id="resultPanel" style="display:none;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:28px 32px;">
         <h2 style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:18px;">
             <i class="fas fa-check-circle" style="color:#22c55e;margin-right:6px;"></i>
@@ -200,7 +200,7 @@
     const CSRF         = document.querySelector('meta[name="csrf-token"]')?.content
                          || '{{ csrf_token() }}';
 
-    // ─── Info event ─────────────────────────────────────────────
+    // â”€â”€â”€ Info event â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     document.getElementById('event_id').addEventListener('change', function () {
         const opt = this.options[this.selectedIndex];
         if (!this.value) {
@@ -219,25 +219,25 @@
         }
     });
 
-    // ─── Info jenis dokumen ─────────────────────────────────────
+    // â”€â”€â”€ Info jenis dokumen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const JENIS_DESC = {
         proposal: {
-            icon: '📄', label: 'Proposal Event',
+            icon: 'ðŸ“„', label: 'Proposal Event',
             desc: 'Dokumen proposal lengkap meliputi profil perusahaan, data client & event, konsep, layanan, timeline, vendor, RAB, dan syarat & ketentuan.',
             color: '#6366f1'
         },
         surat_kontrak: {
-            icon: '📑', label: 'Surat Kontrak',
+            icon: 'ðŸ“‘', label: 'Surat Kontrak',
             desc: 'Kontrak resmi antara EO dan client mencakup nomor kontrak, nilai kontrak, hak & kewajiban, ketentuan pembayaran, masa berlaku, dan area tanda tangan.',
             color: '#0ea5e9'
         },
         invoice: {
-            icon: '🧾', label: 'Invoice',
+            icon: 'ðŸ§¾', label: 'Invoice',
             desc: 'Invoice pembayaran berisi nomor invoice, daftar item RAB, harga, subtotal, total, dan status pembayaran.',
             color: '#f59e0b'
         },
         rab: {
-            icon: '📊', label: 'RAB (Rencana Anggaran Biaya)',
+            icon: 'ðŸ“Š', label: 'RAB (Rencana Anggaran Biaya)',
             desc: 'Tabel rincian anggaran event: nama item, vendor, qty, harga satuan, subtotal, dan total keseluruhan.',
             color: '#22c55e'
         },
@@ -269,11 +269,11 @@
         card.style.display = 'block';
     });
 
-    // ─── State untuk tombol aksi ────────────────────────────────
+    // â”€â”€â”€ State untuk tombol aksi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     let lastEventId = null;
     let lastJenis   = null;
 
-    // ─── Generate ───────────────────────────────────────────────
+    // â”€â”€â”€ Generate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function doGenerate() {
         const eventId = document.getElementById('event_id').value;
         const jenis   = document.getElementById('jenis_dokumen').value;
@@ -382,7 +382,7 @@
             document.getElementById('event_id').dispatchEvent(new Event('change'));
             document.getElementById('jenis_dokumen').dispatchEvent(new Event('change'));
         });
-﻿    @endif
+ï»¿    @endif
 
     // Payment Scheme Functions (khusus Invoice)
     let docTotalDibayarKlien = 0;
@@ -527,3 +527,5 @@
 
 @endpush
 @endsection
+
+

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Dokumen')
 @section('page-title', 'Dokumen')
@@ -157,7 +157,7 @@
                 <td>
                     <div class="action-btns" style="justify-content:center; gap:6px;">
 
-                        {{-- 👁 Lihat (Preview) --}}
+                        {{-- ðŸ‘ Lihat (Preview) --}}
                         <a href="{{ route('admin.proposals.preview', $doc->id) }}"
                            target="_blank"
                            class="action-btn"
@@ -165,14 +165,14 @@
                             <i class="bi bi-eye"></i>
                         </a>
 
-                        {{-- ⬇ Download --}}
+                        {{-- â¬‡ Download --}}
                         <a href="{{ route('admin.proposals.download', $doc->id) }}"
                            class="action-btn"
                            title="Download">
                             <i class="bi bi-download"></i>
                         </a>
 
-                        {{-- 📤 Kirim ke Client --}}
+                        {{-- ðŸ“¤ Kirim ke Client --}}
                         <button type="button"
                                 class="action-btn"
                                 title="Kirim ke Client"
@@ -180,7 +180,7 @@
                             <i class="bi bi-send"></i>
                         </button>
 
-                        {{-- 🗑 Hapus --}}
+                        {{-- ðŸ—‘ Hapus --}}
                         <form action="{{ route('admin.proposals.destroy', $doc->id) }}"
                               method="POST"
                               style="display:inline;"
@@ -214,11 +214,11 @@
     @endif
 </div>
 
-{{-- ─── Modal Kirim ke Client ─────────────────────────── --}}
+{{-- â”€â”€â”€ Modal Kirim ke Client â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <div id="modalKirim"
      style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:9999; align-items:center; justify-content:center;">
     <div style="background:#fff; border-radius:12px; padding:28px 32px; width:100%; max-width:460px; box-shadow:0 20px 60px rgba(0,0,0,.2);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div class="page-header" style="margin-bottom:20px;">
             <h3 style="margin:0; font-size:1.1rem; font-weight:600;">
                 <i class="bi bi-send" style="color:#6366f1; margin-right:8px;"></i>
                 Kirim Dokumen ke Client
@@ -276,7 +276,7 @@
 
 @push('scripts')
 <script>
-// ─── File Preview sebelum upload ────────────────
+// â”€â”€â”€ File Preview sebelum upload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.getElementById('fileInput').addEventListener('change', function() {
     const file = this.files[0];
     const preview = document.getElementById('filePreview');
@@ -349,7 +349,7 @@ function cancelUpload() {
     document.getElementById('filePreview').style.display = 'none';
 }
 
-// ─── Filter pencarian ──────────────────────────
+// â”€â”€â”€ Filter pencarian â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.getElementById('searchInput').addEventListener('input', debounce(filterTable, 350));
 document.getElementById('typeFilter').addEventListener('change', filterTable);
 
@@ -368,7 +368,7 @@ function debounce(fn, delay) {
     return function (...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), delay); };
 }
 
-// ─── Modal Kirim ke Client ─────────────────────
+// â”€â”€â”€ Modal Kirim ke Client â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function bukaModalKirim(docId, docName) {
     document.getElementById('formKirim').action = '/admin/proposals/' + docId + '/send';
     document.querySelector('#modalDocName span').textContent = docName;
@@ -391,3 +391,4 @@ document.addEventListener('keydown', function (e) {
 });
 </script>
 @endpush
+

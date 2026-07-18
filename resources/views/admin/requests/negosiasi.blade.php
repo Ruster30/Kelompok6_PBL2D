@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Riwayat Negosiasi')
 @section('page-title', 'Admin Dashboard')
@@ -6,7 +6,7 @@
 @section('content')
 
 {{-- Header --}}
-<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+<div class="page-header" style="margin-bottom:24px;">
     <a href="{{ route('admin.requests.index') }}"
        style="display:inline-flex; align-items:center; gap:6px; color:#64748b; font-size:14px; text-decoration:none;">
         <i class="fas fa-arrow-left"></i> Kembali ke Request
@@ -111,3 +111,4 @@
 @endforelse
 
 @endsection
+

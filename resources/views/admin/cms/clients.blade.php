@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Landing Page CMS')
 @section('page-title', 'Landing Page CMS')
@@ -19,7 +19,7 @@
 </div>
 
 <div class="tab-content">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div class="page-header" style="margin-bottom:18px;">
         <h2 style="font-size:17px; font-weight:700; color:#0f172a;">Logo Klien &amp; Partner</h2>
         <button class="btn btn-primary" onclick="openClientModal()">
             <i class="fas fa-plus"></i> Tambah Logo
@@ -83,7 +83,7 @@
                     <label class="form-label">Website</label>
                     <input type="url" name="website" id="website" class="form-input" placeholder="https://...">
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="form-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                     <div class="form-group">
                         <label class="form-label">Tampilkan</label>
                         <select name="is_active" id="is_active" class="form-input">
@@ -140,3 +140,4 @@ document.getElementById('logo').addEventListener('change', function(e) {
 });
 </script>
 @endpush
+

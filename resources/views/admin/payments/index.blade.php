@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Pembayaran')
 @section('page-title', 'Pembayaran')
@@ -25,7 +25,7 @@
 @endphp
 
 {{-- Stats Cards --}}
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px;">
+<div class="stats-grid">
     <div class="stat-card">
         <div class="stat-card-top"><i class="fas fa-credit-card stat-icon"></i><span class="stat-badge">Total</span></div>
         <div class="stat-value">{{ $totalPayments }}</div>
@@ -53,7 +53,7 @@
         <span style="font-size:15px;font-weight:700;color:#0f172a;">Daftar Pembayaran</span>
         <span style="font-size:12px;color:#94a3b8;">Total: {{ $totalPayments }} transaksi</span>
     </div>
-    <table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th>Tanggal</th>
@@ -69,15 +69,14 @@
         <tbody>
             @forelse($payments as $payment)
             <tr>
-                <td>{{ \Carbon\Carbon::parse($payment->tanggal_pembayaran)->format('d M Y') }}</td>
-                <td style="font-weight:500;">{{ $payment->invoice->nomor_invoice ?? '-' }}</td>
-                <td>{{ $payment->invoice->event->nama_event ?? '-' }}</td>
-                <td>
-                    <span class="badge {{ $payment->jenis_pembayaran === 'dp' ? 'badge-pending' : 'badge-done' }}">
+                <td data-label="Tanggal">{{ \Carbon\Carbon::parse($payment->tanggal_pembayaran)->format('d M Y') }}</td>
+                <td data-label="Invoice" style="font-weight:500;">{{ $payment->invoice->nomor_invoice ?? '-' }}</td>
+                <td data-label="Event">{{ $payment->invoice->event->nama_event ?? '-' }}</td>
+                <td data-label="Jenis"><span class="badge {{ $payment->jenis_pembayaran === 'dp' ? 'badge-pending' : 'badge-done' }}">
                         {{ $payment->jenis_pembayaran === 'dp' ? 'DP' : 'Pelunasan' }}
                     </span>
                 </td>
-                <td style="font-weight:600;">Rp {{ number_format($payment->nominal, 0, ',', '.') }}</td>
+                <td data-label="Nominal" style="font-weight:600;">Rp {{ number_format($payment->nominal, 0, ',', '.') }}</td>
                 <td>
                     @php
                         $map = ['menunggu'=>'badge-pending','diverifikasi'=>'badge-active','ditolak'=>'badge-cancel'];
@@ -164,7 +163,7 @@
                 </td></tr>
             @endforelse
         </tbody>
-    </table>
+    </table></div>
 
     @if($payments->hasPages())
     <div style="padding:16px 24px; border-top:1px solid #f1f5f9;">
@@ -173,6 +172,8 @@
     @endif
 </div>
 @endsection
+
+
 
 
 

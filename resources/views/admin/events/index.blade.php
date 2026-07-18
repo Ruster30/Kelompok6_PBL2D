@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Kelola Event')
 @section('page-title', 'Kelola Event')
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div class="table-responsive-wrap"><table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th>Nama Event</th>
@@ -47,18 +47,16 @@
         <tbody>
             @forelse($events as $event)
             <tr>
-                <td style="font-weight:500;">{{ $event->nama_event }}</td>
+                <td data-label="Nama Event" style="font-weight:500;">{{ $event->nama_event }}</td>
                 <td>{{ $event->client->name ?? '-' }}</td>
                 <td>{{ $event->tanggal_event ? $event->tanggal_event->format('d M Y') : '-' }}</td>
                 <td>{{ $event->lokasi_event ?? '-' }}</td>
                 <td>{{ number_format($event->jumlah_tamu ?? 0, 0, ',', '.') }}</td>
-                <td>
-                    <span class="badge {{ $event->badge_class }}">
+                <td data-label="Status"><span class="badge {{ $event->badge_class }}">
                         {{ $event->status_label }}
                     </span>
                 </td>
-                <td>
-                    <div class="action-btns">
+                <td data-label="Aksi"><div class="action-btns">
                         <a href="{{ route('admin.events.show', $event->id) }}" class="action-btn" title="Lihat">
                             <i class="fas fa-eye" style="font-size:12px;"></i>
                         </a>
@@ -112,3 +110,4 @@
     }
 </script>
 @endpush
+

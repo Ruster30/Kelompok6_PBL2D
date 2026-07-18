@@ -1,4 +1,4 @@
-@extends('layouts.client')
+﻿@extends('layouts.client')
 @section('title','Pengaturan Akun')
 @section('page-title','Pengaturan Akun')
 
@@ -186,3 +186,4 @@ function togglePw(btn) {
 </script>
 @endpush
 @endsection
+

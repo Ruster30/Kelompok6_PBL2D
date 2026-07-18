@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Dokumen')
 @section('page-title', 'Dokumen')
@@ -17,7 +17,7 @@
 </div>
 
 <div class="tab-content">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div class="page-header" style="margin-bottom:18px;">
         <h2 style="font-size:17px; font-weight:700; color:#0f172a;">Daftar Kwitansi</h2>
         <button class="btn btn-primary" onclick="document.getElementById('invoiceModal').classList.add('show')">
             <i class="fas fa-plus"></i> Buat Kwitansi Baru
@@ -144,3 +144,4 @@ function editInvoice(invoice) {
 }
 </script>
 @endpush
+
