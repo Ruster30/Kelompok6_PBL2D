@@ -138,7 +138,7 @@
             <td data-label="No" style="color:#94a3b8;font-size:13px;">{{ $kliens->firstItem() + $loop->index }}</td>
 
                 {{-- Avatar + Nama --}}
-                <td> data-label="Nama Klien"
+                <td data-label="Nama Klien">
                     <div style="display:flex;align-items:center;gap:12px;">
                         <div style="width:38px;height:38px;border-radius:50%;background:#14b8a6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;">
                             {{ $initials }}
@@ -153,7 +153,7 @@
                 </td>
 
                 {{-- Kontak --}}
-                <td> data-label="Kontak"
+                <td data-label="Kontak">
                     <div style="display:flex;flex-direction:column;gap:3px;">
                         <span style="font-size:13px;color:#334155;display:flex;align-items:center;gap:6px;">
                             <i class="fas fa-envelope" style="color:#94a3b8;font-size:11px;"></i>
@@ -169,19 +169,19 @@
                 </td>
 
                 {{-- Status --}}
-                <td> data-label="Status"
+                <td data-label="Status">
                     <span class="badge {{ $isAktif ? 'badge-active' : 'badge-gray' }}">
                         {{ $isAktif ? 'Aktif' : 'Nonaktif' }}
                     </span>
                 </td>
 
                 {{-- Total Event --}}
-                <td style="text-align:center;"> data-label="Total Event"
+                <td style="text-align:center;" data-label="Total Event">
                     <span style="font-weight:600;color:#1e293b;">{{ $klien->events_count }}</span>
                 </td>
 
                 {{-- Terakhir Aktif --}}
-                <td> data-label="Terakhir Aktif"
+                <td data-label="Terakhir Aktif">
                     <div style="font-size:13px;color:#334155;">
                         {{ $tanggal ? $tanggal->format('d/m/Y') : '-' }}
                     </div>
@@ -193,7 +193,7 @@
                 </td>
 
                 {{-- Aksi --}}
-                <td> data-label="Aksi"
+                <td data-label="Aksi">
                     <div style="display:flex;align-items:center;gap:6px;justify-content:center;">
                         {{-- Kirim Notifikasi --}}
                         <button onclick="openModalKirim({{ $klien->id }}, '{{ addslashes($klien->name) }}')"
@@ -328,11 +328,11 @@
                 </label>
                 <select name="tipe" required
                         style="width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;color:#334155;">
-                    <option value="info">ðŸ“¢ Info Umum</option>
-                    <option value="promo">ðŸŽ‰ Promo</option>
+                    <option value="info">📢 Info Umum</option>
+                    <option value="promo">🎉 Promo</option>
                     <option value="pengingat">â° Pengingat</option>
-                    <option value="pembayaran">ðŸ’³ Pembayaran</option>
-                    <option value="event">ðŸ“… Event</option>
+                    <option value="pembayaran">💳 Pembayaran</option>
+                    <option value="event">📅 Event</option>
                     <option value="peringatan">âš ï¸ Peringatan</option>
                 </select>
             </div>
