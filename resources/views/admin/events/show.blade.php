@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Detail Event')
 @section('page-title', 'Kelola Event')
@@ -28,7 +28,7 @@
     $feedback = $event->feedbacks->first();
 @endphp
 
-<div class="page-header" style="margin-bottom:16px;">
+<div class="page-header mb-4">
     <div class="page-header-left">
         <h1>{{ $event->nama_event }}</h1>
         <p>Detail informasi event dan evaluasi dari klien.</p>
@@ -45,7 +45,7 @@
     ══════════════════════════════════════════════ --}}
     <div class="card">
         <div class="card-header">
-            <span class="card-title"><i class="fas fa-calendar-day" style="color:#14b8a6; margin-right:8px;"></i>Informasi Event</span>
+            <span class="card-title"><i class="fas fa-calendar-day text-teal mr-2"></i>Informasi Event</span>
             <span class="badge {{ $cls }}">{{ $label }}</span>
         </div>
 
@@ -132,7 +132,7 @@
     ══════════════════════════════════════════════ --}}
     <div class="card">
         <div class="card-header">
-            <span class="card-title"><i class="fas fa-comment-dots" style="color:#14b8a6; margin-right:8px;"></i>Feedback Klien</span>
+            <span class="card-title"><i class="fas fa-comment-dots text-teal mr-2"></i>Feedback Klien</span>
             @if($feedback)
             <span class="badge badge-active"><i class="fas fa-check-circle" style="margin-right:4px;"></i>Feedback Diterima</span>
             @endif

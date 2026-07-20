@@ -41,7 +41,7 @@ class ProposalController extends Controller
             'tipe'      => $request->tipe,
         ]);
 
-        return redirect()->route('admin.proposals.index')
+        return redirect()->route('admin.documents.index')
             ->with('success', 'File berhasil diunggah.');
     }
 
@@ -67,14 +67,14 @@ class ProposalController extends Controller
             $request->pesan
         );
 
-        return redirect()->route('admin.proposals.index')->with('success', $msg);
+        return redirect()->route('admin.documents.index')->with('success', $msg);
     }
 
     public function destroy(Document $document)
     {
         $this->proposalService->deleteDocument($document);
 
-        return redirect()->route('admin.proposals.index')
+        return redirect()->route('admin.documents.index')
             ->with('success', 'Dokumen berhasil dihapus.');
     }
 

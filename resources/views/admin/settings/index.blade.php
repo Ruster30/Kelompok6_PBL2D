@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Pengaturan')
 @section('page-title', 'Pengaturan')
@@ -22,15 +22,15 @@
 </div>
 
 <div class="card">
-    <div class="card-header" style="display:block;">
+    <div class="card-header block">
         <div class="card-title">Profil Pribadi</div>
-        <p style="font-size:13px; color:#64748b; margin-top:3px;">Perbarui informasi pribadi Anda.</p>
+        <p class="text-sm text-muted mt-1">Perbarui informasi pribadi Anda.</p>
     </div>
 
-    <form action="{{ route('admin.settings.update') }}" method="POST" style="padding:24px;">
+    <form action="{{ route('admin.settings.update') }}" method="POST" class="p-6">
         @csrf
         @method('PUT')
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <div class="form-grid">
             <div class="form-group">
                 <label class="form-label">Nama Depan</label>
                 <input type="text" name="name" class="form-input @error('name') error @enderror"
@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div style="margin-top:20px;">
+        <div class="mt-5">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save"></i> Simpan Perubahan
             </button>
@@ -53,16 +53,16 @@
     </form>
 </div>
 
-<div class="card" style="margin-top:20px;">
-    <div class="card-header" style="display:block;">
+<div class="card mt-5">
+    <div class="card-header block">
         <div class="card-title">Ubah Password</div>
-        <p style="font-size:13px; color:#64748b; margin-top:3px;">Pastikan password baru aman dan mudah diingat.</p>
+        <p class="text-sm text-muted mt-1">Pastikan password baru aman dan mudah diingat.</p>
     </div>
 
-    <form action="{{ route('admin.settings.updatePassword') }}" method="POST" style="padding:24px;">
+    <form action="{{ route('admin.settings.updatePassword') }}" method="POST" class="p-6">
         @csrf
         @method('PUT')
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px;">
+        <div class="grid-3">
             <div class="form-group">
                 <label class="form-label">Password Saat Ini</label>
                 <div class="pw-wrap">
@@ -93,7 +93,7 @@
                 </div>
             </div>
 
-        <div style="margin-top:20px;">
+        <div class="mt-5">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-key"></i> Ubah Password
             </button>

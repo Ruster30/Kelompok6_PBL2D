@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -12,31 +12,6 @@
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <style>
-        /* ---- Custom Scrollbar ---- */
-        ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #e8ecf1;
-          border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #94a3b8;
-          border-radius: 4px;
-          transition: all 0.2s;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background: #64748b;
-        }
-        ::-webkit-scrollbar-thumb:active {
-          background: #2DD4BF;
-        }
-        * {
-          scrollbar-width: thin;
-          scrollbar-color: #94a3b8 #e8ecf1;
-        }
-
                 /* ---- Loading States ---- */
         .btn-loading {
             position: relative;
@@ -78,8 +53,8 @@
             display: block;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #f5f6fa; display: flex; min-height: 100vh; }
-        /* Sidebar ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â redesigned to match Client style */
+        body { font-family: 'Inter', sans-serif; background: #f5f6fa; display: flex; min-height: 100vh; overflow: hidden; }
+        /* Sidebar Ã¢â‚¬â€ redesigned to match Client style */
         .sidebar {
             width: 280px; min-width: 280px; background: #0f172a; color: #94a3b8;
             display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
@@ -117,7 +92,7 @@
         .sidebar-footer { padding: 12px; border-top: 1px solid rgba(255,255,255,0.07); }
 
         /* Main content */
-        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .main-wrapper { overflow: hidden; margin-left: 280px; flex: 1; display: flex; flex-direction: column; height: 100vh; }
 
         /* Topbar */
         .topbar {
@@ -150,7 +125,7 @@
             display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 700;
         }
         /* Page content */
-        .page-content { padding: 20px; flex: 1; }
+        .page-content { padding: 20px; flex: 1; overflow-y: auto; }
 
         /* Cards */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
@@ -460,7 +435,7 @@
             font-size: 20px;
         }
 
-        /* Desktop (ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥769px) - No changes */
+        /* Desktop (Ã¢â€°Â¥769px) - No changes */
         @media (min-width: 769px) {
             #sidebarToggle {
                 display: none !important;
@@ -500,7 +475,7 @@
             }
 
             /* Main content takes full width */
-            .main-wrapper {
+            .main-wrapper { overflow: hidden;
                 margin-left: 0 !important;
             }
 
@@ -724,6 +699,9 @@
         .table-responsive-wrap table {
             min-width: 700px;
         }
+        .table-responsive-wrap table {
+            display: table;
+        }
         @media (max-width: 768px) {
             div[style*='grid-template-columns:repeat(4,1fr)'],
             div[style*='grid-template-columns: repeat(4, 1fr)'] {
@@ -836,8 +814,8 @@
 
         <div class="nav-section">
             <div class="nav-section-label">Dokumen</div>
-            <a href="{{ route('admin.proposals.index') }}" class="nav-item {{ request()->routeIs('admin.proposals.*') ? 'active' : '' }}">
-                <i class="fas fa-file-alt"></i> Proposal & Dokumen
+            <a href="{{ route('admin.documents.index') }}" class="nav-item {{ request()->routeIs('admin.documents.*') || request()->routeIs('admin.document_builder.*') ? 'active' : '' }}">
+                <i class="fas fa-file-alt"></i> Dokumen
             </a>
             <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
                 <i class="fas fa-folder-open"></i> Pusat Dokumentasi

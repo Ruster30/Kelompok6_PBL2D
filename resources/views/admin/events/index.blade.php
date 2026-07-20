@@ -14,8 +14,8 @@
 </div>
 
 <div class="card">
-    <div class="card-header" style="border-bottom:none; padding-bottom:14px;">
-        <div class="toolbar" style="margin-bottom:0; flex:1;">
+    <div class="card-header border-b" style="border-bottom:none; padding-bottom:14px;">
+        <div class="toolbar mb-0 flex-1">
             <div class="search-wrap">
                 <i class="fas fa-search"></i>
                 <input type="text" id="searchInput" placeholder="Cari event..." value="{{ request('search') }}">
@@ -47,7 +47,7 @@
         <tbody>
             @forelse($events as $event)
             <tr>
-                <td data-label="Nama Event" style="font-weight:500;">{{ $event->nama_event }}</td>
+                <td data-label="Nama Event" class="font-medium">{{ $event->nama_event }}</td>
                 <td>{{ $event->client->name ?? '-' }}</td>
                 <td>{{ $event->tanggal_event ? $event->tanggal_event->format('d M Y') : '-' }}</td>
                 <td>{{ $event->lokasi_event ?? '-' }}</td>
@@ -75,8 +75,8 @@
             </tr>
             @empty
             <tr class="empty-row"><td colspan="7">
-                    <div class="empty-state" style="padding:40px 20px;">
-                        <div class="empty-state-icon"><i class="bi-calendar-event" style="font-size:40px;"></i></div>
+                    <div class="empty-state p-5">
+                        <div class="empty-state-icon"><i class="bi-calendar-event text-2xl"></i></div>
                         <h3 class="empty-state-title">Belum ada event.</h3>
                         <p class="empty-state-text">Data akan muncul setelah Anda menambahkan data baru.</p>
                     </div>
@@ -86,7 +86,7 @@
     </table></div>
 
     @if($events->hasPages())
-    <div style="padding:16px 24px; border-top:1px solid #f1f5f9;">
+    <div class="p-4 px-6 border-t">
         {{ $events->links() }}
     </div>
     @endif

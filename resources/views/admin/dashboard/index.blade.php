@@ -278,6 +278,7 @@
             </tbody>
         </table>
     </div>
+</div>
 
     {{-- Aksi Cepat --}}
     <div class="quick-card">

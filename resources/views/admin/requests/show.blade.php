@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Detail Request Client')
 @section('page-title', 'Detail Request Client')
@@ -11,9 +11,9 @@
     </div>
     <div style="display:flex; gap:10px;">
         @if($request->latestProposal)
-        <a href="{{ route('admin.proposals.download', $request->latestProposal) }}" target="_blank" class="btn btn-primary"><i class="fas fa-file-alt"></i> Lihat Penawaran</a>
+        <a href="{{ route('admin.documents.download', $request->latestProposal) }}" target="_blank" class="btn btn-primary"><i class="fas fa-file-alt"></i> Lihat Penawaran</a>
         @else
-        <a href="{{ route('admin.proposals.builder', ['event_id' => $request->id]) }}" class="btn btn-primary"><i class="fas fa-file-alt"></i> Buat Penawaran</a>
+        <a href="{{ route('admin.documents.builder', ['event_id' => $request->id]) }}" class="btn btn-primary"><i class="fas fa-file-alt"></i> Buat Penawaran</a>
         @endif
         <a href="{{ route('admin.requests.index') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Kembali</a>
     </div>
