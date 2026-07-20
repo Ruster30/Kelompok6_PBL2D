@@ -11,45 +11,7 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/vendor.css') }}">
     <style>
-        /* ---- Custom Scrollbar ---- */
-        ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #e8ecf1;
-          border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #94a3b8;
-          border-radius: 4px;
-          transition: all 0.2s;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background: #64748b;
-        }
-        ::-webkit-scrollbar-thumb:active {
-          background: #2DD4BF;
-        }
-        * {
-          scrollbar-width: thin;
-          scrollbar-color: #94a3b8 #e8ecf1;
-        }
 
-        :root {
-    --sidebar-width: 280px;
-            --sidebar-bg: #0f1923;
-            --sidebar-text: #c9d4df;
-            --sidebar-active-bg: #1a8f7e;
-            --sidebar-hover-bg: rgba(255,255,255,0.06);
-            --topbar-height: 64px;
-            --teal: #1a8f7e;
-            --teal-light: #e6f5f3;
-            --teal-hover: #157a6b;
-            --body-bg: #f4f6f9;
-            --card-radius: 12px;
-            --text-muted-custom: #8a9bb0;
-        }
 
         * { box-sizing: border-box; }
 

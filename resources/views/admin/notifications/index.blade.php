@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Notifikasi')
 @section('page-title', 'Notifikasi')
@@ -35,16 +35,16 @@
             default => '#64748b',
         };
     @endphp
-    <div style="display:flex; align-items:flex-start; gap:14px; padding:16px 24px; border-bottom:1px solid #f1f5f9; {{ $notif->dibaca ? '' : 'background:#f0fdf9;' }}">
-        <div style="width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:{{ $iconBackground }}; color:{{ $iconColor }};">
+    <div class="notif-item @if(!$notif->dibaca) unread @endif">
+        <div class="notif-icon" style="background:{{ $iconBackground }}; color:{{ $iconColor }};">
             <i class="fas {{ $notif->icon }}"></i>
         </div>
-        <div style="flex:1;">
-            <div style="font-size:14px; font-weight:600; color:#0f172a;">{{ $notif->judul }}</div>
+        <div class="notif-body">
+            <div class="notif-title">{{ $notif->judul }}</div>
             @if($notif->pesan)
-            <div style="font-size:13px; color:#64748b; margin-top:3px; line-height:1.5;">{{ $notif->pesan }}</div>
+            <div class="notif-message">{{ $notif->pesan }}</div>
             @endif
-            <div style="font-size:12px; color:#94a3b8; margin-top:7px;">{{ $notif->created_at->locale('id')->diffForHumans() }}</div>
+            <div class="notif-date">{{ $notif->created_at->locale('id')->diffForHumans() }}</div>
         </div>
         @if(!$notif->dibaca)
         <form action="{{ route('admin.notifications.markRead', $notif) }}" method="POST">
@@ -63,6 +63,6 @@
 </div>
 
 @if($notifications->hasPages())
-<div style="margin-top:16px;">{{ $notifications->links() }}</div>
+<div class="mt-4">{{ $notifications->links() }}</div>
 @endif
 @endsection

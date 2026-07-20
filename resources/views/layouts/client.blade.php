@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -11,32 +11,6 @@
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/client.css') }}">
     <style>
-        /* ---- Custom Scrollbar ---- */
-        ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #e8ecf1;
-          border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #94a3b8;
-          border-radius: 4px;
-          transition: all 0.2s;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background: #64748b;
-        }
-        ::-webkit-scrollbar-thumb:active {
-          background: #2DD4BF;
-        }
-        * {
-          scrollbar-width: thin;
-          scrollbar-color: #94a3b8 #e8ecf1;
-        }
-
-        
         /* ---- Empty State ---- */
         .empty-state {
             display: flex;

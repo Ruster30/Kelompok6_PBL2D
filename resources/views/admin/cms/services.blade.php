@@ -4,7 +4,7 @@
 @section('page-title', 'Landing Page CMS')
 
 @section('content')
-<div class="page-header" style="margin-bottom:16px;">
+<div class="page-header mb-4">
     <div class="page-header-left">
         <h1>Landing Page CMS</h1>
         <p>Kelola konten landing page secara dinamis. Perubahan langsung tampil di halaman publik.</p>
@@ -19,8 +19,8 @@
 </div>
 
 <div class="tab-content">
-    <div class="page-header" style="margin-bottom:18px;">
-        <h2 style="font-size:17px; font-weight:700; color:#0f172a;">Daftar Layanan</h2>
+    <div class="page-header mb-4">
+        <h2 class="text-lg font-bold text-dark">Daftar Layanan</h2>
         <button class="btn btn-primary" onclick="openServiceModal()">
             <i class="fas fa-plus"></i> Tambah Layanan
         </button>
@@ -46,15 +46,15 @@
             </div>
             <h3>{{ $service->nama_layanan }}</h3>
             <p>{{ $service->deskripsi }}</p>
-            <div style="margin-top:10px; display:flex; gap:8px; align-items:center;">
+            <div class="mt-3 flex items-center gap-3">
                 <span class="badge {{ $service->is_active ? 'badge-active' : 'badge-gray' }}">
                     {{ $service->is_active ? 'Aktif' : 'Nonaktif' }}
                 </span>
-                <span style="font-size:12px; color:#94a3b8;">Urutan: {{ $service->urutan }}</span>
+                <span class="text-sm text-muted">Urutan: {{ $service->urutan }}</span>
             </div>
         </div>
         @empty
-        <div class="empty-state" style="grid-column:1/-1;">
+        <div class="empty-state full-width">
             <i class="fas fa-briefcase"></i>
             <h3>Belum ada layanan</h3>
             <p>Tambahkan layanan untuk ditampilkan di landing page.</p>
@@ -83,7 +83,7 @@
                 <div class="form-group">
                     <label class="form-label">Icon (Font Awesome class) *</label>
                     <input type="text" name="icon" id="icon" class="form-input" placeholder="contoh: fas fa-heart" required>
-                    <span style="font-size:12px; color:#94a3b8;">Lihat referensi di fontawesome.com/icons</span>
+                    <span class="text-sm text-muted">Lihat referensi di fontawesome.com/icons</span>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Deskripsi *</label>

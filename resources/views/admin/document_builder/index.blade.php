@@ -12,7 +12,7 @@
 
 {{-- Tab Navigation --}}
 <div class="tabs">
-    <a href="{{ route('admin.proposals.index') }}" class="tab-link">Dokumen Umum</a>
+    <a href="{{ route('admin.documents.index') }}" class="tab-link">Dokumen Umum</a>
     <a href="{{ route('admin.document_builder.index') }}" class="tab-link active">Document Builder</a>
 </div>
 
@@ -62,9 +62,9 @@
                     </label>
                     <select name="jenis_dokumen" id="jenis_dokumen" class="form-input" required>
                         <option value="">-- Pilih Jenis Dokumen --</option>
-                        <option value="surat_kontrak" @selected($selectedJenis === 'surat_kontrak')>ðŸ“‘ Surat Kontrak</option>
-                        <option value="invoice"       @selected($selectedJenis === 'invoice')>ðŸ§¾ Invoice</option>
-                        <option value="rab"           @selected($selectedJenis === 'rab')>ðŸ“Š RAB (Rencana Anggaran Biaya)</option>
+                        <option value="surat_kontrak" @selected($selectedJenis === 'surat_kontrak')>📑 Surat Kontrak</option>
+                        <option value="invoice"       @selected($selectedJenis === 'invoice')>🧾 Invoice</option>
+                        <option value="rab"           @selected($selectedJenis === 'rab')>📊 RAB (Rencana Anggaran Biaya)</option>
                     </select>
                 </div>
             </div>
@@ -227,17 +227,17 @@
             color: '#6366f1'
         },
         surat_kontrak: {
-            icon: 'ðŸ“‘', label: 'Surat Kontrak',
+            icon: '📑', label: 'Surat Kontrak',
             desc: 'Kontrak resmi antara EO dan client mencakup nomor kontrak, nilai kontrak, hak & kewajiban, ketentuan pembayaran, masa berlaku, dan area tanda tangan.',
             color: '#0ea5e9'
         },
         invoice: {
-            icon: 'ðŸ§¾', label: 'Invoice',
+            icon: '🧾', label: 'Invoice',
             desc: 'Invoice pembayaran berisi nomor invoice, daftar item RAB, harga, subtotal, total, dan status pembayaran.',
             color: '#f59e0b'
         },
         rab: {
-            icon: 'ðŸ“Š', label: 'RAB (Rencana Anggaran Biaya)',
+            icon: '📊', label: 'RAB (Rencana Anggaran Biaya)',
             desc: 'Tabel rincian anggaran event: nama item, vendor, qty, harga satuan, subtotal, dan total keseluruhan.',
             color: '#22c55e'
         },

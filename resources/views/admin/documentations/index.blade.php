@@ -2,6 +2,17 @@
 
 @section('title', 'Pusat Dokumentasi')
 @section('page-title', 'Pusat Dokumentasi')
+@push('styles')
+<style>
+.doc-card-table table {
+    display: table !important;
+}
+.doc-card-table .table-responsive-wrap table {
+    min-width: 700px;
+}
+</style>
+@endpush
+
 
 @section('content')
 <div class="page-header">
@@ -43,7 +54,7 @@
 </div>
 
 @forelse($documentations as $doc)
-<div class="card" style="margin-bottom:16px;">
+<div class="card doc-card-table" style="margin-bottom:16px;">
     {{-- Header dokumentasi --}}
     <div class="card-header">
         <div>
@@ -67,7 +78,7 @@
         Belum ada file yang diunggah untuk dokumentasi ini.
     </div>
     @else
-    <table>
+    <div class="table-responsive-wrap"><table>
         <thead>
             <tr>
                 <th>File</th>
@@ -130,7 +141,7 @@
             </tr>
             @endforeach
         </tbody>
-    </table>
+    </table></div>
     @endif
 </div>
 @empty

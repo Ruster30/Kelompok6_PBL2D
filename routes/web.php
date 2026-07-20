@@ -175,12 +175,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/notifications/{notification}/read', [App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('admin.notifications.markRead');
 
     // Dokumen Umum (Invoice & Kwitansi dihapus)
-    Route::get('/proposals',                     [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.proposals.index');
-    Route::post('/proposals/upload',             [App\Http\Controllers\Admin\ProposalController::class, 'upload'])->name('admin.proposals.upload');
-    Route::get('/proposals/{document}/preview',  [App\Http\Controllers\Admin\ProposalController::class, 'preview'])->name('admin.proposals.preview');
-    Route::get('/proposals/{document}/download', [App\Http\Controllers\Admin\ProposalController::class, 'downloadDocument'])->name('admin.proposals.download');
-    Route::post('/proposals/{document}/send',    [App\Http\Controllers\Admin\ProposalController::class, 'sendToClient'])->name('admin.proposals.send');
-    Route::delete('/proposals/{document}',       [App\Http\Controllers\Admin\ProposalController::class, 'destroy'])->name('admin.proposals.destroy');
+    Route::get('/documents',                     [App\Http\Controllers\Admin\ProposalController::class, 'index'])->name('admin.documents.index');
+    Route::post('/documents/upload',             [App\Http\Controllers\Admin\ProposalController::class, 'upload'])->name('admin.documents.upload');
+    Route::get('/documents/{document}/preview',  [App\Http\Controllers\Admin\ProposalController::class, 'preview'])->name('admin.documents.preview');
+    Route::get('/documents/{document}/download', [App\Http\Controllers\Admin\ProposalController::class, 'downloadDocument'])->name('admin.documents.download');
+    Route::post('/documents/{document}/send',    [App\Http\Controllers\Admin\ProposalController::class, 'sendToClient'])->name('admin.documents.send');
+    Route::delete('/documents/{document}',       [App\Http\Controllers\Admin\ProposalController::class, 'destroy'])->name('admin.documents.destroy');
 
     // Document Builder
     Route::get('/document-builder',
@@ -373,7 +373,7 @@ Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'vendor.role'])->g
     Route::put('/tugas/update', [TugasController::class, 'update'])->name('tugas.update');
 
     // Dokumentasi
-    Route::post('/dokumentasi/store', [DokumentasiController::class, 'store'])->name('dokumentasi.store');
+    Route::post('/documentationtasi/store', [DokumentasiController::class, 'store'])->name('dokumentasi.store');
 
     // Notifikasi
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi');

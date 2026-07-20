@@ -12,13 +12,13 @@
 
 {{-- Tab navigasi --}}
 <div class="tabs">
-    <a href="{{ route('admin.proposals.index') }}" class="tab-link active">Dokumen Umum</a>
+    <a href="{{ route('admin.documents.index') }}" class="tab-link active">Dokumen Umum</a>
     <a href="{{ route('admin.document_builder.index') }}" class="tab-link">Document Builder</a>
 </div>
 
 <div class="tab-content">
     {{-- Upload Zone --}}
-    <form action="{{ route('admin.proposals.upload') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
+    <form action="{{ route('admin.documents.upload') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
         @csrf
 
         {{-- Baris 1: Event + Jenis Dokumen --}}
@@ -157,22 +157,22 @@
                 <td>
                     <div class="action-btns" style="justify-content:center; gap:6px;">
 
-                        {{-- ðŸ‘ Lihat (Preview) --}}
-                        <a href="{{ route('admin.proposals.preview', $doc->id) }}"
+                        {{-- 👁 Lihat (Preview) --}}
+                        <a href="{{ route('admin.documents.preview', $doc->id) }}"
                            target="_blank"
                            class="action-btn"
                            title="Lihat / Preview">
                             <i class="bi bi-eye"></i>
                         </a>
 
-                        {{-- â¬‡ Download --}}
-                        <a href="{{ route('admin.proposals.download', $doc->id) }}"
+                        {{-- ⬇ Download --}}
+                        <a href="{{ route('admin.documents.download', $doc->id) }}"
                            class="action-btn"
                            title="Download">
                             <i class="bi bi-download"></i>
                         </a>
 
-                        {{-- ðŸ“¤ Kirim ke Client --}}
+                        {{-- 📤 Kirim ke Client --}}
                         <button type="button"
                                 class="action-btn"
                                 title="Kirim ke Client"
@@ -180,8 +180,8 @@
                             <i class="bi bi-send"></i>
                         </button>
 
-                        {{-- ðŸ—‘ Hapus --}}
-                        <form action="{{ route('admin.proposals.destroy', $doc->id) }}"
+                        {{-- 🗑 Hapus --}}
+                        <form action="{{ route('admin.documents.destroy', $doc->id) }}"
                               method="POST"
                               style="display:inline;"
                               onsubmit="return swalDelete(this, {text: 'Dokumen {{ addslashes($doc->nama_file) }} akan dihapus permanen.'})">
@@ -360,7 +360,7 @@ function filterTable() {
     }
     const search = document.getElementById('searchInput').value;
     const type   = document.getElementById('typeFilter').value;
-    window.location.href = `{{ route('admin.proposals.index') }}?search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`;
+    window.location.href = `{{ route('admin.documents.index') }}?search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`;
 }
 
 function debounce(fn, delay) {
