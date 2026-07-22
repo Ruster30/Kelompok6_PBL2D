@@ -1,0 +1,45 @@
+﻿/* ---- Alert Components ---- */
+.alert-box {
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.alert-success {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #15803d;
+}
+.alert-error {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+}
+.alert-danger {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+/* ---- Focus Visible for Accessibility ---- */
+:focus-visible {
+    outline: 2px solid #2DD4BF;
+    outline-offset: 2px;
+}
+button:focus-visible,
+a:focus-visible,
+.nav-item:focus-visible,
+.btn:focus-visible,
+.eye-btn:focus-visible {
+    outline: 2px solid #2DD4BF;
+    outline-offset: 2px;
+}
+/* ---- Sidebar Text Contrast Fix ---- */
+.sidebar .nav-item {
+    color: #cbd5e1;
+}

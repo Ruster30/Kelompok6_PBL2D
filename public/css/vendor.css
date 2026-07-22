@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    VENDOR — vendor.css
    Responsive styles for Vendor dashboard
    ============================================================ */
@@ -310,4 +310,11 @@ body {
         padding: 8px 10px !important;
         white-space: nowrap;
     }
+}
+
+/* ---- Vendor Inline Style Fixes ---- */
+.vendor-event-title {
+    font-size: 15px;
+    color: #1a2332;
+    margin-bottom: 6px;
 }

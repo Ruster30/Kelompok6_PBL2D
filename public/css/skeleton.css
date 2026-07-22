@@ -1,0 +1,20 @@
+test skeleton css
+/* Skeleton Loading Init */
+.skeleton-init > * { position: relative; overflow: hidden; }
+.skeleton-init .stat-card-dash, .skeleton-init .stat-card, .skeleton-init .dash-card,
+.skeleton-init .quick-card, .skeleton-init .section-card, .skeleton-init .event-dash-card,
+.skeleton-init .pengajuan-item, .skeleton-init .activity-item {
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%) !important;
+    background-size: 200% 100% !important;
+    animation: skeleton-shimmer 0.8s ease-in-out;
+    border-color: transparent !important;
+    color: transparent !important;
+    pointer-events: none;
+}
+.skeleton-init .stat-card-dash *, .skeleton-init .stat-card *,
+.skeleton-init .dash-card *, .skeleton-init .quick-card *,
+.skeleton-init .section-card *, .skeleton-init .event-dash-card *,
+.skeleton-init .pengajuan-item *, .skeleton-init .activity-item * {
+    color: transparent !important;
+    border-color: transparent !important;
+}

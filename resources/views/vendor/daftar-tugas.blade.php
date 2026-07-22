@@ -22,7 +22,7 @@
 
     <div class="table-responsive">
 
-        <table class="table custom-table align-middle mb-0">
+        <table class="table card-view-mobile custom-table align-middle mb-0">
 
             <thead>
                 <tr>
@@ -460,7 +460,7 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
     
     const fileItems = files.map((file, index) => {
         const fileSize = (file.size / 1024 / 1024).toFixed(2);
-        const fileType = file.type.includes('video') ? '🎥' : '📷';
+        const fileType = file.type.includes('video') ? 'Ã°Å¸Å½Â¥' : 'Ã°Å¸â€œÂ·';
         return `<div>${fileType} <strong>${file.name}</strong> (${fileSize} MB)</div>`;
     }).join('');
     
