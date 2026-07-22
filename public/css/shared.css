@@ -331,3 +331,109 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ---- Mobile Table Card View ---- */
+@media (max-width: 575px) {
+    table.table-responsive-mobile,
+    table.table-responsive-mobile tbody,
+    table.table-responsive-mobile tr,
+    table.table-responsive-mobile td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    table.table-responsive-mobile thead {
+        display: none;
+    }
+    table.table-responsive-mobile tr {
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        position: relative;
+    }
+    table.table-responsive-mobile td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border: none;
+        border-bottom: 1px solid #f8fafc;
+        text-align: right;
+        gap: 8px;
+    }
+    table.table-responsive-mobile td:last-child {
+        border-bottom: none;
+    }
+    table.table-responsive-mobile td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 12px;
+        text-align: left;
+        flex-shrink: 0;
+    }
+    table.table-responsive-mobile td.actions-cell {
+        justify-content: flex-end;
+        gap: 6px;
+        padding-top: 12px;
+        flex-wrap: wrap;
+    }
+    table.table-responsive-mobile td.actions-cell::before {
+        display: none;
+    }
+    table.table-responsive-mobile td .eye-btn {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 575px) {
+    /* Additional table types */
+    table.card-view-mobile thead { display: none; }
+    table.card-view-mobile,
+    table.card-view-mobile tbody,
+    table.card-view-mobile tr,
+    table.card-view-mobile td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    table.card-view-mobile tr {
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+    table.card-view-mobile td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border: none;
+        border-bottom: 1px solid #f8fafc;
+        text-align: right;
+        gap: 8px;
+    }
+    table.card-view-mobile td:last-child {
+        border-bottom: none;
+    }
+    table.card-view-mobile td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 12px;
+        text-align: left;
+        flex-shrink: 0;
+    }
+    /* Adapt existing table wrapper styles */
+    .table-responsive-wrap.card-view-mobile {
+        border: none;
+        overflow: visible;
+    }
+    .table-responsive-wrap.card-view-mobile table thead {
+        display: none;
+    }
+}

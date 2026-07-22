@@ -47,7 +47,7 @@
 {{-- Tabel Invoice --}}
 <div style="margin-bottom:28px;">
     <h3 style="font-size:17px;font-weight:700;color:var(--dark);margin-bottom:14px;">Daftar Invoice</h3>
-    <div class="invoice-table-wrap">
+    <div class="invoice-table-wrap card-view-mobile">
         <table class="invoice-table">
             <thead>
                 <tr>
@@ -63,10 +63,10 @@
             <tbody>
                 @forelse($invoices as $inv)
                 <tr>
-                    <td style="font-weight:700;">{{ $inv->nomor_invoice }}</td>
+                    <td data-label="No. Invoice">{{ $inv->nomor_invoice }}</td>
                     <td>{{ $inv->event->nama_event ?? '-' }}</td>
                     <td>{{ $inv->tanggal_invoice->format('j M Y') }}</td>
-                    <td style="font-weight:700;">{{ $inv->formatted_total }}</td>
+                    <td data-label="Total">{{ $inv->formatted_total }}</td>
                     <td>
                         <span class="badge {{ $inv->badge_class }}">
                             {{ $inv->status_label }}
@@ -119,7 +119,7 @@
     <h3 style="font-size:17px;font-weight:700;color:var(--dark);margin-bottom:14px;">
         Riwayat Pembayaran
     </h3>
-    <div class="invoice-table-wrap">
+    <div class="invoice-table-wrap card-view-mobile">
         <table class="invoice-table">
             <thead>
                 <tr>
@@ -140,7 +140,7 @@
                             {{ strtoupper($pay->jenis_pembayaran) }}
                         </span>
                     </td>
-                    <td style="font-weight:700;">{{ $pay->formatted_nominal }}</td>
+                    <td data-label="Nominal">{{ $pay->formatted_nominal }}</td>
                     <td>{{ $pay->tanggal_pembayaran->format('j M Y') }}</td>
                     <td>
                         <span class="badge {{ $pay->badge_class }}">

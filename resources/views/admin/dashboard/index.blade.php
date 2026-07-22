@@ -5,7 +5,7 @@
 
 @push('styles')
 <style>
-/* â”€â”€ Dashboard-specific overrides â”€â”€ */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Dashboard-specific overrides Ã¢â€â‚¬Ã¢â€â‚¬ */
 .stats-grid-dash {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -53,14 +53,14 @@
 .stat-value-dash { font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1; margin-bottom: 8px; }
 .stat-label-dash { font-size: 13px; color: #64748b; line-height: 1.5; margin-top: 0; }
 
-/* â”€â”€ Bottom Layout â”€â”€ */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Bottom Layout Ã¢â€â‚¬Ã¢â€â‚¬ */
 .dash-bottom {
     display: grid;
     grid-template-columns: 1fr 300px;
     gap: 20px;
 }
 
-/* â”€â”€ Recent Events Card â”€â”€ */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Recent Events Card Ã¢â€â‚¬Ã¢â€â‚¬ */
 .dash-card {
     background: #fff;
     border: 1px solid #e8edf5;
@@ -112,7 +112,7 @@
 }
 .eye-btn:hover { border-color: #14b8a6; color: #14b8a6; }
 
-/* â”€â”€ Quick Actions â”€â”€ */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Quick Actions Ã¢â€â‚¬Ã¢â€â‚¬ */
 .quick-card {
     background: #fff;
     border: 1px solid #e8edf5;
@@ -154,7 +154,7 @@
 
 @section('content')
 
-{{-- â”€â”€ Stat Cards â”€â”€ --}}
+{{-- Ã¢â€â‚¬Ã¢â€â‚¬ Stat Cards Ã¢â€â‚¬Ã¢â€â‚¬ --}}
 <div class="stats-grid-dash skeleton-init">
 
     {{-- Total Event --}}
@@ -215,7 +215,7 @@
 
 </div>
 
-{{-- â”€â”€ Bottom Grid â”€â”€ --}}
+{{-- Ã¢â€â‚¬Ã¢â€â‚¬ Bottom Grid Ã¢â€â‚¬Ã¢â€â‚¬ --}}
 <div class="dash-bottom">
 
     {{-- Event Terbaru --}}
@@ -224,7 +224,7 @@
             <span class="dash-card-title">Event Terbaru</span>
             <a href="{{ route('admin.events.index') }}" class="dash-card-link">Lihat Semua</a>
         </div>
-        <div class="table-responsive-wrap"><table class="event-table">
+        <div class="table-responsive-wrap"><table class="event-table card-view-mobile">
             <thead>
                 <tr>
                     <th>Nama Event</th>
