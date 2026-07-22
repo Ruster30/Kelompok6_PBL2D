@@ -1,4 +1,4 @@
-﻿@extends('layouts.client')
+@extends('layouts.client')
 @section('title','Ringkasan Saya')
 @section('page-title','Ringkasan Saya')
 
@@ -11,7 +11,7 @@
 </div>
 
 {{-- Stat Cards --}}
-<div class="stat-cards">
+<div class="stat-cards skeleton-init">
     <div class="stat-card">
         <div class="stat-icon"><i class="bi bi-calendar-check"></i></div>
         <div class="stat-info">
@@ -37,7 +37,7 @@
 
 {{-- Grid --}}
 <div class="dash-grid">
-    <div class="dash-main">
+    <div class="dash-main skeleton-init">
 
         {{-- Pengajuan / Proposal --}}
         <div class="section-hdr">
@@ -120,7 +120,7 @@
     </div>
 
     {{-- Pembaruan Terbaru --}}
-    <div class="dash-side">
+    <div class="dash-side skeleton-init">
         <div class="activity-card">
             <div class="activity-title">Pembaruan Terbaru</div>
             @forelse($notifications as $notif)

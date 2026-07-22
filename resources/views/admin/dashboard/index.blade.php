@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Ringkasan Dashboard')
 @section('page-title', 'Ringkasan Dashboard')
@@ -155,7 +155,7 @@
 @section('content')
 
 {{-- â”€â”€ Stat Cards â”€â”€ --}}
-<div class="stats-grid-dash">
+<div class="stats-grid-dash skeleton-init">
 
     {{-- Total Event --}}
     <div class="stat-card-dash">
@@ -219,7 +219,7 @@
 <div class="dash-bottom">
 
     {{-- Event Terbaru --}}
-    <div class="dash-card">
+    <div class="dash-card skeleton-init">
         <div class="dash-card-header">
             <span class="dash-card-title">Event Terbaru</span>
             <a href="{{ route('admin.events.index') }}" class="dash-card-link">Lihat Semua</a>
@@ -281,7 +281,7 @@
 </div>
 
     {{-- Aksi Cepat --}}
-    <div class="quick-card">
+    <div class="quick-card skeleton-init">
         <div class="quick-card-header">
             <span class="dash-card-title">Aksi Cepat</span>
         </div>
@@ -317,6 +317,22 @@
     </div>
 
 </div>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){document.querySelectorAll('.skeleton-init').forEach(function(e){e.classList.remove('skeleton-init')})},400)});
+</script>
+@endpush
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+setTimeout(function(){
+document.querySelectorAll('.skeleton-init').forEach(function(e){
+e.classList.remove('skeleton-init')
+})
+},400)
+})
+</script>
+@endpush
 @endsection
 
 

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/vendor.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/skeleton.css') }}">
     <style>
 
 
@@ -706,7 +707,7 @@
             opacity: 1;
         }
 
-        /* Desktop (â‰¥1200px) - No changes */
+        /* Desktop (ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥1200px) - No changes */
         @media (min-width: 1200px) {
             .mobile-toggle {
                 display: none !important;
@@ -1077,16 +1078,8 @@
     <!-- PAGE CONTENT -->
      <main class="page-content">
 
-        @if(session('success'))
-            <div id="success-alert" class="alert-box alert-success">
-                <i class="bi bi-check-circle-fill" aria-hidden="true"></i> {{ session('success') }}
-            </div>
-        @endif
-        @if(session('error'))
-            <div id="error-alert" class="alert-box alert-error">
-                <i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i> {{ session('error') }}
-            </div>
-        @endif
+        <x-alert type="success" />
+        <x-alert type="error" />
 
         @yield('content')>
         document.addEventListener('DOMContentLoaded', function () {
@@ -1115,6 +1108,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/skeleton.js') }}"></script>
 <script>
 // Sidebar responsive toggle & scroll position persistence
 document.addEventListener('DOMContentLoaded', function() {

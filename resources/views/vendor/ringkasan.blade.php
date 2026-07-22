@@ -1,4 +1,4 @@
-﻿@extends('layouts.vendor')
+@extends('layouts.vendor')
 
 @section('title', 'Ringkasan')
 @section('page-title', 'Ringkasan')
@@ -8,7 +8,7 @@
 
 @section('content')
 
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-4 skeleton-init">
 
     <div class="col-md-4">
         <div class="stat-card">
@@ -48,7 +48,7 @@
 
 </div>
 
-<div class="row g-3">
+<div class="row g-3 skeleton-init">
 
     <div class="col-lg-7">
 
