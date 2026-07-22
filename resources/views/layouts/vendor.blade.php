@@ -8,9 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/shared.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/vendor.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/skeleton.css') }}">
+
     <style>
 
 
@@ -40,15 +41,6 @@
             letter-spacing: -0.3px;
         }
         .sidebar-brand span span { color: #2DD4BF; }
-
-
-
-
-
-
-
-
-
 
         .sidebar-footer a:hover {
             background: rgba(229,62,62,0.10);
@@ -707,7 +699,7 @@
             opacity: 1;
         }
 
-        /* Desktop (ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥1200px) - No changes */
+        /* Desktop */
         @media (min-width: 1200px) {
             .mobile-toggle {
                 display: none !important;
