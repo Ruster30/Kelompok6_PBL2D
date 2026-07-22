@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -131,14 +131,14 @@
             <div class="nav-section">
                 <div class="nav-section-label">Menu</div>
                 <a href="{{ route('client.dashboard') }}" class="nav-item {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-grid-1x2"></i> Ringkasan Saya
+                    <i class="bi bi-grid-1x2" aria-hidden="true"></i> Ringkasan Saya
                 </a>
             </div>
 
             <div class="nav-section">
                 <div class="nav-section-label">Event Saya</div>
                 <a href="{{ route('client.events') }}" class="nav-item {{ request()->routeIs('client.events') ? 'active' : '' }}">
-                    <i class="bi bi-calendar-event"></i> Event Terdaftar
+                    <i class="bi bi-calendar-event" aria-hidden="true"></i> Event Terdaftar
                 </a>
                 <a href="{{ route('client.timeline') }}" class="nav-item {{ request()->routeIs('client.timeline*') ? 'active' : '' }}">
                     <i class="bi bi-calendar3"></i> Timeline Event
@@ -155,14 +155,14 @@
             <div class="nav-section">
                 <div class="nav-section-label">Dokumen</div>
                 <a href="{{ route('client.proposals') }}" class="nav-item {{ request()->routeIs('client.proposals*') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i> Dokumen
+                    <i class="bi bi-file-earmark-text" aria-hidden="true"></i> Dokumen
                 </a>
             </div>
 
             <div class="nav-section">
                 <div class="nav-section-label">Komunikasi</div>
                 <a href="{{ route('client.notifications') }}" class="nav-item {{ request()->routeIs('client.notifications*') ? 'active' : '' }}">
-                    <i class="bi bi-bell"></i> Notifikasi
+                    <i class="bi bi-bell" aria-hidden="true"></i> Notifikasi
                     @if(isset($unreadCount) && $unreadCount > 0)
                         <span class="sidebar-notification-badge">
                             {{ $unreadCount > 9 ? '9+' : $unreadCount }}
@@ -181,7 +181,7 @@
             <div class="nav-section">
                 <div class="nav-section-label">Akun</div>
                 <a href="{{ route('client.settings') }}" class="nav-item {{ request()->routeIs('client.settings') ? 'active' : '' }}">
-                    <i class="bi bi-gear"></i> Pengaturan Akun
+                    <i class="bi bi-gear" aria-hidden="true"></i> Pengaturan Akun
                 </a>
             </div>
         </nav>
@@ -190,7 +190,7 @@
             <form id="logout-form" method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="button" onclick="confirmLogout(event)" class="nav-item danger" style="width:100%;">
-                    <i class="bi bi-box-arrow-right"></i> Keluar
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Keluar
                 </button>
             </form>
         </div>
@@ -203,10 +203,7 @@
         {{-- Topbar --}}
         <header class="topbar">
             <div style="display:flex;align-items:center;gap:12px;">
-                <button id="sidebarToggle" class="topbar-notif-link"
-                        style="display:none;padding:6px 10px;">
-                    <i class="bi bi-list" style="font-size:18px;"></i>
-                </button>
+                <button id="sidebarToggle" class="topbar-notif-link" style="display:none;padding:6px 10px;" aria-label="Buka/tutup sidebar"><i class="bi bi-list" aria-hidden="true"></i></button>
                 <span class="topbar-title">@yield('page-title')</span>
             </div>
 
@@ -214,7 +211,7 @@
                 <div class="topbar-notif">
                     <a href="{{ route('client.notifications') }}"
                     class="topbar-notif-link">
-                        <i class="bi bi-bell-fill"></i>
+                        <i class="bi bi-bell-fill" aria-hidden="true"></i>
                         @if(isset($unreadCount) && $unreadCount > 0)
                             <span class="notif-count">
                                 {{ $unreadCount > 99 ? '99+' : $unreadCount }}
@@ -238,16 +235,12 @@
         {{-- Content --}}
         <main class="page-content">
             @if(session('success'))
-            <div style="background:#dcfce7;border:1px solid #86efac;color:#15803d;
-                        padding:12px 16px;border-radius:8px;margin-bottom:20px;
-                        font-size:13.5px;display:flex;align-items:center;gap:8px;" id="success-alert">
+            <div id="success-alert" class="alert-box alert-success">
                 <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
             </div>
             @endif
             @if(session('error'))
-            <div id="error-alert" style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;
-                        padding:12px 16px;border-radius:8px;margin-bottom:20px;
-                        font-size:13.5px;display:flex;align-items:center;gap:8px;">
+            <div id="error-alert" class="alert-box alert-error">
                 <i class="bi bi-exclamation-circle-fill"></i> {{ session('error') }}
             </div>
             @endif
@@ -376,6 +369,10 @@ document.addEventListener('DOMContentLoaded', function() {
 @stack('scripts')
 </body>
 </html>
+
+
+
+
 
 
 

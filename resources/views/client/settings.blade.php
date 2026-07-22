@@ -1,4 +1,4 @@
-﻿@extends('layouts.client')
+@extends('layouts.client')
 @section('title','Pengaturan Akun')
 @section('page-title','Pengaturan Akun')
 
@@ -44,21 +44,21 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Nama Lengkap <span style="color:#dc2626;">*</span></label>
+                <label class="form-label">Nama Lengkap <span class="text-red">*</span></label>
                 <input type="text" name="name" class="form-control"
                        value="{{ old('name', $user->name) }}" required>
                 @error('name')
-                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">{{ $message }}</span>
+                <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Email <span style="color:#dc2626;">*</span></label>
+                    <label class="form-label">Email <span class="text-red">*</span></label>
                     <input type="email" name="email" class="form-control"
                            value="{{ old('email', $user->email) }}" required>
                     @error('email')
-                    <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">{{ $message }}</span>
+                    <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group">
@@ -95,7 +95,7 @@
                     </button>
                 </div>
                 @error('current_password')
-                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">{{ $message }}</span>
+                <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
@@ -110,7 +110,7 @@
                     </button>
                 </div>
                 @error('password')
-                    <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">{{ $message }}</span>
+                    <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group">

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -1001,7 +1001,7 @@
         <div class="nav-section">
             <div class="nav-section-label">Pekerjaan</div>
             <a href="{{ route('vendor.event-saya') }}" class="nav-item {{ request()->routeIs('vendor.event-saya') ? 'active' : '' }}">
-                <i class="bi bi-calendar3"></i> Event Saya
+                <i class="bi bi-calendar3" aria-hidden="true"></i> Event Saya
             </a>
             <a href="{{ route('vendor.daftar-tugas') }}" class="nav-item {{ request()->routeIs('vendor.daftar-tugas') ? 'active' : '' }}">
                 <i class="bi bi-check2-square"></i> Daftar Tugas
@@ -1011,7 +1011,7 @@
         <div class="nav-section">
             <div class="nav-section-label">Komunikasi</div>
             <a href="{{ route('vendor.notifikasi') }}" class="nav-item {{ request()->routeIs('vendor.notifikasi') ? 'active' : '' }}">
-                <i class="bi bi-bell"></i> Notifikasi
+                <i class="bi bi-bell" aria-hidden="true"></i> Notifikasi
                 @if(isset($unreadNotifications) && $unreadNotifications > 0)
                     <span class="sidebar-notification-badge">
                         {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
@@ -1023,14 +1023,14 @@
         <div class="nav-section">
             <div class="nav-section-label">Akun</div>
             <a href="{{ route('vendor.pengaturan') }}" class="nav-item {{ request()->routeIs('vendor.pengaturan') ? 'active' : '' }}">
-                <i class="bi bi-gear"></i> Pengaturan
+                <i class="bi bi-gear" aria-hidden="true"></i> Pengaturan
             </a>
         </div>
     </nav>
 
     <div class="sidebar-footer">
         <a href="#" onclick="confirmLogout(event)" class="nav-item danger">
-            <i class="bi bi-box-arrow-right"></i> Keluar
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Keluar
         </a>
         <form id="logout-form" action="{{ route('vendor.logout') }}" method="POST" style="display:none;">
             @csrf
@@ -1057,7 +1057,7 @@
         </div>
         <div class="topbar-right">
             <a href="{{ route('vendor.notifikasi') }}" class="notif-btn">
-                <i class="bi bi-bell-fill"></i>
+                <i class="bi bi-bell-fill" aria-hidden="true"></i>
                 @if(isset($unreadNotifications) && $unreadNotifications > 0)
                     <span class="notif-count">
                         {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
@@ -1078,17 +1078,13 @@
      <main class="page-content">
 
         @if(session('success'))
-            <div id="success-alert" style="background:#dcfce7;border:1px solid #86efac;color:#15803d;
-                        padding:12px 18px;border-radius:8px;margin-bottom:20px;
-                        font-size:13.5px;display:flex;align-items:center;gap:8px;">
-                <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
+            <div id="success-alert" class="alert-box alert-success">
+                <i class="bi bi-check-circle-fill" aria-hidden="true"></i> {{ session('success') }}
             </div>
         @endif
         @if(session('error'))
-            <div id="error-alert" style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;
-                        padding:12px 18px;border-radius:8px;margin-bottom:20px;
-                        font-size:13.5px;display:flex;align-items:center;gap:8px;">
-                <i class="bi bi-exclamation-circle-fill"></i> {{ session('error') }}
+            <div id="error-alert" class="alert-box alert-error">
+                <i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i> {{ session('error') }}
             </div>
         @endif
 
@@ -1210,6 +1206,9 @@ document.addEventListener('DOMContentLoaded', function() {
 @stack('scripts')
 </body>
 </html>
+
+
+
 
 
 

@@ -54,7 +54,7 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f6fa; display: flex; min-height: 100vh; overflow: hidden; }
-        /* Sidebar Ã¢â‚¬â€ redesigned to match Client style */
+        /* Sidebar ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â redesigned to match Client style */
         .sidebar {
             width: 280px; min-width: 280px; background: #0f172a; color: #94a3b8;
             display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
@@ -435,7 +435,7 @@
             font-size: 20px;
         }
 
-        /* Desktop (Ã¢â€°Â¥769px) - No changes */
+        /* Desktop (ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥769px) - No changes */
         @media (min-width: 769px) {
             #sidebarToggle {
                 display: none !important;
@@ -779,43 +779,43 @@
         <div class="nav-section">
             <div class="nav-section-label">Manajemen Event</div>
             <a href="{{ route('admin.kelola-klien.index') }}" class="nav-item {{ request()->routeIs('admin.kelola-klien.*') ? 'active' : '' }}">
-                <i class="fas fa-user-friends"></i> Kelola Klien
+                <i class="fas fa-user-friends" aria-hidden="true"></i> Kelola Klien
             </a>
             <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
-                <i class="fas fa-calendar-alt"></i> Kelola Event
+                <i class="fas fa-calendar-alt" aria-hidden="true"></i> Kelola Event
             </a>
             <a href="{{ route('admin.requests.index') }}" class="nav-item {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
-                <i class="fas fa-inbox"></i> Request Client
+                <i class="fas fa-inbox" aria-hidden="true"></i> Request Client
             </a>
         </div>
 
         <div class="nav-section">
             <div class="nav-section-label">Operasional Event</div>
             <a href="{{ route('admin.timeline.index') }}" class="nav-item {{ request()->routeIs('admin.timeline.*') ? 'active' : '' }}">
-                <i class="fas fa-calendar"></i> Timeline
+                <i class="fas fa-calendar" aria-hidden="true"></i> Timeline
             </a>
             <a href="{{ route('admin.event-vendors.index') }}" class="nav-item {{ request()->routeIs('admin.event-vendors.*') ? 'active' : '' }}">
-                <i class="fas fa-users-cog"></i> Penugasan
+                <i class="fas fa-users-cog" aria-hidden="true"></i> Penugasan
             </a>
             <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
-                <i class="fas fa-users"></i> Vendor
+                <i class="fas fa-users" aria-hidden="true"></i> Vendor
             </a>
         </div>
 
         <div class="nav-section">
             <div class="nav-section-label">Keuangan</div>
             <a href="{{ route('admin.rab.index') }}" class="nav-item {{ request()->routeIs('admin.rab.*') ? 'active' : '' }}">
-                <i class="fas fa-calendar-check"></i> Anggaran (RAB)
+                <i class="fas fa-calendar-check" aria-hidden="true"></i> Anggaran (RAB)
             </a>
             <a href="{{ route('admin.payments.index') }}" class="nav-item {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
-                <i class="fas fa-check-square"></i> Pembayaran
+                <i class="fas fa-check-square" aria-hidden="true"></i> Pembayaran
             </a>
         </div>
 
         <div class="nav-section">
             <div class="nav-section-label">Dokumen</div>
             <a href="{{ route('admin.documents.index') }}" class="nav-item {{ request()->routeIs('admin.documents.*') || request()->routeIs('admin.document_builder.*') ? 'active' : '' }}">
-                <i class="fas fa-file-alt"></i> Dokumen
+                <i class="fas fa-file-alt" aria-hidden="true"></i> Dokumen
             </a>
             <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
                 <i class="fas fa-folder-open"></i> Pusat Dokumentasi
@@ -832,7 +832,7 @@
         <div class="nav-section">
             <div class="nav-section-label">Laporan</div>
             <a href="{{ route('admin.analytics.index') }}" class="nav-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
-                <i class="fas fa-chart-bar"></i> Analitik
+                <i class="fas fa-chart-bar" aria-hidden="true"></i> Analitik
             </a>
             <a href="{{ route('admin.notifications.index') }}" class="nav-item {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
                 <i class="fas fa-bell"></i> Notifikasi
@@ -842,7 +842,7 @@
         <div class="nav-section">
             <div class="nav-section-label">Sistem</div>
             <a href="{{ route('admin.settings.index') }}" class="nav-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
-                <i class="fas fa-cog"></i> Pengaturan
+                <i class="fas fa-cog" aria-hidden="true"></i> Pengaturan
             </a>
         </div>
     </nav>
@@ -851,7 +851,7 @@
         <form id="logout-form" action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="button" onclick="confirmLogout(event)" class="nav-item danger">
-                <i class="fas fa-sign-out-alt"></i>
+                <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
                 <span>Keluar</span>
             </button>
         </form>
@@ -864,14 +864,14 @@
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:12px;">
             <button id="sidebarToggle" aria-label="Toggle sidebar">
-                <i class="bi bi-list"></i>
+                <i class="bi bi-list" aria-hidden="true"></i>
             </button>
             <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
         </div>
         <div class="topbar-right">
             <a href="{{ route('admin.notifications.index') }}"
                 class="topbar-notif">
-                    <i class="bi bi-bell-fill"></i>
+                    <i class="bi bi-bell-fill" aria-hidden="true"></i>
                     @if(isset($unreadNotifications) && $unreadNotifications > 0)
                         <span class="notif-count">
                             {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
@@ -887,22 +887,17 @@
 
     <main class="page-content">
         @if(session('success'))
-            <div id="success-alert"
-                style="background:#dcfce7; color:#166534; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
-                <i class="fas fa-check-circle"></i>
+            <div id="success-alert" class="alert-box alert-success">
+                <i class="fas fa-check-circle" aria-hidden="true"></i>
                 {{ session('success') }}
             </div>
         @endif
         @if(session('error'))
-            <div id="error-alert" style="background:#fee2e2; color:#991b1b; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
-                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+            <div id="error-alert" class="alert-box alert-error">
+                <i class="fas fa-exclamation-circle" aria-hidden="true"></i> {{ session('error') }}
             </div>
         @endif
-        @if($errors->any())
-            <div style="background:#fee2e2; color:#991b1b; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
-                <i class="fas fa-exclamation-circle"></i> {{ $errors->first() }}
-            </div>
-        @endif
+        
         @yield('content')
 
         <script>
@@ -1032,6 +1027,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </html>
+
+
 
 
 

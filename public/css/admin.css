@@ -949,3 +949,118 @@
 .ml-3  { margin-left: 10px; }
 .ml-4  { margin-left: 16px; }
 .max-w-360 { max-width: 360px; }
+
+/* ---- Alert Components ---- */
+.alert-box {
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.alert-success {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #15803d;
+}
+.alert-error {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+}
+.alert-danger {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+/* ---- Focus Visible for Accessibility ---- */
+:focus-visible {
+    outline: 2px solid #2DD4BF;
+    outline-offset: 2px;
+}
+button:focus-visible,
+a:focus-visible,
+.nav-item:focus-visible,
+.btn:focus-visible,
+.eye-btn:focus-visible,
+.sidebar .nav-item:focus-visible {
+    outline: 2px solid #2DD4BF;
+    outline-offset: 2px;
+}
+/* ---- Sidebar Text Contrast Fix ---- */
+.sidebar .nav-item {
+    color: #cbd5e1;
+}
+
+/* ---- Form Components ---- */
+.form-group {
+    margin-bottom: 16px;
+}
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 6px;
+}
+.form-input {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #1a2332;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    font-family: inherit;
+}
+.form-input:focus {
+    border-color: #2DD4BF;
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.12);
+}
+.form-input.error {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+.form-input.error:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+.form-input::placeholder {
+    color: #94a3b8;
+}
+.form-error {
+    display: block;
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+select.form-input {
+    cursor: pointer;
+    appearance: auto;
+}
+textarea.form-input {
+    resize: vertical;
+    min-height: 80px;
+}
+.text-red {
+    color: #dc2626;
+}
+.form-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f1f5f9;
+}
