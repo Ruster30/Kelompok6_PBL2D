@@ -246,14 +246,6 @@
                 <td style="border:none;padding:3px 4px;vertical-align:top;">Fasilitas</td>
                 <td style="border:none;padding:3px 4px;vertical-align:top;text-align:center;">:</td>
                 <td style="border:none;padding:3px 4px;vertical-align:top;">
-                    @if($event->detail_kebutuhan ?? null)
-                        {!! nl2br(e($event->detail_kebutuhan)) !!}
-                    @else
-                        1. Manajemen acara penuh (Full Event Management)<br>
-                        2. Koordinasi vendor dan logistik<br>
-                        3. Setup dan dekorasi standar sesuai tema<br>
-                        4. Tim lapangan profesional selama acara berlangsung
-                    @endif
                 </td>
             </tr>
         </table>
