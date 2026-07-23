@@ -175,7 +175,10 @@ p {
                     <td style="text-align:center; vertical-align:top;">:</td>
                     <td>
                         <strong>{{ $event->rentang_anggaran ?? '-' }}
-                        ( Exclude Ppn &amp; Pph )*</strong>
+                        @if($event->include_ppn ?? true)
+                            ( Include PPN &amp; PPh )*
+                        @endif
+                        </strong>
                         @if($event->terbilang ?? null)
                         <br><span style="font-size:10px;">({{ $event->terbilang }})</span>
                         @endif

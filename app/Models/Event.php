@@ -25,6 +25,7 @@ class Event extends Model
         'perihal',                 // override nomor surat oleh admin
         'luas_area',                // luas area stand/pameran
         'detail_kebutuhan',
+        'include_ppn',              // apakah harga include PPN & PPh
         'status_event',
         'status_pembayaran',
     ];
@@ -34,6 +35,7 @@ class Event extends Model
         return [
             'tanggal_event'   => 'date',
             'tanggal_selesai' => 'date',
+            'include_ppn'     => 'boolean',
         'status_pembayaran' => 'string',
         ];
     }
