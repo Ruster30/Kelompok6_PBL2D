@@ -75,10 +75,18 @@
                 grid-template-columns: repeat(2, 1fr) !important;
             }
             .topbar {
-                padding: 0 16px !important;
+                padding: 0 16px;
             }
             .topbar-title {
-                font-size: 14px !important;
+                font-size: 15px;
+            }
+            .topbar-user span {
+                display: none;
+            }
+            .avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
             }
             .sidebar {
                 transform: translateX(-100%);
@@ -115,6 +123,27 @@
         @media (min-width: 769px) {
             #sidebarToggle {
                 display: none !important;
+            }
+        }
+        
+        @media (max-width: 575px) {
+            .topbar {
+                padding: 0 16px !important;
+            }
+            .topbar-title {
+                font-size: 14px !important;
+            }
+            .page-content {
+                padding: 16px 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 0 16px;
+            }
+            .page-content {
+                padding: 16px 12px;
             }
         }
     </style>
@@ -204,33 +233,23 @@
         
         {{-- Topbar --}}
         <header class="topbar">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <button id="sidebarToggle" class="topbar-notif-link" style="display:none;padding:6px 10px;" aria-label="Buka/tutup sidebar"><i class="bi bi-list" aria-hidden="true"></i></button>
-                <span class="topbar-title">@yield('page-title')</span>
+            <div class="topbar-left">
+                <button id="sidebarToggle" aria-label="Toggle sidebar">
+                    <i class="bi bi-list" aria-hidden="true"></i>
+                </button>
+                <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
             </div>
-
             <div class="topbar-right">
                 <x-dark-mode-toggle />
-                <div class="topbar-notif">
-                    <a href="{{ route('client.notifications') }}"
-                    class="topbar-notif-link">
-                        <i class="bi bi-bell-fill" aria-hidden="true"></i>
-                        @if(isset($unreadCount) && $unreadCount > 0)
-                            <span class="notif-count">
-                                {{ $unreadCount > 99 ? '99+' : $unreadCount }}
-                            </span>
-                        @endif
-                    </a>
-                </div>
-
-                <div class="user-badge">
-                    <div class="user-info">
-                        <div class="user-name">{{ Auth::user()->name }}</div>
-                        <div class="user-role">Klien</div>
-                    </div>
-                    <div class="user-avatar">
-                        {{ Auth::user()->initials }}
-                    </div>
+                <a href="{{ route('client.notifications') }}" class="topbar-notif">
+                    <i class="bi bi-bell-fill" aria-hidden="true"></i>
+                    @if(isset($unreadCount) && $unreadCount > 0)
+                        <span class="notif-count">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
+                    @endif
+                </a>
+                <div class="topbar-user">
+                    <span>{{ Auth::user()->name ?? 'client' }}</span>
+                    <div class="avatar">{{ strtoupper(substr(Auth::user()->name ?? 'CL', 0, 2)) }}</div>
                 </div>
             </div>
         </header>
