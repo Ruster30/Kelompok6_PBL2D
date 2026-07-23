@@ -1,32 +1,74 @@
 {{-- resources/views/sections/hero.blade.php --}}
 <section class="hero-section d-flex align-items-center" id="beranda">
     {{-- Background Carousel --}}
+    <style>
+        /* Mobile responsive hero */
+        @media (max-width: 768px) {
+            .hero-section h1.display-3 {
+                font-size: 2.2rem !important;
+                margin-top: 2rem !important;
+            }
+            .hero-section .fs-5 {
+                font-size: 1rem !important;
+            }
+            .hero-section .btn-lg {
+                font-size: 0.9rem !important;
+                padding: 0.5rem 1rem !important;
+            }
+            .hero-section .min-vh-100 {
+                min-height: 90vh !important;
+            }
+        }
+        @media (max-width: 575px) {
+            .hero-section h1.display-3 {
+                font-size: 1.8rem !important;
+            }
+        }
+        </style>
     <div id="heroCarousel"
          class="carousel slide carousel-fade hero-carousel"
          data-bs-ride="carousel"
-         data-bs-interval="3000">
+         data-bs-interval="3000"
+         style="background: linear-gradient(135deg, #091220, #0d1f35);">
+
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
 
         <div class="carousel-inner">
 
-            <div class="carousel-item active">
+            <div class="carousel-item active" style="background: linear-gradient(135deg, #091220 0%, #0d1f35 50%, #082030 100%);">
                 <img src="{{ asset('images/landing/hero/hero1.png') }}"
                      class="d-block w-100 hero-bg-img"
-                     alt="Hero 1">
+                     alt="Hero 1"
+                     onerror="this.style.display='none'">
             </div>
 
-            <div class="carousel-item">
+            <div class="carousel-item" style="background: linear-gradient(135deg, #0d1f35 0%, #091220 50%, #0b2240 100%);">
                 <img src="{{ asset('images/landing/hero/hero2.png') }}"
                      class="d-block w-100 hero-bg-img"
-                     alt="Hero 2">
+                     alt="Hero 2"
+                     onerror="this.style.display='none'">
             </div>
 
-            <div class="carousel-item">
+            <div class="carousel-item" style="background: linear-gradient(135deg, #082030 0%, #0d1f35 50%, #091220 100%);">
                 <img src="{{ asset('images/landing/hero/hero3.png') }}"
                      class="d-block w-100 hero-bg-img"
-                     alt="Hero 3">
+                     alt="Hero 3"
+                     onerror="this.style.display='none'">
             </div>
 
         </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
 
     <div class="hero-overlay"></div>
@@ -57,3 +99,4 @@
         <div class="scroll-dot"></div>
     </div>
 </section>
+

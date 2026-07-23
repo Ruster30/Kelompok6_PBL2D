@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Kelola Event')
 @section('page-title', 'Kelola Event')
@@ -14,8 +14,8 @@
 </div>
 
 <div class="card">
-    <div class="card-header" style="border-bottom:none; padding-bottom:14px;">
-        <div class="toolbar" style="margin-bottom:0; flex:1;">
+    <div class="card-header border-b" style="border-bottom:none; padding-bottom:14px;">
+        <div class="toolbar mb-0 flex-1">
             <div class="search-wrap">
                 <i class="fas fa-search"></i>
                 <input type="text" id="searchInput" placeholder="Cari event..." value="{{ request('search') }}">
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th>Nama Event</th>
@@ -47,18 +47,16 @@
         <tbody>
             @forelse($events as $event)
             <tr>
-                <td style="font-weight:500;">{{ $event->nama_event }}</td>
+                <td data-label="Nama Event" class="font-medium">{{ $event->nama_event }}</td>
                 <td>{{ $event->client->name ?? '-' }}</td>
                 <td>{{ $event->tanggal_event ? $event->tanggal_event->format('d M Y') : '-' }}</td>
                 <td>{{ $event->lokasi_event ?? '-' }}</td>
                 <td>{{ number_format($event->jumlah_tamu ?? 0, 0, ',', '.') }}</td>
-                <td>
-                    <span class="badge {{ $event->badge_class }}">
+                <td data-label="Status"><span class="badge {{ $event->badge_class }}">
                         {{ $event->status_label }}
                     </span>
                 </td>
-                <td>
-                    <div class="action-btns">
+                <td data-label="Aksi"><div class="action-btns">
                         <a href="{{ route('admin.events.show', $event->id) }}" class="action-btn" title="Lihat">
                             <i class="fas fa-eye" style="font-size:12px;"></i>
                         </a>
@@ -76,13 +74,19 @@
                 </td>
             </tr>
             @empty
-            <tr class="empty-row"><td colspan="7">Belum ada event.</td></tr>
+            <tr class="empty-row"><td colspan="7">
+                    <div class="empty-state p-5">
+                        <div class="empty-state-icon"><i class="bi-calendar-event text-2xl"></i></div>
+                        <h3 class="empty-state-title">Belum ada event.</h3>
+                        <p class="empty-state-text">Data akan muncul setelah Anda menambahkan data baru.</p>
+                    </div>
+                </td></tr>
             @endforelse
         </tbody>
-    </table>
+    </table></div>
 
     @if($events->hasPages())
-    <div style="padding:16px 24px; border-top:1px solid #f1f5f9;">
+    <div class="p-4 px-6 border-t">
         {{ $events->links() }}
     </div>
     @endif
@@ -106,3 +110,4 @@
     }
 </script>
 @endpush
+

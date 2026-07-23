@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Document Builder')
 @section('page-title', 'Document Builder')
@@ -12,14 +12,14 @@
 
 {{-- Tab Navigation --}}
 <div class="tabs">
-    <a href="{{ route('admin.proposals.index') }}" class="tab-link">Dokumen Umum</a>
+    <a href="{{ route('admin.documents.index') }}" class="tab-link">Dokumen Umum</a>
     <a href="{{ route('admin.document_builder.index') }}" class="tab-link active">Document Builder</a>
 </div>
 
 
 <div class="tab-content">
 
-    {{-- ─── FORM GENERATE ─────────────────────────────────────── --}}
+    {{-- â”€â”€â”€ FORM GENERATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:28px 32px;margin-bottom:24px;">
         <h2 style="font-size:17px;font-weight:700;color:#0f172a;margin-bottom:6px;">
             <i class="fas fa-file-alt" style="color:#6366f1;margin-right:6px;"></i>
@@ -71,7 +71,7 @@
 
             {{-- Info Card Event (muncul setelah pilih event) --}}
             <div id="eventInfoCard" style="display:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 18px;margin-bottom:24px;">
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px;">
+                <div class="stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px;">
                     <div><span style="color:#64748b;">Client</span><br><strong id="infoClient">-</strong></div>
                     <div><span style="color:#64748b;">Tanggal Event</span><br><strong id="infoTanggal">-</strong></div>
                     <div><span style="color:#64748b;">Lokasi</span><br><strong id="infoLokasi">-</strong></div>
@@ -150,7 +150,7 @@
         </form>
     </div>
 
-    {{-- ─── AREA HASIL / AKSI ─────────────────────────────────── --}}
+    {{-- â”€â”€â”€ AREA HASIL / AKSI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div id="resultPanel" style="display:none;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:28px 32px;">
         <h2 style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:18px;">
             <i class="fas fa-check-circle" style="color:#22c55e;margin-right:6px;"></i>
@@ -200,7 +200,7 @@
     const CSRF         = document.querySelector('meta[name="csrf-token"]')?.content
                          || '{{ csrf_token() }}';
 
-    // ─── Info event ─────────────────────────────────────────────
+    // â”€â”€â”€ Info event â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     document.getElementById('event_id').addEventListener('change', function () {
         const opt = this.options[this.selectedIndex];
         if (!this.value) {
@@ -219,10 +219,10 @@
         }
     });
 
-    // ─── Info jenis dokumen ─────────────────────────────────────
+    // â”€â”€â”€ Info jenis dokumen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const JENIS_DESC = {
         proposal: {
-            icon: '📄', label: 'Proposal Event',
+            icon: 'ðŸ“„', label: 'Proposal Event',
             desc: 'Dokumen proposal lengkap meliputi profil perusahaan, data client & event, konsep, layanan, timeline, vendor, RAB, dan syarat & ketentuan.',
             color: '#6366f1'
         },
@@ -269,11 +269,11 @@
         card.style.display = 'block';
     });
 
-    // ─── State untuk tombol aksi ────────────────────────────────
+    // â”€â”€â”€ State untuk tombol aksi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     let lastEventId = null;
     let lastJenis   = null;
 
-    // ─── Generate ───────────────────────────────────────────────
+    // â”€â”€â”€ Generate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function doGenerate() {
         const eventId = document.getElementById('event_id').value;
         const jenis   = document.getElementById('jenis_dokumen').value;
@@ -382,7 +382,7 @@
             document.getElementById('event_id').dispatchEvent(new Event('change'));
             document.getElementById('jenis_dokumen').dispatchEvent(new Event('change'));
         });
-﻿    @endif
+ï»¿    @endif
 
     // Payment Scheme Functions (khusus Invoice)
     let docTotalDibayarKlien = 0;
@@ -527,3 +527,5 @@
 
 @endpush
 @endsection
+
+

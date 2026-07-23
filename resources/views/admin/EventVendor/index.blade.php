@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Penugasan')
 @section('page-title', 'Penugasan')
@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th>Event</th>
@@ -112,9 +112,7 @@
 
                 </td>
 
-                <td>
-
-                    <div class="action-btns">
+                <td data-label="Aksi"><div class="action-btns">
 
                         <button
                             class="action-btn"
@@ -159,7 +157,7 @@
         @endforelse
 
         </tbody>
-    </table>
+    </table></div>
 
     <div style="padding:20px">
         {{ $eventVendors->links() }}
@@ -358,3 +356,5 @@ function editData(data)
 </script>
 
 @endpush
+
+

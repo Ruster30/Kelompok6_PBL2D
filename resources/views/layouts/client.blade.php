@@ -4,12 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') — ALPHA.COM</title>
+    <title>@yield('title', 'Dashboard') ALPHA.COM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/shared.css') }}">
     <link rel="stylesheet" href="{{ asset('css/client.css') }}">
+
     <style>
+        /* ---- Empty State ---- */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #475569;
+            margin: 0 0 8px 0;
+        }
+        .empty-state-text {
+            font-size: 14px;
+            color: #94a3b8;
+            max-width: 360px;
+            margin: 0;
+            line-height: 1.5;
+        }
+        .empty-row td {
+            padding: 40px 20px !important;
+            text-align: center !important;
+            color: #94a3b8 !important;
+            font-size: 14px !important;
+        }
+        /* ---- Responsive Tables ---- */
+        table:not(.table-no-responsive) {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
         /* Additional responsive fixes */
         .sidebar-overlay {
             display: none;
@@ -27,6 +70,16 @@
         
         /* Ensure sidebar works properly on mobile */
         @media (max-width: 768px) {
+            div[style*='grid-template-columns:repeat(4,1fr)'],
+            div[style*='grid-template-columns: repeat(4, 1fr)'] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .topbar {
+                padding: 0 16px !important;
+            }
+            .topbar-title {
+                font-size: 14px !important;
+            }
             .sidebar {
                 transform: translateX(-100%);
             }
@@ -76,18 +129,18 @@
             <span class="sidebar-logo-text">ALPHA<span>.</span>CORP</span>
         </a>
 
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav" id="sidebarNav">
             <div class="nav-section">
                 <div class="nav-section-label">Menu</div>
                 <a href="{{ route('client.dashboard') }}" class="nav-item {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-grid-1x2"></i> Ringkasan Saya
+                    <i class="bi bi-grid-1x2" aria-hidden="true"></i> Ringkasan Saya
                 </a>
             </div>
 
             <div class="nav-section">
                 <div class="nav-section-label">Event Saya</div>
                 <a href="{{ route('client.events') }}" class="nav-item {{ request()->routeIs('client.events') ? 'active' : '' }}">
-                    <i class="bi bi-calendar-event"></i> Event Terdaftar
+                    <i class="bi bi-calendar-event" aria-hidden="true"></i> Event Terdaftar
                 </a>
                 <a href="{{ route('client.timeline') }}" class="nav-item {{ request()->routeIs('client.timeline*') ? 'active' : '' }}">
                     <i class="bi bi-calendar3"></i> Timeline Event
@@ -104,14 +157,14 @@
             <div class="nav-section">
                 <div class="nav-section-label">Dokumen</div>
                 <a href="{{ route('client.proposals') }}" class="nav-item {{ request()->routeIs('client.proposals*') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i> Dokumen
+                    <i class="bi bi-file-earmark-text" aria-hidden="true"></i> Dokumen
                 </a>
             </div>
 
             <div class="nav-section">
                 <div class="nav-section-label">Komunikasi</div>
                 <a href="{{ route('client.notifications') }}" class="nav-item {{ request()->routeIs('client.notifications*') ? 'active' : '' }}">
-                    <i class="bi bi-bell"></i> Notifikasi
+                    <i class="bi bi-bell" aria-hidden="true"></i> Notifikasi
                     @if(isset($unreadCount) && $unreadCount > 0)
                         <span class="sidebar-notification-badge">
                             {{ $unreadCount > 9 ? '9+' : $unreadCount }}
@@ -130,7 +183,7 @@
             <div class="nav-section">
                 <div class="nav-section-label">Akun</div>
                 <a href="{{ route('client.settings') }}" class="nav-item {{ request()->routeIs('client.settings') ? 'active' : '' }}">
-                    <i class="bi bi-gear"></i> Pengaturan Akun
+                    <i class="bi bi-gear" aria-hidden="true"></i> Pengaturan Akun
                 </a>
             </div>
         </nav>
@@ -139,23 +192,20 @@
             <form id="logout-form" method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="button" onclick="confirmLogout(event)" class="nav-item danger" style="width:100%;">
-                    <i class="bi bi-box-arrow-right"></i> Keluar
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Keluar
                 </button>
             </form>
         </div>
     </aside>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    {{-- ══════ MAIN AREA ══════ --}}
+    {{--  --}}
     <div class="main-area">
-
+        
         {{-- Topbar --}}
         <header class="topbar">
             <div style="display:flex;align-items:center;gap:12px;">
-                <button id="sidebarToggle" class="topbar-notif-link"
-                        style="display:none;padding:6px 10px;">
-                    <i class="bi bi-list" style="font-size:18px;"></i>
-                </button>
+                <button id="sidebarToggle" class="topbar-notif-link" style="display:none;padding:6px 10px;" aria-label="Buka/tutup sidebar"><i class="bi bi-list" aria-hidden="true"></i></button>
                 <span class="topbar-title">@yield('page-title')</span>
             </div>
 
@@ -163,7 +213,7 @@
                 <div class="topbar-notif">
                     <a href="{{ route('client.notifications') }}"
                     class="topbar-notif-link">
-                        <i class="bi bi-bell-fill"></i>
+                        <i class="bi bi-bell-fill" aria-hidden="true"></i>
                         @if(isset($unreadCount) && $unreadCount > 0)
                             <span class="notif-count">
                                 {{ $unreadCount > 99 ? '99+' : $unreadCount }}
@@ -186,38 +236,35 @@
 
         {{-- Content --}}
         <main class="page-content">
-            @if(session('success'))
-            <div style="background:#dcfce7;border:1px solid #86efac;color:#15803d;
-                        padding:12px 16px;border-radius:8px;margin-bottom:20px;
-                        font-size:13.5px;display:flex;align-items:center;gap:8px;" id="success-alert">
-                <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
-            </div>
-            @endif
-            @if(session('error'))
-            <div style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;
-                        padding:12px 16px;border-radius:8px;margin-bottom:20px;
-                        font-size:13.5px;display:flex;align-items:center;gap:8px;">
-                <i class="bi bi-exclamation-circle-fill"></i> {{ session('error') }}
-            </div>
-            @endif
+            <x-alert type="success" />
+            <x-alert type="error" />
 
             @yield('content')
             <script>
                     document.addEventListener('DOMContentLoaded', function () {
 
-                        const alert = document.getElementById('success-alert');
+                        const successAlert = document.getElementById('success-alert');
+                        const errorAlert = document.getElementById('error-alert');
 
-                        if (alert) {
+                        if (successAlert) {
                             setTimeout(() => {
-                                alert.style.transition = "opacity .3s ease";
-                                alert.style.opacity = "0";
+                                successAlert.style.transition = "opacity .3s ease";
+                                successAlert.style.opacity = "0";
 
                                 setTimeout(() => {
-                                    alert.remove();
+                                    successAlert.remove();
                                 }, 300);
                             }, 2000);
                         }
 
+                    
+                        if (errorAlert) {
+                            setTimeout(() => {
+                                errorAlert.style.transition = "opacity .5s ease";
+                                errorAlert.style.opacity = "0";
+                                setTimeout(() => { errorAlert.remove(); }, 500);
+                            }, 4000);
+                        }
                     });
             </script>
         </main>
@@ -230,27 +277,35 @@ document.addEventListener('DOMContentLoaded', function() {
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebarOverlay');
     var toggleBtn = document.getElementById('sidebarToggle');
-    
+    var sidebarNav = document.getElementById('sidebarNav');
+    var KEY = 'clientSidebarScrollPosition';
+
     // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    if (sidebar) {
-        var KEY = 'clientSidebarScrollPosition';
+    if (sidebarNav) {
         var restoreScroll = function() {
             var saved = sessionStorage.getItem(KEY);
             if (saved !== null) {
-                sidebar.scrollTop = parseInt(saved, 10);
+                sidebarNav.scrollTop = parseInt(saved, 10);
             }
         };
         restoreScroll();
         if (window.requestAnimationFrame) {
             window.requestAnimationFrame(restoreScroll);
         }
-        sidebar.addEventListener('scroll', function() {
-            sessionStorage.setItem(KEY, sidebar.scrollTop);
+        sidebarNav.addEventListener('scroll', function() {
+            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
         window.addEventListener('beforeunload', function() {
-            sessionStorage.setItem(KEY, sidebar.scrollTop);
+            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
+        document.addEventListener('click', function(e) {
+            var target = e.target.closest('a, button[type="submit"]');
+            if (target && sidebarNav) {
+                sessionStorage.setItem(KEY, sidebarNav.scrollTop);
+            }
+        }, true);
     }
+
     // ===== RESPONSIVE TOGGLE =====
     if (toggleBtn && sidebar && overlay) {
         function openSidebar() {
@@ -282,17 +337,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Close sidebar when clicking nav links on mobile
         var navLinks = sidebar.querySelectorAll('.nav-item');
         navLinks.forEach(function(link) {
             link.addEventListener('click', function() {
                 if (window.innerWidth < 768) {
+                    if (sidebarNav) {
+                        sessionStorage.setItem(KEY, sidebarNav.scrollTop);
+                    }
                     closeSidebar();
                 }
             });
         });
         
-        // Reset sidebar state on window resize
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768) {
                 closeSidebar();
@@ -301,8 +357,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/skeleton.js') }}"></script>
 <x-swal-helper />
 <x-logout-confirmation />
 @stack('scripts')
 </body>
 </html>
+
+
+
+
+
+
+
+

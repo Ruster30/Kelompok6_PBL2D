@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lupa Password - Alpha Organizer</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -38,7 +38,7 @@
             overflow: hidden;
         }
 
-        /* ── LEFT PANEL ── */
+        /* â”€â”€ LEFT PANEL â”€â”€ */
         .left-panel {
             width: 42%;
             height: 100vh;
@@ -53,17 +53,23 @@
             top: 0;
         }
 
-        .logo-box {
-            display: flex;
+        .logo-box{
+            background: transparent;
+            border-radius: 0;
+            width: auto;
+            height: auto;
+            display: inline-flex;
             align-items: center;
-            gap: 12px;
+            justify-content: flex-start;
+            box-shadow: none;
+            padding: 0;
+            margin-bottom: 30px;
         }
 
-        .logo-box img {
-            width: 52px;
-            height: 52px;
-            object-fit: contain;
-            border-radius: 12px;
+        .logo-box img{
+            width:120px;
+            height:auto;
+            display:block;
         }
 
         .logo-box .logo-text {
@@ -81,12 +87,15 @@
             letter-spacing: 2px;
         }
 
-        .left-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 60px 0 40px;
+        .left-content{
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            position:relative;
+            z-index:1;
+
+            transform:translateY(-40px);
         }
 
         .left-content .eyebrow {
@@ -99,12 +108,12 @@
         }
 
         .left-content h1 {
-            font-size: 48px;
+            font-size: 35px;
             font-weight: 800;
-            line-height: 1.1;
+            line-height: 1.15;
             color: var(--text-primary);
             letter-spacing: -1px;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
         }
 
         .left-content h1 span {
@@ -114,26 +123,26 @@
         .left-content p {
             font-size: 15.5px;
             color: var(--text-secondary);
-            line-height: 1.75;
+            line-height: 1.8;
             max-width: 380px;
         }
 
         .steps-list {
-            margin-top: 48px;
+            margin-top: 56px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 24px;
         }
 
         .step-item {
             display: flex;
             align-items: flex-start;
-            gap: 14px;
+            gap: 18px;
         }
 
         .step-icon {
-            width: 36px;
-            height: 36px;
+            width: 46px;
+            height: 46px;
             border-radius: 10px;
             background: rgba(14,202,180,0.12);
             border: 1px solid rgba(14,202,180,0.25);
@@ -141,7 +150,7 @@
             align-items: center;
             justify-content: center;
             color: var(--accent);
-            font-size: 16px;
+            font-size: 18px;
             flex-shrink: 0;
         }
 
@@ -164,7 +173,7 @@
             color: var(--text-muted);
         }
 
-        /* ── RIGHT PANEL ── */
+        /* â”€â”€ RIGHT PANEL â”€â”€ */
         .right-panel {
             margin-left: 42%;
             width: 58%;
@@ -179,7 +188,7 @@
 
         .form-wrapper {
             width: 100%;
-            max-width: 440px;
+            transform: translateY(-15px);
         }
 
         .back-link {
@@ -280,6 +289,7 @@
             font-size: 14.5px;
             transition: border-color 0.2s, box-shadow 0.2s;
             outline: none;
+            height:54px;
         }
 
         .form-control-custom::placeholder {
@@ -328,6 +338,7 @@
             justify-content: center;
             gap: 8px;
             margin-top: 8px;
+            height:56px;
         }
 
         .btn-primary-custom:hover {
@@ -359,9 +370,7 @@
 <div class="left-panel">
     <div class="logo-box">
         <img src="{{ asset('images/Logo-bg.png') }}" alt="Alpha Organizer"
-             onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-        <div class="logo-text" style="display:none;">ALPHA<span>ORGANIZER</span></div>
-        <div class="logo-text">Alpha<span>ORGANIZER</span></div>
+             onerror="this.style.display='none';">
     </div>
 
     <div class="left-content">
@@ -476,6 +485,5 @@
     });
 </script>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </body>
 </html>

@@ -33,22 +33,20 @@
 
             <div class="form-group">
                 <label class="form-label">
-                    Nama Event <span style="color:#dc2626;">*</span>
+                    Nama Event <span class="text-red">*</span>
                 </label>
                 <input type="text" name="nama_event" class="form-control"
                        placeholder="mis. Konferensi Teknologi Tahunan 2026"
                        value="{{ old('nama_event') }}" required>
                 @error('nama_event')
-                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">
-                    {{ $message }}
-                </span>
+                <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">
-                        Jenis Event <span style="color:#dc2626;">*</span>
+                        Jenis Event <span class="text-red">*</span>
                     </label>
                     <select name="jenis_event" class="form-control" required>
                         <option value="">Pilih jenis event</option>
@@ -63,22 +61,18 @@
                         @endforeach
                     </select>
                     @error('jenis_event')
-                    <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">
-                        {{ $message }}
-                    </span>
+                    <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label">
-                        Jumlah Tamu <span style="color:#dc2626;">*</span>
+                        Jumlah Tamu <span class="text-red">*</span>
                     </label>
                     <input type="number" name="jumlah_tamu" class="form-control"
                            placeholder="mis. 250"
                            value="{{ old('jumlah_tamu') }}" min="1" required>
                     @error('jumlah_tamu')
-                    <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">
-                        {{ $message }}
-                    </span>
+                    <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
@@ -94,21 +88,19 @@
                     @endforeach
                 </select>
                 @error('rentang_anggaran')
-                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">{{ $message }}</span>
+                <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="form-group">
                 <label class="form-label">
-                    Tanggal Event <span style="color:#dc2626;">*</span>
+                    Tanggal Event <span class="text-red">*</span>
                 </label>
                 <input type="date" name="tanggal_event" class="form-control"
                        value="{{ old('tanggal_event') }}"
                        min="{{ date('Y-m-d', strtotime('+1 day')) }}" required>
                 @error('tanggal_event')
-                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">
-                    {{ $message }}
-                </span>
+                <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
@@ -119,15 +111,13 @@
 
             <div class="form-group">
                 <label class="form-label">
-                    Lokasi Event <span style="color:#dc2626;">*</span>
+                    Lokasi Event <span class="text-red">*</span>
                 </label>
                 <input type="text" name="lokasi_event" class="form-control"
                        placeholder="mis. Basko Grand Mall, Padang"
                        value="{{ old('lokasi_event') }}" required>
                 @error('lokasi_event')
-                <span style="color:#dc2626;font-size:12px;display:block;margin-top:4px;">
-                    {{ $message }}
-                </span>
+                <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 

@@ -249,6 +249,8 @@
 .select-filter:focus { border-color: var(--accent, #14b8a6); }
 
 .cms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 991px) { .cms-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 575px) { .cms-grid { grid-template-columns: 1fr; } }
 .cms-card { border: 1px solid var(--border, #e2e8f0); border-radius: 10px; padding: 18px; position: relative; }
 .cms-icon-circle {
     width: 44px; height: 44px; border-radius: 10px; background: #f0fdf9; color: var(--accent, #14b8a6);
@@ -300,4 +302,5 @@
 }
 </style>
 @endpush
+
 

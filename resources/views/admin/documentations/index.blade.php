@@ -2,6 +2,17 @@
 
 @section('title', 'Pusat Dokumentasi')
 @section('page-title', 'Pusat Dokumentasi')
+@push('styles')
+<style>
+.doc-card-table table {
+    display: table !important;
+}
+.doc-card-table .table-responsive-wrap table {
+    min-width: 700px;
+}
+</style>
+@endpush
+
 
 @section('content')
 <div class="page-header">
@@ -11,7 +22,7 @@
     </div>
 </div>
 
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
+<div class="doc-grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
     <div class="plain-stat">
         <div class="plain-stat-label">Total Dokumentasi</div>
         <div class="plain-stat-value">{{ $totalDocs }}</div>
@@ -43,7 +54,7 @@
 </div>
 
 @forelse($documentations as $doc)
-<div class="card" style="margin-bottom:16px;">
+<div class="card doc-card-table" style="margin-bottom:16px;">
     {{-- Header dokumentasi --}}
     <div class="card-header">
         <div>
@@ -67,7 +78,7 @@
         Belum ada file yang diunggah untuk dokumentasi ini.
     </div>
     @else
-    <table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th>File</th>
@@ -130,7 +141,7 @@
             </tr>
             @endforeach
         </tbody>
-    </table>
+    </table></div>
     @endif
 </div>
 @empty
@@ -162,3 +173,4 @@ function debounce(fn, delay) {
 }
 </script>
 @endpush
+

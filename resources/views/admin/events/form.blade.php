@@ -14,30 +14,19 @@
     </a>
 </div>
 
-<div class="card" style="max-width:800px;">
-    <div style="padding:28px;">
+<div class="card max-w-800">
+    <div class="p-6">
         <form action="{{ isset($event) ? route('admin.events.update', $event->id) : route('admin.events.store') }}" method="POST">
             @csrf
             @if(isset($event)) @method('PUT') @endif
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-                <div class="form-group" style="grid-column:1/-1;">
-                    <label class="form-label">Nama Event <span style="color:#f43f5e;">*</span></label>
-                    <input type="text" name="nama_event" class="form-input @error('nama_event') error @enderror"
-                           value="{{ old('nama_event', $event->nama_event ?? '') }}" placeholder="Masukkan nama event" required>
-                    @error('nama_event')<span class="form-error">{{ $message }}</span>@enderror
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <x-bs-input name="nama_event" label="Nama Event" :value="$event->nama_event ?? ''" placeholder="Masukkan nama event" required />
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Klien</label>
-                    <select name="client_id" class="form-input">
-                        <option value="">-- Pilih Klien --</option>
-                        @foreach($clients as $client)
-                        <option value="{{ $client->id }}" {{ old('client_id', $event->client_id ?? '') == $client->id ? 'selected' : '' }}>
-                            {{ $client->name }}
-                        </option>
-                        @endforeach
-                    </select>
+                    <x-bs-select name="client_id" label="Klien" :value="$event->client_id ?? ''" placeholder="-- Pilih Klien --" :options="$clients->pluck('name', 'id')" />
                 </div>
 
                 <div class="form-group">
@@ -51,7 +40,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Tanggal Event <span style="color:#f43f5e;">*</span></label>
+                    <label class="form-label">Tanggal Event <span class="text-red">*</span></label>
                     <input type="date" name="tanggal_event" class="form-input @error('tanggal_event') error @enderror"
                            value="{{ old('tanggal_event', isset($event) ? $event->tanggal_event->format('Y-m-d') : '') }}" required>
                     @error('tanggal_event')<span class="form-error">{{ $message }}</span>@enderror
@@ -78,14 +67,14 @@
                     </select>
                 </div>
 
-                <div class="form-group" style="grid-column:1/-1;">
+                <div class="form-group full-width">
                     <label class="form-label">Detail Kebutuhan</label>
                     <textarea name="detail_kebutuhan" class="form-input" rows="4" placeholder="Detail kebutuhan event...">{{ old('detail_kebutuhan', $event->detail_kebutuhan ?? '') }}</textarea>
                 </div>
             </div>
 
             <div style="display:flex; gap:12px; margin-top:8px;">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="submitBtn" onclick="this.disabled=true; this.innerHTML='<i class=\"fas fa-spinner fa-spin\"></i> Menyimpan...'; this.form.submit();">
                     <i class="fas fa-save"></i> {{ isset($event) ? 'Simpan Perubahan' : 'Buat Event' }}
                 </button>
                 <a href="{{ route('admin.events.index') }}" class="btn btn-outline">Batal</a>

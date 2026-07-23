@@ -8,21 +8,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/shared.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/vendor.css') }}">
+
     <style>
-        :root {
-    --sidebar-width: 280px;
-            --sidebar-bg: #0f1923;
-            --sidebar-text: #c9d4df;
-            --sidebar-active-bg: #1a8f7e;
-            --sidebar-hover-bg: rgba(255,255,255,0.06);
-            --topbar-height: 64px;
-            --teal: #1a8f7e;
-            --teal-light: #e6f5f3;
-            --teal-hover: #157a6b;
-            --body-bg: #f4f6f9;
-            --card-radius: 12px;
-            --text-muted-custom: #8a9bb0;
-        }
+
 
         * { box-sizing: border-box; }
 
@@ -50,15 +41,6 @@
             letter-spacing: -0.3px;
         }
         .sidebar-brand span span { color: #2DD4BF; }
-
-
-
-
-
-
-
-
-
 
         .sidebar-footer a:hover {
             background: rgba(229,62,62,0.10);
@@ -95,6 +77,22 @@
             z-index: 100;
         }
 
+        .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
         .topbar-title {
             font-size: 18px;
             font-weight: 700;
@@ -701,7 +699,7 @@
             opacity: 1;
         }
 
-        /* Desktop (≥1200px) - No changes */
+        /* Desktop */
         @media (min-width: 1200px) {
             .mobile-toggle {
                 display: none !important;
@@ -742,7 +740,23 @@
             .topbar {
                 padding: 0 16px;
             }
-            .topbar-title {
+            .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
+        .topbar-title {
                 font-size: 15px;
             }
             .user-info .name-role {
@@ -885,7 +899,58 @@
 
         /* Very Small Mobile (<576px) */
         @media (max-width: 575px) {
-            .topbar-title {
+            div[style*='grid-template-columns:repeat(4,1fr)'],
+            div[style*='grid-template-columns: repeat(4, 1fr)'] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            div[style*='grid-template-columns:repeat(3,1fr)'],
+            div[style*='grid-template-columns: repeat(3, 1fr)'] {
+                grid-template-columns: repeat(1, 1fr) !important;
+            }
+            .page-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 12px !important;
+            }
+            .topbar {
+                padding: 0 16px !important;
+            }
+            .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
+        .topbar-title {
+                font-size: 14px !important;
+            }
+            .breadcrumbs {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .breadcrumbs a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: #2DD4BF;
+        }
+        .breadcrumbs .separator {
+            margin: 0 6px;
+            color: #cbd5e1;
+        }
+        .topbar-title {
                 font-size: 14px;
             }
             .page-content {
@@ -904,6 +969,10 @@
 
         /* Responsive helper */
         @media (max-width: 768px) {
+            div[style*='grid-template-columns:repeat(4,1fr)'],
+            div[style*='grid-template-columns: repeat(4, 1fr)'] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
     </style>
     @stack('styles')
 </head>
@@ -914,7 +983,7 @@
     <a href="{{ route('vendor.ringkasan') }}" class="sidebar-logo">
         <span class="sidebar-logo-text">ALPHA<span>.</span>CORP</span>
     </a>
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" id="sidebarNav">
         <div class="nav-section">
             <div class="nav-section-label">Dashboard</div>
             <a href="{{ route('vendor.ringkasan') }}" class="nav-item {{ request()->routeIs('vendor.ringkasan') ? 'active' : '' }}">
@@ -925,7 +994,7 @@
         <div class="nav-section">
             <div class="nav-section-label">Pekerjaan</div>
             <a href="{{ route('vendor.event-saya') }}" class="nav-item {{ request()->routeIs('vendor.event-saya') ? 'active' : '' }}">
-                <i class="bi bi-calendar3"></i> Event Saya
+                <i class="bi bi-calendar3" aria-hidden="true"></i> Event Saya
             </a>
             <a href="{{ route('vendor.daftar-tugas') }}" class="nav-item {{ request()->routeIs('vendor.daftar-tugas') ? 'active' : '' }}">
                 <i class="bi bi-check2-square"></i> Daftar Tugas
@@ -935,7 +1004,7 @@
         <div class="nav-section">
             <div class="nav-section-label">Komunikasi</div>
             <a href="{{ route('vendor.notifikasi') }}" class="nav-item {{ request()->routeIs('vendor.notifikasi') ? 'active' : '' }}">
-                <i class="bi bi-bell"></i> Notifikasi
+                <i class="bi bi-bell" aria-hidden="true"></i> Notifikasi
                 @if(isset($unreadNotifications) && $unreadNotifications > 0)
                     <span class="sidebar-notification-badge">
                         {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
@@ -947,14 +1016,14 @@
         <div class="nav-section">
             <div class="nav-section-label">Akun</div>
             <a href="{{ route('vendor.pengaturan') }}" class="nav-item {{ request()->routeIs('vendor.pengaturan') ? 'active' : '' }}">
-                <i class="bi bi-gear"></i> Pengaturan
+                <i class="bi bi-gear" aria-hidden="true"></i> Pengaturan
             </a>
         </div>
     </nav>
 
     <div class="sidebar-footer">
         <a href="#" onclick="confirmLogout(event)" class="nav-item danger">
-            <i class="bi bi-box-arrow-right"></i> Keluar
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Keluar
         </a>
         <form id="logout-form" action="{{ route('vendor.logout') }}" method="POST" style="display:none;">
             @csrf
@@ -973,10 +1042,15 @@
                 <i class="bi bi-list"></i>
             </button>
             <h1 class="topbar-title">@yield('page-title')</h1>
+              @hasSection('breadcrumbs')
+              <div class="breadcrumbs">
+                  @yield('breadcrumbs')
+              </div>
+              @endif
         </div>
         <div class="topbar-right">
             <a href="{{ route('vendor.notifikasi') }}" class="notif-btn">
-                <i class="bi bi-bell-fill"></i>
+                <i class="bi bi-bell-fill" aria-hidden="true"></i>
                 @if(isset($unreadNotifications) && $unreadNotifications > 0)
                     <span class="notif-count">
                         {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
@@ -994,40 +1068,74 @@
     </header>
 
     <!-- PAGE CONTENT -->
-    <main class="page-content">
-        @yield('content')
+     <main class="page-content">
+
+        <x-alert type="success" />
+        <x-alert type="error" />
+
+        @yield('content')>
+        document.addEventListener('DOMContentLoaded', function () {
+            const successAlert = document.getElementById('success-alert');
+            const errorAlert = document.getElementById('error-alert');
+
+            if (successAlert) {
+                setTimeout(() => {
+                    successAlert.style.transition = "opacity .3s ease";
+                    successAlert.style.opacity = "0";
+                    setTimeout(() => { successAlert.remove(); }, 300);
+                }, 2000);
+            }
+
+            if (errorAlert) {
+                setTimeout(() => {
+                    errorAlert.style.transition = "opacity .5s ease";
+                    errorAlert.style.opacity = "0";
+                    setTimeout(() => { errorAlert.remove(); }, 500);
+                }, 4000);
+            }
+        });
+    </script>
     </main>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/skeleton.js') }}"></script>
 <script>
 // Sidebar responsive toggle & scroll position persistence
 document.addEventListener('DOMContentLoaded', function() {
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebarOverlay');
     var toggleBtn = document.getElementById('mobileToggle');
-    
+    var sidebarNav = document.getElementById('sidebarNav');
+    var KEY = 'vendorSidebarScrollPosition';
+
     // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    if (sidebar) {
-        var KEY = 'vendorSidebarScrollPosition';
+    if (sidebarNav) {
         var restoreScroll = function() {
             var saved = sessionStorage.getItem(KEY);
             if (saved !== null) {
-                sidebar.scrollTop = parseInt(saved, 10);
+                sidebarNav.scrollTop = parseInt(saved, 10);
             }
         };
         restoreScroll();
         if (window.requestAnimationFrame) {
             window.requestAnimationFrame(restoreScroll);
         }
-        sidebar.addEventListener('scroll', function() {
-            sessionStorage.setItem(KEY, sidebar.scrollTop);
+        sidebarNav.addEventListener('scroll', function() {
+            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
         window.addEventListener('beforeunload', function() {
-            sessionStorage.setItem(KEY, sidebar.scrollTop);
+            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
         });
+        document.addEventListener('click', function(e) {
+            var target = e.target.closest('a, button[type="submit"]');
+            if (target && sidebarNav) {
+                sessionStorage.setItem(KEY, sidebarNav.scrollTop);
+            }
+        }, true);
     }
+
     // ===== RESPONSIVE TOGGLE =====
     if (toggleBtn && sidebar && overlay) {
         function openSidebar() {
@@ -1059,14 +1167,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Close sidebar when clicking nav links on mobile
         var navLinks = sidebar.querySelectorAll('.nav-item');
         navLinks.forEach(function(link) {
             link.addEventListener('click', function() {
                 if (window.innerWidth < 768) {
+                    if (sidebarNav) {
+                        sessionStorage.setItem(KEY, sidebarNav.scrollTop);
+                    }
                     closeSidebar();
                 }
             });
+        });
+        
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeSidebar();
+            }
         });
     }
 });
@@ -1076,3 +1192,10 @@ document.addEventListener('DOMContentLoaded', function() {
 @stack('scripts')
 </body>
 </html>
+
+
+
+
+
+
+

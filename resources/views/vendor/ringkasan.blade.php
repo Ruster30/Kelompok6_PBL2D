@@ -2,10 +2,13 @@
 
 @section('title', 'Ringkasan')
 @section('page-title', 'Ringkasan')
+@section('breadcrumbs')
+    <a href="{{ route('vendor.ringkasan') }}">Dashboard</a><span class="separator">/</span><span>Ringkasan</span>
+@endsection
 
 @section('content')
 
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-4 skeleton-init">
 
     <div class="col-md-4">
         <div class="stat-card">
@@ -45,7 +48,7 @@
 
 </div>
 
-<div class="row g-3">
+<div class="row g-3 skeleton-init">
 
     <div class="col-lg-7">
 
@@ -68,20 +71,17 @@
 
                         <div>
 
-                            <div class="fw-semibold"
-                                 style="font-size:15px;color:#1a2332;margin-bottom:6px;">
+                            <div class="fw-semibold vendor-event-title">
                                 {{ $event->nama_event }}
                             </div>
 
-                            <div class="d-flex align-items-center gap-1 mt-1"
-                                 style="font-size:13px;color:#8a9bb0;">
+                            <div class="d-flex align-items-center gap-1 mt-1 muted-text-sm">
                                 <i class="bi bi-calendar3"></i>
 
                                 {{ \Carbon\Carbon::parse($event->tanggal_event)->format('d/m/Y') }}
                             </div>
 
-                            <div class="d-flex align-items-center gap-1 mt-1"
-                                 style="font-size:13px;color:#8a9bb0;">
+                            <div class="d-flex align-items-center gap-1 mt-1 muted-text-sm">
                                 <i class="bi bi-geo-alt"></i>
 
                                 {{ $event->lokasi_event }}
@@ -150,7 +150,7 @@
                                 {{ $tugas->event->nama_event ?? '-' }}
 
                                 @if($tugas->deadline)
-                                    • Deadline:
+                                    â€¢ Deadline:
                                     {{ \Carbon\Carbon::parse($tugas->deadline)->format('d/m/Y') }}
                                 @endif
 

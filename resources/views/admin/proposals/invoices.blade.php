@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Dokumen')
 @section('page-title', 'Dokumen')
@@ -11,20 +11,20 @@
 </div>
 
 <div class="tabs">
-    <a href="{{ route('admin.proposals.index') }}" class="tab-link">Dokumen Umum</a>
-    <a href="{{ route('admin.proposals.invoices') }}" class="tab-link active">Invoice &amp; Kwitansi</a>
+    <a href="{{ route('admin.documents.index') }}" class="tab-link">Dokumen Umum</a>
+    <a href="{{ route('admin.documents.invoices') }}" class="tab-link active">Invoice &amp; Kwitansi</a>
     <a href="{{ route('admin.document_builder.index') }}" class="tab-link">Document Builder</a>
 </div>
 
 <div class="tab-content">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div class="page-header" style="margin-bottom:18px;">
         <h2 style="font-size:17px; font-weight:700; color:#0f172a;">Daftar Kwitansi</h2>
         <button class="btn btn-primary" onclick="document.getElementById('invoiceModal').classList.add('show')">
             <i class="fas fa-plus"></i> Buat Kwitansi Baru
         </button>
     </div>
 
-    <table>
+    <div class="table-responsive-wrap"><table>
         <thead>
             <tr>
                 <th>No Kwitansi</th>
@@ -51,13 +51,13 @@
                 </td>
                 <td>
                     <div class="action-btns">
-                        <a href="{{ route('admin.proposals.invoices.print', $invoice->id) }}" target="_blank" class="action-btn" title="Cetak">
+                        <a href="{{ route('admin.documents.invoices.print', $invoice->id) }}" target="_blank" class="action-btn" title="Cetak">
                             <i class="fas fa-print" style="font-size:12px;"></i>
                         </a>
                         <button class="action-btn" title="Edit" onclick='editInvoice({{ json_encode($invoice) }})'>
                             <i class="fas fa-edit" style="font-size:12px;"></i>
                         </button>
-                        <form action="{{ route('admin.proposals.invoices.destroy', $invoice->id) }}" method="POST" style="display:inline;"
+                        <form action="{{ route('admin.documents.invoices.destroy', $invoice->id) }}" method="POST" style="display:inline;"
                               onsubmit="return swalDelete(this, {text: 'Kwitansi {{ addslashes($invoice->nomor_invoice) }} akan dihapus permanen.'})">
                             @csrf @method('DELETE')
                             <button type="submit" class="action-btn danger" title="Hapus">
@@ -83,7 +83,7 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <form id="invoiceForm" action="{{ route('admin.proposals.storeInvoice') }}" method="POST">
+        <form id="invoiceForm" action="{{ route('admin.documents.storeInvoice') }}" method="POST">
             @csrf
             <input type="hidden" name="_method" id="invoiceFormMethod" value="POST">
             <div class="modal-body">
@@ -122,7 +122,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline" onclick="document.getElementById('invoiceModal').classList.remove('show')">Batal</button>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
+                <button type="submit" class="btn btn-primary" id="invoiceSubmitBtn" onclick="this.disabled=true; this.innerHTML='<i class=\"fas fa-spinner fa-spin\"></i> Menyimpan...';"><i class="fas fa-save"></i> Simpan</button>
             </div>
         </form>
     </div>
@@ -144,3 +144,4 @@ function editInvoice(invoice) {
 }
 </script>
 @endpush
+
