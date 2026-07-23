@@ -210,6 +210,7 @@
             </div>
 
             <div class="topbar-right">
+                <x-dark-mode-toggle />
                 <div class="topbar-notif">
                     <a href="{{ route('client.notifications') }}"
                     class="topbar-notif-link">
@@ -238,125 +239,15 @@
         <main class="page-content">
             <x-alert type="success" />
             <x-alert type="error" />
+            <x-alert-dismiss />
 
             @yield('content')
-            <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-
-                        const successAlert = document.getElementById('success-alert');
-                        const errorAlert = document.getElementById('error-alert');
-
-                        if (successAlert) {
-                            setTimeout(() => {
-                                successAlert.style.transition = "opacity .3s ease";
-                                successAlert.style.opacity = "0";
-
-                                setTimeout(() => {
-                                    successAlert.remove();
-                                }, 300);
-                            }, 2000);
-                        }
-
-                    
-                        if (errorAlert) {
-                            setTimeout(() => {
-                                errorAlert.style.transition = "opacity .5s ease";
-                                errorAlert.style.opacity = "0";
-                                setTimeout(() => { errorAlert.remove(); }, 500);
-                            }, 4000);
-                        }
-                    });
-            </script>
+            
         </main>
     </div>
 </div>
 
-<script>
-// Sidebar responsive toggle & scroll position persistence
-document.addEventListener('DOMContentLoaded', function() {
-    var sidebar = document.getElementById('sidebar');
-    var overlay = document.getElementById('sidebarOverlay');
-    var toggleBtn = document.getElementById('sidebarToggle');
-    var sidebarNav = document.getElementById('sidebarNav');
-    var KEY = 'clientSidebarScrollPosition';
-
-    // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    if (sidebarNav) {
-        var restoreScroll = function() {
-            var saved = sessionStorage.getItem(KEY);
-            if (saved !== null) {
-                sidebarNav.scrollTop = parseInt(saved, 10);
-            }
-        };
-        restoreScroll();
-        if (window.requestAnimationFrame) {
-            window.requestAnimationFrame(restoreScroll);
-        }
-        sidebarNav.addEventListener('scroll', function() {
-            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-        });
-        window.addEventListener('beforeunload', function() {
-            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-        });
-        document.addEventListener('click', function(e) {
-            var target = e.target.closest('a, button[type="submit"]');
-            if (target && sidebarNav) {
-                sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-            }
-        }, true);
-    }
-
-    // ===== RESPONSIVE TOGGLE =====
-    if (toggleBtn && sidebar && overlay) {
-        function openSidebar() {
-            sidebar.classList.add('open');
-            overlay.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeSidebar() {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('show');
-            document.body.style.overflow = '';
-        }
-        
-        toggleBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (sidebar.classList.contains('open')) {
-                closeSidebar();
-            } else {
-                openSidebar();
-            }
-        });
-        
-        overlay.addEventListener('click', closeSidebar);
-        
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-                closeSidebar();
-            }
-        });
-        
-        var navLinks = sidebar.querySelectorAll('.nav-item');
-        navLinks.forEach(function(link) {
-            link.addEventListener('click', function() {
-                if (window.innerWidth < 768) {
-                    if (sidebarNav) {
-                        sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-                    }
-                    closeSidebar();
-                }
-            });
-        });
-        
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                closeSidebar();
-            }
-        });
-    }
-});
-</script>
+<x-sidebar-script storageKey="clientSidebarScrollPosition" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('js/skeleton.js') }}"></script>
 <x-swal-helper />
@@ -364,11 +255,3 @@ document.addEventListener('DOMContentLoaded', function() {
 @stack('scripts')
 </body>
 </html>
-
-
-
-
-
-
-
-

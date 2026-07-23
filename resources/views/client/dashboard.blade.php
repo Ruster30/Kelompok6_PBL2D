@@ -6,7 +6,7 @@
 
 {{-- Greeting --}}
 <div class="greeting-section">
-    <h2>Selamat datang kembali, {{ Auth::user()->name }} ðŸ‘‹</h2>
+    <h2>Selamat datang kembali, {{ Auth::user()->name }} </h2>
     <p>Berikut adalah ringkasan progres perencanaan event Anda.</p>
 </div>
 
@@ -57,7 +57,7 @@
                         </span>
                     </div>
                     <div class="pengajuan-meta">
-                        {{ $event->tanggal_event->format('Y-m-d') }} â€¢ {{ $event->lokasi_event }}
+                        {{ $event->tanggal_event->format('Y-m-d') }} {{ $event->lokasi_event }}
                     </div>
                 </div>
                 <a href="{{ route('client.proposals.show', $event->latestProposal->id) }}"
@@ -71,7 +71,7 @@
             <i class="bi bi-inbox" style="font-size:28px;display:block;margin-bottom:8px;color:var(--border);"></i>
             Belum ada pengajuan.
             <a href="{{ route('client.event.create') }}" style="color:var(--accent);font-weight:600;">
-                Ajukan sekarang â†’
+                Ajukan sekarang
             </a>
         </div>
         @endforelse
@@ -93,7 +93,7 @@
                 </div>
                 <div class="event-dash-meta">
                     <i class="bi bi-geo-alt-fill"></i>
-                    {{ $event->tanggal_event->format('j/n/Y') }} â€¢ {{ $event->lokasi_event }}
+                    {{ $event->tanggal_event->format('j/n/Y') }} {{ $event->lokasi_event }}
                 </div>
                 <div class="progress-row">
                     <span class="progress-label">Progres Perencanaan</span>
@@ -112,7 +112,7 @@
         <div class="card" style="padding:24px;text-align:center;color:var(--text-muted);">
             Belum ada event terdaftar.
             <a href="{{ route('client.event.create') }}" style="color:var(--accent);font-weight:600;">
-                Ajukan sekarang â†’
+                Ajukan sekarang
             </a>
         </div>
         @endforelse
