@@ -49,6 +49,7 @@ body {
     color: var(--text-main);
     font-size: 14px;
     min-height: 100vh;
+    overflow: hidden;
 }
 
 /* ============================================================
@@ -56,7 +57,8 @@ body {
    ============================================================ */
 .dash-wrap {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* ---- SIDEBAR ---- */
@@ -192,65 +194,66 @@ body {
 /* ---- TOPBAR ---- */
 .topbar {
     height: var(--topbar-h);
-    background: var(--topbar-bg);
-    border-bottom: 1px solid var(--border);
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 32px;
+    padding: 0 28px;
     position: sticky;
     top: 0;
     z-index: 50;
 }
-
 .topbar-title {
     font-size: 18px;
     font-weight: 700;
-    color: var(--dark);
+    color: #0f172a;
 }
-
 .topbar-right {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
 }
-
 /* Notifikasi */
-.topbar-notif-link {
+.topbar-notif {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    color: #d1d5db;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #94a3b8;
     text-decoration: none;
-
     font-size: 18px;
     transition: all .2s ease;
 }
 
-.topbar-notif-link:hover {
-    color: #2dd4bf;
+.topbar-notif:hover {
+    background: #f1f5f9;
+    color: #2DD4BF;
 }
 
 /* Badge jumlah notifikasi */
-.topbar-notif-link .notif-count {
+.notif-count {
     position: absolute;
-    top: -6px;
-    right: -8px;
+    top: -4px;
+    right: -4px;
     min-width: 18px;
     height: 18px;
     background: #ef4444;
     color: white;
-    border-radius: 999px;
+    border-radius: 50%;
+    border: 2px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 10px;
     font-weight: 700;
-    padding: 0 5px;
+    z-index: 10;
+    padding: 0;
 }
-
 .topbar-back {
     display: flex;
     align-items: center;
@@ -286,54 +289,44 @@ body {
     color: var(--accent);
 }
 
-.user-badge {
+.topbar-user {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
-    padding: 4px 8px 4px 4px;
-    border-radius: 999px;
-    transition: background var(--trans);
+    padding: 4px 12px 4px 4px;
+    border-radius: 50px;
+    transition: all 0.2s;
 }
 
-.user-badge:hover {
-    background: var(--body-bg);
+.topbar-user:hover {
+    background: #f8fafc;
 }
 
-.user-info {
-    text-align: right;
-}
-
-.user-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--dark);
-    line-height: 1.2;
-}
-
-.user-role {
-    font-size: 11px;
-    color: var(--text-muted);
-}
-
-.user-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--dark);
-    color: #fff;
+.topbar-user span {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    background: #2DD4BF;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 /* ---- PAGE CONTENT ---- */
 .page-content {
     flex: 1;
     padding: 32px;
+    overflow-y: auto;
 }
 
 .page-header {
@@ -1703,13 +1696,6 @@ body {
         margin-left: 0;
     }
 
-    /* Topbar */
-    .topbar {
-        padding: 0 15px;
-    }
-
-    .topbar-title {
-        font-size: 14px;
     }
 
     /* Content */
@@ -1823,7 +1809,6 @@ body {
     .invoice-table {
         min-width: 700px;
     }
-}
 
 /* ============================================
     SMALL MOBILE ( 575px)
@@ -1875,9 +1860,6 @@ body {
         width: 100%;
         justify-content: center;
     }
-
-    .topbar-logo-small-text,
-    .user-role,
     .user-name {
         display: none;
     }
@@ -2000,4 +1982,3 @@ textarea.form-input {
     resize: vertical;
     min-height: 80px;
 }
-
