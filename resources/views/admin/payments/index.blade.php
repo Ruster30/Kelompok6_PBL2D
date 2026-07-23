@@ -130,9 +130,9 @@
                         @if($payment->jenis_pembayaran === 'dp')
                             @if($payment->invoice->event->invoices()->whereIn('status_invoice', ['belum_bayar', 'terkirim', 'draft'])->count() == 0)
                             <form action="{{ route('admin.payments.sendPelunasan', $payment->id) }}" method="POST" style="display:inline;"
-                                  onsubmit="return swalSend(this, 'Kirim Invoice Pelunasan?', 'Invoice pelunasan akan dikirim ke client.')">
+                                  onsubmit="return swalSend(this, 'Generate Invoice Pelunasan?', 'Invoice pelunasan akan dikirim ke client.')">
                                 @csrf
-                                <button type="submit" class="action-btn" title="Kirim Pelunasan" style="color:#f59e0b;">
+                                <button type="submit" class="action-btn" title="Generate Invoice Pelunasan" style="color:#f59e0b;">
                                     <i class="fas fa-file-invoice-dollar"></i>
                                 </button>
                             </form>
