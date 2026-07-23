@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ClientController;
@@ -9,6 +9,7 @@ use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Vendor\TugasController;
 use App\Http\Controllers\Vendor\DokumentasiController;
 use App\Http\Controllers\Vendor\NotifikasiController;
+
 
 Route::get('/d', function () {
     return view('welcome');
