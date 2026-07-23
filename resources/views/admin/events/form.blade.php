@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', isset($event) ? 'Edit Event' : 'Buat Event Baru')
 @section('page-title', isset($event) ? 'Edit Event' : 'Buat Event Baru')
@@ -22,22 +22,11 @@
 
             <div class="form-grid">
                 <div class="form-group full-width">
-                    <label class="form-label">Nama Event <span class="text-red">*</span></label>
-                    <input type="text" name="nama_event" class="form-input @error('nama_event') error @enderror"
-                           value="{{ old('nama_event', $event->nama_event ?? '') }}" placeholder="Masukkan nama event" required>
-                    @error('nama_event')<span class="form-error">{{ $message }}</span>@enderror
+                    <x-bs-input name="nama_event" label="Nama Event" :value="$event->nama_event ?? ''" placeholder="Masukkan nama event" required />
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Klien</label>
-                    <select name="client_id" class="form-input">
-                        <option value="">-- Pilih Klien --</option>
-                        @foreach($clients as $client)
-                        <option value="{{ $client->id }}" {{ old('client_id', $event->client_id ?? '') == $client->id ? 'selected' : '' }}>
-                            {{ $client->name }}
-                        </option>
-                        @endforeach
-                    </select>
+                    <x-bs-select name="client_id" label="Klien" :value="$event->client_id ?? ''" placeholder="-- Pilih Klien --" :options="$clients->pluck('name', 'id')" />
                 </div>
 
                 <div class="form-group">

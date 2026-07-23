@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/shared.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+
     <style>
                 /* ---- Loading States ---- */
         .btn-loading {
@@ -54,7 +56,7 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f6fa; display: flex; min-height: 100vh; overflow: hidden; }
-        /* Sidebar Ã¢â‚¬â€ redesigned to match Client style */
+        /* Sidebar redesigned to match Client style */
         .sidebar {
             width: 280px; min-width: 280px; background: #0f172a; color: #94a3b8;
             display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
@@ -435,7 +437,7 @@
             font-size: 20px;
         }
 
-        /* Desktop (Ã¢â€°Â¥769px) - No changes */
+        /* Desktop */
         @media (min-width: 769px) {
             #sidebarToggle {
                 display: none !important;
@@ -779,43 +781,43 @@
         <div class="nav-section">
             <div class="nav-section-label">Manajemen Event</div>
             <a href="{{ route('admin.kelola-klien.index') }}" class="nav-item {{ request()->routeIs('admin.kelola-klien.*') ? 'active' : '' }}">
-                <i class="fas fa-user-friends"></i> Kelola Klien
+                <i class="fas fa-user-friends" aria-hidden="true"></i> Kelola Klien
             </a>
             <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
-                <i class="fas fa-calendar-alt"></i> Kelola Event
+                <i class="fas fa-calendar-alt" aria-hidden="true"></i> Kelola Event
             </a>
             <a href="{{ route('admin.requests.index') }}" class="nav-item {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
-                <i class="fas fa-inbox"></i> Request Client
+                <i class="fas fa-inbox" aria-hidden="true"></i> Request Client
             </a>
         </div>
 
         <div class="nav-section">
             <div class="nav-section-label">Operasional Event</div>
             <a href="{{ route('admin.timeline.index') }}" class="nav-item {{ request()->routeIs('admin.timeline.*') ? 'active' : '' }}">
-                <i class="fas fa-calendar"></i> Timeline
+                <i class="fas fa-calendar" aria-hidden="true"></i> Timeline
             </a>
             <a href="{{ route('admin.event-vendors.index') }}" class="nav-item {{ request()->routeIs('admin.event-vendors.*') ? 'active' : '' }}">
-                <i class="fas fa-users-cog"></i> Penugasan
+                <i class="fas fa-users-cog" aria-hidden="true"></i> Penugasan
             </a>
             <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
-                <i class="fas fa-users"></i> Vendor
+                <i class="fas fa-users" aria-hidden="true"></i> Vendor
             </a>
         </div>
 
         <div class="nav-section">
             <div class="nav-section-label">Keuangan</div>
             <a href="{{ route('admin.rab.index') }}" class="nav-item {{ request()->routeIs('admin.rab.*') ? 'active' : '' }}">
-                <i class="fas fa-calendar-check"></i> Anggaran (RAB)
+                <i class="fas fa-calendar-check" aria-hidden="true"></i> Anggaran (RAB)
             </a>
             <a href="{{ route('admin.payments.index') }}" class="nav-item {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
-                <i class="fas fa-check-square"></i> Pembayaran
+                <i class="fas fa-check-square" aria-hidden="true"></i> Pembayaran
             </a>
         </div>
 
         <div class="nav-section">
             <div class="nav-section-label">Dokumen</div>
             <a href="{{ route('admin.documents.index') }}" class="nav-item {{ request()->routeIs('admin.documents.*') || request()->routeIs('admin.document_builder.*') ? 'active' : '' }}">
-                <i class="fas fa-file-alt"></i> Dokumen
+                <i class="fas fa-file-alt" aria-hidden="true"></i> Dokumen
             </a>
             <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
                 <i class="fas fa-folder-open"></i> Pusat Dokumentasi
@@ -832,7 +834,7 @@
         <div class="nav-section">
             <div class="nav-section-label">Laporan</div>
             <a href="{{ route('admin.analytics.index') }}" class="nav-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
-                <i class="fas fa-chart-bar"></i> Analitik
+                <i class="fas fa-chart-bar" aria-hidden="true"></i> Analitik
             </a>
             <a href="{{ route('admin.notifications.index') }}" class="nav-item {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
                 <i class="fas fa-bell"></i> Notifikasi
@@ -842,7 +844,7 @@
         <div class="nav-section">
             <div class="nav-section-label">Sistem</div>
             <a href="{{ route('admin.settings.index') }}" class="nav-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
-                <i class="fas fa-cog"></i> Pengaturan
+                <i class="fas fa-cog" aria-hidden="true"></i> Pengaturan
             </a>
         </div>
     </nav>
@@ -851,7 +853,7 @@
         <form id="logout-form" action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="button" onclick="confirmLogout(event)" class="nav-item danger">
-                <i class="fas fa-sign-out-alt"></i>
+                <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
                 <span>Keluar</span>
             </button>
         </form>
@@ -864,14 +866,15 @@
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:12px;">
             <button id="sidebarToggle" aria-label="Toggle sidebar">
-                <i class="bi bi-list"></i>
+                <i class="bi bi-list" aria-hidden="true"></i>
             </button>
             <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
         </div>
         <div class="topbar-right">
+            <x-dark-mode-toggle />
             <a href="{{ route('admin.notifications.index') }}"
                 class="topbar-notif">
-                    <i class="bi bi-bell-fill"></i>
+                    <i class="bi bi-bell-fill" aria-hidden="true"></i>
                     @if(isset($unreadNotifications) && $unreadNotifications > 0)
                         <span class="notif-count">
                             {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
@@ -886,160 +889,23 @@
     </header>
 
     <main class="page-content">
-        @if(session('success'))
-            <div id="success-alert"
-                style="background:#dcfce7; color:#166534; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
-                <i class="fas fa-check-circle"></i>
-                {{ session('success') }}
-            </div>
-        @endif
-        @if(session('error'))
-            <div id="error-alert" style="background:#fee2e2; color:#991b1b; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
-                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
-            </div>
-        @endif
-        @if($errors->any())
-            <div style="background:#fee2e2; color:#991b1b; padding:12px 18px; border-radius:8px; margin-bottom:20px; font-size:14px;">
-                <i class="fas fa-exclamation-circle"></i> {{ $errors->first() }}
-            </div>
-        @endif
+        <x-alert type="success" />
+        <x-alert type="error" />
+        <x-alert-dismiss />
+        
         @yield('content')
 
-        <script>
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const successAlert = document.getElementById('success-alert');
-            const errorAlert = document.getElementById('error-alert');
-
-            if (successAlert) {
-                setTimeout(() => {
-                    successAlert.style.transition = "opacity .3s ease";
-                    successAlert.style.opacity = "0";
-
-                    setTimeout(() => {
-                        successAlert.remove();
-                    }, 300);
-                }, 2000);
-            }
-
         
-
-            if (errorAlert) {
-                setTimeout(() => {
-                    errorAlert.style.transition = "opacity .5s ease";
-                    errorAlert.style.opacity = "0";
-                    setTimeout(() => { errorAlert.remove(); }, 500);
-                }, 4000);
-            }
-        });
-</script>
     </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/skeleton.js') }}"></script>
 <x-swal-helper />
 <x-logout-confirmation />
 @stack('scripts')
 
 </body>
 
-<script>
-// Sidebar responsive toggle & scroll position persistence
-document.addEventListener('DOMContentLoaded', function() {
-    var sidebar = document.getElementById('sidebar');
-    var overlay = document.getElementById('sidebarOverlay');
-    var toggleBtn = document.getElementById('sidebarToggle');
-    
-    // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    if (sidebarNav) {
-        var KEY = 'adminSidebarScrollPosition';
-        var restoreScroll = function() {
-            var saved = sessionStorage.getItem(KEY);
-            if (saved !== null) {
-                sidebarNav.scrollTop = parseInt(saved, 10);
-            }
-        };
-        restoreScroll();
-        if (window.requestAnimationFrame) {
-            window.requestAnimationFrame(restoreScroll);
-        }
-        sidebar.addEventListener('scroll', function() {
-            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-        });
-        window.addEventListener('beforeunload', function() {
-            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-        });
-        // Also save on any link/form click that navigates away
-        document.addEventListener('click', function(e) {
-            var target = e.target.closest('a, button[type="submit"]');
-            if (target && sidebarNav) {
-                sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-            }
-        }, true);
-    }
-    // ===== RESPONSIVE TOGGLE =====
-    if (toggleBtn && sidebar && overlay) {
-        function openSidebar() {
-            sidebar.classList.add('open');
-            overlay.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeSidebar() {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('show');
-            document.body.style.overflow = '';
-        }
-        
-        toggleBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (sidebar.classList.contains('open')) {
-                closeSidebar();
-            } else {
-                openSidebar();
-            }
-        });
-        
-        overlay.addEventListener('click', closeSidebar);
-        
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-                closeSidebar();
-            }
-        });
-        
-        // Close sidebar when clicking nav links on mobile
-        var navLinks = sidebar.querySelectorAll('.nav-item');
-        navLinks.forEach(function(link) {
-            link.addEventListener('click', function() {
-                if (window.innerWidth < 768) {
-                    // Save sidebar scroll position BEFORE closing
-                    if (sidebarNav) {
-                        sessionStorage.setItem('adminSidebarScrollPosition', sidebarNav.scrollTop);
-                    }
-                    closeSidebar();
-                }
-            });
-        });
-        
-        // Reset sidebar state on window resize
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                closeSidebar();
-            }
-        });
-    }
-});
-</script>
+<x-sidebar-script storageKey="adminSidebarScrollPosition" />
 </html>
-
-
-
-
-
-
-
-
-
-
-
