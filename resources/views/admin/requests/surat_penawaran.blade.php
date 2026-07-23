@@ -100,6 +100,26 @@
     @csrf
     @method('PATCH')
 
+{{-- ── Kebutuhan Event dari Client (Read Only) ── --}}
+<div style="margin-bottom:20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden;">
+    <div style="display:flex; align-items:center; gap:10px; padding:14px 20px; background:#fff; border-bottom:1px solid #e2e8f0;">
+        <div style="width:34px; height:34px; background:#eff6ff; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#3b82f6; font-size:15px; flex-shrink:0;">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <div>
+            <div style="font-size:14px; font-weight:700; color:#0f172a; line-height:1.2;">Kebutuhan Event dari Client</div>
+            <div style="font-size:12px; color:#94a3b8; margin-top:1px;">Informasi ini diisi oleh client saat mengajukan event &mdash; hanya baca.</div>
+        </div>
+    </div>
+    <div style="padding:16px 20px;">
+        @if(!empty($event->detail_kebutuhan))
+            <div style="font-size:13.5px; color:#334155; line-height:1.75; white-space:pre-wrap;">{{ $event->detail_kebutuhan }}</div>
+        @else
+            <div style="font-size:13px; color:#94a3b8; font-style:italic;">Belum ada kebutuhan tambahan dari client.</div>
+        @endif
+    </div>
+</div>
+
 {{-- Preview Surat --}}
 <div style="background:#f1f5f9; padding:24px; border-radius:12px;">
 <div id="surat-preview" style="background:white; max-width:820px; margin:0 auto; padding:0; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.08); font-family:'Times New Roman',serif; font-size:13px; line-height:1.7; color:#111; overflow:hidden;">
@@ -168,7 +188,7 @@
         {{-- Kepada (tidak dapat diedit) --}}
         <div style="margin-bottom:8px;">
             Kepada Yth<br>
-            Kepala Cabang Dealer Mobil <strong>{{ $event->client->name ?? 'Bapak/Ibu Client' }}</strong>
+            <strong>{{ $event->client->name ?? 'Bapak/Ibu Client' }}</strong>
         </div>
         <div style="margin-bottom:16px;">
             Di,<br>
@@ -178,11 +198,10 @@
         <hr style="border:none; border-top:0.5px solid #bbb; margin:10px 0 14px;">
 
         {{-- Pembuka (tidak dapat diedit - template tetap) --}}
-        <p style="text-align:justify; margin-bottom:14px;">
+        <p style="text-align:justify;margin-bottom:14px;">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dengan hormat, kami dari <strong>CV. Alpha Multi Organizer</strong>
-            Perusahaan yang bergerak di bidang Event Organizer. Dengan ini menawarkan kegiatan pameran
-            pameran otomotif mobil kepada <strong>{{ $event->client->name ?? 'Client' }}</strong>
-            di Basko City Mall Padang, maka dengan ini kami mengajukan surat penawaran <strong>"Special Price"</strong> sebagai berikut :
+            Perusahaan yang bergerak di bidang Event Organizer. Dengan ini menawarkan kegiatan <strong>{{ $event->jenis_event }}</strong> kepada <strong>{{ $event->client->name ?? 'Client' }}</strong>
+            di <strong>{{ $event->lokasi_event ?? '-' }}</strong>, maka dengan ini kami mengajukan surat penawaran <strong>"Special Price"</strong> sebagai berikut :
         </p>
 
         {{-- Rincian --}}
@@ -265,7 +284,11 @@
                             <td style="border:none; padding:2px 3px;">
                                 {{-- VIEW --}}
                                 <span class="field-view" id="view-price">
-                                    <strong>{{ $event->rentang_anggaran ?? '-' }} <small>(Exclude Ppn &amp; Pph)*</small></strong><br>
+                                    <strong>{{ $event->rentang_anggaran ?? '-' }}
+                                    @if($event->include_ppn ?? true)
+                                        <small>(Include PPN &amp; PPh)*</small>
+                                    @endif
+                                    </strong><br>
                                     @if($event->terbilang ?? null)
                                     <small>({{ $event->terbilang }})</small>
                                     @endif
@@ -276,7 +299,14 @@
                                            value="{{ $event->rentang_anggaran }}"
                                            placeholder="cth: Rp 15.000.000,-"
                                            style="width:200px;">
-                                    <small style="display:block; margin-top:4px; color:#64748b;">(Exclude Ppn &amp; Pph)*</small>
+                                    {{-- Checkbox Include PPN: hidden + checkbox agar false pun terkirim --}}
+                                    <input type="hidden" name="include_ppn" value="0">
+                                    <label style="display:flex; align-items:center; gap:6px; margin-top:6px; font-size:12px; color:#334155; cursor:pointer; font-family:Arial,sans-serif;">
+                                        <input type="checkbox" name="include_ppn" value="1" id="chk-include-ppn"
+                                               {{ ($event->include_ppn ?? true) ? 'checked' : '' }}
+                                               style="width:14px; height:14px; accent-color:#1a6fa8; cursor:pointer;">
+                                        Include PPN &amp; PPh
+                                    </label>
                                     <input type="text" name="terbilang" class="surat-input"
                                            value="{{ $event->terbilang }}"
                                            placeholder="Terbilang (opsional)"
@@ -315,21 +345,25 @@
         </table>
 
         {{-- Ketentuan lain (tidak dapat diedit - template tetap) --}}
-        <div style="font-weight:700; margin-bottom:6px;">V.&nbsp;&nbsp;Ketentuan lain :</div>
-        <ol style="padding-left:22px; margin-bottom:14px; list-style-type:lower-alpha; font-size:13px;">
+        <div style="font-weight:700; margin-bottom:6px; display:flex; gap: 11px;">
+            <div style="border:none; padding:3px 4px; font-weight:700; vertical-align:top;">V.</div>
+            <div style="border:none; padding:3px 4px; vertical-align:top;">Ketentuan lain :</div>
+            <div style="border:none; padding:3px 4px; vertical-align:top; text-align:center;">:</div>
+        </div>
+        <ol style="padding-left:48px; margin-bottom:14px; list-style-type:lower-alpha; font-size:13px;">
             <li style="margin-bottom:5px; text-align:justify;">Loading In dan Out Barang Jam 22.00 wib sd selesai dan wajib diberitahukan kepada manajemen Alpha Organizer.</li>
             <li style="margin-bottom:5px; text-align:justify;">Segala bentuk izin dan pajak diurus sendiri oleh penyewa.</li>
             <li style="margin-bottom:5px; text-align:justify;">Pembayaran dilakukan melalui Transfer <strong>Bank BRI A.n CV ALPHA MULTI ORGANIZER No Rek. 005801006983568</strong>.</li>
             <li style="margin-bottom:5px; text-align:justify;">Biaya yang tersebut diatas belum termasuk biaya SPSI (jika ada)</li>
-            <li style="margin-bottom:5px; text-align:justify;">Pemakai Jasa Penyelenggara wajib mematuhi semua peraturan dan tata tertib yang berlaku di Basko City Mall Padang.</li>
+            <li style="margin-bottom:5px; text-align:justify;">Pemakai Jasa Penyelenggara wajib mematuhi semua peraturan dan tata tertib yang berlaku di {{ $event->lokasi_event ?? '-' }}.</li>
             <li style="margin-bottom:5px; text-align:justify;">Pemakai Jasa Penyelenggara wajib mengasuransikan produknya selama pameran berlangsung. Kerusakan dan kehilangan barang di saat pameran yang diakibatkan oleh human error dan forced majure bukan tanggung jawab dari pemakai jasa penyelenggara.</li>
         </ol>
 
         {{-- Penutup (tidak dapat diedit) --}}
-        <p style="text-align:justify; margin-top:14px;">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Apabila ada hal-hal yang perlu dipertanyakan, silahkan menghubungi Sdra. Fajar Viliano
-            0895-4013-00022 atau melalui email : alphaorganizer1209@gmail.com. Demikianlah surat
-            penawaran ini kami buat, Atas perhatian dan kerjasamanya kami ucapkan terimakasih.
+        <p style="text-align:justify;margin-bottom:14px;">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dengan hormat, kami dari <strong>CV. Alpha Multi Organizer</strong>
+            Perusahaan yang bergerak di bidang Event Organizer. Dengan ini menawarkan kegiatan <strong>{{ $event->jenis_event }}</strong> kepada <strong>{{ $event->client->name ?? 'Client' }}</strong>
+            di <strong>{{ $event->lokasi_event ?? '-' }}</strong>, maka dengan ini kami mengajukan surat penawaran <strong>"Special Price"</strong> sebagai berikut :
         </p>
 
         {{-- Tanda Tangan (tidak dapat diedit) --}}

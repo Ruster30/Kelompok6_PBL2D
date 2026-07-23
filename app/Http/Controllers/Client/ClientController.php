@@ -9,9 +9,11 @@ use App\Http\Requests\Client\SubmitNegosiasiRequest;
 use App\Models\Document;
 use App\Models\Proposal;
 use App\Services\ClientService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
@@ -139,6 +141,31 @@ class ClientController extends Controller
         return redirect()
             ->route('client.proposals.show', $id)
             ->with('success', 'Penawaran diterima! Timeline event telah disiapkan secara otomatis.');
+    }
+
+    public function exportProposalPdf(Proposal $proposal)
+    {
+        // Pastikan proposal milik event dari client yang sedang login
+        $eventIds = \App\Models\Event::where('client_id', Auth::id())->pluck('id');
+        abort_unless($eventIds->contains($proposal->event_id), 403, 'Anda tidak memiliki akses ke Surat Penawaran ini.');
+
+        $event = $proposal->event->load(['client', 'rabs', 'activeProposal']);
+
+        $data = [
+            'nomor_surat'   => $event->nomor_surat_override
+                ?? $proposal->nomor_proposal
+                ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), $event->id),
+            'tanggal_surat' => $proposal->tanggal_proposal?->format('Y-m-d')
+                ?? now()->format('Y-m-d'),
+            'perihal'       => $event->perihal ?? 'Surat Penawaran Pameran Otomotif',
+        ];
+
+        $pdf = Pdf::loadView('admin.requests.surat_penawaran_pdf', compact('event', 'data'))
+            ->setPaper('a4', 'portrait');
+
+        $filename = 'Surat-Penawaran-' . Str::slug($event->nama_event) . '.pdf';
+
+        return $pdf->download($filename);
     }
 
     // ========== DOCUMENTS ==========

@@ -15,7 +15,7 @@
 @if($proposal->versi > 1)
 <div style="background:#eff6ff;border:1px solid #93c5fd;color:#1e40af;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:14px;display:flex;align-items:center;gap:8px;">
     <i class="bi bi-info-circle-fill"></i>
-    Ini adalah <strong>Revisi v{{ $proposal->versi }}</strong> â€” penawaran terbaru yang telah diperbarui oleh tim kami.
+    Ini adalah <strong>Revisi v{{ $proposal->versi }}</strong> penawaran terbaru yang telah diperbarui oleh tim kami.
 </div>
 @endif
 
@@ -33,14 +33,12 @@
         </span>
 
         {{-- Unduh PDF --}}
-        @if($proposal->file_url)
-        <a href="{{ $proposal->file_url }}" target="_blank"
+        <a href="{{ route('client.proposals.export-pdf', $proposal->id) }}" target="_blank"
            style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
                   border:1.5px solid var(--border);border-radius:8px;font-size:13px;
                   font-weight:600;color:var(--dark);text-decoration:none;background:white;">
             <i class="bi bi-download"></i> Unduh PDF
         </a>
-        @endif
 
         {{-- Tombol aksi respon â€” hanya jika status menunggu konfirmasi --}}
         @if(!in_array($proposal->status, ['diterima','ditolak']))
@@ -167,7 +165,7 @@
         {{-- Kepada --}}
         <div style="margin-bottom:8px;">
             Kepada Yth<br>
-            Kepala Cabang Dealer Mobil <strong>{{ $event->client->name ?? 'Bapak/Ibu Client' }}</strong>
+            <strong>{{ $event->client->name ?? 'Bapak/Ibu Client' }}</strong>
         </div>
         <div style="margin-bottom:16px;">
             Di,<br>
@@ -179,9 +177,8 @@
         {{-- Pembuka --}}
         <p style="text-align:justify;margin-bottom:14px;">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dengan hormat, kami dari <strong>CV. Alpha Multi Organizer</strong>
-            Perusahaan yang bergerak di bidang Event Organizer. Dengan ini menawarkan kegiatan pameran
-            pameran otomotif mobil kepada <strong>{{ $event->client->name ?? 'Client' }}</strong>
-            di Basko City Mall Padang, maka dengan ini kami mengajukan surat penawaran <strong>"Special Price"</strong> sebagai berikut :
+            Perusahaan yang bergerak di bidang Event Organizer. Dengan ini menawarkan kegiatan <strong>{{ $event->jenis_event }}</strong> kepada <strong>{{ $event->client->name ?? 'Client' }}</strong>
+            di <strong>{{ $event->lokasi_event ?? '-' }}</strong>, maka dengan ini kami mengajukan surat penawaran <strong>"Special Price"</strong> sebagai berikut :
         </p>
 
         {{-- Rincian --}}
@@ -230,7 +227,11 @@
                             <td style="border:none;padding:2px 3px;">Price</td>
                             <td style="border:none;padding:2px 3px;text-align:center;">:</td>
                             <td style="border:none;padding:2px 3px;">
-                                <strong>{{ $event->rentang_anggaran ?? '-' }} <small>(Exclude Ppn &amp; Pph)*</small></strong>
+                                <strong>{{ $event->rentang_anggaran ?? '-' }}
+                                @if($event->include_ppn ?? true)
+                                    <small>(Include PPN &amp; PPh)*</small>
+                                @endif
+                                </strong>
                                 @if($event->terbilang ?? null)
                                 <br><small>({{ $event->terbilang }})</small>
                                 @endif
@@ -258,14 +259,18 @@
         </table>
 
         {{-- V. Ketentuan --}}
-        <div style="font-weight:700;margin-bottom:6px;">V.&nbsp;&nbsp;Ketentuan lain :</div>
-        <ol style="padding-left:22px;margin-bottom:14px;list-style-type:lower-alpha;font-size:13px;">
-            <li style="margin-bottom:5px;text-align:justify;">Loading In dan Out Barang Jam 22.00 wib sd selesai dan wajib diberitahukan kepada manajemen Alpha Organizer.</li>
-            <li style="margin-bottom:5px;text-align:justify;">Segala bentuk izin dan pajak diurus sendiri oleh penyewa.</li>
-            <li style="margin-bottom:5px;text-align:justify;">Pembayaran dilakukan melalui Transfer <strong>Bank BRI A.n CV ALPHA MULTI ORGANIZER No Rek. 005801006983568</strong>.</li>
-            <li style="margin-bottom:5px;text-align:justify;">Biaya yang tersebut diatas belum termasuk biaya SPSI (jika ada)</li>
-            <li style="margin-bottom:5px;text-align:justify;">Pemakai Jasa Penyelenggara wajib mematuhi semua peraturan dan tata tertib yang berlaku di Basko City Mall Padang.</li>
-            <li style="margin-bottom:5px;text-align:justify;">Pemakai Jasa Penyelenggara wajib mengasuransikan produknya selama pameran berlangsung. Kerusakan dan kehilangan barang di saat pameran yang diakibatkan oleh human error dan forced majure bukan tanggung jawab dari pemakai jasa penyelenggara.</li>
+        <div style="font-weight:700; margin-bottom:6px; display:flex; gap: 11px;">
+            <div style="border:none; padding:3px 4px; font-weight:700; vertical-align:top;">V.</div>
+            <div style="border:none; padding:3px 4px; vertical-align:top;">Ketentuan lain :</div>
+            <div style="border:none; padding:3px 4px; vertical-align:top; text-align:center;">:</div>
+        </div>
+        <ol style="padding-left:48px; margin-bottom:14px; list-style-type:lower-alpha; font-size:13px;">
+            <li style="margin-bottom:5px; text-align:justify;">Loading In dan Out Barang Jam 22.00 wib sd selesai dan wajib diberitahukan kepada manajemen Alpha Organizer.</li>
+            <li style="margin-bottom:5px; text-align:justify;">Segala bentuk izin dan pajak diurus sendiri oleh penyewa.</li>
+            <li style="margin-bottom:5px; text-align:justify;">Pembayaran dilakukan melalui Transfer <strong>Bank BRI A.n CV ALPHA MULTI ORGANIZER No Rek. 005801006983568</strong>.</li>
+            <li style="margin-bottom:5px; text-align:justify;">Biaya yang tersebut diatas belum termasuk biaya SPSI (jika ada)</li>
+            <li style="margin-bottom:5px; text-align:justify;">Pemakai Jasa Penyelenggara wajib mematuhi semua peraturan dan tata tertib yang berlaku di {{ $event->lokasi_event ?? '-' }}.</li>
+            <li style="margin-bottom:5px; text-align:justify;">Pemakai Jasa Penyelenggara wajib mengasuransikan produknya selama pameran berlangsung. Kerusakan dan kehilangan barang di saat pameran yang diakibatkan oleh human error dan forced majure bukan tanggung jawab dari pemakai jasa penyelenggara.</li>
         </ol>
 
         {{-- Penutup --}}
@@ -393,7 +398,7 @@
 </div>
 @endif
 
-{{-- â”€â”€ Kontrak â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{--  Kontrak  --}}
 @if($event->contract)
 <div style="max-width:820px;margin:0 auto;">
     <div class="settings-card">

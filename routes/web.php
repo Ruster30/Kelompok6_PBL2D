@@ -309,6 +309,9 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
          ->name('proposals.show');
 
+    Route::get('/proposals/{proposal}/export-pdf', [ClientController::class, 'exportProposalPdf'])
+         ->name('proposals.export-pdf');
+
     Route::get('/proposals/{id}/negosiasi-form',
         [App\Http\Controllers\Client\ClientController::class, 'negosiasiForm'])
         ->name('proposals.negosiasi.form');
