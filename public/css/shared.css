@@ -437,3 +437,245 @@ textarea.form-input { resize: vertical; min-height: 80px; }
         display: none;
     }
 }
+
+/* ---- Micro-interactions ---- */
+
+/* Button press effect */
+.btn:active,
+.btn-sm:active,
+.btn-lg:active,
+.eye-btn:active,
+button:active {
+    transform: scale(0.97);
+}
+
+/* Card hover lift */
+.card-hover,
+.stat-card-dash,
+.stat-card,
+.dash-card,
+.quick-card,
+.section-card,
+.event-dash-card,
+.pengajuan-item {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover,
+.stat-card-dash:hover,
+.stat-card:hover,
+.dash-card:hover,
+.quick-card:hover,
+.section-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+/* Status badge pulse for active statuses */
+.status-berjalan {
+    animation: shared-pulse 2s ease-in-out infinite;
+}
+
+@keyframes shared-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Stat value scale on card hover */
+.stat-value-dash,
+.stat-value,
+.stat-number {
+    transition: transform 0.3s ease;
+}
+.stat-card-dash:hover .stat-value-dash,
+.stat-card:hover .stat-value,
+.stat-card:hover .stat-number {
+    transform: scale(1.05);
+}
+
+/* Sidebar nav item active indicator slide */
+.nav-item {
+    position: relative;
+    overflow: hidden;
+}
+.nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 0;
+    background: #2DD4BF;
+    border-radius: 0 3px 3px 0;
+    transition: width 0.25s ease;
+}
+.nav-item.active::before {
+    width: 3px;
+}
+.nav-item:not(.active):hover::before {
+    width: 2px;
+    opacity: 0.5;
+}
+
+/* Smooth link underline for card links */
+.dash-card-link,
+.link-teal {
+    transition: color 0.2s ease, gap 0.2s ease;
+}
+.dash-card-link:hover,
+.link-teal:hover {
+    gap: 4px;
+}
+.dash-card-link i,
+.link-teal i {
+    transition: transform 0.2s ease;
+}
+.dash-card-link:hover i,
+.link-teal:hover i {
+    transform: translateX(3px);
+}
+
+/* Avatar hover subtle effect */
+.avatar {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.avatar:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.2);
+}
+
+/* Status pill subtle scale */
+.status-pill {
+    transition: transform 0.2s ease;
+}
+.status-pill:hover {
+    transform: scale(1.05);
+}
+
+/* ---- Dark Mode - CSS Variables ---- */
+:root {
+    --bg-body: #f5f6fa;
+    --bg-card: #ffffff;
+    --bg-sidebar: #0f172a;
+    --bg-topbar: #ffffff;
+    --bg-input: #ffffff;
+    --text-main: #1a2540;
+    --text-muted: #6b7a99;
+    --text-sidebar: #cbd5e1;
+    --border: #e4eaf3;
+    --border-input: #e2e8f0;
+    --shadow-card: 0 1px 4px rgba(0,0,0,.06);
+}
+
+[data-theme="dark"] {
+    --bg-body: #0f172a;
+    --bg-card: #1e293b;
+    --bg-sidebar: #0a0f1e;
+    --bg-topbar: #1e293b;
+    --bg-input: #1a2233;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-sidebar: #94a3b8;
+    --border: #334155;
+    --border-input: #2a3448;
+    --shadow-card: 0 1px 4px rgba(0,0,0,.2);
+}
+
+/* Apply variables to common elements */
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Card backgrounds */
+.card,
+.stat-card-dash,
+.stat-card,
+.dash-card,
+.quick-card,
+.section-card,
+.card-hover,
+.event-dash-card,
+.pengajuan-item,
+.settings-card,
+.form-card,
+.penawaran-card,
+.activity-card,
+.notif-item,
+.topbar,
+.page-content .card {
+    background: var(--bg-card) !important;
+    border-color: var(--border) !important;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Input fields */
+.form-input,
+.form-control,
+.form-control-custom,
+input, select, textarea {
+    background: var(--bg-input) !important;
+    border-color: var(--border-input) !important;
+    color: var(--text-main) !important;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Topbar */
+.topbar {
+    background: var(--bg-topbar) !important;
+    border-bottom-color: var(--border) !important;
+}
+
+/* Text colors */
+.text-dark,
+.topbar-title,
+.page-header-left h1,
+.dash-card-title,
+.section-card-title,
+.card-title,
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-main) !important;
+}
+.text-muted,
+.text-light-muted,
+.stat-label-dash,
+.stat-label,
+.form-label,
+label,
+p, .p, span:not(.badge):not(.status-pill) {
+    color: var(--text-main) !important;
+}
+
+/* Fix specific muted text that should stay muted */
+.card-text,
+.text-secondary,
+small, .small,
+.text-muted-color,
+.muted-text-sm {
+    color: var(--text-muted) !important;
+}
+
+/* ---- Dark Mode Toggle Button ---- */
+.dark-mode-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+.dark-mode-toggle:hover {
+    background: #e6faf8;
+    color: #2DD4BF;
+    border-color: #2DD4BF;
+}
+[data-theme="dark"] .dark-mode-toggle:hover {
+    background: rgba(45, 212, 191, 0.1);
+    color: #2DD4BF;
+}

@@ -75,10 +75,18 @@
                 grid-template-columns: repeat(2, 1fr) !important;
             }
             .topbar {
-                padding: 0 16px !important;
+                padding: 0 16px;
             }
             .topbar-title {
-                font-size: 14px !important;
+                font-size: 15px;
+            }
+            .topbar-user span {
+                display: none;
+            }
+            .avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
             }
             .sidebar {
                 transform: translateX(-100%);
@@ -115,6 +123,27 @@
         @media (min-width: 769px) {
             #sidebarToggle {
                 display: none !important;
+            }
+        }
+        
+        @media (max-width: 575px) {
+            .topbar {
+                padding: 0 16px !important;
+            }
+            .topbar-title {
+                font-size: 14px !important;
+            }
+            .page-content {
+                padding: 16px 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 0 16px;
+            }
+            .page-content {
+                padding: 16px 12px;
             }
         }
     </style>
@@ -204,32 +233,23 @@
         
         {{-- Topbar --}}
         <header class="topbar">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <button id="sidebarToggle" class="topbar-notif-link" style="display:none;padding:6px 10px;" aria-label="Buka/tutup sidebar"><i class="bi bi-list" aria-hidden="true"></i></button>
-                <span class="topbar-title">@yield('page-title')</span>
+            <div class="topbar-left">
+                <button id="sidebarToggle" aria-label="Toggle sidebar">
+                    <i class="bi bi-list" aria-hidden="true"></i>
+                </button>
+                <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
             </div>
-
             <div class="topbar-right">
-                <div class="topbar-notif">
-                    <a href="{{ route('client.notifications') }}"
-                    class="topbar-notif-link">
-                        <i class="bi bi-bell-fill" aria-hidden="true"></i>
-                        @if(isset($unreadCount) && $unreadCount > 0)
-                            <span class="notif-count">
-                                {{ $unreadCount > 99 ? '99+' : $unreadCount }}
-                            </span>
-                        @endif
-                    </a>
-                </div>
-
-                <div class="user-badge">
-                    <div class="user-info">
-                        <div class="user-name">{{ Auth::user()->name }}</div>
-                        <div class="user-role">Klien</div>
-                    </div>
-                    <div class="user-avatar">
-                        {{ Auth::user()->initials }}
-                    </div>
+                <x-dark-mode-toggle />
+                <a href="{{ route('client.notifications') }}" class="topbar-notif">
+                    <i class="bi bi-bell-fill" aria-hidden="true"></i>
+                    @if(isset($unreadCount) && $unreadCount > 0)
+                        <span class="notif-count">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
+                    @endif
+                </a>
+                <div class="topbar-user">
+                    <span>{{ Auth::user()->name ?? 'client' }}</span>
+                    <div class="avatar">{{ strtoupper(substr(Auth::user()->name ?? 'CL', 0, 2)) }}</div>
                 </div>
             </div>
         </header>
@@ -238,125 +258,15 @@
         <main class="page-content">
             <x-alert type="success" />
             <x-alert type="error" />
+            <x-alert-dismiss />
 
             @yield('content')
-            <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-
-                        const successAlert = document.getElementById('success-alert');
-                        const errorAlert = document.getElementById('error-alert');
-
-                        if (successAlert) {
-                            setTimeout(() => {
-                                successAlert.style.transition = "opacity .3s ease";
-                                successAlert.style.opacity = "0";
-
-                                setTimeout(() => {
-                                    successAlert.remove();
-                                }, 300);
-                            }, 2000);
-                        }
-
-                    
-                        if (errorAlert) {
-                            setTimeout(() => {
-                                errorAlert.style.transition = "opacity .5s ease";
-                                errorAlert.style.opacity = "0";
-                                setTimeout(() => { errorAlert.remove(); }, 500);
-                            }, 4000);
-                        }
-                    });
-            </script>
+            
         </main>
     </div>
 </div>
 
-<script>
-// Sidebar responsive toggle & scroll position persistence
-document.addEventListener('DOMContentLoaded', function() {
-    var sidebar = document.getElementById('sidebar');
-    var overlay = document.getElementById('sidebarOverlay');
-    var toggleBtn = document.getElementById('sidebarToggle');
-    var sidebarNav = document.getElementById('sidebarNav');
-    var KEY = 'clientSidebarScrollPosition';
-
-    // ===== SIDEBAR SCROLL POSITION PERSISTENCE =====
-    if (sidebarNav) {
-        var restoreScroll = function() {
-            var saved = sessionStorage.getItem(KEY);
-            if (saved !== null) {
-                sidebarNav.scrollTop = parseInt(saved, 10);
-            }
-        };
-        restoreScroll();
-        if (window.requestAnimationFrame) {
-            window.requestAnimationFrame(restoreScroll);
-        }
-        sidebarNav.addEventListener('scroll', function() {
-            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-        });
-        window.addEventListener('beforeunload', function() {
-            sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-        });
-        document.addEventListener('click', function(e) {
-            var target = e.target.closest('a, button[type="submit"]');
-            if (target && sidebarNav) {
-                sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-            }
-        }, true);
-    }
-
-    // ===== RESPONSIVE TOGGLE =====
-    if (toggleBtn && sidebar && overlay) {
-        function openSidebar() {
-            sidebar.classList.add('open');
-            overlay.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeSidebar() {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('show');
-            document.body.style.overflow = '';
-        }
-        
-        toggleBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (sidebar.classList.contains('open')) {
-                closeSidebar();
-            } else {
-                openSidebar();
-            }
-        });
-        
-        overlay.addEventListener('click', closeSidebar);
-        
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-                closeSidebar();
-            }
-        });
-        
-        var navLinks = sidebar.querySelectorAll('.nav-item');
-        navLinks.forEach(function(link) {
-            link.addEventListener('click', function() {
-                if (window.innerWidth < 768) {
-                    if (sidebarNav) {
-                        sessionStorage.setItem(KEY, sidebarNav.scrollTop);
-                    }
-                    closeSidebar();
-                }
-            });
-        });
-        
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                closeSidebar();
-            }
-        });
-    }
-});
-</script>
+<x-sidebar-script storageKey="clientSidebarScrollPosition" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('js/skeleton.js') }}"></script>
 <x-swal-helper />
@@ -364,11 +274,3 @@ document.addEventListener('DOMContentLoaded', function() {
 @stack('scripts')
 </body>
 </html>
-
-
-
-
-
-
-
-
