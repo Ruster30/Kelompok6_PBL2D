@@ -200,13 +200,19 @@ class ClientService
 
         $path = request()->file('bukti_pembayaran')->store('payments', 'public');
 
-        // Tentukan jenis pembayaran berdasarkan urutan invoice
-        $firstInvoice = $invoice->event->invoices()
-            ->whereIn('status_invoice', ['belum_bayar', 'menunggu_verifikasi', 'dp_lunas', 'lunas', 'menunggu_dp'])
-            ->orderBy('id', 'asc')
-            ->first();
-        $isDp = $firstInvoice && $firstInvoice->id === $invoice->id
-            && $invoice->event->invoices()->whereIn('status_invoice', ['belum_bayar', 'menunggu_verifikasi', 'dp_lunas', 'lunas'])->count() > 1;
+        // Tentukan jenis pembayaran berdasarkan skema pembayaran event
+        $scheme = app(PaymentSchemeService::class)->getScheme($invoice->event_id);
+
+        if ($scheme && $scheme->jenis_pembayaran === 'dp_dan_pelunasan') {
+            // DP + Pelunasan: invoice pertama adalah DP
+            $firstInvoice = $invoice->event->invoices()
+                ->orderBy('id', 'asc')
+                ->first();
+            $isDp = $firstInvoice && $firstInvoice->id === $invoice->id;
+        } else {
+            // Full payment atau tanpa skema: selalu pelunasan
+            $isDp = false;
+        }
 
         Payment::create([
             'invoice_id'        => $invoice->id,
