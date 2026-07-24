@@ -50,12 +50,12 @@ class AdminPaymentService
                     } else {
                         // Pelunasan diverifikasi
                         $invoice->update(["status_invoice" => "lunas"]);
-                        $event->update(["status_event" => "selesai"]);
+                        $event->update(["status_event" => "selesai", "status_pembayaran" => "lunas"]);
                     }
                 } else {
                     // Full payment diverifikasi
                     $invoice->update(["status_invoice" => "lunas"]);
-                    $event->update(["status_event" => "selesai"]);
+                    $event->update(["status_event" => "selesai", "status_pembayaran" => "lunas"]);
                 }
 
                 return;
