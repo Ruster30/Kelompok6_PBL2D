@@ -1,10 +1,11 @@
 # Migration Plan
-**Project:** Event Management System (Laravel)
+
+**Project:** Event Management System (Laravel 12)
 **Module:** Digital Document Management System (DDMS)
-**Version:** 1.0
-**Status:** Draft
+**Version:** 2.0
+**Status:** Final
 **Author:** Kelompok 6 PBL
-**Last Update:** 24 Juli 2026
+**Reference:** Architecture Audit v1.0
 
 ---
 
@@ -12,184 +13,372 @@
 
 ## 1.1 Tujuan
 
-Dokumen ini menjelaskan rencana perubahan struktur database yang diperlukan untuk mengimplementasikan Digital Document Management System (DDMS).
+Dokumen ini menjelaskan rencana implementasi perubahan struktur database untuk mengintegrasikan Digital Document Management System (DDMS) ke dalam Event Management System yang telah ada.
 
-Dokumen ini belum berisi kode migration Laravel, namun menjadi acuan implementasi migration pada tahap development.
+Migration Plan disusun berdasarkan prinsip:
 
----
+- Extend Existing Architecture
+- Backward Compatible
+- Zero Business Workflow Break
+- Incremental Migration
 
-# 2. Prinsip Migration
-
-Migration DDMS menggunakan prinsip berikut.
-
-- Reuse Existing Table
-- Extend Existing Table
-- Create New Table Only When Necessary
-- Tidak mengubah workflow modul lain
-- Tidak menghapus tabel existing
+Dokumen ini menjadi acuan implementasi Laravel Migration.
 
 ---
 
-# 3. Existing Table (Reuse)
+# 2. Migration Principles
 
-Tabel berikut digunakan kembali tanpa perubahan struktur utama.
+Seluruh perubahan database mengikuti prinsip berikut.
 
-| Tabel | Modul |
-|--------|-------|
-| users | Authentication |
-| events | Event |
-| proposals | Proposal |
-| contracts | Contract |
-| payments | Payment |
-| notifications | Notification |
+## Reuse Existing Table
+
+Menggunakan tabel yang telah ada tanpa mengubah fungsi bisnis utamanya.
+
+Contoh:
+
+- users
+- events
+- proposals
+- contracts
+- invoices
+- payments
+- document_sends
+- notifications
 
 ---
 
-# 4. Existing Table (Extend)
+## Extend Existing Table
+
+Menambahkan atribut baru apabila memang diperlukan tanpa mengubah workflow lama.
+
+Tabel utama yang diperluas:
+
+- documents
+
+---
+
+## New Supporting Table
+
+Fitur DDMS yang memiliki lifecycle sendiri dibuat pada tabel terpisah.
+
+Contoh:
+
+- document_approvals
+- document_numberings
+- document_qr_verifications
+- document_verification_logs
+- activity_logs
+
+---
+
+# 3. Existing Tables
+
+Tidak dilakukan perubahan struktur terhadap tabel berikut.
+
+| Tabel | Status |
+|--------|---------|
+| users | Reuse |
+| events | Reuse |
+| proposals | Reuse |
+| contracts | Reuse |
+| invoices | Reuse |
+| payments | Reuse |
+| payment_schemes | Reuse |
+| rabs | Reuse |
+| negotiations | Reuse |
+| document_sends | Reuse |
+| notifications | Reuse |
+
+---
+
+# 4. Extended Table
 
 ## documents
 
-Tabel documents akan diperluas agar dapat menjadi Repository Dokumen.
+DDMS menjadikan tabel ini sebagai pusat Repository Dokumen.
 
-Perubahan yang direncanakan:
+Kolom baru yang ditambahkan:
 
-- Menambahkan metadata dokumen
-- Menambahkan informasi sumber dokumen
-- Menambahkan relasi event (opsional)
-- Menambahkan informasi arsip
+| Kolom | Tipe | Keterangan |
+|--------|------|------------|
+| status | enum | Draft, Waiting Approval, Approved, Rejected |
+| current_version | integer | Versi aktif dokumen |
+| is_archived | boolean | Status arsip |
+| document_category | varchar | Official / General / Invoice |
+| updated_by | bigint | User terakhir mengubah |
 
-Workflow approval tidak disimpan pada tabel ini.
+Catatan:
+
+Informasi approval, nomor surat, QR Code, dan audit trail **tidak disimpan langsung** pada tabel ini, tetapi menggunakan tabel relasi agar memenuhi prinsip normalisasi.
 
 ---
 
 # 5. New Tables
 
-Berikut tabel baru yang akan dibuat.
+## document_approvals
 
-| No | Nama Tabel | Fungsi |
-|----|------------|--------|
-| 1 | document_approvals | Approval dokumen |
-| 2 | document_numberings | Nomor surat |
-| 3 | document_qr_verifications | QR verification |
-| 4 | document_send_histories | Riwayat pengiriman |
-| 5 | document_verification_logs | Riwayat scan QR |
-| 6 | document_templates | Template dokumen |
-| 7 | ddms_settings | Konfigurasi DDMS |
+Menyimpan proses approval dokumen.
+
+---
+
+## document_numberings
+
+Menyimpan nomor surat resmi.
+
+---
+
+## document_qr_verifications
+
+Menyimpan data QR Code.
+
+---
+
+## document_verification_logs
+
+Mencatat seluruh proses scan QR.
+
+---
+
+## document_send_histories
+
+Riwayat pengiriman dokumen.
+
+---
+
+## document_templates
+
+Template Blade setiap dokumen.
+
+---
+
+## ddms_settings
+
+Konfigurasi DDMS.
+
+---
+
+## activity_logs
+
+Tabel baru untuk audit trail.
+
+Mencatat:
+
+- Create
+- Update
+- Delete
+- Approval
+- Reject
+- Download
+- Upload
+- Send
+- Verification
 
 ---
 
 # 6. Migration Order
 
-Urutan migration yang direkomendasikan.
+Migration dijalankan secara bertahap.
 
-| Urutan | Migration |
-|---------|-----------|
-| 001 | Alter Documents Table |
-| 002 | Create Document Templates |
-| 003 | Create Document Approvals |
-| 004 | Create Document Numberings |
-| 005 | Create Document QR Verifications |
-| 006 | Create Document Send Histories |
-| 007 | Create Document Verification Logs |
-| 008 | Create DDMS Settings |
+## Phase 1
+
+Core Table
+
+1. Alter Documents
+2. Create Document Templates
+3. Create DDMS Settings
 
 ---
 
-# 7. Dependency
+## Phase 2
 
-```text
-documents
-     │
-     ├──────── document_templates
-     ├──────── document_approvals
-     ├──────── document_numberings
-     ├──────── document_qr_verifications
-     ├──────── document_send_histories
-     └──────── events
+Workflow
 
-document_qr_verifications
-          │
-          ▼
-document_verification_logs
+4. Create Document Approvals
+5. Create Document Numberings
+6. Create Document QR Verifications
+
+---
+
+## Phase 3
+
+History
+
+7. Create Document Send Histories
+8. Create Verification Logs
+9. Create Activity Logs
+
+---
+
+# 7. Backfill Strategy
+
+Data existing harus tetap dapat digunakan.
+
+Backfill dilakukan terhadap seluruh data lama.
+
+Contoh:
+
+```
+Semua document lama
+
+↓
+
+status = approved
+
+↓
+
+current_version = 1
+
+↓
+
+is_archived = false
 ```
 
----
-
-# 8. Impact Analysis
-
-## Tidak Berubah
-
-- Event
-- Proposal
-- Contract
-- Payment
-- Timeline
-- Vendor
+Dengan pendekatan ini, seluruh dokumen lama tetap valid tanpa perlu approval ulang.
 
 ---
 
-## Berubah
+# 8. Event & Listener Preparation
 
-- Document
-- Document Builder
-- Repository
-- Notification
+Migration juga menyiapkan kebutuhan Event Driven Architecture.
+
+Event:
+
+- DocumentCreated
+- DocumentSubmitted
+- DocumentApproved
+- DocumentRejected
+- DocumentSent
+
+Listener:
+
+- GenerateDocumentNumber
+- GenerateQRCode
+- GeneratePDF
+- SaveRepository
+- SendNotification
+- WriteActivityLog
 
 ---
 
-# 9. Rollback Strategy
+# 9. Queue Preparation
 
-Jika migration gagal:
+Job yang akan dibuat.
+
+- GeneratePDFJob
+- GenerateQRCodeJob
+- SendDocumentJob
+
+Seluruh Job menggunakan Laravel Queue.
+
+---
+
+# 10. Middleware Preparation
+
+Middleware baru.
+
+CheckDocumentApproval
+
+Fungsi:
+
+Mencegah dokumen dikirim apabila belum berstatus Approved.
+
+---
+
+# 11. Existing Service Integration
+
+Migration harus tetap kompatibel dengan service yang sudah ada.
+
+Tidak mengganti:
+
+- AdminProposalService
+- AdminPaymentService
+- ClientService
+- TimelineService
+
+DocumentBuilderService tetap digunakan sebagai generator dokumen.
+
+DDMS hanya memperluas kemampuannya.
+
+---
+
+# 12. Risk Assessment
+
+Risiko Rendah
+
+- Tambah tabel baru
+
+Risiko Sedang
+
+- Alter documents
+
+Risiko Tinggi
+
+- Workflow Payment
+- Proposal Versioning
+- Timeline Auto Fill
+
+Bagian tersebut tidak boleh mengalami perubahan perilaku.
+
+---
+
+# 13. Rollback Strategy
+
+Apabila migration gagal:
 
 - rollback migration terakhir
-- tidak mengubah data existing
-- tidak menghapus dokumen lama
+- tidak menghapus data lama
+- mempertahankan workflow existing
 
 ---
 
-# 10. Checklist
+# 14. Deployment Checklist
 
-## Existing
+## Database
 
-- [ ] users
-- [ ] events
-- [ ] proposals
-- [ ] contracts
-- [ ] payments
-- [ ] notifications
+- [ ] Backup Production
+- [ ] Jalankan Migration
+- [ ] Jalankan Seeder
+- [ ] Backfill Existing Document
 
 ---
 
-## Extend
+## Application
 
-- [ ] documents
-
----
-
-## Create
-
-- [ ] document_templates
-- [ ] document_approvals
-- [ ] document_numberings
-- [ ] document_qr_verifications
-- [ ] document_send_histories
-- [ ] document_verification_logs
-- [ ] ddms_settings
+- [ ] Register Event
+- [ ] Register Listener
+- [ ] Register Queue
+- [ ] Register Middleware
 
 ---
 
-# 11. Deliverables
+## Verification
 
-Dokumen ini menjadi dasar pembuatan:
+- [ ] Existing Proposal berjalan
+- [ ] Existing Payment berjalan
+- [ ] Existing Timeline berjalan
+- [ ] Existing Document Builder berjalan
+- [ ] DDMS berjalan
+
+---
+
+# 15. Deliverables
+
+Migration Plan menghasilkan implementasi berikut.
 
 - Laravel Migration
+- Seeder
+- Event
+- Listener
+- Queue
+- Middleware
 - Model
 - Repository
 - Service
-- Controller
 
 ---
 
-# 12. Status
+# 16. Kesimpulan
 
-Draft.
+Migration DDMS menerapkan pendekatan **Architectural Extension**, yaitu memperluas kemampuan Event Management System tanpa mengubah proses bisnis yang telah berjalan.
+
+Dengan strategi bertahap, penggunaan tabel pendukung, dan mekanisme backfill, implementasi DDMS dapat dilakukan secara aman, kompatibel, dan mudah dipelihara dalam jangka panjang.
