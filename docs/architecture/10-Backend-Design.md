@@ -1,12 +1,12 @@
 # Backend Design
-**Project:** Event Management System (Laravel)
+
+**Project:** Event Management System (Laravel 12)
 **Module:** Digital Document Management System (DDMS)
-**Framework:** Laravel 12
-**Architecture:** Service Layer + Repository Pattern
-**Version:** 1.0
-**Status:** Draft
+**Version:** 2.0
+**Status:** Final
 **Author:** Kelompok 6 PBL
-**Last Update:** 24 Juli 2026
+**Architecture:** Service Layer + Repository Pattern
+**Reference:** Architecture Audit v1.0
 
 ---
 
@@ -14,27 +14,43 @@
 
 ## 1.1 Tujuan
 
-Dokumen ini menjelaskan desain backend untuk implementasi Digital Document Management System (DDMS).
+Dokumen ini menjelaskan rancangan implementasi backend DDMS pada Event Management System.
 
-Dokumen ini menjadi acuan implementasi Laravel.
+Backend DDMS dikembangkan dengan pendekatan **Architectural Extension**, yaitu memperluas kemampuan sistem yang telah ada tanpa mengubah proses bisnis utama.
+
+Dokumen ini menjadi acuan implementasi:
+
+- Controller
+- Form Request
+- Service
+- Repository
+- Model
+- Event
+- Listener
+- Queue
+- Policy
+- Middleware
+- Notification
 
 ---
 
 # 2. Design Principles
 
-Backend DDMS dibangun menggunakan prinsip:
+Backend mengikuti prinsip berikut.
 
 - Thin Controller
 - Service Layer
 - Repository Pattern
 - Dependency Injection
-- Form Request Validation
+- SOLID Principle
+- Event Driven Architecture
+- Queue Processing
 - Policy Authorization
-- Single Responsibility Principle
+- Separation of Responsibility
 
 ---
 
-# 3. Arsitektur Backend
+# 3. Backend Architecture
 
 ```text
 Route
@@ -58,52 +74,125 @@ Model
 Database
 ```
 
-Komponen lain dapat dipanggil dari Service:
+Service dapat memanggil:
 
 - Notification
-- PDF
-- QR Generator
+- Event
+- Queue
 - Storage
+- PDF Generator
+- QR Generator
 
 ---
 
-# 4. Module Structure
+# 4. Existing Components (Dipertahankan)
 
-```
-DDMS
+Komponen berikut **tidak diganti**, hanya diperluas.
 
-├── Document
-├── Approval
-├── Numbering
-├── QR Verification
-├── Repository
-├── Template
-├── Send History
-├── Verification
-├── Settings
-```
+## Existing Services
+
+- AdminProposalService
+- AdminPaymentService
+- ClientService
+- TimelineService
+- RabService
+- VendorDashboardService
+- AdminAnalyticsService
+- DocumentBuilderService
+
+## Existing Repository
+
+- DocumentRepository
+- ProposalRepository
+- TimelineRepository
+- VendorRepository
+- RabRepository
+- NotificationRepository
 
 ---
 
-# 5. Controller
+# 5. New Components
 
-## DocumentController
+## Services
+
+### DocumentApprovalService
 
 Tanggung jawab:
 
+- Submit Approval
+- Approve Document
+- Reject Document
+- Validasi PIN Director
+- Mengubah status dokumen
+
+---
+
+### DocumentVerificationService
+
+Tanggung jawab:
+
+- Verifikasi QR Code
+- Validasi hash
+- Menyimpan Verification Log
+
+---
+
+### DocumentNumberingService
+
+Tanggung jawab:
+
+- Generate nomor surat
+- Menjamin nomor unik
+- Menangani format penomoran
+
+---
+
+### ActivityLogService
+
+Tanggung jawab:
+
+- Menyimpan Audit Trail
+- Logging seluruh aktivitas DDMS
+
+---
+
+# 6. Existing Service Extension
+
+## DocumentBuilderService
+
+Service ini **tetap dipertahankan**.
+
+DDMS hanya menambahkan kemampuan baru.
+
+Fitur tambahan:
+
+- Generate Draft
+- Generate PDF Final
+- Generate QR Code
+- Generate Nomor Surat
+- Integrasi Approval
+- Integrasi Repository
+
+---
+
+# 7. Controllers
+
+## DocumentController
+
+Fungsi:
+
 - Create Draft
-- Edit Draft
+- Update Draft
 - Delete Draft
-- Upload Document
-- Repository
 - Preview
 - Download
+- Repository
 
 ---
 
 ## ApprovalController
 
-Tanggung jawab:
+Fungsi:
 
 - Submit Approval
 - Approve
@@ -113,29 +202,25 @@ Tanggung jawab:
 
 ## VerificationController
 
-Tanggung jawab:
+Fungsi:
 
-- Public Verification
+- Public QR Verification
 
 ---
 
 ## TemplateController
 
-Tanggung jawab:
-
-- CRUD Template
+CRUD Template.
 
 ---
 
 ## SettingsController
 
-Tanggung jawab:
-
-- DDMS Configuration
+Konfigurasi DDMS.
 
 ---
 
-# 6. Form Request
+# 8. Form Requests
 
 ## StoreDocumentRequest
 
@@ -169,227 +254,229 @@ Validasi reject.
 
 ## UploadDocumentRequest
 
-Validasi upload.
+Validasi upload file.
 
 ---
 
-## TemplateRequest
+## VerifyDocumentRequest
 
-Validasi template.
-
----
-
-# 7. Services
-
-## DocumentService
-
-Tanggung jawab:
-
-- Create Draft
-- Update Draft
-- Delete Draft
-- Generate PDF
-- Repository
+Validasi QR Verification.
 
 ---
 
-## ApprovalService
+# 9. Repository Layer
 
-Tanggung jawab:
+Repository baru.
 
-- Submit
-- Approve
-- Reject
-- PIN Validation
+## DocumentApprovalRepository
 
----
-
-## NumberingService
-
-Generate nomor surat.
+Approval data.
 
 ---
 
-## QRService
+## DocumentNumberingRepository
 
-Generate QR.
-
----
-
-## PDFService
-
-Generate PDF.
+Nomor surat.
 
 ---
 
-## SendDocumentService
+## DocumentVerificationRepository
 
-Mengirim dokumen.
-
----
-
-## VerificationService
-
-Validasi QR.
+QR Verification.
 
 ---
 
-## TemplateService
+## ActivityLogRepository
 
-Kelola template.
-
----
-
-## SettingsService
-
-Kelola konfigurasi.
+Audit Trail.
 
 ---
 
-# 8. Repository
-
-## DocumentRepository
-
-Mengelola Document.
+Repository existing tetap digunakan.
 
 ---
 
-## ApprovalRepository
+# 10. Event Driven Architecture
 
-Mengelola Approval.
+## Event
 
----
-
-## NumberingRepository
-
-Mengelola nomor surat.
-
----
-
-## QRRepository
-
-Mengelola QR.
+- DocumentCreated
+- DocumentUpdated
+- DocumentSubmitted
+- DocumentApproved
+- DocumentRejected
+- DocumentSent
+- DocumentVerified
 
 ---
 
-## SendHistoryRepository
+## Listener
 
-Mengelola riwayat kirim.
-
----
-
-## VerificationRepository
-
-Mengelola log verifikasi.
-
----
-
-## TemplateRepository
-
-Mengelola template.
+- GenerateDocumentNumber
+- GenerateQRCode
+- GeneratePDF
+- SaveRepository
+- SendNotification
+- WriteActivityLog
 
 ---
 
-# 9. Models
+# 11. Queue
 
-- Document
-- DocumentApproval
-- DocumentNumbering
-- DocumentQRVerification
-- DocumentSendHistory
-- DocumentVerificationLog
-- DocumentTemplate
+Queue digunakan untuk proses berat.
 
-Model existing:
+Job:
 
-- User
-- Event
-- Proposal
-- Payment
+- GeneratePDFJob
+- GenerateQRCodeJob
+- SendDocumentJob
+
+Keuntungan:
+
+- Respon aplikasi lebih cepat.
+- Proses berat berjalan di background.
 
 ---
 
-# 10. Notifications
+# 12. Middleware
+
+Middleware baru.
+
+## CheckDocumentApproval
+
+Mencegah:
+
+- Download Final
+- Send To Client
+
+apabila status dokumen belum Approved.
+
+---
+
+# 13. Notification
+
+Notification baru.
 
 ## DirectorApprovalNotification
 
-Dikirim saat dokumen diajukan.
+Memberi tahu Director.
 
 ---
 
 ## ApprovalResultNotification
 
-Dikirim setelah approval.
+Memberi tahu Admin.
 
 ---
 
 ## DocumentSentNotification
 
-Dikirim ke Client.
+Memberi tahu Client.
 
 ---
 
-# 11. Policies
+## VerificationNotification (Opsional)
+
+Memberi tahu apabila terjadi verifikasi tertentu sesuai kebutuhan bisnis.
+
+---
+
+# 14. Policy
 
 ## DocumentPolicy
 
-Hak akses Document.
+Hak akses dokumen.
 
 ---
 
 ## ApprovalPolicy
 
-Hak akses Approval.
+Hak akses approval.
+
+---
+
+## VerificationPolicy
+
+Hak akses verifikasi.
 
 ---
 
 ## TemplatePolicy
 
-Hak akses Template.
+Hak akses template.
 
 ---
 
-## SettingsPolicy
-
-Hak akses konfigurasi.
-
----
-
-# 12. Jobs (Opsional)
-
-Job yang dapat dijalankan secara asynchronous.
-
-- GeneratePDFJob
-- GenerateQRJob
-- SendDocumentJob
-
----
-
-# 13. Storage
-
-Penyimpanan:
-
-```
-storage/app/private/ddms
-
-├── official
-├── invoices
-├── receipts
-├── uploads
-├── templates
-└── qr
-```
-
----
-
-# 14. Dependency Injection
+# 15. Storage Structure
 
 ```text
+storage/
+
+└── app/
+
+    └── private/
+
+        └── ddms/
+
+            ├── official/
+            ├── invoice/
+            ├── receipt/
+            ├── uploaded/
+            ├── template/
+            ├── qr/
+            └── archive/
+```
+
+---
+
+# 16. Security
+
+Keamanan sistem meliputi:
+
+- Laravel Policy
+- Middleware
+- Approval PIN
+- Private Storage
+- Signed URL (jika diperlukan)
+- QR Hash
+- Audit Trail
+
+---
+
+# 17. Audit Trail
+
+Seluruh aktivitas dicatat.
+
+Aktivitas:
+
+- Create
+- Update
+- Delete
+- Submit Approval
+- Approve
+- Reject
+- Generate Number
+- Generate QR
+- Generate PDF
+- Download
+- Upload
+- Send
+- Verify
+
+---
+
+# 18. Dependency Flow
+
+```text
+Route
+
+↓
+
 Controller
 
 ↓
 
-Service Interface
+Form Request
 
 ↓
 
@@ -397,104 +484,129 @@ Service
 
 ↓
 
-Repository Interface
+Repository
 
 ↓
 
-Repository
+Model
+
+↓
+
+Database
+
+↓
+
+Event
+
+↓
+
+Listener
+
+↓
+
+Queue
+
+↓
+
+Notification
+
+↓
+
+Activity Log
 ```
 
 ---
 
-# 15. Error Handling
+# 19. Deployment Checklist
 
-Menggunakan:
+## Backend
 
-- Form Request Validation
-- Exception Handler
-- Custom Exception
-- Transaction Database
-
----
-
-# 16. Logging
-
-Log yang dicatat:
-
-- Approval
-- Reject
-- Upload
-- Download
-- QR Verification
-- Send Document
+- [ ] Controller
+- [ ] Request
+- [ ] Service
+- [ ] Repository
+- [ ] Model
+- [ ] Policy
 
 ---
 
-# 17. Security
+## Infrastructure
 
-- Authorization menggunakan Policy.
-- Approval menggunakan PIN.
-- File disimpan pada private storage.
-- QR menggunakan hash unik.
-- Semua approval dicatat sebagai audit trail.
-
----
-
-# 18. Backend Checklist
-
-## Controller
-
-- [ ] DocumentController
-- [ ] ApprovalController
-- [ ] VerificationController
-- [ ] TemplateController
-- [ ] SettingsController
+- [ ] Queue
+- [ ] Event
+- [ ] Listener
+- [ ] Notification
+- [ ] Middleware
 
 ---
 
-## Service
+## Database
 
-- [ ] DocumentService
-- [ ] ApprovalService
-- [ ] NumberingService
-- [ ] QRService
-- [ ] PDFService
-- [ ] VerificationService
-- [ ] SendDocumentService
-- [ ] TemplateService
-- [ ] SettingsService
+- [ ] Migration
+- [ ] Seeder
+- [ ] Backfill
 
 ---
 
-## Repository
+## Testing
 
-- [ ] DocumentRepository
-- [ ] ApprovalRepository
-- [ ] NumberingRepository
-- [ ] QRRepository
-- [ ] SendHistoryRepository
-- [ ] VerificationRepository
-- [ ] TemplateRepository
+- [ ] Unit Test
+- [ ] Feature Test
+- [ ] Integration Test
 
 ---
 
-## Notification
+# 20. Roadmap Implementasi
 
-- [ ] DirectorApprovalNotification
-- [ ] ApprovalResultNotification
-- [ ] DocumentSentNotification
+## Tahap 1
 
----
-
-## Policy
-
-- [ ] DocumentPolicy
-- [ ] ApprovalPolicy
-- [ ] TemplatePolicy
-- [ ] SettingsPolicy
+- Database
+- Migration
+- Model
 
 ---
 
-# 19. Status
+## Tahap 2
 
-Draft.
+- Repository
+- Service
+
+---
+
+## Tahap 3
+
+- Controller
+- Request
+- Policy
+
+---
+
+## Tahap 4
+
+- Event
+- Listener
+- Queue
+
+---
+
+## Tahap 5
+
+- Notification
+- Activity Log
+
+---
+
+## Tahap 6
+
+- Testing
+- Deployment
+
+---
+
+# 21. Kesimpulan
+
+Backend DDMS dikembangkan sebagai perluasan dari Event Management System yang telah ada.
+
+Pendekatan ini mempertahankan Service Layer, Repository Pattern, dan workflow bisnis yang sudah stabil, sekaligus menambahkan kemampuan baru seperti Approval Workflow, QR Verification, Audit Trail, serta Event Driven Architecture.
+
+Dengan pendekatan **Architectural Extension**, implementasi DDMS dapat dilakukan secara bertahap tanpa mengganggu modul yang sudah berjalan.
