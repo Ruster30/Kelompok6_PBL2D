@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ClientController;
@@ -9,6 +9,7 @@ use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Vendor\TugasController;
 use App\Http\Controllers\Vendor\DokumentasiController;
 use App\Http\Controllers\Vendor\NotifikasiController;
+
 
 Route::get('/d', function () {
     return view('welcome');
@@ -258,12 +259,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 require __DIR__.'/auth.php';
 
 /*
-|â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+|
 |  CLIENT DASHBOARD ROUTES
 |  Semua dilindungi middleware 'auth'
 |  Prefix URL  : /client/...
 |  Prefix name : client....
-|â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+|
 */
 
 
@@ -274,33 +275,33 @@ Route::post('/feedback', [FeedbackController::class, 'store'])
     ->name('feedback.store');
 
 Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->group(function () {
-    // â”€â”€ Ringkasan / Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Ringkasan / Dashboard 
     Route::get('/',                         [ClientController::class, 'dashboard'])
          ->name('dashboard');
  
-    // â”€â”€ Event Terdaftar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Event Terdaftar 
     Route::get('/events',                   [ClientController::class, 'events'])
          ->name('events');
  
-    // â”€â”€ Ajukan Event Baru â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Ajukan Event Baru 
     Route::get('/event/create',             [ClientController::class, 'eventCreate'])
          ->name('event.create');
     Route::post('/event',                   [ClientController::class, 'eventStore'])
          ->name('event.store');
  
-    // â”€â”€ Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Timeline 
     Route::get('/timeline',                 [ClientController::class, 'timeline'])
          ->name('timeline');
     Route::get('/timeline/{id}',            [ClientController::class, 'timeline'])
          ->name('timeline.show');
  
-    // â”€â”€ Anggaran & Faktur â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Anggaran & Faktur 
     Route::get('/invoices',                 [ClientController::class, 'invoices'])
          ->name('invoices');
     Route::post('/invoices/{id}/bayar',     [ClientController::class, 'bayar'])
          ->name('invoices.bayar');
  
-    // â”€â”€ Surat Penawaran â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Surat Penawaran 
     Route::get('/proposals/{tab?}',         [ClientController::class, 'proposals'])
         ->where('tab', 'penawaran|proposal|rab|kontrak|laporan|kwitansi')
         ->name('proposals');
@@ -308,21 +309,24 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
          ->name('proposals.show');
 
+    Route::get('/proposals/{proposal}/export-pdf', [ClientController::class, 'exportProposalPdf'])
+         ->name('proposals.export-pdf');
+
     Route::get('/proposals/{id}/negosiasi-form',
         [App\Http\Controllers\Client\ClientController::class, 'negosiasiForm'])
         ->name('proposals.negosiasi.form');
     
-    // â”€â”€ Terima Penawaran LANGSUNG (tanpa negosiasi) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Terima Penawaran LANGSUNG (tanpa negosiasi) 
     Route::post('/proposals/{id}/terima',
         [App\Http\Controllers\Client\ClientController::class, 'terimaProposal'])
         ->name('proposals.terima');
 
-    // â”€â”€ Ajukan Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Ajukan Negosiasi 
     Route::post('/proposals/{id}/negosiasi',
         [App\Http\Controllers\Client\ClientController::class, 'submitNegosiasi'])
         ->name('proposals.negosiasi');
 
-    // â”€â”€ Terima Penawaran Revisi SETELAH Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Terima Penawaran Revisi SETELAH Negosiasi 
     Route::post('/proposals/{id}/terima-setelah-negosiasi',
         [App\Http\Controllers\Client\ClientController::class, 'terimaSetelahNegosiasi'])
         ->name('proposals.terima-setelah-negosiasi');
@@ -333,7 +337,7 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::get('/proposals/document/{document}/download', [ClientController::class, 'documentDownload'])
         ->name('proposals.document.download');
  
-    // â”€â”€ Pengaturan Akun â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Pengaturan Akun  
     Route::get('/settings',                 [ClientController::class, 'settings'])
          ->name('settings');
     Route::put('/settings/profile',         [ClientController::class, 'settingsProfile'])
@@ -341,8 +345,8 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::put('/settings/password',        [ClientController::class, 'settingsPassword'])
          ->name('settings.password');
  
-    // â”€â”€ Notifikasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-     Route::get('/notifications', [ClientController::class, 'notifications'])
+    //  Notifikasi  
+    Route::get('/notifications', [ClientController::class, 'notifications'])
     ->name('notifications');
 
     Route::post('/notifications/read', [ClientController::class, 'notifRead'])
