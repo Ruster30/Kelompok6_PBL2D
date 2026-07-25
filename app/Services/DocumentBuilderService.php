@@ -71,11 +71,12 @@ class DocumentBuilderService
         $event->load(['client', 'contract', 'invoices']);
 
         $nomorKontrak = sprintf('KTR-%s-%03d', now()->format('Ymd'), Contract::whereDate('created_at', today())->count() + 1);
-        // Gunakan total_invoice dari Event Model (invoice utama saja) atau total RAB
         $nilaiKontrak = $event->total_invoice ?: app(RabService::class)->getTotalDibayarKlien($event->id);
 
+        $layoutPath = $event->layout_denah ? Storage::disk('public')->path($event->layout_denah) : null;
+
         $pdf = Pdf::loadView('admin.pdf_templates.surat_kontrak', compact(
-            'event', 'nomorKontrak', 'nilaiKontrak'
+            'event', 'nomorKontrak', 'nilaiKontrak', 'layoutPath'
         ))->setPaper('a4', 'portrait');
 
         $filename = 'kontrak-' . Str::slug($event->nama_event) . '-' . now()->format('YmdHis') . '.pdf';

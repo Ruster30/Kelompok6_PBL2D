@@ -14,6 +14,15 @@ class AdminAnalyticsService
 {
     public function getAnalyticsData(array $filters = []): array
     {
+        $period = $filters['period'] ?? 'all';
+        $startDate = $filters['start_date'] ?? null;
+        $endDate = $filters['end_date'] ?? null;
+
+        [$dateFrom, $dateTo] = $this->resolvePeriod($period, $startDate, $endDate);
+
+        $filters['date_from'] = $dateFrom;
+        $filters['date_to'] = $dateTo;
+
         $year = isset($filters['year'])
             ? (int) $filters['year']
             : now()->year;
@@ -25,7 +34,7 @@ class AdminAnalyticsService
         $jenisEvent = $filters['jenis_event'] ?? null;
 
         // Base queries with filters
-        $eventQuery = $this->buildEventQuery($year, $month, $statusEvent, $jenisEvent);
+        $eventQuery = $this->buildEventQuery($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo);
 
         // Statistics Cards
         $totalEvents = (clone $eventQuery)->count();
@@ -34,11 +43,12 @@ class AdminAnalyticsService
         $totalClients = User::where('role', 'client')->count();
         $totalVendors = Vendor::count();
         
-        $totalInvoices = Invoice::whereHas('event', function($q) use ($year, $month, $statusEvent, $jenisEvent) {
+        $totalInvoices = Invoice::whereHas('event', function($q) use ($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo) {
             $q->whereYear('created_at', $year);
             if ($month) $q->whereMonth('created_at', $month);
             if ($statusEvent) $q->where('status_event', $statusEvent);
             if ($jenisEvent) $q->where('jenis_event', $jenisEvent);
+            $this->applyDateFilter($q, 'created_at', $dateFrom, $dateTo);
         })->count();
         
         // Total Revenue: gunakan Payment yang sudah diverifikasi, dengan filter event jika ada
@@ -47,6 +57,7 @@ class AdminAnalyticsService
         if ($month) {
             $revenueQuery->whereMonth('tanggal_pembayaran', $month);
         }
+        $this->applyDateFilter($revenueQuery, 'tanggal_pembayaran', $dateFrom, $dateTo);
         if ($statusEvent || $jenisEvent) {
             $revenueQuery->whereHas('invoice.event', function ($q) use ($statusEvent, $jenisEvent) {
                 if ($statusEvent) $q->where('status_event', $statusEvent);
@@ -56,18 +67,19 @@ class AdminAnalyticsService
         $totalRevenue = $revenueQuery->sum('nominal');
 
         $paidInvoices = Invoice::where('status_invoice', 'lunas')
-            ->whereHas('event', function($q) use ($year, $month, $statusEvent, $jenisEvent) {
+            ->whereHas('event', function($q) use ($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo) {
                 $q->whereYear('created_at', $year);
                 if ($month) $q->whereMonth('created_at', $month);
                 if ($statusEvent) $q->where('status_event', $statusEvent);
                 if ($jenisEvent) $q->where('jenis_event', $jenisEvent);
+                $this->applyDateFilter($q, 'created_at', $dateFrom, $dateTo);
             })->count();
 
         // Chart Data - Monthly Revenue
-        $monthlyRevenue = $this->getMonthlyRevenue($year, $statusEvent, $jenisEvent);
+        $monthlyRevenue = $this->getMonthlyRevenue($year, $statusEvent, $jenisEvent, $dateFrom, $dateTo);
         
         // Chart Data - Monthly Events
-        $monthlyEvents = $this->getMonthlyEvents($year, $statusEvent, $jenisEvent);
+        $monthlyEvents = $this->getMonthlyEvents($year, $statusEvent, $jenisEvent, $dateFrom, $dateTo);
         
         // Chart Data - Events by Status
         $eventsByStatus = (clone $eventQuery)
@@ -84,9 +96,9 @@ class AdminAnalyticsService
             ->toArray();
 
         // Top Tables
-        $topClients = $this->getTopClients($year, $month, $statusEvent, $jenisEvent);
-        $topVendors = $this->getTopVendors($year, $month, $statusEvent, $jenisEvent);
-        $topEvents = $this->getTopEvents($year, $month, $statusEvent, $jenisEvent);
+        $topClients = $this->getTopClients($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo);
+        $topVendors = $this->getTopVendors($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo);
+        $topEvents = $this->getTopEvents($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo);
 
         // Filter Options
         $availableYears = $this->getAvailableYears();
@@ -103,7 +115,7 @@ class AdminAnalyticsService
         );
     }
 
-    private function buildEventQuery($year, $month, $statusEvent, $jenisEvent)
+    private function buildEventQuery($year, $month, $statusEvent, $jenisEvent, $dateFrom = null, $dateTo = null)
     {
         $query = Event::query()->whereYear('created_at', $year);
         
@@ -116,17 +128,20 @@ class AdminAnalyticsService
         if ($jenisEvent) {
             $query->where('jenis_event', $jenisEvent);
         }
+        $this->applyDateFilter($query, 'created_at', $dateFrom, $dateTo);
         
         return $query;
     }
 
-    private function getMonthlyRevenue($year, $statusEvent, $jenisEvent): array
+    private function getMonthlyRevenue($year, $statusEvent, $jenisEvent, $dateFrom = null, $dateTo = null): array
     {
         $data = [];
         for ($m = 1; $m <= 12; $m++) {
             $query = Payment::where('status_pembayaran', 'diverifikasi')
                 ->whereYear('tanggal_pembayaran', $year)
                 ->whereMonth('tanggal_pembayaran', $m);
+            
+            $this->applyDateFilter($query, 'tanggal_pembayaran', $dateFrom, $dateTo);
             
             if ($statusEvent || $jenisEvent) {
                 $query->whereHas('invoice.event', function($q) use ($statusEvent, $jenisEvent) {
@@ -140,7 +155,7 @@ class AdminAnalyticsService
         return $data;
     }
 
-    private function getMonthlyEvents($year, $statusEvent, $jenisEvent): array
+    private function getMonthlyEvents($year, $statusEvent, $jenisEvent, $dateFrom = null, $dateTo = null): array
     {
         $data = [];
         for ($m = 1; $m <= 12; $m++) {
@@ -149,26 +164,29 @@ class AdminAnalyticsService
             
             if ($statusEvent) $query->where('status_event', $statusEvent);
             if ($jenisEvent) $query->where('jenis_event', $jenisEvent);
+            $this->applyDateFilter($query, 'created_at', $dateFrom, $dateTo);
             
             $data[] = $query->count();
         }
         return $data;
     }
 
-    private function getTopClients($year, $month, $statusEvent, $jenisEvent, $limit = 10)
+    private function getTopClients($year, $month, $statusEvent, $jenisEvent, $dateFrom = null, $dateTo = null, $limit = 10)
     {
         return User::where('role', 'client')
-            ->withCount(['events' => function($q) use ($year, $month, $statusEvent, $jenisEvent) {
+            ->withCount(['events' => function($q) use ($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo) {
                 $q->whereYear('created_at', $year);
                 if ($month) $q->whereMonth('created_at', $month);
                 if ($statusEvent) $q->where('status_event', $statusEvent);
                 if ($jenisEvent) $q->where('jenis_event', $jenisEvent);
+                $this->applyDateFilter($q, 'created_at', $dateFrom, $dateTo);
             }])
-            ->with(['events' => function($q) use ($year, $month, $statusEvent, $jenisEvent) {
+            ->with(['events' => function($q) use ($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo) {
                 $q->whereYear('created_at', $year);
                 if ($month) $q->whereMonth('created_at', $month);
                 if ($statusEvent) $q->where('status_event', $statusEvent);
                 if ($jenisEvent) $q->where('jenis_event', $jenisEvent);
+                $this->applyDateFilter($q, 'created_at', $dateFrom, $dateTo);
                 $q->with(['payments' => function ($pq) {
                     $pq->where('status_pembayaran', 'diverifikasi');
                 }]);
@@ -187,22 +205,24 @@ class AdminAnalyticsService
             ->take($limit);
     }
 
-    private function getTopVendors($year, $month, $statusEvent, $jenisEvent, $limit = 10)
+    private function getTopVendors($year, $month, $statusEvent, $jenisEvent, $dateFrom = null, $dateTo = null, $limit = 10)
     {
-        return Vendor::withCount(['rabs' => function($q) use ($year, $month, $statusEvent, $jenisEvent) {
-                $q->whereHas('event', function($eq) use ($year, $month, $statusEvent, $jenisEvent) {
+        return Vendor::withCount(['rabs' => function($q) use ($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo) {
+                $q->whereHas('event', function($eq) use ($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo) {
                     $eq->whereYear('created_at', $year);
                     if ($month) $eq->whereMonth('created_at', $month);
                     if ($statusEvent) $eq->where('status_event', $statusEvent);
                     if ($jenisEvent) $eq->where('jenis_event', $jenisEvent);
+                    $this->applyDateFilter($eq, 'created_at', $dateFrom, $dateTo);
                 });
             }])
-            ->withSum(['rabs' => function($q) use ($year, $month, $statusEvent, $jenisEvent) {
-                $q->whereHas('event', function($eq) use ($year, $month, $statusEvent, $jenisEvent) {
+            ->withSum(['rabs' => function($q) use ($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo) {
+                $q->whereHas('event', function($eq) use ($year, $month, $statusEvent, $jenisEvent, $dateFrom, $dateTo) {
                     $eq->whereYear('created_at', $year);
                     if ($month) $eq->whereMonth('created_at', $month);
                     if ($statusEvent) $eq->where('status_event', $statusEvent);
                     if ($jenisEvent) $eq->where('jenis_event', $jenisEvent);
+                    $this->applyDateFilter($eq, 'created_at', $dateFrom, $dateTo);
                 });
             }], 'subtotal_biaya')
             ->having('rabs_count', '>', 0)
@@ -211,7 +231,7 @@ class AdminAnalyticsService
             ->get();
     }
 
-    private function getTopEvents($year, $month, $statusEvent, $jenisEvent, $limit = 10)
+    private function getTopEvents($year, $month, $statusEvent, $jenisEvent, $dateFrom = null, $dateTo = null, $limit = 10)
     {
         $query = Event::with(['client', 'invoices' => function ($q) {
                 $q->orderBy('id', 'asc');
@@ -221,6 +241,7 @@ class AdminAnalyticsService
         if ($month) $query->whereMonth('created_at', $month);
         if ($statusEvent) $query->where('status_event', $statusEvent);
         if ($jenisEvent) $query->where('jenis_event', $jenisEvent);
+        $this->applyDateFilter($query, 'created_at', $dateFrom, $dateTo);
         
         return $query->get()
             ->map(function($event) {
@@ -238,5 +259,40 @@ class AdminAnalyticsService
         $minYear = Event::min(DB::raw('YEAR(created_at)')) ?? now()->year;
         $maxYear = now()->year;
         return range($maxYear, $minYear);
+    }
+
+    private function resolvePeriod(?string $period, ?string $startDate, ?string $endDate): array
+    {
+        if (!$period || $period === 'all') {
+            return [null, null];
+        }
+
+        $now = now();
+
+        return match ($period) {
+            'today' => [$now->copy()->startOfDay(), $now->copy()->endOfDay()],
+            'yesterday' => [$now->copy()->subDay()->startOfDay(), $now->copy()->subDay()->endOfDay()],
+            'last_7_days' => [$now->copy()->subDays(6)->startOfDay(), $now->copy()->endOfDay()],
+            'last_30_days' => [$now->copy()->subDays(29)->startOfDay(), $now->copy()->endOfDay()],
+            'this_week' => [$now->copy()->startOfWeek(), $now->copy()->endOfWeek()],
+            'this_month' => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()],
+            'this_year' => [$now->copy()->startOfYear(), $now->copy()->endOfYear()],
+            'custom' => [
+                $startDate ? Carbon::parse($startDate)->startOfDay() : null,
+                $endDate ? Carbon::parse($endDate)->endOfDay() : null,
+            ],
+            default => [null, null],
+        };
+    }
+
+    private function applyDateFilter($query, string $column, $dateFrom, $dateTo): void
+    {
+        if ($dateFrom && $dateTo) {
+            $query->whereBetween($column, [$dateFrom, $dateTo]);
+        } elseif ($dateFrom) {
+            $query->where($column, '>=', $dateFrom);
+        } elseif ($dateTo) {
+            $query->where($column, '<=', $dateTo);
+        }
     }
 }
