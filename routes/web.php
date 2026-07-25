@@ -204,6 +204,18 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'sendToClient'])
         ->name('admin.document_builder.send');
 
+    Route::post('/document-builder/upload-denah',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'uploadDenah'])
+        ->name('admin.document_builder.upload_denah');
+
+    Route::get('/document-builder/denah-status/{event}',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'denahStatus'])
+        ->name('admin.document_builder.denah_status');
+
+    Route::delete('/document-builder/hapus-denah/{event}',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'hapusDenah'])
+        ->name('admin.document_builder.hapus_denah');
+
     // Documentation
     Route::get('/documentation', [App\Http\Controllers\Admin\DocumentationController::class, 'index'])->name('admin.documentation.index');
     Route::patch('/documentation/files/{file}/approve', [App\Http\Controllers\Admin\DocumentationController::class, 'approveFile'])->name('admin.documentation.approve-file');
