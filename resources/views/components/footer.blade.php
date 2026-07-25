@@ -29,14 +29,19 @@
                     <span class="text-white">ALPHA</span><span class="text-accent">.</span><span class="text-white">COM</span>
                 </a>
                 <p class="text-light-muted small mb-3">Kami adalah perusahaan event organizer profesional yang berdedikasi menghadirkan pengalaman tak terlupakan untuk setiap momen spesial Anda.</p>
-                <div class="d-flex gap-2">
-                    <a href="https://www.instagram.com/alphaorganizer.co?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="social-icon"><i class="bi bi-instagram"></i></a>
-                    <a href="mailto:alphaorganizer@gmail.com" class="social-icon" target="_blank" rel="noopener noreferrer">
-                        <i class="bi bi-envelope-fill"></i>
+                <div class="footer-social-vertical d-flex flex-column gap-2 mt-3">
+                    <a href="https://www.instagram.com/alphaorganizer.co?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="footer-social-link">
+                        <span class="social-icon"><i class="bi bi-instagram"></i></span>
+                        <span class="social-label">Instagram</span>
                     </a>
-                    <a href="https://api.whatsapp.com/send?phone=6282233181883" class="social-icon" target="_blank" rel="noopener noreferrer">
-                        <i class="bi bi-whatsapp"></i>
-                    </a>    
+                    <a href="https://api.whatsapp.com/send?phone=6282233181883" target="_blank" rel="noopener noreferrer" class="footer-social-link">
+                        <span class="social-icon"><i class="bi bi-whatsapp"></i></span>
+                        <span class="social-label">WhatsApp</span>
+                    </a>
+                    <a href="mailto:alphaorganizer@gmail.com" target="_blank" rel="noopener noreferrer" class="footer-social-link">
+                        <span class="social-icon"><i class="bi bi-envelope-fill"></i></span>
+                        <span class="social-label">Email</span>
+                    </a>
                 </div>
             </div>
 

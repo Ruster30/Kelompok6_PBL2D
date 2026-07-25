@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Surat Penawaran')
 @section('page-title', 'Surat Penawaran')
@@ -14,7 +14,13 @@
     </a>
     <div style="display:flex; gap:10px;" id="action-bar-buttons">
         {{-- Tombol mode VIEW (default) --}}
-        <div id="btn-group-view">
+        <div id="btn-group-view" style="display:flex; gap:10px; align-items:center;">
+            {{-- Tombol Lihat RAB --}}
+            <a href="{{ route('admin.rab.index', ['event_id' => $event->id]) }}"
+               class="btn btn-outline"
+               style="border-color:#6366f1; color:#6366f1;">
+                <i class="fas fa-calculator"></i> Lihat RAB
+            </a>
             <a href="{{ route('admin.requests.export-pdf', $event->id) }}"
                class="btn btn-outline" target="_blank">
                 <i class="fas fa-download"></i> Export PDF
