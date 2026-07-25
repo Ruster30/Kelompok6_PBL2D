@@ -10,6 +10,14 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    /*
+     * Role constants
+     */
+    public const ROLE_ADMIN    = 'admin';
+    public const ROLE_DIRECTOR = 'director';
+    public const ROLE_VENDOR   = 'vendor';
+    public const ROLE_CLIENT   = 'client';
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -99,24 +107,34 @@ class User extends Authenticatable
                     ->join('invoices', 'invoices.id', '=', 'payments.invoice_id');
     }
 
-    // ─── Helper Role ─────────────────────────────────────────
+        // ─── Helper Role ─────────────────────────────────────────
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === self::ROLE_ADMIN;
     }
 
-    public function isClient(): bool
+    public function isDirector(): bool
     {
-        return $this->role === 'client';
+        return $this->role === self::ROLE_DIRECTOR;
     }
 
     public function isVendor(): bool
     {
-        return $this->role === 'vendor';
+        return $this->role === self::ROLE_VENDOR;
     }
 
-    // ─── Accessors ───────────────────────────────────────────
+    public function isClient(): bool
+    {
+        return $this->role === self::ROLE_CLIENT;
+    }
+
+    /** Apakah user termasuk manajemen (admin atau director)? */
+    public function isManagement(): bool
+    {
+        return $this->isAdmin() || $this->isDirector();
+    }
+// ─── Accessors ───────────────────────────────────────────
 
     /** Inisial nama untuk avatar teks (misal "Ahmad Rizki" → "AR") */
     public function getInitialsAttribute(): string

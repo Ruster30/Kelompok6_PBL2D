@@ -14,11 +14,6 @@ Route::get('/d', function () {
     return view('welcome');
 });
 
-Route::get('/profil', function () {
-    echo '<h1>Profil</h1>';
-    return '<p>Jurusan Teknologi Informasi - Politeknik Negeri Padang</p>';
-});
-
 Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
 
 /*
@@ -252,7 +247,6 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/settings/update', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
     Route::put('/settings/update-password', [App\Http\Controllers\Admin\SettingsController::class, 'updatePassword'])->name('admin.settings.updatePassword');
 
-    // (duplikasi routes sudah dihapus)
 });
 
 require __DIR__.'/auth.php';
