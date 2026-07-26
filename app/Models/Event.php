@@ -25,8 +25,10 @@ class Event extends Model
         'perihal',                 // override nomor surat oleh admin
         'luas_area',                // luas area stand/pameran
         'detail_kebutuhan',
+        'include_ppn',              // apakah harga include PPN & PPh
         'status_event',
         'status_pembayaran',
+        'layout_denah',
     ];
 
     protected function casts(): array
@@ -34,6 +36,7 @@ class Event extends Model
         return [
             'tanggal_event'   => 'date',
             'tanggal_selesai' => 'date',
+            'include_ppn'     => 'boolean',
         'status_pembayaran' => 'string',
         ];
     }
@@ -143,6 +146,13 @@ class Event extends Model
     public function reports()
     {
         return $this->hasMany(Report::class, 'event_id');
+    }
+
+    // ─── Accessors ───────────────────────────────────────────
+
+    public function getLayoutDenahUrlAttribute()
+    {
+        return $this->layout_denah ? \Illuminate\Support\Facades\Storage::url($this->layout_denah) : null;
     }
 
     // ─── Computed Attributes ─────────────────────────────────

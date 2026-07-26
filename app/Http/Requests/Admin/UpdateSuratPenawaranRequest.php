@@ -11,6 +11,18 @@ class UpdateSuratPenawaranRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Normalisasi checkbox include_ppn sebelum validasi.
+     * Checkbox HTML tidak mengirim field apapun ketika tidak dicentang,
+     * sehingga kita perlu secara eksplisit set false jika tidak ada.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'include_ppn' => $this->boolean('include_ppn'),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
@@ -24,6 +36,7 @@ class UpdateSuratPenawaranRequest extends FormRequest
             'rentang_anggaran'     => 'nullable|string|max:100',
             'terbilang'            => 'nullable|string|max:255',
             'detail_kebutuhan'     => 'nullable|string',
+            'include_ppn'          => 'required|boolean',
         ];
     }
 }

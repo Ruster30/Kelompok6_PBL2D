@@ -22,6 +22,11 @@
         <button class="btn btn-primary" onclick="openAddRab()">
             <i class="fas fa-plus"></i> Tambah Item
         </button>
+        <a href="{{ route('admin.document_builder.index', ['event_id' => $selectedEvent->id, 'jenis_dokumen' => 'rab']) }}"
+           class="btn btn-outline"
+           style="border-color:#14b8a6; color:#14b8a6;">
+            <i class="fas fa-file-invoice"></i> Generate RAB
+        </a>
         @endif
     </div>
 </div>
@@ -35,6 +40,26 @@
     </div>
 </div>
 @else
+
+{{-- ── Kebutuhan Event dari Client (Read Only) ── --}}
+<div style="margin-bottom:20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden;">
+    <div style="display:flex; align-items:center; gap:10px; padding:14px 20px; background:#fff; border-bottom:1px solid #e2e8f0;">
+        <div style="width:34px; height:34px; background:#eff6ff; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#3b82f6; font-size:15px; flex-shrink:0;">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <div>
+            <div style="font-size:14px; font-weight:700; color:#0f172a; line-height:1.2;">Kebutuhan Event dari Client</div>
+            <div style="font-size:12px; color:#94a3b8; margin-top:1px;">Informasi ini diisi oleh client saat mengajukan event &mdash; hanya baca.</div>
+        </div>
+    </div>
+    <div style="padding:16px 20px;">
+        @if(!empty($selectedEvent->detail_kebutuhan))
+            <div style="font-size:13.5px; color:#334155; line-height:1.75; white-space:pre-wrap;">{{ $selectedEvent->detail_kebutuhan }}</div>
+        @else
+            <div style="font-size:13px; color:#94a3b8; font-style:italic;">Belum ada kebutuhan tambahan dari client.</div>
+        @endif
+    </div>
+</div>
 
 {{-- Summary Cards --}}
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">

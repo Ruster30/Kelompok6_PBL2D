@@ -236,6 +236,72 @@ class DocumentBuilderController extends Controller
             ->with("success", "Dokumen berhasil dikirim ke client dan disimpan.");
     }
 
+    /**
+     * Upload denah/layout untuk event.
+     */
+    public function uploadDenah(UploadDenahRequest $request)
+    {
+        $event = Event::findOrFail($request->event_id);
+
+        // Hapus file lama jika ada
+        if ($event->layout_denah && Storage::disk('public')->exists($event->layout_denah)) {
+            Storage::disk('public')->delete($event->layout_denah);
+        }
+
+        $file = $request->file('layout_denah');
+        $path = $file->storeAs(
+            'layouts',
+            'denah-' . $event->id . '-' . now()->format('YmdHis') . '.' . $file->extension(),
+            'public'
+        );
+
+        $event->update(['layout_denah' => $path]);
+
+        return response()->json([
+            'success'   => true,
+            'message'   => 'Denah/layout berhasil diupload.',
+            'url'       => Storage::url($path),
+            'file_path' => $path,
+        ]);
+    }
+
+    /**
+     * Cek status denah/layout untuk event.
+     */
+    public function denahStatus(int $eventId)
+    {
+        $event = Event::find($eventId);
+
+        if (!$event || !$event->layout_denah) {
+            return response()->json(['has_denah' => false]);
+        }
+
+        return response()->json([
+            'has_denah' => true,
+            'url'       => Storage::url($event->layout_denah),
+            'file_path' => $event->layout_denah,
+        ]);
+    }
+
+    /**
+     * Hapus denah/layout dari event.
+     */
+    public function hapusDenah(int $eventId)
+    {
+        $event = Event::findOrFail($eventId);
+
+        if ($event->layout_denah && Storage::disk('public')->exists($event->layout_denah)) {
+            Storage::disk('public')->delete($event->layout_denah);
+        }
+
+        $event->update(['layout_denah' => null]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Denah/layout berhasil dihapus.',
+        ]);
+    }
+
     private function validateWithScheme(Request $request): array
     {
         $base = $request->validate([

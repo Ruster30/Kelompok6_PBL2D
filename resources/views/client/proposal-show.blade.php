@@ -1,4 +1,4 @@
-﻿@extends('layouts.client')
+@extends('layouts.client')
 @section('title','Surat Penawaran')
 @section('page-title','Surat Penawaran')
 
@@ -15,7 +15,15 @@
 @if($proposal->versi > 1)
 <div style="background:#eff6ff;border:1px solid #93c5fd;color:#1e40af;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:14px;display:flex;align-items:center;gap:8px;">
     <i class="bi bi-info-circle-fill"></i>
-    Ini adalah <strong>Revisi v{{ $proposal->versi }}</strong> â€” penawaran terbaru yang telah diperbarui oleh tim kami.
+    Ini adalah <strong>Revisi v{{ $proposal->versi }}</strong> penawaran terbaru yang telah diperbarui oleh tim kami.
+</div>
+@endif
+
+{{-- Info negosiasi aktif --}}
+@if($proposal->status === 'negosiasi')
+<div style="background:#fffbeb;border:1px solid #fcd34d;color:#92400e;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:14px;display:flex;align-items:center;gap:8px;">
+    <i class="bi bi-hourglass-split"></i>
+    Anda telah mengajukan negosiasi. Tombol Terima Penawaran dikunci hingga Admin mengirimkan Surat Penawaran versi revisi.
 </div>
 @endif
 
@@ -33,57 +41,73 @@
         </span>
 
         {{-- Unduh PDF --}}
-        @if($proposal->file_url)
-        <a href="{{ $proposal->file_url }}" target="_blank"
+        <a href="{{ route('client.proposals.export-pdf', $proposal->id) }}" target="_blank"
            style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
                   border:1.5px solid var(--border);border-radius:8px;font-size:13px;
                   font-weight:600;color:var(--dark);text-decoration:none;background:white;">
             <i class="bi bi-download"></i> Unduh PDF
         </a>
-        @endif
 
-        {{-- Tombol aksi respon â€” hanya jika status menunggu konfirmasi --}}
+        {{-- Tombol aksi respon --}}
         @if(!in_array($proposal->status, ['diterima','ditolak']))
 
-        <a href="{{ route('client.proposals.negosiasi.form', $proposal->id) }}"
-           style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
-                  border:1.5px solid var(--accent);color:var(--accent);border-radius:8px;
-                  font-size:13px;font-weight:600;text-decoration:none;background:white;">
-            <i class="bi bi-chat-dots-fill"></i> Ajukan Negosiasi
-        </a>
+            @if($proposal->status === 'negosiasi')
+                <button type="button" disabled
+                        title="Anda telah mengajukan negosiasi. Menunggu penawaran revisi dari Admin."
+                        style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
+                               background:#f1f5f9;color:#94a3b8;border:1px solid #cbd5e1;
+                               border-radius:8px;font-size:13px;font-weight:600;cursor:not-allowed;">
+                    <i class="bi bi-chat-dots"></i> Negosiasi Diajukan
+                </button>
 
-        <form action="{{ route('client.proposals.terima', $proposal->id) }}"
-            method="POST"
-            style="margin:0;">
+                <button type="button" disabled
+                        title="Tombol Terima Penawaran dikunci karena Anda telah mengajukan negosiasi. Menunggu revisi penawaran dari Admin."
+                        style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
+                               background:#e2e8f0;color:#64748b;border:none;
+                               border-radius:8px;font-size:13px;font-weight:600;cursor:not-allowed;">
+                    <i class="bi bi-lock-fill"></i> Terima Penawaran
+                </button>
+            @else
+                <a href="{{ route('client.proposals.negosiasi.form', $proposal->id) }}"
+                   style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
+                          border:1.5px solid var(--accent);color:var(--accent);border-radius:8px;
+                          font-size:13px;font-weight:600;text-decoration:none;background:white;">
+                    <i class="bi bi-chat-dots-fill"></i> Ajukan Negosiasi
+                </a>
 
-            @csrf
+                <form action="{{ route('client.proposals.terima', $proposal->id) }}"
+                    method="POST"
+                    style="margin:0;">
 
-            <button
-                type="submit"
-                onclick="return swalApprove(this.form, 'Terima Penawaran?', 'Timeline event akan otomatis dibuat setelah Anda menerima penawaran ini.')"
+                    @csrf
 
-                style="
-                display:inline-flex;
-                align-items:center;
-                gap:6px;
-                padding:9px 18px;
-                background:#16a34a;
-                color:white;
-                border:none;
-                border-radius:8px;
-                font-size:13px;
-                font-weight:600;
-                cursor:pointer;">
+                    <button
+                        type="submit"
+                        onclick="return swalApprove(this.form, 'Terima Penawaran?', 'Timeline event akan otomatis dibuat setelah Anda menerima penawaran ini.')"
 
-                <i class="bi bi-check-circle-fill"></i>
+                        style="
+                        display:inline-flex;
+                        align-items:center;
+                        gap:6px;
+                        padding:9px 18px;
+                        background:#16a34a;
+                        color:white;
+                        border:none;
+                        border-radius:8px;
+                        font-size:13px;
+                        font-weight:600;
+                        cursor:pointer;">
 
-                {{ $proposal->status == 'direvisi'
-                    ? 'Terima Penawaran Revisi'
-                    : 'Terima Penawaran'
-                }}
+                        <i class="bi bi-check-circle-fill"></i>
 
-            </button>
-        </form>
+                        {{ $proposal->status == 'direvisi'
+                            ? 'Terima Penawaran Revisi'
+                            : 'Terima Penawaran'
+                        }}
+
+                    </button>
+                </form>
+            @endif
         @elseif($proposal->status === 'diterima')
         <button
             type="button"
@@ -167,7 +191,7 @@
         {{-- Kepada --}}
         <div style="margin-bottom:8px;">
             Kepada Yth<br>
-            Kepala Cabang Dealer Mobil <strong>{{ $event->client->name ?? 'Bapak/Ibu Client' }}</strong>
+            <strong>{{ $event->client->name ?? 'Bapak/Ibu Client' }}</strong>
         </div>
         <div style="margin-bottom:16px;">
             Di,<br>
@@ -179,9 +203,8 @@
         {{-- Pembuka --}}
         <p style="text-align:justify;margin-bottom:14px;">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dengan hormat, kami dari <strong>CV. Alpha Multi Organizer</strong>
-            Perusahaan yang bergerak di bidang Event Organizer. Dengan ini menawarkan kegiatan pameran
-            pameran otomotif mobil kepada <strong>{{ $event->client->name ?? 'Client' }}</strong>
-            di Basko City Mall Padang, maka dengan ini kami mengajukan surat penawaran <strong>"Special Price"</strong> sebagai berikut :
+            Perusahaan yang bergerak di bidang Event Organizer. Dengan ini menawarkan kegiatan <strong>{{ $event->jenis_event }}</strong> kepada <strong>{{ $event->client->name ?? 'Client' }}</strong>
+            di <strong>{{ $event->lokasi_event ?? '-' }}</strong>, maka dengan ini kami mengajukan surat penawaran <strong>"Special Price"</strong> sebagai berikut :
         </p>
 
         {{-- Rincian --}}
@@ -230,7 +253,11 @@
                             <td style="border:none;padding:2px 3px;">Price</td>
                             <td style="border:none;padding:2px 3px;text-align:center;">:</td>
                             <td style="border:none;padding:2px 3px;">
-                                <strong>{{ $event->rentang_anggaran ?? '-' }} <small>(Exclude Ppn &amp; Pph)*</small></strong>
+                                <strong>{{ $event->rentang_anggaran ?? '-' }}
+                                @if($event->include_ppn ?? true)
+                                    <small>(Include PPN &amp; PPh)*</small>
+                                @endif
+                                </strong>
                                 @if($event->terbilang ?? null)
                                 <br><small>({{ $event->terbilang }})</small>
                                 @endif
@@ -245,27 +272,23 @@
                 <td style="border:none;padding:3px 4px;vertical-align:top;">Fasilitas</td>
                 <td style="border:none;padding:3px 4px;vertical-align:top;text-align:center;">:</td>
                 <td style="border:none;padding:3px 4px;vertical-align:top;">
-                    @if($event->detail_kebutuhan ?? null)
-                        {!! nl2br(e($event->detail_kebutuhan)) !!}
-                    @else
-                        1. Manajemen acara penuh (Full Event Management)<br>
-                        2. Koordinasi vendor dan logistik<br>
-                        3. Setup dan dekorasi standar sesuai tema<br>
-                        4. Tim lapangan profesional selama acara berlangsung
-                    @endif
                 </td>
             </tr>
         </table>
 
         {{-- V. Ketentuan --}}
-        <div style="font-weight:700;margin-bottom:6px;">V.&nbsp;&nbsp;Ketentuan lain :</div>
-        <ol style="padding-left:22px;margin-bottom:14px;list-style-type:lower-alpha;font-size:13px;">
-            <li style="margin-bottom:5px;text-align:justify;">Loading In dan Out Barang Jam 22.00 wib sd selesai dan wajib diberitahukan kepada manajemen Alpha Organizer.</li>
-            <li style="margin-bottom:5px;text-align:justify;">Segala bentuk izin dan pajak diurus sendiri oleh penyewa.</li>
-            <li style="margin-bottom:5px;text-align:justify;">Pembayaran dilakukan melalui Transfer <strong>Bank BRI A.n CV ALPHA MULTI ORGANIZER No Rek. 005801006983568</strong>.</li>
-            <li style="margin-bottom:5px;text-align:justify;">Biaya yang tersebut diatas belum termasuk biaya SPSI (jika ada)</li>
-            <li style="margin-bottom:5px;text-align:justify;">Pemakai Jasa Penyelenggara wajib mematuhi semua peraturan dan tata tertib yang berlaku di Basko City Mall Padang.</li>
-            <li style="margin-bottom:5px;text-align:justify;">Pemakai Jasa Penyelenggara wajib mengasuransikan produknya selama pameran berlangsung. Kerusakan dan kehilangan barang di saat pameran yang diakibatkan oleh human error dan forced majure bukan tanggung jawab dari pemakai jasa penyelenggara.</li>
+        <div style="font-weight:700; margin-bottom:6px; display:flex; gap: 11px;">
+            <div style="border:none; padding:3px 4px; font-weight:700; vertical-align:top;">V.</div>
+            <div style="border:none; padding:3px 4px; vertical-align:top;">Ketentuan lain :</div>
+            <div style="border:none; padding:3px 4px; vertical-align:top; text-align:center;">:</div>
+        </div>
+        <ol style="padding-left:48px; margin-bottom:14px; list-style-type:lower-alpha; font-size:13px;">
+            <li style="margin-bottom:5px; text-align:justify;">Loading In dan Out Barang Jam 22.00 wib sd selesai dan wajib diberitahukan kepada manajemen Alpha Organizer.</li>
+            <li style="margin-bottom:5px; text-align:justify;">Segala bentuk izin dan pajak diurus sendiri oleh penyewa.</li>
+            <li style="margin-bottom:5px; text-align:justify;">Pembayaran dilakukan melalui Transfer <strong>Bank BRI A.n CV ALPHA MULTI ORGANIZER No Rek. 005801006983568</strong>.</li>
+            <li style="margin-bottom:5px; text-align:justify;">Biaya yang tersebut diatas belum termasuk biaya SPSI (jika ada)</li>
+            <li style="margin-bottom:5px; text-align:justify;">Pemakai Jasa Penyelenggara wajib mematuhi semua peraturan dan tata tertib yang berlaku di {{ $event->lokasi_event ?? '-' }}.</li>
+            <li style="margin-bottom:5px; text-align:justify;">Pemakai Jasa Penyelenggara wajib mengasuransikan produknya selama pameran berlangsung. Kerusakan dan kehilangan barang di saat pameran yang diakibatkan oleh human error dan forced majure bukan tanggung jawab dari pemakai jasa penyelenggara.</li>
         </ol>
 
         {{-- Penutup --}}
@@ -393,7 +416,7 @@
 </div>
 @endif
 
-{{-- â”€â”€ Kontrak â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{--  Kontrak  --}}
 @if($event->contract)
 <div style="max-width:820px;margin:0 auto;">
     <div class="settings-card">
