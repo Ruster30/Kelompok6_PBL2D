@@ -35,7 +35,7 @@ class User extends Authenticatable
         'google_id',
         'avatar',
         'email_verified_at',
-        'last_active_at',  // ← ditambah untuk fitur "Terakhir Aktif" di Kelola Klien
+        'last_active_at',
     ];
 
     /**
@@ -46,6 +46,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'approval_pin',
     ];
 
     /**
@@ -178,4 +179,13 @@ class User extends Authenticatable
     {
         return $this->events()->count();
     }
+
+    /**
+     * Cek apakah user sudah memiliki PIN approval.
+     */
+    public function hasApprovalPin(): bool
+    {
+        return $this->approval_pin !== null;
+    }
+
 }

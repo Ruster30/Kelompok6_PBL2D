@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Models;
 
@@ -52,7 +52,7 @@ class DocumentApproval extends Model
     protected function casts(): array
     {
         return [
-            'status'       => ApprovalStatus::class,
+            'status' => 'string',
             'submitted_at' => 'datetime',
             'reviewed_at'  => 'datetime',
         ];

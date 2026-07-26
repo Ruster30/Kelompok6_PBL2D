@@ -1,4 +1,4 @@
-﻿@props(['type' => 'success', 'message' => null])
+@props(['type' => 'success', 'message' => null])
 
 @php
     $message = $message ?? session($type);

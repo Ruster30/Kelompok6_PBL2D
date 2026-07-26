@@ -90,5 +90,9 @@
         {{ $companyAddress ?? '' }}<br>
         Telp: {{ $companyPhone ?? '' }} | Email: {{ $companyEmail ?? '' }}
     </div>
+
+{{-- Approval Metadata --}}
+@include('admin.pdf_templates.partials.verification')
+
 </body>
 </html>

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\DocumentStatus;
+use App\Enums\DocumentCategory;
+use App\Enums\DocumentSource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -100,6 +103,7 @@ class Document extends Model
         'mime_type',
         'updated_by',
         'is_archived',
+        'document_source',
         'archived_at',
     ];
 
@@ -111,6 +115,7 @@ class Document extends Model
             'current_version'   => 'integer',
             'file_size'         => 'integer',
             'is_archived'       => 'boolean',
+            'document_source'   => DocumentSource::class,
             'archived_at'       => 'datetime',
         ];
     }
@@ -203,5 +208,31 @@ class Document extends Model
         return $this->file_path
             ? asset('storage/' . $this->file_path)
             : null;
+    }
+
+
+    /**
+     * Prefix kode untuk nomor dokumen berdasarkan tipe.
+     */
+    
+    /**
+     * Cek apakah dokumen masih dalam status Draft.
+     */
+    public function isDraft(): bool
+    {
+        return $this->status === \App\Enums\DocumentStatus::Draft;
+    }
+
+    public function numberingPrefix(): string
+    {
+        $map = [
+            self::TIPE_PROPOSAL  => "PRO",
+            self::TIPE_KONTRAK   => "SPK",
+            self::TIPE_INVOICE   => "INV",
+            self::TIPE_KWITANSI  => "KWT",
+            self::TIPE_RAB       => "RAB",
+            self::TIPE_LAPORAN   => "LAP",
+        ];
+        return $map[$this->tipe] ?? "DOC";
     }
 }

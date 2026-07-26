@@ -7,11 +7,11 @@
   body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.7; padding: 32px 40px; }
 
   .kop { text-align: center; border-bottom: 3px double #1e3a8a; padding-bottom: 14px; margin-bottom: 20px; }
-  .kop h1 { font-size: 17px; font-weight: 900; color: #1e3a8a; letter-spacing: 1px; }
+  .kop h1 { font-size: 17px; font-weight: 700; color: #1e3a8a;  }
   .kop .subtitle { font-size: 11px; color: #475569; }
   .kop .no { font-size: 11px; margin-top: 8px; color: #334155; }
 
-  h2 { font-size: 12px; font-weight: 700; color: #1e3a8a; margin: 18px 0 6px; text-transform: uppercase; letter-spacing: .5px; }
+  h2 { font-size: 12px; font-weight: 700; color: #1e3a8a; margin: 18px 0 6px; text-text-transform: uppercase;  }
   p { margin-bottom: 8px; text-align: justify; }
 
   .info-table { width: 100%; margin: 10px 0; }
@@ -32,13 +32,16 @@
   .materai { border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px 14px; font-size: 9.5px; color: #64748b; margin-top: 10px; display: inline-block; }
 </style>
 </head>
+
+
+
 <body>
 
 {{-- KOP SURAT --}}
 <div class="kop">
     <h1>SURAT KONTRAK JASA EVENT ORGANIZER</h1>
     <div class="subtitle">CV. Alpha Multi Organizer | Padang, Sumatera Barat</div>
-    <div class="no">Nomor: {{ $nomorKontrak }}</div>
+    <div class="no">Nomor: {{ $document?->numbering?->document_number ?? 'BELUM DITERBITKAN' }}</div>
 </div>
 
 <p>
@@ -90,7 +93,7 @@
     <div style="background:#eef2ff;border:2px solid #c7d2fe;border-radius:8px;padding:12px 18px;margin:10px 0;font-size:15px;font-weight:900;color:#3730a3;text-align:center;">
         Rp {{ number_format($nilaiKontrak, 0, ',', '.') }}
         <div style="font-size:10px;font-weight:400;color:#6366f1;margin-top:2px;">
-            ({{ terbilang($nilaiKontrak) }} Rupiah)
+            ({{ ($nilaiKontrak) }} Rupiah)
         </div>
     </div>
 </div>
@@ -177,26 +180,11 @@
     </div>
 </div>
 
+
+{{-- Approval Metadata --}}
+@include('admin.pdf_templates.partials.verification')
+
 </body>
 </html>
 
-@php
-/**
- * Fungsi terbilang sederhana untuk nilai kontrak.
- * Untuk kebutuhan nyata, gunakan package seperti `kwn/terbilang`.
- */
-function terbilang(float $angka): string {
-    $angka  = (int) abs($angka);
-    $satuan = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan',
-               'sepuluh', 'sebelas'];
-    if ($angka < 12) return $satuan[$angka];
-    if ($angka < 20) return $satuan[$angka - 10] . ' belas';
-    if ($angka < 100) return $satuan[(int)($angka / 10)] . ' puluh ' . terbilang($angka % 10);
-    if ($angka < 200) return 'seratus ' . terbilang($angka % 100);
-    if ($angka < 1000) return $satuan[(int)($angka / 100)] . ' ratus ' . terbilang($angka % 100);
-    if ($angka < 2000) return 'seribu ' . terbilang($angka % 1000);
-    if ($angka < 1000000) return terbilang((int)($angka / 1000)) . ' ribu ' . terbilang($angka % 1000);
-    if ($angka < 1000000000) return terbilang((int)($angka / 1000000)) . ' juta ' . terbilang($angka % 1000000);
-    return terbilang((int)($angka / 1000000000)) . ' miliar ' . terbilang($angka % 1000000000);
-}
-@endphp
+
