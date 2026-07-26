@@ -463,5 +463,9 @@
         <div class="bottom-line"></div>
 
         <div class="footer">Alpha Organizer &nbsp;&nbsp;|&nbsp;&nbsp; alphaorganizer1209@gmail.com &nbsp;&nbsp;|&nbsp;&nbsp; +62 822-3318-1883</div>
-    </body>
+    
+{{-- Approval Metadata --}}
+@include('admin.pdf_templates.partials.verification')
+
+</body>
 </html>

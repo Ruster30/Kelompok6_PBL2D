@@ -3,83 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <style>
-    @page {
-        margin:15px 20px;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:DejaVu Sans, Arial, sans-serif; font-size:11px; color:#1e293b; line-height:1.6; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.7; padding: 32px 40px; }
 
-    /* ─── Header ─── */
-    .header { width:100%; margin-bottom:4px; }
-    .header td { vertical-align:top; }
-    .logo { width:150px; }
-    .company { text-align:right; font-size:10px; line-height:1.8; }
-    .company div { margin-bottom:2px; }
-    .line { margin-top:8px; border-top:3px solid #14b8a6; border-bottom:1px solid #14b8a6; height:3px; }
+  .kop { text-align: center; border-bottom: 3px double #1e3a8a; padding-bottom: 14px; margin-bottom: 20px; }
+  .kop h1 { font-size: 17px; font-weight: 700; color: #1e3a8a;  }
+  .kop .subtitle { font-size: 11px; color: #475569; }
+  .kop .no { font-size: 11px; margin-top: 8px; color: #334155; }
 
-    /* ─── Title ─── */
-    .title { text-align:center; margin:10px 0 14px; }
-    .title h1 { margin:0; font-size:20px; font-weight:900; color:#0f172a; letter-spacing:1.5px; }
-    .title hr { width:100px; margin:4px auto 0; border:none; border-top:2px solid #14b8a6; }
-    .title .no-surat { font-size:11px; color:#475569; margin-top:6px; }
+  h2 { font-size: 12px; font-weight: 700; color: #1e3a8a; margin: 18px 0 6px; text-text-transform: uppercase;  }
+  p { margin-bottom: 8px; text-align: justify; }
 
-    /* ─── Info Tables ─── */
-    .info-table { width:100%; margin:8px 0; border-collapse:collapse; }
-    .info-table td { padding:3px 6px; font-size:10.5px; }
-    .info-table td:first-child { width:30%; color:#475569; }
-    .info-table td:nth-child(2) { width:3%; }
-    .info-table td:last-child { font-weight:600; }
+  .info-table { width: 100%; margin: 10px 0; }
+  .info-table td { padding: 3px 6px; }
+  .info-table td:first-child { width: 36%; color: #475569; }
+  .info-table td:nth-child(2) { width: 4%; }
+  .info-table td:last-child { font-weight: 600; }
 
-    /* ─── Section ─── */
-    .section-title { font-size:11.5px; font-weight:700; color:#14b8a6; margin:14px 0 6px; text-transform:uppercase; letter-spacing:.5px; border-bottom:1px solid #ccfbf1; padding-bottom:3px; }
+  .pasal { margin-bottom: 16px; }
+  .pasal-title { font-weight: 700; font-size: 11.5px; color: #1e3a8a; margin-bottom: 6px; }
+  .pasal ol { padding-left: 20px; }
+  .pasal li { margin-bottom: 4px; }
 
-    /* ─── Pasal ─── */
-    .pasal { margin-bottom:12px; }
-    .pasal-title { font-weight:700; font-size:11px; color:#0f172a; margin-bottom:4px; }
-    .pasal ol { padding-left:18px; }
-    .pasal li { margin-bottom:3px; font-size:10.5px; text-align:justify; }
-    .pasal p { font-size:10.5px; text-align:justify; margin-bottom:4px; }
+  .ttd-area { display: table; width: 100%; margin-top: 40px; }
+  .ttd-col { display: table-cell; width: 50%; text-align: center; padding: 0 10px; }
+  .ttd-line { border-top: 1px solid #1e293b; display: inline-block; min-width: 160px; margin-top: 60px; padding-top: 4px; }
 
-    /* ─── Nilai Kontrak Highlight ─── */
-    .nilai-box { background:#f0fdfa; border:2px solid #99f6e4; border-radius:8px; padding:10px 16px; margin:8px 0; text-align:center; }
-    .nilai-box .amount { font-size:15px; font-weight:900; color:#0f766e; }
-    .nilai-box .terbilang { font-size:9.5px; font-weight:400; color:#14b8a6; margin-top:2px; }
-
-    /* ─── TTD ─── */
-    .ttd-area { width:100%; margin-top:30px; }
-    .ttd-area td { width:50%; text-align:center; vertical-align:bottom; padding:0 10px; }
-    .ttd-line { border-top:1px solid #1e293b; display:inline-block; min-width:160px; margin-top:60px; padding-top:4px; font-weight:700; font-size:11px; }
-    .materai { border:1px dashed #94a3b8; border-radius:6px; padding:4px 12px; font-size:9px; color:#64748b; display:inline-block; margin-top:8px; }
-
-    /* ─── Denah Page ─── */
-    .denah-page { page-break-before:always; text-align:center; padding:20px; }
-    .denah-page h2 { font-size:16px; font-weight:700; color:#0f172a; margin-bottom:16px; }
-    .denah-page img { max-width:100%; max-height:600px; border:1px solid #e2e8f0; border-radius:8px; }
+  .materai { border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px 14px; font-size: 9.5px; color: #64748b; margin-top: 10px; display: inline-block; }
 </style>
 </head>
+
+
+
 <body>
 
-{{-- ─═══ HEADER ═══─ --}}
-<table class="header">
-    <tr>
-        <td width="55%">
-            <img src="{{ public_path('images/Logo-bg.png') }}" class="logo" onerror="this.style.display='none'">
-        </td>
-        <td width="45%" class="company">
-            <div>📞 +62 822-3318-1883</div>
-            <div>✉ alphaorganizer1209@gmail.com</div>
-            <div>📍 Jl. Air Dingin No.25, Kec. Koto Tangah, Kota Padang</div>
-        </td>
-    </tr>
-</table>
-
-<div class="line"></div>
-
-{{-- ─═══ TITLE ═══─ --}}
-<div class="title">
-    <h1>SURAT KONTRAK</h1>
-    <hr>
-    <div class="no-surat">Nomor: {{ $nomorKontrak }}</div>
+{{-- KOP SURAT --}}
+<div class="kop">
+    <h1>SURAT KONTRAK JASA EVENT ORGANIZER</h1>
+    <div class="subtitle">CV. Alpha Multi Organizer | Padang, Sumatera Barat</div>
+    <div class="no">Nomor: {{ $document?->numbering?->document_number ?? 'BELUM DITERBITKAN' }}</div>
 </div>
 
 <p style="text-align:justify;margin-bottom:10px;">
@@ -128,9 +90,11 @@
     <p>
         PIHAK KEDUA setuju untuk membayar kepada PIHAK PERTAMA total biaya penyelenggaraan event sebesar:
     </p>
-    <div class="nilai-box">
-        <div class="amount">Rp {{ number_format($nilaiKontrak, 0, ',', '.') }}</div>
-        <div class="terbilang">({{ terbilang($nilaiKontrak) }} Rupiah)</div>
+    <div style="background:#eef2ff;border:2px solid #c7d2fe;border-radius:8px;padding:12px 18px;margin:10px 0;font-size:15px;font-weight:900;color:#3730a3;text-align:center;">
+        Rp {{ number_format($nilaiKontrak, 0, ',', '.') }}
+        <div style="font-size:10px;font-weight:400;color:#6366f1;margin-top:2px;">
+            ({{ ($nilaiKontrak) }} Rupiah)
+        </div>
     </div>
 </div>
 
@@ -227,25 +191,11 @@
 </div>
 @endif
 
+
+{{-- Approval Metadata --}}
+@include('admin.pdf_templates.partials.verification')
+
 </body>
 </html>
 
-@php
-/**
- * Fungsi terbilang sederhana untuk nilai kontrak.
- */
-function terbilang(float $angka): string {
-    $angka  = (int) abs($angka);
-    $satuan = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan',
-               'sepuluh', 'sebelas'];
-    if ($angka < 12) return $satuan[$angka];
-    if ($angka < 20) return $satuan[$angka - 10] . ' belas';
-    if ($angka < 100) return $satuan[(int)($angka / 10)] . ' puluh ' . terbilang($angka % 10);
-    if ($angka < 200) return 'seratus ' . terbilang($angka % 100);
-    if ($angka < 1000) return $satuan[(int)($angka / 100)] . ' ratus ' . terbilang($angka % 100);
-    if ($angka < 2000) return 'seribu ' . terbilang($angka % 1000);
-    if ($angka < 1000000) return terbilang((int)($angka / 1000)) . ' ribu ' . terbilang($angka % 1000);
-    if ($angka < 1000000000) return terbilang((int)($angka / 1000000)) . ' juta ' . terbilang($angka % 1000000);
-    return terbilang((int)($angka / 1000000000)) . ' miliar ' . terbilang($angka % 1000000000);
-}
-@endphp
+

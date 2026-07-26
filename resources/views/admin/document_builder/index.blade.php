@@ -19,7 +19,7 @@
 
 <div class="tab-content">
 
-    {{-- â”€â”€â”€ FORM GENERATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- FORM GENERATE--}}
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:28px 32px;margin-bottom:24px;">
         <h2 style="font-size:17px;font-weight:700;color:#0f172a;margin-bottom:6px;">
             <i class="fas fa-file-alt" style="color:#6366f1;margin-right:6px;"></i>
@@ -184,7 +184,7 @@
         </form>
     </div>
 
-    {{-- â”€â”€â”€ AREA HASIL / AKSI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- AREA HASIL / AKSI --}}
     <div id="resultPanel" style="display:none;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:28px 32px;">
         <h2 style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:18px;">
             <i class="fas fa-check-circle" style="color:#22c55e;margin-right:6px;"></i>
@@ -227,9 +227,12 @@
 
 </div>
 
+@include('admin.document_builder.partials.latest-documents')
+
 @push('scripts')
 <script>
-    const PREVIEW_URL  = '{{ route('admin.document_builder.preview') }}';
+    const PREVIEW_URL  = '{{ route('admin.document_builder.preview-pdf') }}';
+    const GENERATE_URL = '{{ route('admin.document_builder.generate') }}';
     const DOWNLOAD_URL = '{{ route('admin.document_builder.download') }}';
     const CSRF         = document.querySelector('meta[name="csrf-token"]')?.content
                          || '{{ csrf_token() }}';
@@ -446,12 +449,10 @@
         document.getElementById('generateLoading').style.display = 'inline-flex';
         document.getElementById('resultPanel').style.display = 'none';
 
-        try {
-            // POST ke preview endpoint, tampilkan di iframe
-            const form = document.createElement('form');
+        // POST ke generate endpoint, redirect ke halaman preview
+        const form = document.createElement('form');
             form.method = 'POST';
-            form.action = PREVIEW_URL;
-            form.target = 'pdfPreviewFrame';
+            form.action = GENERATE_URL;
 
             [['_token', CSRF], ['event_id', eventId], ['jenis_dokumen', jenis]].forEach(([k, v]) => {
                 const i = document.createElement('input');
@@ -472,11 +473,6 @@
                 document.getElementById('resultPanel').style.display = 'block';
                 document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 800);
-
-        } finally {
-            document.getElementById('btnGenerate').disabled = false;
-            document.getElementById('generateLoading').style.display = 'none';
-        }
     }
 
     function openPreview() {
