@@ -299,5 +299,9 @@
     Dokumen ini sah tanpa tanda tangan basah jika telah disetujui secara digital.
 </div>
 
+
+{{-- Approval Metadata --}}
+@include('admin.pdf_templates.partials.verification')
+
 </body>
 </html>

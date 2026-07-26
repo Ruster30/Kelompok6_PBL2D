@@ -22,6 +22,11 @@
         <button class="btn btn-primary" onclick="openAddRab()">
             <i class="fas fa-plus"></i> Tambah Item
         </button>
+        <a href="{{ route('admin.document_builder.index', ['event_id' => $selectedEvent->id, 'jenis_dokumen' => 'rab']) }}"
+           class="btn btn-outline"
+           style="border-color:#14b8a6; color:#14b8a6;">
+            <i class="fas fa-file-invoice"></i> Generate RAB
+        </a>
         @endif
     </div>
 </div>

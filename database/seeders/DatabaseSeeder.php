@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             EventSeeder::class,
             NotificationSeeder::class,
             DocumentSendSeeder::class,
+            DirectorSeeder::class,
         ]);
     }
 }

@@ -1,4 +1,4 @@
-﻿@props(['name', 'label', 'options' => [], 'value' => '', 'placeholder' => '-- Pilih --', 'required' => false, 'disabled' => false])
+@props(['name', 'label', 'options' => [], 'value' => '', 'placeholder' => '-- Pilih --', 'required' => false, 'disabled' => false])
 
 @php
     $hasError = $errors->has($name);

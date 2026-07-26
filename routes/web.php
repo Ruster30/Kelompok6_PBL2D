@@ -13,11 +13,18 @@ use App\Http\Controllers\Vendor\NotifikasiController;
 
 Route::get('/d', function () {
     return view('welcome');
-});
+    Route::get('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
+        ->name('settings.pin');
 
-Route::get('/profil', function () {
-    echo '<h1>Profil</h1>';
-    return '<p>Jurusan Teknologi Informasi - Politeknik Negeri Padang</p>';
+    Route::post('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
+        ->name('settings.pin.store');
+
+    Route::match(['put', 'patch'], '/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
+        ->name('settings.pin.update');
+
 });
 
 Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
@@ -39,6 +46,8 @@ Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
     } elseif ($role === 'vendor') {
         return redirect()->route('vendor.ringkasan');
+    } elseif ($role === 'director') {
+        return redirect()->route('director.dashboard');
     }
     return app(ClientController::class)->dashboard();
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -50,6 +59,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
         return view('vendor.ringkasan');
     })->name('vendor.dashboard');
+    Route::get('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
+        ->name('settings.pin');
+
+    Route::post('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
+        ->name('settings.pin.store');
+
+    Route::match(['put', 'patch'], '/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
+        ->name('settings.pin.update');
+
 });
 
 
@@ -57,6 +78,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
+        ->name('settings.pin');
+
+    Route::post('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
+        ->name('settings.pin.store');
+
+    Route::match(['put', 'patch'], '/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
+        ->name('settings.pin.update');
+
 });
 
 // ========================================
@@ -187,10 +220,37 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/document-builder',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'index'])
         ->name('admin.document_builder.index');
+    Route::post('/document-builder/generate',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'generate'])
+        ->name('admin.document_builder.generate');
+    Route::get('/document-builder/{document}/preview',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'previewDocument'])
+        ->name('admin.document_builder.preview');
+    Route::get('/document-builder/{document}/download',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'downloadDocument'])
+        ->name('admin.document_builder.download-doc');
+
+    Route::get('/document-builder/{document}/print',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'printDocument'])
+        ->name('admin.document_builder.print-doc');
+    Route::post('/document-builder/{document}/submit',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'submitApproval'])
+        ->name('admin.document_builder.submit');
+
+    Route::delete('/document-builder/{document}',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'destroyDraft'])
+        ->name('admin.document_builder.destroy');
+
+    Route::put('/document-builder/{document}/rename',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'renameDraft'])
+        ->name('admin.document_builder.rename');
+    Route::get('/document-builder/{document}',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'show'])
+        ->name('admin.document_builder.show');
 
     Route::post('/document-builder/preview',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'preview'])
-        ->name('admin.document_builder.preview');
+        ->name('admin.document_builder.preview-pdf');
 
     Route::post('/document-builder/download',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'download'])
@@ -203,6 +263,18 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/document-builder/send',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'sendToClient'])
         ->name('admin.document_builder.send');
+
+    Route::post('/document-builder/upload-denah',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'uploadDenah'])
+        ->name('admin.document_builder.upload_denah');
+
+    Route::get('/document-builder/denah-status/{event}',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'denahStatus'])
+        ->name('admin.document_builder.denah_status');
+
+    Route::delete('/document-builder/hapus-denah/{event}',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'hapusDenah'])
+        ->name('admin.document_builder.hapus_denah');
 
     // Documentation
     Route::get('/documentation', [App\Http\Controllers\Admin\DocumentationController::class, 'index'])->name('admin.documentation.index');
@@ -253,10 +325,19 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/settings/update', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
     Route::put('/settings/update-password', [App\Http\Controllers\Admin\SettingsController::class, 'updatePassword'])->name('admin.settings.updatePassword');
 
-    // (duplikasi routes sudah dihapus)
-});
+    Route::get('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
+        ->name('settings.pin');
 
-require __DIR__.'/auth.php';
+    Route::post('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
+        ->name('settings.pin.store');
+
+    Route::match(['put', 'patch'], '/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
+        ->name('settings.pin.update');
+
+});       
 
 /*
 |
@@ -352,6 +433,18 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::post('/notifications/read', [ClientController::class, 'notifRead'])
     ->name('notif.read');
 
+    Route::get('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
+        ->name('settings.pin');
+
+    Route::post('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
+        ->name('settings.pin.store');
+
+    Route::match(['put', 'patch'], '/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
+        ->name('settings.pin.update');
+
 });
    
 /*
@@ -392,6 +485,61 @@ Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'vendor.role'])->g
     // Redirect root /vendor ke ringkasan
     Route::redirect('/', '/vendor/ringkasan');
 
+    Route::get('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
+        ->name('settings.pin');
+
+    Route::post('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
+        ->name('settings.pin.store');
+
+    Route::match(['put', 'patch'], '/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
+        ->name('settings.pin.update');
+
 });
 
+// --------------------------------------------------------------------------
+// Director Routes
+// --------------------------------------------------------------------------
+Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->group(function () {
 
+        Route::get('/dashboard', [App\Http\Controllers\Director\DirectorApprovalController::class, 'dashboard'])
+        ->name('dashboard');
+
+    Route::get('/approval',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'index'])
+        ->name('approval.index');
+    Route::get('/history',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'history'])
+        ->name('approval.history');
+
+    Route::get('/history/{document}',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'historyShow'])
+        ->name('approval.history-show');
+    Route::get('/approval/{document}',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'show'])
+        ->name('approval.show');
+    Route::post('/approval/{document}/approve',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'approve'])
+        ->name('approval.approve');
+
+    Route::post('/approval/{document}/reject',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'reject'])
+        ->name('approval.reject');
+
+    Route::get('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
+        ->name('settings.pin');
+
+    Route::post('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
+        ->name('settings.pin.store');
+
+    Route::match(['put', 'patch'], '/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
+        ->name('settings.pin.update');
+
+});
+
+require __DIR__.'/auth.php';

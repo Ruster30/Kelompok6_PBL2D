@@ -215,5 +215,9 @@ tbody td {
     </div>
 </div>
 
+
+{{-- Approval Metadata --}}
+@include('admin.pdf_templates.partials.verification')
+
 </body>
 </html>

@@ -7,11 +7,11 @@
   body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.7; padding: 32px 40px; }
 
   .kop { text-align: center; border-bottom: 3px double #1e3a8a; padding-bottom: 14px; margin-bottom: 20px; }
-  .kop h1 { font-size: 17px; font-weight: 900; color: #1e3a8a; letter-spacing: 1px; }
+  .kop h1 { font-size: 17px; font-weight: 700; color: #1e3a8a;  }
   .kop .subtitle { font-size: 11px; color: #475569; }
   .kop .no { font-size: 11px; margin-top: 8px; color: #334155; }
 
-  h2 { font-size: 12px; font-weight: 700; color: #1e3a8a; margin: 18px 0 6px; text-transform: uppercase; letter-spacing: .5px; }
+  h2 { font-size: 12px; font-weight: 700; color: #1e3a8a; margin: 18px 0 6px; text-text-transform: uppercase;  }
   p { margin-bottom: 8px; text-align: justify; }
 
   .info-table { width: 100%; margin: 10px 0; }
@@ -32,23 +32,26 @@
   .materai { border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px 14px; font-size: 9.5px; color: #64748b; margin-top: 10px; display: inline-block; }
 </style>
 </head>
+
+
+
 <body>
 
 {{-- KOP SURAT --}}
 <div class="kop">
     <h1>SURAT KONTRAK JASA EVENT ORGANIZER</h1>
     <div class="subtitle">CV. Alpha Multi Organizer | Padang, Sumatera Barat</div>
-    <div class="no">Nomor: {{ $nomorKontrak }}</div>
+    <div class="no">Nomor: {{ $document?->numbering?->document_number ?? 'BELUM DITERBITKAN' }}</div>
 </div>
 
-<p>
+<p style="text-align:justify;margin-bottom:10px;">
     Pada hari ini, <strong>{{ now()->isoFormat('dddd') }}</strong>, tanggal <strong>{{ now()->format('d') }}</strong>
     bulan <strong>{{ now()->isoFormat('MMMM') }}</strong> tahun <strong>{{ now()->format('Y') }}</strong>,
     telah disepakati Surat Kontrak Jasa Event Organizer oleh dan antara:
 </p>
 
-{{-- PIHAK I --}}
-<h2>Pihak I (Event Organizer)</h2>
+{{-- ─═══ PIHAK I ═══─ --}}
+<div class="section-title">Pihak I (Event Organizer)</div>
 <table class="info-table">
     <tr><td>Nama Perusahaan</td><td>:</td><td>CV. Alpha Multi Organizer</td></tr>
     <tr><td>Bidang Usaha</td><td>:</td><td>Event Organizer &amp; Entertainment</td></tr>
@@ -56,8 +59,8 @@
     <tr><td>Selanjutnya disebut</td><td>:</td><td><strong>PIHAK PERTAMA</strong></td></tr>
 </table>
 
-{{-- PIHAK II --}}
-<h2>Pihak II (Client)</h2>
+{{-- ─═══ PIHAK II ═══─ --}}
+<div class="section-title">Pihak II (Client)</div>
 <table class="info-table">
     <tr><td>Nama</td><td>:</td><td>{{ $event->client->name ?? '-' }}</td></tr>
     <tr><td>Email</td><td>:</td><td>{{ $event->client->email ?? '-' }}</td></tr>
@@ -65,11 +68,11 @@
     <tr><td>Selanjutnya disebut</td><td>:</td><td><strong>PIHAK KEDUA</strong></td></tr>
 </table>
 
-<p style="margin-top:14px;">
+<p style="margin-top:12px;font-size:10.5px;text-align:justify;">
     Kedua belah pihak telah sepakat untuk mengadakan perjanjian kerja sama jasa penyelenggaraan acara dengan ketentuan sebagai berikut:
 </p>
 
-{{-- PASAL 1: DATA EVENT --}}
+{{-- ═══ PASAL 1 ═══ --}}
 <div class="pasal">
     <div class="pasal-title">PASAL 1 — DATA EVENT</div>
     <table class="info-table">
@@ -81,7 +84,7 @@
     </table>
 </div>
 
-{{-- PASAL 2: NILAI KONTRAK --}}
+{{-- ═══ PASAL 2 ═══ --}}
 <div class="pasal">
     <div class="pasal-title">PASAL 2 — NILAI KONTRAK</div>
     <p>
@@ -90,12 +93,12 @@
     <div style="background:#eef2ff;border:2px solid #c7d2fe;border-radius:8px;padding:12px 18px;margin:10px 0;font-size:15px;font-weight:900;color:#3730a3;text-align:center;">
         Rp {{ number_format($nilaiKontrak, 0, ',', '.') }}
         <div style="font-size:10px;font-weight:400;color:#6366f1;margin-top:2px;">
-            ({{ terbilang($nilaiKontrak) }} Rupiah)
+            ({{ ($nilaiKontrak) }} Rupiah)
         </div>
     </div>
 </div>
 
-{{-- PASAL 3: HAK & KEWAJIBAN --}}
+{{-- ═══ PASAL 3 ═══ --}}
 <div class="pasal">
     <div class="pasal-title">PASAL 3 — HAK DAN KEWAJIBAN PIHAK PERTAMA</div>
     <ol>
@@ -107,6 +110,7 @@
     </ol>
 </div>
 
+{{-- ═══ PASAL 4 ═══ --}}
 <div class="pasal">
     <div class="pasal-title">PASAL 4 — HAK DAN KEWAJIBAN PIHAK KEDUA</div>
     <ol>
@@ -117,7 +121,7 @@
     </ol>
 </div>
 
-{{-- PASAL 5: PEMBAYARAN --}}
+{{-- ═══ PASAL 5 ═══ --}}
 <div class="pasal">
     <div class="pasal-title">PASAL 5 — KETENTUAN PEMBAYARAN</div>
     <ol>
@@ -128,7 +132,7 @@
     </ol>
 </div>
 
-{{-- PASAL 6: MASA BERLAKU --}}
+{{-- ═══ PASAL 6 ═══ --}}
 <div class="pasal">
     <div class="pasal-title">PASAL 6 — MASA BERLAKU KONTRAK</div>
     <p>
@@ -138,7 +142,7 @@
     </p>
 </div>
 
-{{-- PASAL 7: PEMBATALAN --}}
+{{-- ═══ PASAL 7 ═══ --}}
 <div class="pasal">
     <div class="pasal-title">PASAL 7 — PEMBATALAN DAN FORCE MAJEURE</div>
     <ol>
@@ -147,7 +151,7 @@
     </ol>
 </div>
 
-{{-- PASAL 8: PENYELESAIAN SENGKETA --}}
+{{-- ═══ PASAL 8 ═══ --}}
 <div class="pasal">
     <div class="pasal-title">PASAL 8 — PENYELESAIAN SENGKETA</div>
     <p>
@@ -156,47 +160,42 @@
     </p>
 </div>
 
-<p>
+<p style="font-size:10.5px;text-align:justify;">
     Kontrak ini dibuat dalam rangkap dua, masing-masing bermaterai cukup dan memiliki kekuatan hukum yang sama,
     ditandatangani oleh kedua belah pihak pada tanggal tersebut di atas.
 </p>
 
-{{-- TTD --}}
-<div class="ttd-area">
-    <div class="ttd-col">
-        <div><strong>PIHAK PERTAMA</strong></div>
-        <div style="font-size:10px;color:#64748b;">CV. Alpha Multi Organizer</div>
-        <div class="materai">Materai Rp 10.000</div>
-        <div><div class="ttd-line">Direktur</div></div>
-    </div>
-    <div class="ttd-col">
-        <div><strong>PIHAK KEDUA</strong></div>
-        <div style="font-size:10px;color:#64748b;">Client</div>
-        <div class="materai">Materai Rp 10.000</div>
-        <div><div class="ttd-line">{{ $event->client->name ?? '_____________________' }}</div></div>
-    </div>
+{{-- ═══ TTD ═══ --}}
+<table class="ttd-area">
+    <tr>
+        <td>
+            <div><strong>PIHAK PERTAMA</strong></div>
+            <div style="font-size:9px;color:#64748b;">CV. Alpha Multi Organizer</div>
+            <div class="materai">Materai Rp 10.000</div>
+            <div class="ttd-line">Direktur</div>
+        </td>
+        <td>
+            <div><strong>PIHAK KEDUA</strong></div>
+            <div style="font-size:9px;color:#64748b;">Client</div>
+            <div class="materai">Materai Rp 10.000</div>
+            <div class="ttd-line">{{ $event->client->name ?? '_____________________' }}</div>
+        </td>
+    </tr>
+</table>
+
+{{-- ═══ DENAH / LAYOUT (last page) ═══ --}}
+@if($layoutPath)
+<div class="denah-page">
+    <h2>DENAH / LAYOUT LOKASI</h2>
+    <img src="{{ $layoutPath }}" alt="Denah Layout">
 </div>
+@endif
+
+
+{{-- Approval Metadata --}}
+@include('admin.pdf_templates.partials.verification')
 
 </body>
 </html>
 
-@php
-/**
- * Fungsi terbilang sederhana untuk nilai kontrak.
- * Untuk kebutuhan nyata, gunakan package seperti `kwn/terbilang`.
- */
-function terbilang(float $angka): string {
-    $angka  = (int) abs($angka);
-    $satuan = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan',
-               'sepuluh', 'sebelas'];
-    if ($angka < 12) return $satuan[$angka];
-    if ($angka < 20) return $satuan[$angka - 10] . ' belas';
-    if ($angka < 100) return $satuan[(int)($angka / 10)] . ' puluh ' . terbilang($angka % 10);
-    if ($angka < 200) return 'seratus ' . terbilang($angka % 100);
-    if ($angka < 1000) return $satuan[(int)($angka / 100)] . ' ratus ' . terbilang($angka % 100);
-    if ($angka < 2000) return 'seribu ' . terbilang($angka % 1000);
-    if ($angka < 1000000) return terbilang((int)($angka / 1000)) . ' ribu ' . terbilang($angka % 1000);
-    if ($angka < 1000000000) return terbilang((int)($angka / 1000000)) . ' juta ' . terbilang($angka % 1000000);
-    return terbilang((int)($angka / 1000000000)) . ' miliar ' . terbilang($angka % 1000000000);
-}
-@endphp
+

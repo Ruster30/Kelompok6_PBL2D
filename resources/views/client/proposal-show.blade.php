@@ -1,4 +1,4 @@
-﻿@extends('layouts.client')
+@extends('layouts.client')
 @section('title','Surat Penawaran')
 @section('page-title','Surat Penawaran')
 
@@ -16,6 +16,14 @@
 <div style="background:#eff6ff;border:1px solid #93c5fd;color:#1e40af;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:14px;display:flex;align-items:center;gap:8px;">
     <i class="bi bi-info-circle-fill"></i>
     Ini adalah <strong>Revisi v{{ $proposal->versi }}</strong> penawaran terbaru yang telah diperbarui oleh tim kami.
+</div>
+@endif
+
+{{-- Info negosiasi aktif --}}
+@if($proposal->status === 'negosiasi')
+<div style="background:#fffbeb;border:1px solid #fcd34d;color:#92400e;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:14px;display:flex;align-items:center;gap:8px;">
+    <i class="bi bi-hourglass-split"></i>
+    Anda telah mengajukan negosiasi. Tombol Terima Penawaran dikunci hingga Admin mengirimkan Surat Penawaran versi revisi.
 </div>
 @endif
 
@@ -40,48 +48,66 @@
             <i class="bi bi-download"></i> Unduh PDF
         </a>
 
-        {{-- Tombol aksi respon â€” hanya jika status menunggu konfirmasi --}}
+        {{-- Tombol aksi respon --}}
         @if(!in_array($proposal->status, ['diterima','ditolak']))
 
-        <a href="{{ route('client.proposals.negosiasi.form', $proposal->id) }}"
-           style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
-                  border:1.5px solid var(--accent);color:var(--accent);border-radius:8px;
-                  font-size:13px;font-weight:600;text-decoration:none;background:white;">
-            <i class="bi bi-chat-dots-fill"></i> Ajukan Negosiasi
-        </a>
+            @if($proposal->status === 'negosiasi')
+                <button type="button" disabled
+                        title="Anda telah mengajukan negosiasi. Menunggu penawaran revisi dari Admin."
+                        style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
+                               background:#f1f5f9;color:#94a3b8;border:1px solid #cbd5e1;
+                               border-radius:8px;font-size:13px;font-weight:600;cursor:not-allowed;">
+                    <i class="bi bi-chat-dots"></i> Negosiasi Diajukan
+                </button>
 
-        <form action="{{ route('client.proposals.terima', $proposal->id) }}"
-            method="POST"
-            style="margin:0;">
+                <button type="button" disabled
+                        title="Tombol Terima Penawaran dikunci karena Anda telah mengajukan negosiasi. Menunggu revisi penawaran dari Admin."
+                        style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
+                               background:#e2e8f0;color:#64748b;border:none;
+                               border-radius:8px;font-size:13px;font-weight:600;cursor:not-allowed;">
+                    <i class="bi bi-lock-fill"></i> Terima Penawaran
+                </button>
+            @else
+                <a href="{{ route('client.proposals.negosiasi.form', $proposal->id) }}"
+                   style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
+                          border:1.5px solid var(--accent);color:var(--accent);border-radius:8px;
+                          font-size:13px;font-weight:600;text-decoration:none;background:white;">
+                    <i class="bi bi-chat-dots-fill"></i> Ajukan Negosiasi
+                </a>
 
-            @csrf
+                <form action="{{ route('client.proposals.terima', $proposal->id) }}"
+                    method="POST"
+                    style="margin:0;">
 
-            <button
-                type="submit"
-                onclick="return swalApprove(this.form, 'Terima Penawaran?', 'Timeline event akan otomatis dibuat setelah Anda menerima penawaran ini.')"
+                    @csrf
 
-                style="
-                display:inline-flex;
-                align-items:center;
-                gap:6px;
-                padding:9px 18px;
-                background:#16a34a;
-                color:white;
-                border:none;
-                border-radius:8px;
-                font-size:13px;
-                font-weight:600;
-                cursor:pointer;">
+                    <button
+                        type="submit"
+                        onclick="return swalApprove(this.form, 'Terima Penawaran?', 'Timeline event akan otomatis dibuat setelah Anda menerima penawaran ini.')"
 
-                <i class="bi bi-check-circle-fill"></i>
+                        style="
+                        display:inline-flex;
+                        align-items:center;
+                        gap:6px;
+                        padding:9px 18px;
+                        background:#16a34a;
+                        color:white;
+                        border:none;
+                        border-radius:8px;
+                        font-size:13px;
+                        font-weight:600;
+                        cursor:pointer;">
 
-                {{ $proposal->status == 'direvisi'
-                    ? 'Terima Penawaran Revisi'
-                    : 'Terima Penawaran'
-                }}
+                        <i class="bi bi-check-circle-fill"></i>
 
-            </button>
-        </form>
+                        {{ $proposal->status == 'direvisi'
+                            ? 'Terima Penawaran Revisi'
+                            : 'Terima Penawaran'
+                        }}
+
+                    </button>
+                </form>
+            @endif
         @elseif($proposal->status === 'diterima')
         <button
             type="button"
