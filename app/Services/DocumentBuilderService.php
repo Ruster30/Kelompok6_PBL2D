@@ -74,8 +74,14 @@ class DocumentBuilderService
         $nilaiKontrak = $event->total_invoice ?: app(RabService::class)->getTotalDibayarKlien($event->id);
 
 
+        // Layout/Denah image — path absolut untuk DomPDF
+        $layoutPath = null;
+        if ($event->layout_denah && Storage::disk("public")->exists($event->layout_denah)) {
+            $layoutPath = Storage::disk("public")->path($event->layout_denah);
+        }
+
         $pdf = Pdf::loadView('admin.pdf_templates.surat_kontrak', compact(
-            'event', 'nilaiKontrak', 'document'
+            'event', 'nilaiKontrak', 'document', 'layoutPath'
         ))->setPaper('a4', 'portrait');
 
 

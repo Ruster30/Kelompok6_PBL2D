@@ -183,11 +183,17 @@
     </tr>
 </table>
 
-{{-- ‚ïê‚ïê‚ïê DENAH / LAYOUT (last page) ‚ïê‚ïê‚ïê --}}
+{{-- ‚?Ä‚?Ä‚?Ä DENAH / LAYOUT LOKASI ‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä‚?Ä --}}
 @if($layoutPath)
-<div class="denah-page">
-    <h2>DENAH / LAYOUT LOKASI</h2>
-    <img src="{{ $layoutPath }}" alt="Denah Layout">
+<div style="page-break-before: always;"></div>
+<div style="padding: 30px; text-align: center; font-family: DejaVu Sans, sans-serif;">
+    <h2 style="font-size: 16px; font-weight: 700; color: #1e3a8a; text-transform: uppercase; margin-bottom: 4px;">DENAH / LAYOUT LOKASI</h2>
+    <p style="font-size: 12px; color: #475569; margin-bottom: 4px;">{{ $event->nama_event }}</p>
+    @if($event->lokasi_event)
+    <p style="font-size: 11px; color: #64748b; margin-bottom: 20px;">Lokasi: {{ $event->lokasi_event }}</p>
+    @endif
+    <img src="{{ $layoutPath }}" style="max-width: 90%; height: auto; border: 1px solid #e2e8f0; border-radius: 4px;" alt="Denah Layout">
+    <p style="font-size: 9px; color: #94a3b8; margin-top: 16px; font-style: italic;">Denah/Layout lokasi merupakan bagian yang tidak terpisahkan dari Surat Kontrak.</p>
 </div>
 @endif
 
