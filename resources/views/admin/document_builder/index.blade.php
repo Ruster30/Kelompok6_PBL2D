@@ -377,24 +377,38 @@
             headers: { 'X-CSRF-TOKEN': CSRF },
             body: formData,
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                status.style.color = '#16a34a';
-                status.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
-                document.getElementById('denahPreviewImg').src = data.url;
-                document.getElementById('denahPreview').style.display = 'block';
-                document.getElementById('denahFilePath').value = data.file_path;
-                document.getElementById('btnHapusDenah').style.display = 'inline-flex';
-                fileInput.value = '';
+        .then(r => {
+            console.log('[DEBUG] Response status:', r.status);
+            console.log('[DEBUG] Content-Type:', r.headers.get('content-type'));
+            const ct = r.headers.get('content-type') || '';
+            if (ct.includes('application/json')) {
+                return r.json().then(data => {
+                    console.log('[DEBUG] JSON response:', data);
+                    if (data.success) {
+                        status.style.color = '#16a34a';
+                        status.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
+                        document.getElementById('denahPreviewImg').src = data.url;
+                        document.getElementById('denahPreview').style.display = 'block';
+                        document.getElementById('denahFilePath').value = data.file_path;
+                        document.getElementById('btnHapusDenah').style.display = 'inline-flex';
+                        fileInput.value = '';
+                    } else {
+                        status.style.color = '#dc2626';
+                        status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal upload.';
+                    }
+                });
             } else {
-                status.style.color = '#dc2626';
-                status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal upload.';
+                return r.text().then(text => {
+                    console.log('[DEBUG] HTML response (first 1000 chars):', text.substring(0, 1000));
+                    status.style.color = '#dc2626';
+                    status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Server error (status: ' + r.status + '). Cek console.';
+                });
             }
         })
-        .catch(() => {
+        .catch(err => {
+            console.error('[DEBUG] Fetch error:', err);
             status.style.color = '#dc2626';
-            status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Terjadi kesalahan.';
+            status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error: ' + err.message;
         })
         .finally(() => {
             btn.disabled = false;

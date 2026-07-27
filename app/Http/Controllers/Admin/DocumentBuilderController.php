@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Enums\DocumentStatus;
 use App\Models\User;
 use App\Services\DocumentApprovalService;
+use App\Http\Requests\UploadDenahRequest;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentBuilderController extends Controller
