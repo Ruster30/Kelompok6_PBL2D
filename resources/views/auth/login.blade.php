@@ -103,7 +103,7 @@
             height: auto;
             display: inline-flex;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: left;
             box-shadow: none;
             position: relative;
             z-index: 1;
@@ -111,7 +111,7 @@
         }
 
         .logo-box img {
-            width: 120px;
+            width: 250px;
             height: auto;
             display: block;
         }
@@ -647,7 +647,7 @@
                         name="password"
                         id="password"
                         class="form-control-custom {{ $errors->has('password') ? 'is-invalid' : '' }}"
-                        placeholder="+62 800-0000-0000"
+                        placeholder="Masukkan kata sandi"
                         autocomplete="current-password">
                     <i class="bi bi-lock input-icon"></i>
                     <button type="button" class="toggle-password" onclick="togglePassword('password', this)">

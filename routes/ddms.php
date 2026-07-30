@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Http\Controllers\DDMS\DdmsSettingController;
 use App\Http\Controllers\DDMS\DocumentController;

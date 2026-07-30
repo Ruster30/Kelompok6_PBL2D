@@ -131,7 +131,7 @@ body {
 }
 
 .navbar-logo {
-    height: 50px;
+    height: 100px;
     width: auto;
     object-fit: contain;
     transition: .3s;

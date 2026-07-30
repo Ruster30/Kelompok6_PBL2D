@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Surat Penawaran')
 @section('page-title', 'Surat Penawaran')
@@ -131,18 +131,7 @@
 <div id="surat-preview" style="background:white; max-width:820px; margin:0 auto; padding:0; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.08); font-family:'Times New Roman',serif; font-size:13px; line-height:1.7; color:#111; overflow:hidden;">
 
     {{-- KOP SURAT (tidak dapat diedit - template tetap) --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:20px 40px 14px;">
-        <div>
-            <div style="font-size:30px; font-weight:900; color:#1a6fa8; letter-spacing:3px; font-family:'Arial Black',Arial,sans-serif; line-height:1;">ALPHA</div>
-            <div style="font-size:10px; letter-spacing:5px; color:#1a6fa8; font-family:Arial,sans-serif; font-weight:700; margin-top:2px;">ORGANIZER</div>
-        </div>
-        <div style="text-align:right; font-size:11.5px; font-family:Arial,sans-serif; color:#333; line-height:1.9;">
-            <div>+62 822-3318-1883</div>
-            <div>alphaorganizer1209@gmail.com</div>
-            <div>Jl.Air Dingin No.25 Kec.Koto Tangah, Kota Padang</div>
-        </div>
-    </div>
-    <div style="height:3px; background:#1a6fa8; margin:0;"></div>
+    @include('admin.pdf_templates.partials.header_web')
 
     {{-- BADAN SURAT --}}
     <div style="padding:24px 40px 40px;">
@@ -383,7 +372,13 @@
 
 @push('styles')
 <style>
-/* â”€â”€ Input dalam surat â”€â”€ */
+/* ─── HEADER ─── */
+.logo-img { width: 130px; }
+.contact-col { text-align: right; font-size: 11.5px; line-height: 2.1; color: #333; font-family: Arial, sans-serif; }
+.divider-thick { margin-top: 7px; border-top: 4px solid #00b8b0; }
+.divider-thin  { border-top: 1.5px solid #00b8b0; margin-top: 2px; }
+
+/* ── Input dalam surat ── */
 .surat-input {
     font-family: 'Times New Roman', serif;
     font-size: 13px;
