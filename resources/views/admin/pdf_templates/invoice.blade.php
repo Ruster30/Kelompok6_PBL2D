@@ -26,35 +26,13 @@
                 border-collapse: collapse;
             }
 
-            .header {
-                width: 100%;
-                margin-bottom: 4px;
-            }
-
-            .header td {
-                vertical-align: top;
-            }
-
-            .logo {
-                width: 150px;
-            }
-
-            .company {
-                text-align: right;
-                font-size: 10px;
-                line-height: 1.8;
-            }
-
-            .company div {
-                margin-bottom: 2px;
-            }
-
-            .line {
-                margin-top: 8px;
-                border-top: 3px solid #18b6c9;
-                border-bottom: 1px solid #18b6c9;
-                height: 3px;
-            }
+            /* ─── HEADER ─── */
+            .header-tbl { width: 100%; border-collapse: collapse; }
+            .header-tbl td { vertical-align: top; }
+            .logo-img { width: 130px; }
+            .contact-col { text-align: right; font-size: 9.5px; line-height: 2.1; }
+            .divider-thick { margin-top: 7px; border-top: 4px solid #00b8b0; }
+            .divider-thin  { border-top: 1.5px solid #00b8b0; margin-top: 2px; }
 
             .title {
                 text-align: center;
@@ -139,23 +117,7 @@
     </head>
 
     <body>
-        <table class="header">
-            <tr>
-                <td width="45%">
-                    <img src="{{ public_path('images/Logo-bg.png') }}" class="logo" />
-                </td>
-
-                <td width="55%" class="company">
-                    <div>📞 +62 822-3318-1883</div>
-
-                    <div>✉ alphaorganizer1209@gmail.com</div>
-
-                    <div>📍 Jl. Air Dingin No.25 Kec. Koto Tangah, Kota Padang</div>
-                </td>
-            </tr>
-        </table>
-
-        <div class="line"></div>
+        @include('admin.pdf_templates.partials.header')
 
         <div class="title">
             <h1>INVOICE</h1>

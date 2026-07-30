@@ -3,205 +3,327 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.7; padding: 32px 40px; }
+    @page {
+        margin: 20mm 18mm 18mm 18mm;
+    }
 
-  .kop { text-align: center; border-bottom: 3px double #1e3a8a; padding-bottom: 14px; margin-bottom: 20px; }
-  .kop h1 { font-size: 17px; font-weight: 700; color: #1e3a8a;  }
-  .kop .subtitle { font-size: 11px; color: #475569; }
-  .kop .no { font-size: 11px; margin-top: 8px; color: #334155; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  h2 { font-size: 12px; font-weight: 700; color: #1e3a8a; margin: 18px 0 6px; text-text-transform: uppercase;  }
-  p { margin-bottom: 8px; text-align: justify; }
+    body {
+        font-family: DejaVu Sans, Arial, sans-serif;
+        font-size: 11px;
+        color: #111;
+        line-height: 1.5;
+        padding: 76px 68px 68px 68px;
+    }
 
-  .info-table { width: 100%; margin: 10px 0; }
-  .info-table td { padding: 3px 6px; }
-  .info-table td:first-child { width: 36%; color: #475569; }
-  .info-table td:nth-child(2) { width: 4%; }
-  .info-table td:last-child { font-weight: 600; }
+    p { text-align: justify; }
 
-  .pasal { margin-bottom: 16px; }
-  .pasal-title { font-weight: 700; font-size: 11.5px; color: #1e3a8a; margin-bottom: 6px; }
-  .pasal ol { padding-left: 20px; }
-  .pasal li { margin-bottom: 4px; }
+    /* ═══ FOOTER EVERY PAGE ═══ */
+    .page-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: #00b8b0;
+        z-index: 1000;
+    }
 
-  .ttd-area { display: table; width: 100%; margin-top: 40px; }
-  .ttd-col { display: table-cell; width: 50%; text-align: center; padding: 0 10px; }
-  .ttd-line { border-top: 1px solid #1e293b; display: inline-block; min-width: 160px; margin-top: 60px; padding-top: 4px; }
+    /* ─── HEADER ─── */
+    .header-tbl { width: 100%; border-collapse: collapse; }
+    .header-tbl td { vertical-align: top; }
+    .logo-img { width: 130px; }
 
-  .materai { border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px 14px; font-size: 9.5px; color: #64748b; margin-top: 10px; display: inline-block; }
+    .contact-col { text-align: right; font-size: 9.5px; line-height: 2.1; }
+
+    .divider-thick { margin-top: 7px; border-top: 4px solid #00b8b0; }
+    .divider-thin  { border-top: 1.5px solid #00b8b0; margin-top: 2px; }
+
+    /* ─── META / TANGGAL ─── */
+    .date-right { text-align: right; margin: 18px 0 14px; font-size: 11px; }
+
+    .meta-tbl { border-collapse: collapse; width: 100%; margin-bottom: 18px; }
+    .meta-tbl td { padding: 1px 0; font-size: 11px; vertical-align: top; }
+    .meta-tbl td.lbl { width: 60px; }
+    .meta-tbl td.sep { width: 16px; text-align: center; }
+
+    /* ─── ALAMAT ─── */
+    .kepada { margin-bottom: 18px; font-size: 11px; line-height: 1.5; }
+    .di-line { margin-bottom: 20px; font-size: 11px; line-height: 1.5; }
+
+    /* ─── OPENING ─── */
+    .opening {
+        text-align: justify;
+        margin-bottom: 18px;
+        font-size: 11px;
+        line-height: 1.5;
+        text-indent: 30px;
+    }
+
+    /* ─── DETAIL TABLE (I, II, III...) ─── */
+    .detail-tbl { border-collapse: collapse; width: 100%; margin-bottom: 8px; font-size: 11px; }
+    .detail-tbl td { padding: 2px 0; vertical-align: top; }
+    .detail-tbl td.num { width: 28px; font-weight: bold; }
+    .detail-tbl td.lbl { width: 140px; font-weight: bold; }
+    .detail-tbl td.sep { width: 16px; text-align: center; }
+
+    /* ─── SUB LIST (a, b, c) ─── */
+    .sub-list { margin: 2px 0 0; padding: 0 0 0 18px; list-style: none; }
+    .sub-list li { font-size: 11px; line-height: 1.5; text-align: justify; margin-bottom: 2px; }
+
+    /* ─── PAGE BREAK ─── */
+    .page-break { page-break-before: always; }
+
+    /* ─── TTD ─── */
+    .ttd-date { margin-top: 24px; margin-bottom: 2px; font-size: 11px; }
+    .ttd-tbl  { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    .ttd-tbl td { width: 50%; vertical-align: top; font-size: 11px; padding: 0; }
+    .ttd-tbl td.right { text-align: right; }
+
+    .sig-space { height: 68px; }
+
+    .ttd-line {
+        border-top: 1px solid #111;
+        display: inline-block;
+        min-width: 170px;
+        padding-top: 3px;
+    }
+
+    .name-bold { font-weight: bold; text-decoration: underline; font-size: 11px; }
+    .jab { font-size: 10px; }
+
+    .contact-footer {
+        margin-top: 20px;
+        text-align: right;
+        color: #cc0000;
+        font-size: 9.5px;
+        line-height: 1.9;
+        font-weight: bold;
+    }
+
+    /* ─── DENAH ─── */
+    .denah-wrap { text-align: center; margin-top: 16px; }
+    .denah-img  { max-width: 100%; border: 1px solid #ccc; }
 </style>
 </head>
-
-
-
 <body>
 
-{{-- KOP SURAT --}}
-<div class="kop">
-    <h1>SURAT KONTRAK JASA EVENT ORGANIZER</h1>
-    <div class="subtitle">CV. Alpha Multi Organizer | Padang, Sumatera Barat</div>
-    <div class="no">Nomor: {{ $document?->numbering?->document_number ?? 'BELUM DITERBITKAN' }}</div>
+{{-- FOOTER --}}
+<div class="page-footer"></div>
+
+{{-- ════════════════════════ PAGE 1 ════════════════════════ --}}
+
+@include('admin.pdf_templates.partials.header')
+
+{{-- TANGGAL --}}
+<div class="date-right">
+    Padang, {{ $event->tanggal_event?->isoFormat('D MMMM Y') ?? now()->isoFormat('D MMMM Y') }}
 </div>
 
-<p style="text-align:justify;margin-bottom:10px;">
-    Pada hari ini, <strong>{{ now()->isoFormat('dddd') }}</strong>, tanggal <strong>{{ now()->format('d') }}</strong>
-    bulan <strong>{{ now()->isoFormat('MMMM') }}</strong> tahun <strong>{{ now()->format('Y') }}</strong>,
-    telah disepakati Surat Kontrak Jasa Event Organizer oleh dan antara:
-</p>
-
-{{-- ─═══ PIHAK I ═══─ --}}
-<div class="section-title">Pihak I (Event Organizer)</div>
-<table class="info-table">
-    <tr><td>Nama Perusahaan</td><td>:</td><td>CV. Alpha Multi Organizer</td></tr>
-    <tr><td>Bidang Usaha</td><td>:</td><td>Event Organizer &amp; Entertainment</td></tr>
-    <tr><td>Alamat</td><td>:</td><td>Padang, Sumatera Barat</td></tr>
-    <tr><td>Selanjutnya disebut</td><td>:</td><td><strong>PIHAK PERTAMA</strong></td></tr>
-</table>
-
-{{-- ─═══ PIHAK II ═══─ --}}
-<div class="section-title">Pihak II (Client)</div>
-<table class="info-table">
-    <tr><td>Nama</td><td>:</td><td>{{ $event->client->name ?? '-' }}</td></tr>
-    <tr><td>Email</td><td>:</td><td>{{ $event->client->email ?? '-' }}</td></tr>
-    <tr><td>Telepon</td><td>:</td><td>{{ $event->client->phone ?? '-' }}</td></tr>
-    <tr><td>Selanjutnya disebut</td><td>:</td><td><strong>PIHAK KEDUA</strong></td></tr>
-</table>
-
-<p style="margin-top:12px;font-size:10.5px;text-align:justify;">
-    Kedua belah pihak telah sepakat untuk mengadakan perjanjian kerja sama jasa penyelenggaraan acara dengan ketentuan sebagai berikut:
-</p>
-
-{{-- ═══ PASAL 1 ═══ --}}
-<div class="pasal">
-    <div class="pasal-title">PASAL 1 — DATA EVENT</div>
-    <table class="info-table">
-        <tr><td>Nama Event</td><td>:</td><td>{{ $event->nama_event }}</td></tr>
-        <tr><td>Jenis Event</td><td>:</td><td>{{ $event->jenis_event ?? '-' }}</td></tr>
-        <tr><td>Tanggal Pelaksanaan</td><td>:</td><td>{{ $event->tanggal_event?->format('d F Y') ?? '-' }}</td></tr>
-        <tr><td>Lokasi</td><td>:</td><td>{{ $event->lokasi_event ?? '-' }}</td></tr>
-        <tr><td>Jumlah Tamu</td><td>:</td><td>{{ $event->jumlah_tamu ? number_format($event->jumlah_tamu) . ' orang' : '-' }}</td></tr>
-    </table>
-</div>
-
-{{-- ═══ PASAL 2 ═══ --}}
-<div class="pasal">
-    <div class="pasal-title">PASAL 2 — NILAI KONTRAK</div>
-    <p>
-        PIHAK KEDUA setuju untuk membayar kepada PIHAK PERTAMA total biaya penyelenggaraan event sebesar:
-    </p>
-    <div style="background:#eef2ff;border:2px solid #c7d2fe;border-radius:8px;padding:12px 18px;margin:10px 0;font-size:15px;font-weight:900;color:#3730a3;text-align:center;">
-        Rp {{ number_format($nilaiKontrak, 0, ',', '.') }}
-        <div style="font-size:10px;font-weight:400;color:#6366f1;margin-top:2px;">
-            ({{ ($nilaiKontrak) }} Rupiah)
-        </div>
-    </div>
-</div>
-
-{{-- ═══ PASAL 3 ═══ --}}
-<div class="pasal">
-    <div class="pasal-title">PASAL 3 — HAK DAN KEWAJIBAN PIHAK PERTAMA</div>
-    <ol>
-        <li>Menyediakan layanan event organizer secara profesional sesuai kesepakatan.</li>
-        <li>Mengelola vendor, dekorasi, dokumentasi, dan keperluan teknis lainnya.</li>
-        <li>Memberikan laporan progress kepada PIHAK KEDUA secara berkala.</li>
-        <li>Berhak menolak permintaan di luar lingkup kontrak ini.</li>
-        <li>Berhak menerima pembayaran sesuai jadwal yang disepakati.</li>
-    </ol>
-</div>
-
-{{-- ═══ PASAL 4 ═══ --}}
-<div class="pasal">
-    <div class="pasal-title">PASAL 4 — HAK DAN KEWAJIBAN PIHAK KEDUA</div>
-    <ol>
-        <li>Memberikan informasi yang dibutuhkan untuk penyelenggaraan event.</li>
-        <li>Melakukan pembayaran sesuai jadwal yang ditetapkan.</li>
-        <li>Menyetujui atau memberikan masukan atas rencana yang diajukan PIHAK PERTAMA.</li>
-        <li>Berhak mendapatkan laporan penyelenggaraan event secara tertulis.</li>
-    </ol>
-</div>
-
-{{-- ═══ PASAL 5 ═══ --}}
-<div class="pasal">
-    <div class="pasal-title">PASAL 5 — KETENTUAN PEMBAYARAN</div>
-    <ol>
-        <li>Uang muka (DP) sebesar <strong>50%</strong> dari total nilai kontrak dibayarkan pada saat penandatanganan kontrak ini.</li>
-        <li>Pelunasan sebesar <strong>50%</strong> dibayarkan selambat-lambatnya <strong>7 hari sebelum</strong> pelaksanaan event.</li>
-        <li>Pembayaran dilakukan melalui transfer bank ke rekening yang ditunjuk oleh PIHAK PERTAMA.</li>
-        <li>Bukti pembayaran wajib dikirimkan kepada PIHAK PERTAMA sebagai konfirmasi.</li>
-    </ol>
-</div>
-
-{{-- ═══ PASAL 6 ═══ --}}
-<div class="pasal">
-    <div class="pasal-title">PASAL 6 — MASA BERLAKU KONTRAK</div>
-    <p>
-        Kontrak ini berlaku sejak tanggal penandatanganan hingga selesainya seluruh kewajiban kedua belah pihak,
-        yaitu paling lambat <strong>30 hari</strong> setelah pelaksanaan event pada tanggal
-        <strong>{{ $event->tanggal_event?->format('d F Y') ?? '____________' }}</strong>.
-    </p>
-</div>
-
-{{-- ═══ PASAL 7 ═══ --}}
-<div class="pasal">
-    <div class="pasal-title">PASAL 7 — PEMBATALAN DAN FORCE MAJEURE</div>
-    <ol>
-        <li>Pembatalan yang dilakukan PIHAK KEDUA kurang dari 14 hari sebelum event dikenakan biaya 30% dari total kontrak.</li>
-        <li>Pembatalan akibat force majeure (bencana alam, pandemi, kerusuhan) membebaskan kedua pihak dari kewajiban, dengan pengembalian dana yang telah dibayarkan dikurangi biaya yang telah dikeluarkan.</li>
-    </ol>
-</div>
-
-{{-- ═══ PASAL 8 ═══ --}}
-<div class="pasal">
-    <div class="pasal-title">PASAL 8 — PENYELESAIAN SENGKETA</div>
-    <p>
-        Segala perselisihan yang timbul dari kontrak ini akan diselesaikan secara musyawarah mufakat.
-        Apabila tidak tercapai kesepakatan, maka diserahkan kepada pengadilan negeri yang berwenang di wilayah Padang.
-    </p>
-</div>
-
-<p style="font-size:10.5px;text-align:justify;">
-    Kontrak ini dibuat dalam rangkap dua, masing-masing bermaterai cukup dan memiliki kekuatan hukum yang sama,
-    ditandatangani oleh kedua belah pihak pada tanggal tersebut di atas.
-</p>
-
-{{-- ═══ TTD ═══ --}}
-<table class="ttd-area">
+{{-- META --}}
+<table class="meta-tbl">
     <tr>
+        <td class="lbl">Nomor</td>
+        <td class="sep">:</td>
+        <td>{{ $document?->numbering?->document_number ?? 'BELUM DITERBITKAN' }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Lampiran</td>
+        <td class="sep">:</td>
+        <td>Layout {{ $event->jenis_event ?? 'Pameran' }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Perihal</td>
+        <td class="sep">:</td>
+        <td>Surat Kontrak Kerjasama {{ $event->jenis_event ?? 'Pameran' }} &mdash; {{ $event->nama_event ?? '' }}</td>
+    </tr>
+</table>
+
+{{-- KEPADA --}}
+<div class="kepada">
+    Kepada Yth<br>
+    Pimpinan <strong>{{ $event->client->name ?? '______________________' }}</strong>
+</div>
+
+<div class="di-line">
+    Di<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Tempat
+</div>
+
+{{-- OPENING --}}
+<p class="opening">
+    Dengan hormat, Kami dari CV. <strong>Alpha Multi Organizer</strong> adalah perusahaan yang
+    bergerak di bidang Event Organizer dengan ini mengirimkan surat kontrak kerja sama
+    kegiatan <strong>{{ strtolower($event->jenis_event ?? 'pameran') }}</strong>
+    <strong>&ldquo;{{ $event->nama_event ?? '' }}&rdquo;</strong> kepada
+    <strong>{{ $event->client->name ?? '______________________' }}</strong>
+    yang berlokasi di {{ $event->lokasi_event ?? '______________________' }},
+    maka dengan ini kami mengajukan surat kontrak kerja sama
+    {{ strtolower($event->jenis_event ?? 'pameran') }} sebagai berikut :
+</p>
+
+{{-- DETAIL --}}
+<table class="detail-tbl">
+    <tr>
+        <td class="num">I.</td>
+        <td class="lbl">Lokasi</td>
+        <td class="sep">:</td>
+        <td>{{ $event->lokasi_event ?? '-' }}</td>
+    </tr>
+    <tr>
+        <td class="num">II.</td>
+        <td class="lbl">Jenis Kegiatan</td>
+        <td class="sep">:</td>
+        <td>{{ $event->jenis_event ?? '-' }}</td>
+    </tr>
+    <tr>
+        <td class="num">III.</td>
+        <td class="lbl">Jadwal Kegiatan</td>
+        <td class="sep">:</td>
         <td>
-            <div><strong>PIHAK PERTAMA</strong></div>
-            <div style="font-size:9px;color:#64748b;">CV. Alpha Multi Organizer</div>
-            <div class="materai">Materai Rp 10.000</div>
-            <div class="ttd-line">Direktur</div>
+            @if($event->tanggal_event)
+                {{ $event->tanggal_event->isoFormat('D MMMM Y') }}
+                @if($event->tanggal_selesai ?? null)
+                    &ndash; {{ $event->tanggal_selesai->isoFormat('D MMMM Y') }}
+                    ({{ $event->tanggal_event->diffInDays($event->tanggal_selesai) + 1 }} Hari)
+                @endif
+            @else
+                -
+            @endif
         </td>
+    </tr>
+    <tr>
+        <td class="num">IV.</td>
+        <td class="lbl">Jumlah Tamu</td>
+        <td class="sep">:</td>
+        <td>{{ $event->jumlah_tamu ? number_format($event->jumlah_tamu) . ' orang' : '-' }}</td>
+    </tr>
+    <tr>
+        <td class="num">V.</td>
+        <td class="lbl">Price</td>
+        <td class="sep">:</td>
+        <td><strong>Rp. {{ number_format($nilaiKontrak, 0, ',', '.') }}</strong></td>
+    </tr>
+    <tr>
+        <td class="num">VI.</td>
+        <td class="lbl">Fasilitas</td>
+        <td class="sep">:</td>
         <td>
-            <div><strong>PIHAK KEDUA</strong></div>
-            <div style="font-size:9px;color:#64748b;">Client</div>
-            <div class="materai">Materai Rp 10.000</div>
-            <div class="ttd-line">{{ $event->client->name ?? '_____________________' }}</div>
+            @if($event->detail_kebutuhan)
+                <ul class="sub-list">
+                    @foreach(explode("\n", $event->detail_kebutuhan) as $i => $item)
+                        @php $abjad = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l']; @endphp
+                        <li>{{ $abjad[$i] ?? ($i + 1) }}. {{ $item }}</li>
+                    @endforeach
+                </ul>
+            @else
+                <ul class="sub-list">
+                    <li>a. Dekorasi dan tata ruang sesuai tema acara</li>
+                    <li>b. Dokumentasi (foto &amp; video)</li>
+                    <li>c. Sound system dan lighting</li>
+                </ul>
+            @endif
+        </td>
+    </tr>
+    <tr>
+        <td class="num">VII.</td>
+        <td class="lbl">Ketentuan lain</td>
+        <td class="sep">:</td>
+        <td>
+            <ul class="sub-list">
+                <li>a. Pembayaran selambat-lambatnya H-3 sebelum acara berlangsung.</li>
+                <li>b. Pembayaran dilakukan melalui Transfer Bank <strong>BRI a.n. Kurnia Fajar Viliano No. 005801123790503</strong>.</li>
+                <li>c. Seluruh koordinasi teknis wajib diberitahukan kepada manajemen Alpha Organizer.</li>
+                <li>d. Pemasangan dekorasi dan perlengkapan dikoordinasikan dengan EO Alpha Organizer.</li>
+                <li>e. Pemakai jasa penyelenggara wajib mematuhi semua peraturan dan tata tertib yang berlaku di lokasi acara.</li>
+            </ul>
         </td>
     </tr>
 </table>
 
-{{-- �?��?��?� DENAH / LAYOUT LOKASI �?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?��?� --}}
-@if($layoutPath)
-<div style="page-break-before: always;"></div>
-<div style="padding: 30px; text-align: center; font-family: DejaVu Sans, sans-serif;">
-    <h2 style="font-size: 16px; font-weight: 700; color: #1e3a8a; text-transform: uppercase; margin-bottom: 4px;">DENAH / LAYOUT LOKASI</h2>
-    <p style="font-size: 12px; color: #475569; margin-bottom: 4px;">{{ $event->nama_event }}</p>
-    @if($event->lokasi_event)
-    <p style="font-size: 11px; color: #64748b; margin-bottom: 20px;">Lokasi: {{ $event->lokasi_event }}</p>
-    @endif
-    <img src="{{ $layoutPath }}" style="max-width: 90%; height: auto; border: 1px solid #e2e8f0; border-radius: 4px;" alt="Denah Layout">
-    <p style="font-size: 9px; color: #94a3b8; margin-top: 16px; font-style: italic;">Denah/Layout lokasi merupakan bagian yang tidak terpisahkan dari Surat Kontrak.</p>
+
+{{-- ════════════════════════ PAGE 2 ════════════════════════ --}}
+<div class="page-break">
+
+@include('admin.pdf_templates.partials.header')
+
+{{-- Lanjutan ketentuan f & g --}}
+<table class="detail-tbl" style="margin-top: 20px;">
+    <tr>
+        <td class="num"></td>
+        <td class="lbl"></td>
+        <td class="sep"></td>
+        <td>
+            <ul class="sub-list">
+                <li>f. Pemakai jasa penyelenggara wajib mengasuransikan propertinya selama acara berlangsung.</li>
+                <li>g. Kerusakan dan kehilangan barang yang diakibatkan oleh human error dan force majeure bukan tanggung jawab dari pemakai jasa penyelenggara.</li>
+            </ul>
+        </td>
+    </tr>
+</table>
+
+{{-- TTD --}}
+<div class="ttd-date">
+    Padang, {{ $event->tanggal_event?->isoFormat('D MMMM Y') ?? now()->isoFormat('D MMMM Y') }}
 </div>
+
+<table class="ttd-tbl">
+    <tr>
+        <td style="font-weight:bold;">Hormat kami,</td>
+        <td class="right" style="font-weight:bold;">Menyetujui,</td>
+    </tr>
+    <tr>
+        <td>
+            @if(file_exists(public_path('images/ttd-fajar.png')))
+                <img src="{{ public_path('images/ttd-fajar.png') }}" style="height:62px; display:block; margin-bottom:3px;">
+            @else
+                <div class="sig-space"></div>
+            @endif
+        </td>
+        <td class="right">
+            <div class="sig-space"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="ttd-line"></div>
+            <div class="name-bold">Kurnia Fajar Viliano S.Tr.Kom</div>
+            <div class="jab">Head Of Alpha Organizer</div>
+        </td>
+        <td class="right">
+            <div class="ttd-line" style="margin-left:auto;"></div>
+            <div class="name-bold">&nbsp;</div>
+            <div class="jab">&nbsp;</div>
+        </td>
+    </tr>
+</table>
+
+<div class="contact-footer">
+    * Contact Person +62 895 4013 00022 (Fajar)<br>
+    Instagram @alphaorganizer.co
+</div>
+
+</div>{{-- /page-break --}}
+
+
+{{-- ════════════════════════ PAGE 3: DENAH ════════════════════════ --}}
+@if($layoutPath)
+<div class="page-break">
+
+@include('admin.pdf_templates.partials.header')
+
+<div class="denah-wrap">
+    <p style="font-size:13px; font-weight:bold; margin:18px 0 14px;">DENAH / LAYOUT LOKASI</p>
+    <img src="{{ $layoutPath }}" class="denah-img" alt="Denah Layout">
+</div>
+
+</div>{{-- /page-break --}}
 @endif
 
 
-{{-- Approval Metadata --}}
+{{-- ════════════════════════ VERIFICATION ════════════════════════ --}}
 @include('admin.pdf_templates.partials.verification')
 
 </body>
 </html>
-
-

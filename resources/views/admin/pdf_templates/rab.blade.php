@@ -165,7 +165,7 @@ tbody td {
 
     @if($rabItems->count())
     <tr class="sum-jumlah">
-        <td colspan="3">JUMLAH (Subtotal Vendor)</td>
+        <td colspan="3">TOTAL</td>
         <td>Rp</td>
         <td class="text-right">{{ number_format($total, 0, '.', '.') }}</td>
     </tr>
@@ -177,7 +177,7 @@ tbody td {
     </tr>
     @endif
     <tr class="sum-total">
-        <td colspan="3">DPP</td>
+        <td colspan="3">SUBTOTAL</td>
         <td>Rp</td>
         <td class="text-right">{{ number_format($dpp, 0, '.', '.') }}</td>
     </tr>
@@ -196,7 +196,7 @@ tbody td {
     </tr>
     @endif
     <tr class="sum-grand">
-        <td colspan="3">TOTAL DIBAYAR KLIEN</td>
+        <td colspan="3">GRANDTOTAL</td>
         <td>Rp</td>
         <td class="text-right">{{ number_format($grandTotal, 0, '.', '.') }}</td>
     </tr>

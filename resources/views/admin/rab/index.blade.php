@@ -266,7 +266,7 @@
         </div>
         <div style="padding:16px 20px;">
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e2e8f0; font-size:14px;">
-                <span style="color:#64748b;">Subtotal Vendor</span>
+                <span style="color:#64748b;">Total</span>
                 <span id="ringkasan_subtotal" style="font-weight:600; color:#0f172a;">Rp {{ number_format($rabItems->sum('subtotal_biaya'), 0, ',', '.') }}</span>
             </div>
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e2e8f0; font-size:14px;">
@@ -274,7 +274,7 @@
                 <span id="ringkasan_fee" style="font-weight:500;">Rp 0</span>
             </div>
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:2px solid #cbd5e1; font-size:14px; font-weight:600;">
-                <span style="color:#0f172a;">DPP</span>
+                <span style="color:#0f172a;">Subtotal</span>
                 <span id="ringkasan_dpp" style="color:#0f172a;">Rp 0</span>
             </div>
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e2e8f0; font-size:14px;">
@@ -286,7 +286,7 @@
                 <span id="ringkasan_pph" style="font-weight:500; color:#dc2626;">Rp 0</span>
             </div>
             <div style="display:flex; justify-content:space-between; padding:12px 0 0 0; font-size:16px;">
-                <span style="font-weight:700; color:#0f172a;">TOTAL DIBAYAR KLIEN</span>
+                <span style="font-weight:700; color:#0f172a;">Grandtotal</span>
                 <span id="ringkasan_total" style="font-weight:800; font-size:18px; color:#0f766e;">Rp 0</span>
             </div>
         </div>
