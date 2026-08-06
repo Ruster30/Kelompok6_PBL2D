@@ -25,4 +25,7 @@ interface DocumentNumberingRepositoryInterface
 
     /** Cek apakah dokumen sudah memiliki nomor */
     public function existsByDocument(int $documentId): bool;
+
+    /** Update numbering */
+    public function update(DocumentNumbering $numbering, array $data): DocumentNumbering;
 }

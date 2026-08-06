@@ -34,6 +34,69 @@
         </div>
     </div>
 
+
+    {{-- --- NOMOR SURAT -------------------------------------- --}}
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom-0 pt-3 px-3">
+                <h5 class="fw-bold mb-0">
+                    <i class="fas fa-hashtag me-2 text-primary"></i>Nomor Surat
+                </h5>
+            </div>
+            <div class="card-body pt-2 px-3">
+                @php
+                    $docNumber = optional($document->numbering)->document_number;
+                    $docStatus = $document->status;
+                    $numberBadge = "";
+                    $numberInfo = "";
+                    if ($docStatus === \App\Enums\DocumentStatus::Draft) {
+                        $numberBadge = "badge bg-warning text-dark";
+                        $numberInfo = "Nomor surat masih dapat diubah oleh Admin.";
+                    } elseif ($docStatus === \App\Enums\DocumentStatus::Pending) {
+                        $numberBadge = "badge bg-primary";
+                        $numberInfo = "Nomor surat telah dikunci dan sedang direview oleh Director.";
+                    } elseif ($docStatus === \App\Enums\DocumentStatus::Approved) {
+                        $numberBadge = "badge bg-success";
+                        $numberInfo = "Nomor surat telah disetujui bersama dokumen.";
+                    } elseif ($docStatus === \App\Enums\DocumentStatus::Published) {
+                        $numberBadge = "badge bg-dark";
+                        $numberInfo = "Nomor surat merupakan bagian dari arsip resmi.";
+                    }
+                @endphp
+
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    @if($docNumber)
+                    <span style="font-family:monospace;font-size:18px;font-weight:700;color:#0f172a;">
+                        {{ $docNumber }}
+                    </span>
+                    @else
+                    <span class="badge bg-warning text-dark" style="font-size:13px;padding:6px 14px;">
+                        <i class="bi bi-exclamation-triangle me-1"></i> Nomor surat belum diisi.
+                    </span>
+                    @endif
+
+                    @if($numberBadge)
+                    <span class="{{ $numberBadge }}" style="font-size:12px;padding:4px 12px;">
+                        @if($docStatus === \App\Enums\DocumentStatus::Draft)
+                            Draft
+                        @elseif($docStatus === \App\Enums\DocumentStatus::Pending || $docStatus === \App\Enums\DocumentStatus::Approved)
+                            <i class="bi bi-lock-fill me-1"></i>Locked
+                        @elseif($docStatus === \App\Enums\DocumentStatus::Published)
+                            Published
+                        @endif
+                    </span>
+                    @endif
+                </div>
+
+                @if($numberInfo)
+                <div class="text-muted small mt-2">
+                    <i class="bi bi-info-circle me-1"></i> {{ $numberInfo }}
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     {{-- --- INFORMASI DOKUMEN ------------------------------- --}}
     <div class="col-md-6">
         <div class="card border-0 shadow-sm h-100">
@@ -331,5 +394,29 @@
         </div>
     </div>
 
+
+    {{-- --- PUBLISH SECTION ---------------------------------- --}}
+    @if($document->status === \App\Enums\DocumentStatus::Approved)
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom-0 pt-3 px-3">
+                <h5 class="fw-bold mb-0">
+                    <i class="fas fa-check-double me-2 text-success"></i>Publish Dokumen
+                </h5>
+            </div>
+            <div class="card-body pt-2 px-3">
+                <p class="text-muted small mb-3">
+                    Dokumen telah disetujui. Klik Publish untuk menerbitkan dokumen secara resmi.
+                </p>
+                <form method="POST" action="{{ route('director.approval.publish', $document->id) }}" onsubmit="return confirm('Publish dokumen ini? Dokumen akan terkunci permanen.');">
+                    @csrf
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check2-circle me-1"></i> Publish
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 @endsection

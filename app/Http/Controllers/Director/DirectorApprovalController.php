@@ -146,6 +146,31 @@ class DirectorApprovalController extends Controller
     /**
      * Tampilkan dashboard approval Director.
      */
+
+    /**
+     * Publish dokumen yang sudah disetujui.
+     */
+    public function publish(Document $document, Request $request)
+    {
+        try {
+            $this->approvalService->publishDocument(
+                document:  $document,
+                publisher: $request->user(),
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()
+                ->route("director.approval.show", $document->id)
+                ->with("error", $e->getMessage());
+        }
+
+        return redirect()
+            ->route("director.approval.show", $document->id)
+            ->with("success", "Dokumen berhasil dipublish.");
+    }
+
+    /**
+     * Tampilkan dashboard approval Director.
+     */
     public function index(Request $request)
     {
         $documents = $this->approvalService->getPendingDocuments(

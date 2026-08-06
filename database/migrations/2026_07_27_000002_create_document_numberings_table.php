@@ -52,11 +52,6 @@ return new class extends Migration
             // created_at: juga berfungsi sebagai waktu generate (generated_at)
             $table->timestamps();
 
-            // === UNIQUE CONSTRAINTS ===
-
-            // Mencegah duplikasi sequence dalam prefix dan tahun yang sama
-            $table->unique(['prefix', 'year', 'sequence_number'], 'num_seq_unique');
-
             // === INDEX ===
 
             // Index untuk query: MAX(sequence) WHERE prefix = ? AND year = ?

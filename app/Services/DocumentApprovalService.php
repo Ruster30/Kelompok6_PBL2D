@@ -10,12 +10,14 @@ use App\Models\User;
 use App\Exceptions\DDMS\ApprovalNotPendingException;
 use App\Repositories\Contracts\DocumentApprovalRepositoryInterface;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\Contracts\DocumentNumberingRepositoryInterface;
 use App\Repositories\Contracts\DocumentRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Services\DirectorPinService;
 use App\Services\DocumentNumberService;
 use App\Services\DocumentQrCodeService;
+use App\Services\DocumentVerificationService;
 
 /**
  * DocumentApprovalService
@@ -38,9 +40,11 @@ class DocumentApprovalService
     public function __construct(
         private readonly DocumentApprovalRepositoryInterface $approvalRepository,
         private readonly DocumentRepositoryInterface $documentRepository,
+        private readonly DocumentNumberingRepositoryInterface $numberingRepository,
         private readonly DirectorPinService $pinService,
         private readonly DocumentNumberService $numberService,
         private readonly DocumentQrCodeService $qrCodeService,
+        private readonly DocumentVerificationService $verificationService,
     ) {}
 
     // ── Submit ───────────────────────────────────────────────
@@ -64,6 +68,13 @@ class DocumentApprovalService
                     'Hanya dokumen dengan status Draft yang dapat diajukan approval. ' .
                     "Status saat ini: {$document->status}."
                 );
+            }
+
+            // Business Rule: Nomor surat wajib diisi sebelum submit
+            if (! $document->numbering || ! $document->numbering->document_number) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "nomor_surat" => "Nomor surat wajib diisi sebelum dokumen dikirim ke Director.",
+                ]);
             }
 
             // Cegah duplicate submission: jika sudah ada approval pending
@@ -277,8 +288,8 @@ class DocumentApprovalService
             // Gunakan method approve() yang sudah ada
             $this->approve($approval, $director);
 
-            // Generate nomor dokumen otomatis
-            $this->numberService->generate($document, $director);
+            // Nomor surat sudah diinput manual oleh Admin
+            // (tidak ada auto-generation)
 
             Log::info("Dokumen diapprove oleh Director", [
                 "document_id" => $document->id,
@@ -371,8 +382,8 @@ class DocumentApprovalService
             // Gunakan method approve() yang sudah ada (validasi + update)
             $this->approve($approval, $director);
             
-            // Generate nomor dokumen otomatis setelah approve
-            $this->numberService->generate($document, $director);
+            // Nomor surat sudah diinput manual oleh Admin sebelum submit
+            // (tidak ada auto-generation)
 
             // Generate QR Code setelah nomor berhasil
             $this->qrCodeService->generate($document, $director);
@@ -465,5 +476,58 @@ class DocumentApprovalService
             ->with(["event.client", "numbering", "approvals.approvedBy"])
             ->orderBy("updated_at", "desc")
             ->paginate($perPage);
+    }
+
+    // -- Publish ----------------------------------------------
+
+    /**
+     * Publish dokumen yang sudah disetujui.
+     *
+     * Business Rules:
+     * - Status harus Approved.
+     * - Document Source harus Generated.
+     * - Nomor surat harus sudah ada.
+     */
+    public function publishDocument(Document $document, User $publisher): Document
+    {
+        return DB::transaction(function () use ($document, $publisher): Document {
+            if ($document->status !== \App\Enums\DocumentStatus::Approved) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "publish" => "Hanya dokumen berstatus Approved yang dapat dipublish.",
+                ]);
+            }
+
+            if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "publish" => "Hanya dokumen Generated yang dapat dipublish.",
+                ]);
+            }
+
+            $numbering = $this->numberingRepository->findByDocument($document->id);
+            if (! $numbering || ! $numbering->document_number) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "publish" => "Nomor surat wajib diisi sebelum dokumen dipublish.",
+                ]);
+            }
+
+            // Update status ke Published
+            $this->documentRepository->update($document, [
+                "status" => Document::STATUS_PUBLISHED,
+            ]);
+
+            Log::info("Dokumen dipublish", [
+                "document_id" => $document->id,
+                "document_number" => $numbering->document_number,
+                "published_by" => $publisher->id,
+            ]);
+
+            // Refresh untuk mendapatkan status Published
+            $document->refresh()->load("numbering");
+
+            // Pastikan Verification Token tersedia (tanpa QR)
+            $this->verificationService->getOrCreateVerificationToken($document);
+
+            return $document->fresh();
+        });
     }
 }
