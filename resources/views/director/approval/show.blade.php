@@ -175,20 +175,34 @@
     {{-- --- PREVIEW DOKUMEN --------------------------------- --}}
     <div class="col-12">
         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-bottom-0 pt-3 px-3">
+            @php
+                $directorPdfUrl = null;
+                if ($document->file_path
+                    && \Illuminate\Support\Facades\Storage::disk('public')->exists($document->file_path)
+                    && ($document->mime_type === 'application/pdf' || str_ends_with($document->file_path, '.pdf'))) {
+                    $directorPdfUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($document->file_path);
+                }
+            @endphp
+            <div class="card-header bg-white border-bottom-0 pt-3 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <h5 class="fw-bold mb-0">
                     <i class="fas fa-file-pdf me-2 text-danger"></i>Preview Dokumen
                 </h5>
+                @if($directorPdfUrl)
+                <div class="d-flex gap-2">
+                    <a href="{{ $directorPdfUrl }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>Buka PDF
+                    </a>
+                    <a href="{{ $directorPdfUrl }}" download class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-download me-1"></i>Download PDF
+                    </a>
+                </div>
+                @endif
             </div>
-            <div class="card-body pt-2 px-3 text-center py-5">
-                @php
-                    $isPdf = $document->mime_type === 'application/pdf' || str_ends_with($document->file_path ?? '', '.pdf');
-                @endphp
-                @if($isPdf)
-                    <i class="fas fa-file-pdf text-muted" style="font-size:48px;opacity:0.3;"></i>
-                    <p class="text-muted mt-3 mb-0">Preview akan tersedia pada phase berikutnya.</p>
+            <div class="card-body p-2">
+                @if($directorPdfUrl)
+                <iframe src="{{ $directorPdfUrl }}" class="w-100 border-0" style="width:100%;height:700px;" title="Preview Dokumen"></iframe>
                 @else
-                    <i class="fas fa-file text-muted" style="font-size:48px;opacity:0.3;"></i>
+                    <i class="fas fa-file-pdf text-muted" style="font-size:48px;opacity:0.3;"></i>
                     <p class="text-muted mt-3 mb-0">Preview tidak tersedia.</p>
                 @endif
             </div>
@@ -331,6 +345,16 @@
     </div>
 
 
+
+    @php
+        $directorStatus    = $document->status;
+        $directorGenerated = $document->document_source === \App\Enums\DocumentSource::Generated;
+        $directorPending   = $directorStatus === \App\Enums\DocumentStatus::Pending;
+        $directorApproved  = $directorStatus === \App\Enums\DocumentStatus::Approved;
+        $directorPublished = $directorStatus === \App\Enums\DocumentStatus::Published;
+        $directorRejected  = $directorStatus === \App\Enums\DocumentStatus::Rejected;
+    @endphp
+
     {{-- --- KEPUTUSAN DIRECTOR ------------------------------- --}}
     <div class="col-12">
         <div class="card border-0 shadow-sm">
@@ -340,50 +364,67 @@
                 </h5>
             </div>
             <div class="card-body pt-2 px-3">
-                @php
-                    $canDecide = $document->status instanceof \App\Enums\DocumentStatus
-                        && $document->status === \App\Enums\DocumentStatus::Pending
-                        && $document->document_source instanceof \App\Enums\DocumentSource
-                        && $document->document_source === \App\Enums\DocumentSource::Generated;
-                @endphp
+                @if($directorPending && $directorGenerated)
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <form method="POST" action="{{ route('director.approval.approve', $document->id) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                            </form>
+                        </div>
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <form method="POST" action="{{ route('director.approval.approve', $document->id) }}">
-                            @csrf
-
-                            <button type="submit" class="btn btn-success w-100" {{ $canDecide ? '' : 'disabled' }}>
-                                <i class="bi bi-check-circle me-1"></i> Approve
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-danger w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#rejectForm">
+                                <i class="bi bi-x-circle me-1"></i> Reject
                             </button>
-                        </form>
-                    </div>
 
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-danger w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#rejectForm" {{ $canDecide ? '' : 'disabled' }}>
-                            <i class="bi bi-x-circle me-1"></i> Reject
-                        </button>
+                            <div class="collapse" id="rejectForm">
+                                <div class="card card-body border-0 bg-light p-3">
+                                    <form method="POST" action="{{ route('director.approval.reject', $document->id) }}">
+                                        @csrf
+                                        <div class="mb-3">
+                                            <label for="reason" class="form-label fw-medium">Alasan Penolakan <span class="text-danger">*</span></label>
+                                            <textarea name="reason" id="reason" rows="2" class="form-control @error('reason') is-invalid @enderror" placeholder="Jelaskan alasan penolakan..." required maxlength="1000"></textarea>
+                                            @error('reason')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <div class="form-text">Maksimal 1000 karakter.</div>
+                                        </div>
 
-                        <div class="collapse" id="rejectForm">
-                            <div class="card card-body border-0 bg-light p-3">
-                                <form method="POST" action="{{ route('director.approval.reject', $document->id) }}">
-                                    @csrf
-                                    <div class="mb-3">
-                                        <label for="reason" class="form-label fw-medium">Alasan Penolakan <span class="text-danger">*</span></label>
-                                        <textarea name="reason" id="reason" rows="2" class="form-control @error('reason') is-invalid @enderror" placeholder="Jelaskan alasan penolakan..." required maxlength="1000"></textarea>
-                                        @error('reason')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                        <div class="form-text">Maksimal 1000 karakter.</div>
-                                    </div>
-
-                                    <button type="submit" class="btn btn-danger w-100">
-                                        <i class="bi bi-x-circle me-1"></i> Konfirmasi Reject
-                                    </button>
-                                </form>
+                                        <button type="submit" class="btn btn-danger w-100">
+                                            <i class="bi bi-x-circle me-1"></i> Konfirmasi Reject
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @elseif($directorApproved)
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="badge bg-success" style="font-size:13px;padding:6px 14px;">
+                            <i class="bi bi-check2-circle me-1"></i> Approved
+                        </span>
+                        <span class="text-muted small">Dokumen telah disetujui. Klik Publish untuk menerbitkan.</span>
+                    </div>
+                @elseif($directorPublished)
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="badge bg-dark" style="font-size:13px;padding:6px 14px;">
+                            <i class="bi bi-check2-all me-1"></i> Published
+                        </span>
+                        <span class="text-muted small">Dokumen telah dipublish dan terkunci permanen.</span>
+                    </div>
+                @elseif($directorRejected)
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="badge bg-danger" style="font-size:13px;padding:6px 14px;">
+                            <i class="bi bi-x-octagon me-1"></i> Rejected
+                        </span>
+                        <span class="text-muted small">Dokumen telah ditolak. Tidak ada aksi lebih lanjut.</span>
+                    </div>
+                @else
+                    <p class="text-muted mb-0">Tidak ada aksi yang tersedia untuk status ini.</p>
+                @endif
 
                 @if(session('success'))
                 <div class="alert alert-success mt-3 mb-0">
@@ -394,9 +435,8 @@
         </div>
     </div>
 
-
-    {{-- --- PUBLISH SECTION ---------------------------------- --}}
-    @if($document->status === \App\Enums\DocumentStatus::Approved)
+    {{-- ==================================== PUBLISH SECTION --}}
+    @if($directorApproved)
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white border-bottom-0 pt-3 px-3">

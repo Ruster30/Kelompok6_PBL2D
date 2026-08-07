@@ -204,7 +204,7 @@ class DocumentApprovalService
 
     /**
      * Ambil dokumen yang menunggu approval Director.
-     * Hanya menampilkan Generated documents dengan status Pending.
+     * Menampilkan Generated documents berstatus Pending (menunggu review) atau Approved (menunggu Publish).
      */
     public function getPendingDocuments(
         ?string $search = null,
@@ -213,7 +213,7 @@ class DocumentApprovalService
     ): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return Document::query()
-            ->where("status", \App\Enums\DocumentStatus::Pending)
+            ->whereIn("status", [\App\Enums\DocumentStatus::Pending, \App\Enums\DocumentStatus::Approved])
             ->where("document_source", \App\Enums\DocumentSource::Generated)
             ->when($search, fn($q, $v) => $q->where("nama_file", "like", "%{$v}%"))
             ->when($category, fn($q, $v) => $q->where("document_category", $v))
@@ -451,7 +451,7 @@ class DocumentApprovalService
 
     /**
      * Ambil riwayat dokumen yang sudah diproses Director.
-     * Status: Approved atau Rejected, Source: Generated.
+     * Status: Published atau Rejected (dokumen selesai diproses); Source: Generated.
      */
     public function getHistory(
         ?string $search = null,
@@ -460,7 +460,7 @@ class DocumentApprovalService
     ): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return \App\Models\Document::query()
-            ->whereIn("status", [\App\Enums\DocumentStatus::Approved, \App\Enums\DocumentStatus::Rejected])
+            ->whereIn("status", [\App\Enums\DocumentStatus::Published, \App\Enums\DocumentStatus::Rejected])
             ->where("document_source", \App\Enums\DocumentSource::Generated)
             ->when($search, function ($q, $v) {
                 $q->where(function ($q2) use ($v) {
