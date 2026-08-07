@@ -519,14 +519,22 @@ class DocumentApprovalService
                 "published_by" => $publisher->id,
             ]);
 
-            // Refresh untuk mendapatkan status Published
-            $document->refresh()->load("numbering");
-
             // Pastikan Verification Token tersedia (tanpa QR)
             $this->verificationService->getOrCreateVerificationToken($document);
 
             // Phase 11G.1: QR otomatis dibuat setelah Publish (menggunakan Verification Token)
             $this->qrCodeService->getOrCreateQrCode($document);
+
+            // Reload Document + relasi terbaru (numbering + qrVerification) sebelum render PDF.
+            // Tidak mengandalkan lazy loading; memastikan PDF final tidak pernah stale.
+            $document->refresh()->load([
+                "numbering",
+                "qrVerification",
+            ]);
+
+            // Phase 11G.2A: Regenerate PDF Final agar selalu berisi QR terbaru.
+            // Hanya render ulang; tidak membuat QR/token/nomor surat baru.
+            app(DocumentBuilderService::class)->regeneratePublishedPdf($document);
 
             return $document->fresh();
         });

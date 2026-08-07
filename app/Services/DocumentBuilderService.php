@@ -482,4 +482,32 @@ private function generateRab(Event $event, ?Document $document = null): array
 
         \Log::info('PDF Final regenerated', ['document_id' => $document->id]);
     }
+
+    /**
+     * Regenerate PDF final untuk dokumen Published.
+     *
+     * Method ini HANYA bertugas:
+     * - reload relasi terbaru (numbering + qrVerification)
+     * - render ulang PDF
+     * - overwrite file PDF lama (file_path yang sama)
+     *
+     * TIDAK membuat nomor surat, verification token, maupun QR code.
+     * TIDAK mengubah status dokumen ataupun approval.
+     * QR memakai dari qr_path yang sudah ada (tidak pernah digenerate ulang).
+     * Backward compatible untuk dokumen lama yang sudah Published.
+     */
+    public function regeneratePublishedPdf(Document $document): void
+    {
+        // Reload relasi terbaru agar tidak terjadi PDF stale.
+        $document->refresh()->load([
+            'numbering',
+            'qrVerification',
+        ]);
+
+        $event = $document->event;
+        $jenis = $document->tipe === 'kontrak' ? 'surat_kontrak' : $document->tipe;
+
+        // Render ulang PDF dan overwrite file lama.
+        $this->regenerateFinalPdf($document, $event, $jenis);
+    }
 }
