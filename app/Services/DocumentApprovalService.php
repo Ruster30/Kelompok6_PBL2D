@@ -385,16 +385,14 @@ class DocumentApprovalService
             // Nomor surat sudah diinput manual oleh Admin sebelum submit
             // (tidak ada auto-generation)
 
-            // Generate QR Code setelah nomor berhasil
-            $this->qrCodeService->generate($document, $director);
-
             // Refresh object agar relasi numbering dan qrVerification termuat
             $document->refresh()->load([
                 "numbering",
                 "qrVerification",
             ]);
 
-            // Regenerate PDF Final — replace file lama dengan PDF yang memuat nomor, QR, status
+            // Regenerate PDF Final — replace file lama dengan PDF yang memuat nomor dan status
+            // (QR dibuat terpisah saat Publish, tidak lagi saat Approve)
             $event = $document->event;
             $jenis = $document->tipe === 'kontrak' ? 'surat_kontrak' : $document->tipe;
             app(DocumentBuilderService::class)->regenerateFinalPdf($document, $event, $jenis);
@@ -526,6 +524,9 @@ class DocumentApprovalService
 
             // Pastikan Verification Token tersedia (tanpa QR)
             $this->verificationService->getOrCreateVerificationToken($document);
+
+            // Phase 11G.1: QR otomatis dibuat setelah Publish (menggunakan Verification Token)
+            $this->qrCodeService->getOrCreateQrCode($document);
 
             return $document->fresh();
         });

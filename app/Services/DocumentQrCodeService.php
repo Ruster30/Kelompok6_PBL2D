@@ -4,87 +4,127 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\DocumentSource;
+use App\Enums\DocumentStatus;
 use App\Models\Document;
-use App\Models\DocumentQrVerification;
-use App\Models\User;
 use App\Repositories\Contracts\DocumentQrVerificationRepositoryInterface;
-use Illuminate\Support\Facades\Http;
+use BaconQrCode\Common\ErrorCorrectionLevel;
+use BaconQrCode\Encoder\Encoder;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 /**
  * DocumentQrCodeService
  *
  * Generate QR Code image dan menyimpannya ke storage.
- * QR berisi URL verifikasi: APP_URL/verify/{token}
+ *
+ * Phase 11G.1:
+ * - QR hanya dibuat untuk dokumen Published (source Generated).
+ * - QR berisi URL verifikasi: APP_URL/verify/{verification_token}.
+ * - QR bersifat immutable: tidak pernah digenerate ulang.
  */
 class DocumentQrCodeService
 {
-    private const QR_DIR = "qr";
+    private const QR_PUBLIC_DIR = "document-qr";
 
     public function __construct(
         private readonly DocumentQrVerificationRepositoryInterface $qrRepository,
     ) {}
 
     /**
-     * Generate QR Code untuk dokumen Approved.
-     * Jika sudah ada, return existing.
+     * Dapatkan QR Code untuk dokumen Published.
+     * Jika QR sudah ada dan file masih ada di storage, return path yang sama.
+     *
+     * Business Rules:
+     * - Status harus Published.
+     * - Document Source harus Generated.
+     * - Verification Token wajib sudah ada.
+     * - QR tidak pernah digenerate ulang.
      */
-    public function generate(Document $document, User $generatedBy): DocumentQrVerification
+    public function getOrCreateQrCode(Document $document): string
     {
-        // Cek apakah sudah ada QR
-        $existing = $this->qrRepository->findByDocument($document->id);
-        if ($existing) {
-            return $existing;
-        }
-
-        $token    = bin2hex(random_bytes(16));
-        $verifyUrl = url("/verify/{$token}");
-
-        // Generate QR image via API
-        $qrFileName = "qr-{$document->id}.png";
-        $qrPath = self::QR_DIR . "/" . $qrFileName;
-
-        try {
-            $response = Http::timeout(10)
-                ->get("https://api.qrserver.com/v1/create-qr-code/", [
-                    "size" => "300x300",
-                    "data" => $verifyUrl,
-                ]);
-
-            if ($response->successful()) {
-                Storage::disk("public")->put($qrPath, $response->body());
-            } else {
-                Log::warning("QR API gagal, menyimpan tanpa gambar", [
-                    "document_id" => $document->id,
-                    "status" => $response->status(),
-                ]);
-                $qrPath = "";
-            }
-        } catch (\Exception $e) {
-            Log::warning("QR API timeout, menyimpan tanpa gambar", [
-                "document_id" => $document->id,
-                "error" => $e->getMessage(),
+        // 1. Validasi status Published
+        if ($document->status !== DocumentStatus::Published) {
+            throw ValidationException::withMessages([
+                "qr" => "QR hanya dapat dibuat untuk dokumen Published.",
             ]);
-            $qrPath = "";
         }
 
-        // Simpan metadata ke database
-        $qr = $this->qrRepository->create([
-            "document_id"         => $document->id,
-            "verification_token"  => $token,
-            "qr_path"             => $qrPath,
-            "generated_by"        => $generatedBy->id,
-            "generated_at"        => now(),
-            "expires_at"          => now()->addYear(),
-        ]);
+        // 2. Validasi document source Generated
+        if ($document->document_source !== DocumentSource::Generated) {
+            throw ValidationException::withMessages([
+                "qr" => "QR hanya dapat dibuat untuk dokumen Generated.",
+            ]);
+        }
 
-        Log::info("QR Code berhasil dibuat", [
-            "document_id" => $document->id,
-            "qr_id" => $qr->id,
+        // 3. Verification Token wajib sudah ada
+        $qrVerification = $this->qrRepository->findByDocument($document->id);
+        if (! $qrVerification || ! $qrVerification->verification_token) {
+            throw ValidationException::withMessages([
+                "qr" => "Verification token wajib ada sebelum QR dibuat.",
+            ]);
+        }
+
+        // 4. Jika QR sudah ada dan file masih ada di storage -> return existing
+        if ($qrVerification->qr_path && Storage::disk("public")->exists($qrVerification->qr_path)) {
+            return $qrVerification->qr_path;
+        }
+
+        // 5-6. Generate QR PNG berisi URL verifikasi
+        $verifyUrl = url("/verify/" . $qrVerification->verification_token);
+        $qrPath    = self::QR_PUBLIC_DIR . "/" . $qrVerification->verification_token . ".png";
+
+        Storage::disk("public")->put($qrPath, $this->renderPng($verifyUrl));
+
+        // 7. Update qr_path
+        $this->qrRepository->update($qrVerification, [
             "qr_path" => $qrPath,
         ]);
 
-        return $qr;
+        Log::info("QR Code dibuat untuk dokumen Published", [
+            "document_id" => $document->id,
+            "qr_path"     => $qrPath,
+        ]);
+
+        // 8. Return path
+        return $qrPath;
+    }
+
+    /**
+     * Render QR Code menjadi PNG menggunakan BaconQrCode + GD.
+     * Tanpa dependency Imagick maupun API eksternal.
+     */
+    private function renderPng(string $text): string
+    {
+        $qrcode = Encoder::encode($text, ErrorCorrectionLevel::M());
+        $matrix = $qrcode->getMatrix();
+
+        $scale  = 8;
+        $margin = 4;
+        $size   = ($matrix->getWidth() + ($margin * 2)) * $scale;
+
+        $image = imagecreatetruecolor($size, $size);
+        $white = imagecolorallocate($image, 255, 255, 255);
+        $black = imagecolorallocate($image, 0, 0, 0);
+
+        imagefilledrectangle($image, 0, 0, $size, $size, $white);
+
+        for ($y = 0; $y < $matrix->getHeight(); $y++) {
+            for ($x = 0; $x < $matrix->getWidth(); $x++) {
+                if ($matrix->get($x, $y)) {
+                    $px = ($x + $margin) * $scale;
+                    $py = ($y + $margin) * $scale;
+                    imagefilledrectangle($image, $px, $py, $px + $scale - 1, $py + $scale - 1, $black);
+                }
+            }
+        }
+
+        ob_start();
+        imagepng($image);
+        $png = (string) ob_get_clean();
+        imagedestroy($image);
+
+        return $png;
     }
 }
