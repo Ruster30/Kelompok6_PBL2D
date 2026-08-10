@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('api/ddms')->group(function () {
+Route::prefix('ddms')->group(function () {
 
     // ── Documents ───────────────────────────────────────────
     Route::prefix('documents')->name('documents.')->group(function () {

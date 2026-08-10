@@ -66,7 +66,7 @@ class DocumentApprovalService
             if (! $document->isDraft()) {
                 throw new \App\Exceptions\DDMS\DDMSException(
                     'Hanya dokumen dengan status Draft yang dapat diajukan approval. ' .
-                    "Status saat ini: {$document->status}."
+                    "Status saat ini: {$document->status->value}."
                 );
             }
 
@@ -249,115 +249,17 @@ class DocumentApprovalService
 
 
 
-    // -- Director Approve -------------------------------------
-
-    /**
-     * Approve dokumen oleh Director.
-     * Validasi: Generated + Pending.
-     */
-    public function approveDocument(Document $document, User $director, string $pin): Document
-    {
-        // Verifikasi PIN sebelum proses approval
-        $this->pinService->verifyPin($director, $pin);
-
-        return DB::transaction(function () use ($document, $director): Document {
-            if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
-                throw new \App\Exceptions\DDMS\DDMSException(
-                    "Hanya dokumen Generated yang dapat diapprove."
-                );
-            }
-
-            if ($document->status !== \App\Enums\DocumentStatus::Pending) {
-                throw new \App\Exceptions\DDMS\DDMSException(
-                    "Hanya dokumen dengan status Pending yang dapat diapprove. Status saat ini: {$document->status->value}."
-                );
-            }
-
-            // Buat atau update approval record
-            $approval = $this->approvalRepository->findLatestByDocument($document->id);
-
-            if (!$approval || !$approval->isPending()) {
-                $approval = $this->approvalRepository->create([
-                    "document_id"   => $document->id,
-                    "submitted_by"  => $document->user_id ?? $director->id,
-                    "status"        => \App\Models\DocumentApproval::STATUS_PENDING,
-                    "submitted_at"  => now(),
-                ]);
-            }
-
-            // Gunakan method approve() yang sudah ada
-            $this->approve($approval, $director);
-
-            // Nomor surat sudah diinput manual oleh Admin
-            // (tidak ada auto-generation)
-
-            Log::info("Dokumen diapprove oleh Director", [
-                "document_id" => $document->id,
-                "director_id" => $director->id,
-            ]);
-
-            return $document->fresh();
-        });
-    }
-
-    // -- Director Reject --------------------------------------
-
-    /**
-     * Reject dokumen oleh Director.
-     * Validasi: Generated + Pending.
-     */
-    public function rejectDocument(Document $document, User $director, string $reason, string $pin): Document
-    {
-        // Verifikasi PIN sebelum proses reject
-        $this->pinService->verifyPin($director, $pin);
-
-        return DB::transaction(function () use ($document, $director, $reason): Document {
-            if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
-                throw new \App\Exceptions\DDMS\DDMSException(
-                    "Hanya dokumen Generated yang dapat direject."
-                );
-            }
-
-            if ($document->status !== \App\Enums\DocumentStatus::Pending) {
-                throw new \App\Exceptions\DDMS\DDMSException(
-                    "Hanya dokumen dengan status Pending yang dapat direject. Status saat ini: {$document->status->value}."
-                );
-            }
-
-            // Buat atau update approval record
-            $approval = $this->approvalRepository->findLatestByDocument($document->id);
-
-            if (!$approval || !$approval->isPending()) {
-                $approval = $this->approvalRepository->create([
-                    "document_id"   => $document->id,
-                    "submitted_by"  => $document->user_id ?? $director->id,
-                    "status"        => \App\Models\DocumentApproval::STATUS_PENDING,
-                    "submitted_at"  => now(),
-                ]);
-            }
-
-            // Gunakan method reject() yang sudah ada
-            $this->reject($approval, $director, $reason);
-
-            Log::info("Dokumen direject oleh Director", [
-                "document_id" => $document->id,
-                "director_id" => $director->id,
-                "reason"      => $reason,
-            ]);
-
-            return $document->fresh();
-        });
-    }
-
-
-    // -- Director Approve (tanpa PIN) --------------------------
+    // -- Director Approve -------------------------------
 
     /**
      * Approve dokumen oleh Director.
      * Mencari approval pending, lalu memproses approve.
      */
-    public function directorApprove(Document $document, User $director): Document
+    public function directorApprove(Document $document, User $director, string $pin): Document
     {
+        // Verifikasi PIN sebelum proses approval (fail-fast, di luar transaction)
+        $this->pinService->verifyPin($director, $pin);
+
         return DB::transaction(function () use ($document, $director): Document {
             if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
                 throw new \App\Exceptions\DDMS\DDMSException(
@@ -391,7 +293,7 @@ class DocumentApprovalService
                 "qrVerification",
             ]);
 
-            // Regenerate PDF Final — replace file lama dengan PDF yang memuat nomor dan status
+            // Regenerate PDF Final ï¿½ replace file lama dengan PDF yang memuat nomor dan status
             // (QR dibuat terpisah saat Publish, tidak lagi saat Approve)
             $event = $document->event;
             $jenis = $document->tipe === 'kontrak' ? 'surat_kontrak' : $document->tipe;
@@ -407,14 +309,17 @@ class DocumentApprovalService
         });
     }
 
-    // -- Director Reject (tanpa PIN) ---------------------------
+    // -- Director Reject --------------------------------
 
     /**
      * Reject dokumen oleh Director.
      * Mencari approval pending, lalu memproses reject.
      */
-    public function directorReject(Document $document, User $director, string $reason): Document
+    public function directorReject(Document $document, User $director, string $reason, string $pin): Document
     {
+        // Verifikasi PIN sebelum proses reject (fail-fast, di luar transaction)
+        $this->pinService->verifyPin($director, $pin);
+
         return DB::transaction(function () use ($document, $director, $reason): Document {
             if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
                 throw new \App\Exceptions\DDMS\DDMSException(

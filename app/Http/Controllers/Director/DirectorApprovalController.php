@@ -44,6 +44,7 @@ class DirectorApprovalController extends Controller
             $this->approvalService->directorApprove(
                 document: $document,
                 director: $request->user(),
+                pin:      $request->input("pin"),
             );
         } catch (\App\Exceptions\DDMS\DDMSException $e) {
             return redirect()
@@ -66,6 +67,7 @@ class DirectorApprovalController extends Controller
                 document: $document,
                 director: $request->user(),
                 reason:   $request->input("reason"),
+                pin:      $request->input("pin"),
             );
         } catch (\App\Exceptions\DDMS\DDMSException $e) {
             return redirect()

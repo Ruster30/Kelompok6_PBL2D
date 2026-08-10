@@ -367,38 +367,15 @@
                 @if($directorPending && $directorGenerated)
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <form method="POST" action="{{ route('director.approval.approve', $document->id) }}">
-                                @csrf
-                                <button type="submit" class="btn btn-success w-100">
-                                    <i class="bi bi-check-circle me-1"></i> Approve
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#approveModal">
+                                <i class="bi bi-check-circle me-1"></i> Approve
+                            </button>
                         </div>
 
                         <div class="col-md-6">
-                            <button type="button" class="btn btn-danger w-100 mb-2" data-bs-toggle="collapse" data-bs-target="#rejectForm">
+                            <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#rejectModal">
                                 <i class="bi bi-x-circle me-1"></i> Reject
                             </button>
-
-                            <div class="collapse" id="rejectForm">
-                                <div class="card card-body border-0 bg-light p-3">
-                                    <form method="POST" action="{{ route('director.approval.reject', $document->id) }}">
-                                        @csrf
-                                        <div class="mb-3">
-                                            <label for="reason" class="form-label fw-medium">Alasan Penolakan <span class="text-danger">*</span></label>
-                                            <textarea name="reason" id="reason" rows="2" class="form-control @error('reason') is-invalid @enderror" placeholder="Jelaskan alasan penolakan..." required maxlength="1000"></textarea>
-                                            @error('reason')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                            <div class="form-text">Maksimal 1000 karakter.</div>
-                                        </div>
-
-                                        <button type="submit" class="btn btn-danger w-100">
-                                            <i class="bi bi-x-circle me-1"></i> Konfirmasi Reject
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 @elseif($directorApproved)
@@ -435,7 +412,81 @@
         </div>
     </div>
 
-    {{-- ==================================== PUBLISH SECTION --}}
+    {{-- ==================================== MODAL APPROVE --}}
+    @if($directorPending && $directorGenerated)
+    <div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('director.approval.approve', $document->id) }}" id="approveForm">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="approveModalLabel">Konfirmasi Approve</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted mb-3">
+                            Dokumen <strong>{{ $document->nama_file }}</strong> akan disetujui.
+                            Masukkan PIN konfirmasi untuk melanjutkan.
+                        </p>
+                        <div class="mb-3">
+                            <label for="approve_pin" class="form-label fw-medium">PIN Konfirmasi <span class="text-danger">*</span></label>
+                            <input type="password" name="pin" id="approve_pin" class="form-control @error('pin') is-invalid @enderror" placeholder="Masukkan 6 digit PIN" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required>
+                            @error('pin')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i> Konfirmasi Approve
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- ==================================== MODAL REJECT ---}}
+    <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('director.approval.reject', $document->id) }}" id="rejectForm">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="rejectModalLabel">Konfirmasi Reject</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="reason" class="form-label fw-medium">Alasan Penolakan <span class="text-danger">*</span></label>
+                            <textarea name="reason" id="reason" rows="3" class="form-control @error('reason') is-invalid @enderror" placeholder="Jelaskan alasan penolakan..." required maxlength="1000"></textarea>
+                            @error('reason')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">Maksimal 1000 karakter.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reject_pin" class="form-label fw-medium">PIN Konfirmasi <span class="text-danger">*</span></label>
+                            <input type="password" name="pin" id="reject_pin" class="form-control @error('pin') is-invalid @enderror" placeholder="Masukkan 6 digit PIN" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required>
+                            @error('pin')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-x-circle me-1"></i> Konfirmasi Reject
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+{{-- ==================================== PUBLISH SECTION --}}
     @if($directorApproved)
     <div class="col-12">
         <div class="card border-0 shadow-sm">
@@ -459,4 +510,55 @@
     </div>
     @endif
 </div>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var approveModalEl = document.getElementById('approveModal');
+    var rejectModalEl  = document.getElementById('rejectModal');
+    var approvePin     = document.getElementById('approve_pin');
+    var rejectPin      = document.getElementById('reject_pin');
+
+    // Fokus ke input PIN saat modal dibuka.
+    if (approveModalEl && approvePin) {
+        approveModalEl.addEventListener('shown.bs.modal', function () {
+            approvePin.focus();
+        });
+    }
+    if (rejectModalEl && rejectPin) {
+        rejectModalEl.addEventListener('shown.bs.modal', function () {
+            rejectPin.focus();
+        });
+    }
+
+    // Jangan simpan PIN: kosongkan setiap kali modal ditutup.
+    if (approveModalEl && approvePin) {
+        approveModalEl.addEventListener('hidden.bs.modal', function () {
+            approvePin.value = '';
+        });
+    }
+    if (rejectModalEl && rejectPin) {
+        rejectModalEl.addEventListener('hidden.bs.modal', function () {
+            rejectPin.value = '';
+        });
+    }
+
+    @php
+        // Buka kembali modal terkait ketika ada validation error dari backend.
+        $reopenApproveModal = $errors->has('pin') && old('reason') === null;
+        $reopenRejectModal  = $errors->has('reason') || old('reason') !== null;
+    @endphp
+
+    @if(isset($reopenApproveModal) && $reopenApproveModal)
+    if (approveModalEl && window.bootstrap) {
+        bootstrap.Modal.getOrCreateInstance(approveModalEl).show();
+    }
+    @endif
+    @if(isset($reopenRejectModal) && $reopenRejectModal)
+    if (rejectModalEl && window.bootstrap) {
+        bootstrap.Modal.getOrCreateInstance(rejectModalEl).show();
+    }
+    @endif
+});
+</script>
+@endpush
 @endsection

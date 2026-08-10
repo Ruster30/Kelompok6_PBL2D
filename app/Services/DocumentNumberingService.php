@@ -64,7 +64,7 @@ class DocumentNumberingService
             if (! $document->isApproved()) {
                 throw new \App\Exceptions\DDMS\DocumentNotApprovedException(
                     'Hanya dokumen berstatus Approved yang dapat diberi nomor. ' .
-                    "Status saat ini: {$document->status}."
+                    "Status saat ini: {$document->status->value}."
                 );
             }
 
