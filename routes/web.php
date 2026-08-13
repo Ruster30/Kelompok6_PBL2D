@@ -548,4 +548,7 @@ Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->
 
 });
 
+// Public Document Verification
+Route::get('/verify/{token}', [App\Http\Controllers\PublicVerificationController::class, 'verify'])
+    ->name('verify.document');
 require __DIR__.'/auth.php';
