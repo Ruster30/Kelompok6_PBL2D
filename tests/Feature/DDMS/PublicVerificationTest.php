@@ -312,4 +312,48 @@ class PublicVerificationTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('public.verification.valid');
     }
+
+    public function test_rate_limit_30_requests_per_minute()
+    {
+        $document = Document::create([
+            'event_id' => $this->event->id,
+            'tipe' => 'sertifikat',
+            'nama_file' => 'document_ratelimit.pdf',
+            'status' => DocumentStatus::Published,
+            'document_source' => DocumentSource::Generated,
+            'file_path' => '/path/to/file.pdf',
+        ]);
+
+        DocumentNumbering::create([
+            'document_id' => $document->id,
+            'prefix' => 'DOC',
+            'year' => 2026,
+            'sequence_number' => 99,
+            'generated_by' => $this->adminUser->id,
+            'document_number' => 'DOC-2026-RATELIMIT',
+            'formatted_number' => 'DOC/2026/RATELIMIT',
+        ]);
+
+        $verification = DocumentQrVerification::create([
+            'document_id' => $document->id,
+            'verification_token' => 'rate-limit-token-test',
+            'qr_code_path' => '/path/to/qr.png',
+            'generated_at' => now(),
+        ]);
+
+        $token = $verification->verification_token;
+
+        // First 30 requests should succeed (200 OK)
+        for ($i = 0; $i < 30; $i++) {
+            $response = $this->get("/verify/{$token}");
+            $response->assertStatus(200)
+                ->assertViewIs('public.verification.valid');
+        }
+
+        // Request 31 should be throttled (429 Too Many Requests)
+        $response = $this->get("/verify/{$token}");
+        $response->assertStatus(429);
+    }
+
+
 }
