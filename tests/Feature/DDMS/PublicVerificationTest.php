@@ -506,4 +506,60 @@ class PublicVerificationTest extends TestCase
         $this->assertSame(DocumentStatus::Published, $document->status);
         $this->assertNull($document->qrVerification);
     }
+
+    
+    public function test_valid_verification_creates_audit_log_in_database()
+    {
+        [$document, $verification] = $this->createValidPublishedDocument("audit-token-test");
+        $logCountBefore = \App\Models\DocumentVerificationLog::count();
+        $response = $this->get("/verify/{$verification->verification_token}");
+        $response->assertStatus(200)->assertViewIs("public.verification.valid");
+        $logCountAfter = \App\Models\DocumentVerificationLog::count();
+        $this->assertEquals($logCountBefore + 1, $logCountAfter);
+        $log = \App\Models\DocumentVerificationLog::where("verification_id", $verification->id)->first();
+        $this->assertNotNull($log);
+        $this->assertSame($verification->id, $log->verification_id);
+        $this->assertSame(\App\Models\DocumentVerificationLog::STATUS_VALID, $log->status);
+    }
+
+    public function test_valid_verification_log_contains_ip_address()
+    {
+        [$document, $verification] = $this->createValidPublishedDocument("ip-token-test");
+        $response = $this->get("/verify/{$verification->verification_token}");
+        $response->assertStatus(200);
+        $log = \App\Models\DocumentVerificationLog::where("verification_id", $verification->id)->first();
+        $this->assertNotNull($log);
+        $this->assertNotNull($log->ip_address);
+        $this->assertNotEmpty($log->ip_address);
+    }
+
+    public function test_valid_verification_log_contains_user_agent()
+    {
+        [$document, $verification] = $this->createValidPublishedDocument("ua-token-test");
+        $response = $this->withHeader("User-Agent", "CustomTestClient/11H.2C")->get("/verify/{$verification->verification_token}");
+        $response->assertStatus(200);
+        $log = \App\Models\DocumentVerificationLog::where("verification_id", $verification->id)->first();
+        $this->assertNotNull($log);
+        $this->assertStringContainsString("CustomTestClient", $log->user_agent);
+    }
+
+    public function test_valid_verification_log_uses_correct_status_and_source()
+    {
+        [$document, $verification] = $this->createValidPublishedDocument("status-token-test");
+        $response = $this->get("/verify/{$verification->verification_token}");
+        $response->assertStatus(200);
+        $log = \App\Models\DocumentVerificationLog::where("verification_id", $verification->id)->first();
+        $this->assertNotNull($log);
+        $this->assertSame(\App\Models\DocumentVerificationLog::STATUS_VALID, $log->status);
+        $this->assertSame(\App\Models\DocumentVerificationLog::SOURCE_PUBLIC, $log->verification_source);
+    }
+
+    public function test_invalid_token_does_not_create_database_audit_log()
+    {
+        $logCountBefore = \App\Models\DocumentVerificationLog::count();
+        $response = $this->get("/verify/invalid-token-xyz");
+        $response->assertStatus(200)->assertViewIs("public.verification.not-found");
+        $logCountAfter = \App\Models\DocumentVerificationLog::count();
+        $this->assertSame($logCountBefore, $logCountAfter);
+    }
 }
