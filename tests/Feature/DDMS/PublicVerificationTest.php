@@ -45,6 +45,37 @@ class PublicVerificationTest extends TestCase
         ]);
     }
 
+    private function createValidPublishedDocument(string $token = 'valid-token-12345'): array
+    {
+        $document = Document::create([
+            'event_id' => $this->event->id,
+            'tipe' => 'sertifikat',
+            'nama_file' => 'document_security_test.pdf',
+            'status' => DocumentStatus::Published,
+            'document_source' => DocumentSource::Generated,
+            'file_path' => '/path/to/file.pdf',
+        ]);
+
+        DocumentNumbering::create([
+            'document_id' => $document->id,
+            'prefix' => 'DOC',
+            'year' => 2026,
+            'sequence_number' => 77,
+            'generated_by' => $this->adminUser->id,
+            'document_number' => 'DOC-2026-SECURITY',
+            'formatted_number' => 'DOC/2026/SECURITY',
+        ]);
+
+        $verification = DocumentQrVerification::create([
+            'document_id' => $document->id,
+            'verification_token' => $token,
+            'qr_code_path' => '/path/to/qr.png',
+            'generated_at' => now(),
+        ]);
+
+        return [$document, $verification];
+    }
+
     public function test_valid_token_published_generated_with_document_number()
     {
         $document = Document::create([
@@ -343,17 +374,136 @@ class PublicVerificationTest extends TestCase
 
         $token = $verification->verification_token;
 
-        // First 30 requests should succeed (200 OK)
         for ($i = 0; $i < 30; $i++) {
             $response = $this->get("/verify/{$token}");
             $response->assertStatus(200)
                 ->assertViewIs('public.verification.valid');
         }
 
-        // Request 31 should be throttled (429 Too Many Requests)
         $response = $this->get("/verify/{$token}");
         $response->assertStatus(429);
     }
 
+    public function test_token_too_short_returns_safe_error()
+    {
+        [$document, $verification] = $this->createValidPublishedDocument();
 
+        $response = $this->get('/verify/abc123');
+
+        $response->assertStatus(200);
+        $response->assertViewIs('public.verification.not-found');
+        $response->assertSee('Dokumen Tidak Ditemukan');
+        $response->assertDontSee('Dokumen Terverifikasi');
+        $response->assertDontSee('SQLSTATE');
+        $response->assertDontSee('QueryException');
+        $response->assertDontSee('SQL');
+        $response->assertDontSee('Exception');
+        $response->assertDontSee('Stack trace');
+        
+        
+    }
+
+    public function test_token_with_invalid_characters_returns_safe_error()
+    {
+        $this->createValidPublishedDocument();
+
+        $invalidTokens = [
+            'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            'ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
+            'abcd1234!@#$%^&*()_+[]{}|;:,.?',
+        ];
+
+        foreach ($invalidTokens as $token) {
+            $response = $this->get('/verify/' . rawurlencode($token));
+
+            $response->assertStatus(200);
+            $response->assertViewIs('public.verification.not-found');
+            $response->assertSee('Dokumen Tidak Ditemukan');
+            $response->assertDontSee('Dokumen Terverifikasi');
+            $response->assertDontSee('SQLSTATE');
+            $response->assertDontSee('QueryException');
+            $response->assertDontSee('Exception');
+            $response->assertDontSee('Stack trace');
+        }
+    }
+
+    public function test_sql_injection_payload_cannot_bypass_verification()
+    {
+        [$document] = $this->createValidPublishedDocument();
+
+        $payloads = [
+            "' OR '1'='1",
+            "' OR 1=1 --",
+            "' UNION SELECT * FROM users --",
+            "'; DROP TABLE documents; --",
+            "' OR ''='",
+            "1' OR '1'='1' --",
+        ];
+
+        foreach ($payloads as $payload) {
+            $response = $this->get('/verify/' . rawurlencode($payload));
+
+            $response->assertStatus(200);
+            $response->assertViewIs('public.verification.not-found');
+            $response->assertSee('Dokumen Tidak Ditemukan');
+            $response->assertDontSee('Dokumen Terverifikasi');
+            $response->assertDontSee('SQLSTATE');
+            $response->assertDontSee('QueryException');
+            $response->assertDontSee('Syntax error');
+            $response->assertDontSee('PDO');
+            $response->assertDontSee('Exception');
+            $response->assertDontSee('Stack trace');
+            
+            $response->assertDontSee($document->numbering->document_number);
+        }
+
+        $this->assertSame(DocumentStatus::Published, $document->fresh()->status);
+        $this->assertSame(1, Document::count());
+        $this->assertSame(1, DocumentNumbering::count());
+        $this->assertSame(1, DocumentQrVerification::count());
+    }
+
+    public function test_empty_token_route_handled_by_framework()
+    {
+        $response = $this->get('/verify/');
+
+        $response->assertStatus(404);
+        $response->assertDontSee('Dokumen Terverifikasi');
+        $response->assertDontSee('SQLSTATE');
+        $response->assertDontSee('QueryException');
+    }
+
+    public function test_malformed_token_does_not_create_new_token_or_qr()
+    {
+        $document = Document::create([
+            'event_id' => $this->event->id,
+            'tipe' => 'sertifikat',
+            'nama_file' => 'document_no_qr.pdf',
+            'status' => DocumentStatus::Published,
+            'document_source' => DocumentSource::Generated,
+            'file_path' => '/path/to/file.pdf',
+        ]);
+
+        DocumentNumbering::create([
+            'document_id' => $document->id,
+            'prefix' => 'DOC',
+            'year' => 2026,
+            'sequence_number' => 78,
+            'generated_by' => $this->adminUser->id,
+            'document_number' => 'DOC-2026-NOQR',
+            'formatted_number' => 'DOC/2026/NOQR',
+        ]);
+
+        $tokensBefore = DocumentQrVerification::count();
+
+        foreach (['abc123', 'xxxx', "'; DROP TABLE qr; --"] as $token) {
+            $this->get('/verify/' . rawurlencode($token));
+        }
+
+        $this->assertSame($tokensBefore, DocumentQrVerification::count());
+
+        $document->refresh();
+        $this->assertSame(DocumentStatus::Published, $document->status);
+        $this->assertNull($document->qrVerification);
+    }
 }
