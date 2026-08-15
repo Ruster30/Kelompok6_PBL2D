@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'vendor.role' => \App\Http\Middleware\VendorMiddleware::class,
             'director'    => \App\Http\Middleware\DirectorMiddleware::class,
             'client.role' => \App\Http\Middleware\ClientMiddleware::class,
+            'security-headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

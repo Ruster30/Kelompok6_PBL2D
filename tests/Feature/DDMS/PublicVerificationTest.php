@@ -562,4 +562,61 @@ class PublicVerificationTest extends TestCase
         $logCountAfter = \App\Models\DocumentVerificationLog::count();
         $this->assertSame($logCountBefore, $logCountAfter);
     }
+
+    public function test_valid_response_includes_security_headers()
+    {
+        [$document, $verification] = $this->createValidPublishedDocument("security-headers-valid-token");
+        $response = $this->get("/verify/{$verification->verification_token}");
+        $response->assertStatus(200);
+        $response->assertHeader("X-Frame-Options", "DENY");
+        $response->assertHeader("X-Content-Type-Options", "nosniff");
+        $response->assertHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+        $response->assertHeader("Content-Security-Policy", "default-src 'self'");
+    }
+
+    public function test_invalid_token_response_includes_security_headers()
+    {
+        $response = $this->get("/verify/invalid-security-headers-token");
+        $response->assertStatus(200);
+        $response->assertHeader("X-Frame-Options", "DENY");
+        $response->assertHeader("X-Content-Type-Options", "nosniff");
+        $response->assertHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+        $response->assertHeader("Content-Security-Policy", "default-src 'self'");
+    }
+
+    public function test_draft_document_response_includes_security_headers()
+    {
+        $document = Document::create([
+            "event_id" => $this->event->id,
+            "tipe" => "sertifikat",
+            "nama_file" => "document_draft_headers.pdf",
+            "status" => DocumentStatus::Draft,
+            "document_source" => DocumentSource::Generated,
+            "file_path" => "/path/to/file.pdf",
+        ]);
+
+        DocumentNumbering::create([
+            "document_id" => $document->id,
+            "prefix" => "DOC",
+            "year" => 2026,
+            "sequence_number" => 99,
+            "generated_by" => $this->adminUser->id,
+            "document_number" => "DOC-2026-HDR",
+            "formatted_number" => "DOC/2026/HDR",
+        ]);
+
+        $verification = DocumentQrVerification::create([
+            "document_id" => $document->id,
+            "verification_token" => "draft-security-headers-token",
+            "qr_code_path" => "/path/to/qr.png",
+            "generated_at" => now(),
+        ]);
+
+        $response = $this->get("/verify/{$verification->verification_token}");
+        $response->assertStatus(200);
+        $response->assertHeader("X-Frame-Options", "DENY");
+        $response->assertHeader("X-Content-Type-Options", "nosniff");
+        $response->assertHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+        $response->assertHeader("Content-Security-Policy", "default-src 'self'");
+    }
 }

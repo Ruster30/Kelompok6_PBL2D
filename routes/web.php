@@ -550,6 +550,6 @@ Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->
 
 // Public Document Verification
 Route::get('/verify/{token}', [App\Http\Controllers\PublicVerificationController::class, 'verify'])
-    ->middleware('throttle:30,1')
+    ->middleware(['throttle:30,1', 'security-headers'])
     ->name('verify.document');
 require __DIR__.'/auth.php';
