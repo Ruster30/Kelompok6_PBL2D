@@ -32,6 +32,36 @@
         Dokumen ini masih dalam status Draft. Anda dapat mengedit, menghapus, atau mengirimkan dokumen untuk approval.
     </p>
 
+    {{-- Nomor Surat --}}
+    <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #e2e8f0;">
+        <h3 style="font-size:14px;font-weight:600;color:#0f172a;margin-bottom:12px;">
+            <i class="fas fa-hashtag me-1"></i> Nomor Surat
+        </h3>
+        @php $currentNumber = optional($document->numbering)->document_number; @endphp
+        @if($currentNumber)
+        <div style="margin-bottom:12px;padding:10px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-family:monospace;font-size:14px;color:#166534;">
+            {{ $currentNumber }}
+        </div>
+        @endif
+        @php $isDraft = $document->status === \App\Enums\DocumentStatus::Draft; @endphp
+        <form method="POST" action="{{ route('admin.document_builder.set_number', $document->id) }}" style="display:flex;gap:12px;align-items:flex-end;">
+            @csrf
+            <div style="flex:1;">
+                <input type="text" name="nomor_surat" value="{{ $currentNumber ?? '' }}" class="form-input" style="width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;font-family:monospace;" placeholder="Contoh: 001/SPK-ALPH/VIII/2026" required maxlength="255" {{ $isDraft ? '' : 'readonly' }}>
+                @error('nomor_surat')
+                <div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ $message }}</div>
+                @enderror
+                @if(! $isDraft)
+                <div style="margin-top:6px;font-size:12px;color:#94a3b8;">
+                    <i class="fas fa-lock me-1"></i> Nomor surat telah dikunci karena dokumen sudah masuk proses approval.
+                </div>
+                @endif
+            </div>
+            <button type="submit" style="background:#0f172a;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;{{ $isDraft ? '' : 'opacity:0.5;cursor:not-allowed;' }}" {{ $isDraft ? '' : 'disabled' }}>
+                <i class="fas fa-save"></i> Simpan Nomor
+            </button>
+        </form>
+    </div>
     {{-- Edit Nama --}}
     <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #e2e8f0;">
         <h3 style="font-size:14px;font-weight:600;color:#0f172a;margin-bottom:12px;">

@@ -51,4 +51,10 @@ class DocumentNumberingRepository implements DocumentNumberingRepositoryInterfac
     {
         return $this->model->where('document_id', $documentId)->exists();
     }
+
+    public function update(DocumentNumbering $numbering, array $data): DocumentNumbering
+    {
+        $numbering->update($data);
+        return $numbering->fresh();
+    }
 }

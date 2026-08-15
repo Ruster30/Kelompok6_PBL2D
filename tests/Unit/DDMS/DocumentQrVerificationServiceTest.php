@@ -26,6 +26,8 @@ it('generates QR for published document', function () {
     $document = Document::factory()->create(['status' => 'published']);
     $user = User::factory()->create();
 
+    $this->qrRepo->shouldReceive('findByDocument')->once()->andReturnNull();
+
     $this->qrRepo->shouldReceive('create')->once()->andReturn(
         new DocumentQrVerification(['verification_token' => str_repeat('a', 32)]),
     );

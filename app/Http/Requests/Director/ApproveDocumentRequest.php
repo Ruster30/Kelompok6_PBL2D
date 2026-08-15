@@ -15,11 +15,16 @@ class ApproveDocumentRequest extends FormRequest
 
     public function rules(): array
     {
-        return [];
+        return [
+            "pin" => "required|digits:6",
+        ];
     }
 
     public function messages(): array
     {
-        return [];
+        return [
+            "pin.required" => "PIN wajib diisi.",
+            "pin.digits"   => "PIN harus tepat 6 digit angka.",
+        ];
     }
 }

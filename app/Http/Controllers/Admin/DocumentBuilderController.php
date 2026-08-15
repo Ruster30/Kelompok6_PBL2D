@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use App\Enums\DocumentStatus;
 use App\Models\User;
 use App\Services\DocumentApprovalService;
+use App\Services\DocumentNumberService;
+use App\Http\Requests\Admin\UpdateDocumentNumberRequest;
 use App\Http\Requests\UploadDenahRequest;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,6 +23,7 @@ class DocumentBuilderController extends Controller
         private readonly DocumentBuilderService $service,
         private readonly PaymentSchemeService $paymentSchemeService,
         private readonly DocumentApprovalService $approvalService,
+        private readonly DocumentNumberService $numberService,
     ) {}
 
     /**
@@ -235,6 +238,26 @@ class DocumentBuilderController extends Controller
         return redirect()
             ->route("admin.document_builder.index")
             ->with("success", "Dokumen berhasil dikirim ke client dan disimpan.");
+    }
+
+    /**
+     * Upload denah/layout untuk event.
+     */
+
+    /**
+     * Simpan nomor surat manual oleh Admin.
+     */
+    public function setDocumentNumber(Document $document, UpdateDocumentNumberRequest $request)
+    {
+        $this->numberService->setManualNumber(
+            document: $document,
+            number:   $request->input("nomor_surat"),
+            setBy:    $request->user(),
+        );
+
+        return redirect()
+            ->route("admin.document_builder.preview", $document->id)
+            ->with("success", "Nomor surat berhasil disimpan.");
     }
 
     /**

@@ -18,12 +18,15 @@ use App\Models\Document;
 use App\Models\DocumentApproval;
 use App\Services\DocumentService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller;
 
 class DocumentController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(
         private readonly DocumentService $documentService,
     ) {}

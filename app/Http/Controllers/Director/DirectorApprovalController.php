@@ -44,6 +44,7 @@ class DirectorApprovalController extends Controller
             $this->approvalService->directorApprove(
                 document: $document,
                 director: $request->user(),
+                pin:      $request->input("pin"),
             );
         } catch (\App\Exceptions\DDMS\DDMSException $e) {
             return redirect()
@@ -66,6 +67,7 @@ class DirectorApprovalController extends Controller
                 document: $document,
                 director: $request->user(),
                 reason:   $request->input("reason"),
+                pin:      $request->input("pin"),
             );
         } catch (\App\Exceptions\DDMS\DDMSException $e) {
             return redirect()
@@ -141,6 +143,31 @@ class DirectorApprovalController extends Controller
         ]);
 
         return view("director.approval.history-show", compact("document"));
+    }
+
+    /**
+     * Tampilkan dashboard approval Director.
+     */
+
+    /**
+     * Publish dokumen yang sudah disetujui.
+     */
+    public function publish(Document $document, Request $request)
+    {
+        try {
+            $this->approvalService->publishDocument(
+                document:  $document,
+                publisher: $request->user(),
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()
+                ->route("director.approval.show", $document->id)
+                ->with("error", $e->getMessage());
+        }
+
+        return redirect()
+            ->route("director.approval.show", $document->id)
+            ->with("success", "Dokumen berhasil dipublish.");
     }
 
     /**

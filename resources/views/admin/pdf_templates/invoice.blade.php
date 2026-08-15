@@ -418,6 +418,8 @@
                     <div class="signature-name">Kurnia Fajar Viliano, S.Tr.Kom</div>
 
                     <div class="signature-position">Direktur</div>
+
+                    @include('admin.pdf_templates.partials.signature_qr')
                 </td>
             </tr>
         </table>
@@ -426,8 +428,6 @@
 
         <div class="footer">Alpha Organizer &nbsp;&nbsp;|&nbsp;&nbsp; alphaorganizer1209@gmail.com &nbsp;&nbsp;|&nbsp;&nbsp; +62 822-3318-1883</div>
     
-{{-- Approval Metadata --}}
-@include('admin.pdf_templates.partials.verification')
 
 </body>
 </html>

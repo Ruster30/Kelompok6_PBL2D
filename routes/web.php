@@ -244,6 +244,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/document-builder/{document}/rename',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'renameDraft'])
         ->name('admin.document_builder.rename');
+    Route::post('/document-builder/{document}/number',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'setDocumentNumber'])
+        ->name('admin.document_builder.set_number');
     Route::get('/document-builder/{document}',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'show'])
         ->name('admin.document_builder.show');
@@ -527,6 +530,9 @@ Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->
     Route::post('/approval/{document}/reject',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'reject'])
         ->name('approval.reject');
+    Route::post('/approval/{document}/publish',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'publish'])
+        ->name('approval.publish');
 
     Route::get('/settings/pin',
         [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
@@ -542,4 +548,8 @@ Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->
 
 });
 
+// Public Document Verification
+Route::get('/verify/{token}', [App\Http\Controllers\PublicVerificationController::class, 'verify'])
+    ->middleware(['throttle:30,1', 'security-headers'])
+    ->name('verify.document');
 require __DIR__.'/auth.php';

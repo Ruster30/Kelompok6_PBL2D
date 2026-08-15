@@ -223,6 +223,26 @@ class Document extends Model
         return $this->status === \App\Enums\DocumentStatus::Draft;
     }
 
+    public function isPending(): bool
+    {
+        return $this->status === \App\Enums\DocumentStatus::Pending;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === \App\Enums\DocumentStatus::Approved;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === \App\Enums\DocumentStatus::Rejected;
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->status === \App\Enums\DocumentStatus::Published;
+    }
+
     public function numberingPrefix(): string
     {
         $map = [

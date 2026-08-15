@@ -26,12 +26,14 @@ it('generates number for approved document', function () {
     $document = Document::factory()->create(['status' => 'approved', 'tipe' => 'proposal']);
     $user = User::factory()->create();
 
+    $this->numberingRepo->shouldReceive('existsByDocument')->once()->andReturn(false);
+
     $this->numberingRepo->shouldReceive('nextSequence')->once()->andReturn(1);
     $this->numberingRepo->shouldReceive('create')->once()->andReturn(
         new DocumentNumbering(['document_number' => 'SP/2026/0001']),
     );
     $this->documentRepo->shouldReceive('update')->once()->andReturn($document);
-    $this->settingService->shouldReceive('getSettingValue')->andReturn(null);
+    $this->settingService->shouldReceive('getSettingValue')->andReturn('');
 
     $result = $this->service->generate($document, $user);
 

@@ -12,7 +12,7 @@ use RuntimeException;
  * Base class untuk seluruh Domain Exception DDMS.
  * Semua custom exception harus extend class ini, bukan RuntimeException langsung.
  */
-abstract class DDMSException extends RuntimeException
+class DDMSException extends RuntimeException
 {
     public function __construct(
         string $message = 'DDMS Domain Exception.',

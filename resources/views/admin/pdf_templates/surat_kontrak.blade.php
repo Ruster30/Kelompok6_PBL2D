@@ -275,6 +275,7 @@
     </tr>
     <tr>
         <td>
+            @include('admin.pdf_templates.partials.signature_qr')
             @if(file_exists(public_path('images/ttd-fajar.png')))
                 <img src="{{ public_path('images/ttd-fajar.png') }}" style="height:62px; display:block; margin-bottom:3px;">
             @else
@@ -322,8 +323,6 @@
 @endif
 
 
-{{-- ════════════════════════ VERIFICATION ════════════════════════ --}}
-@include('admin.pdf_templates.partials.verification')
 
 </body>
 </html>

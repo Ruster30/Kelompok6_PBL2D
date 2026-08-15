@@ -17,6 +17,7 @@ class RejectDocumentRequest extends FormRequest
     {
         return [
             "reason" => "required|string|max:1000",
+            "pin"    => "required|digits:6",
         ];
     }
 
@@ -25,6 +26,8 @@ class RejectDocumentRequest extends FormRequest
         return [
             "reason.required" => "Alasan penolakan wajib diisi.",
             "reason.max"      => "Alasan penolakan maksimal 1000 karakter.",
+            "pin.required"    => "PIN wajib diisi.",
+            "pin.digits"      => "PIN harus tepat 6 digit angka.",
         ];
     }
 }

@@ -61,8 +61,6 @@ class DocumentVerificationLog extends Model
     {
         return [
             'verified_at'          => 'datetime',
-            'status'               => VerificationStatus::class,
-            'verification_source'  => VerificationSource::class,
         ];
     }
 

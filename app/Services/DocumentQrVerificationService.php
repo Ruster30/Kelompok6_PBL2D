@@ -65,7 +65,7 @@ class DocumentQrVerificationService
             if (! $document->isPublished()) {
                 throw new \App\Exceptions\DDMS\DDMSException(
                     'Hanya dokumen berstatus Published yang dapat memiliki QR. ' .
-                    "Status saat ini: {$document->status}."
+                    "Status saat ini: {$document->status->value}."
                 );
             }
 
