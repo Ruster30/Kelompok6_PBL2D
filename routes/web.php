@@ -97,6 +97,8 @@ Route::middleware('auth')->group(function () {
 // ========================================
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/verification-audit', [App\Http\Controllers\Admin\VerificationAuditController::class, 'index'])->name('admin.verification-audit.index');
+    Route::get('/verification-audit/{log}', [App\Http\Controllers\Admin\VerificationAuditController::class, 'show'])->name('admin.verification-audit.show');
 
     // --- Kelola Klien ---
     // Route ini mengelola akun user dengan role='client'.
@@ -510,6 +512,11 @@ Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->
         Route::get('/dashboard', [App\Http\Controllers\Director\DirectorApprovalController::class, 'dashboard'])
         ->name('dashboard');
 
+    Route::get('/verification-audit', [App\Http\Controllers\Admin\VerificationAuditController::class, 'index'])
+        ->name('verification-audit.index');
+    Route::get('/verification-audit/{log}', [App\Http\Controllers\Admin\VerificationAuditController::class, 'show'])
+        ->name('verification-audit.show');
+
     Route::get('/approval',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'index'])
         ->name('approval.index');
@@ -553,3 +560,7 @@ Route::get('/verify/{token}', [App\Http\Controllers\PublicVerificationController
     ->middleware(['throttle:30,1', 'security-headers'])
     ->name('verify.document');
 require __DIR__.'/auth.php';
+
+
+
+
