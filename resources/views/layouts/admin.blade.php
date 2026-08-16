@@ -819,6 +819,9 @@
             <a href="{{ route('admin.documents.index') }}" class="nav-item {{ request()->routeIs('admin.documents.*') || request()->routeIs('admin.document_builder.*') ? 'active' : '' }}">
                 <i class="fas fa-file-alt" aria-hidden="true"></i> Dokumen
             </a>
+            <a href="{{ route('admin.verification-audit.index') }}" class="nav-item {{ request()->routeIs('admin.verification-audit.*') ? 'active' : '' }}">
+                <i class="fas fa-shield-alt" aria-hidden="true"></i> Verifikasi Audit
+            </a>
             <a href="{{ route('admin.documentation.index') }}" class="nav-item {{ request()->routeIs('admin.documentation.*') ? 'active' : '' }}">
                 <i class="fas fa-folder-open"></i> Pusat Dokumentasi
             </a>

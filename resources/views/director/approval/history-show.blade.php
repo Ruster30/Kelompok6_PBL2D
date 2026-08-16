@@ -77,7 +77,7 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white border-bottom-0 pt-3 px-3 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0"><i class="fas fa-file-pdf me-2 text-danger"></i>File Dokumen</h5>
-                <a href="{{ route('admin.document_builder.download-doc', $document->id) }}" class="btn btn-sm btn-outline-dark">
+                <a href="{{ route('director.approval.history-download', $document->id) }}" class="btn btn-sm btn-outline-dark">
                     <i class="fas fa-download me-1"></i> Download PDF
                 </a>
             </div>

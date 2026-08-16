@@ -524,9 +524,12 @@ Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'history'])
         ->name('approval.history');
 
-    Route::get('/history/{document}',
+Route::get('/history/{document}',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'historyShow'])
         ->name('approval.history-show');
+    Route::get('/history/{document}/download',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'downloadDocument'])
+        ->name('approval.history-download');
     Route::get('/approval/{document}',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'show'])
         ->name('approval.show');

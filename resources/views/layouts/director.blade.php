@@ -95,6 +95,9 @@
         <a href="{{ route('director.approval.history') }}" class="nav-item @if(request()->routeIs('director.approval.history*')) active @endif">
             <i class="fas fa-history"></i> Riwayat Approval
         </a>
+        <a href="{{ route('director.verification-audit.index') }}" class="nav-item @if(request()->routeIs('director.verification-audit*')) active @endif">
+            <i class="fas fa-shield-alt"></i> Verifikasi Audit
+        </a>
 
         <div class="nav-section">Keamanan</div>
         <a href="{{ route('director.settings.pin') }}" class="nav-item @if(request()->routeIs('director.settings.pin*')) active @endif">

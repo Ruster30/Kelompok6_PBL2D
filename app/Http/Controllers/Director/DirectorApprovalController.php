@@ -10,6 +10,7 @@ use App\Http\Requests\Director\RejectDocumentRequest;
 use App\Models\Document;
 use App\Services\DocumentApprovalService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DirectorApprovalController extends Controller
 {
@@ -143,6 +144,31 @@ class DirectorApprovalController extends Controller
         ]);
 
         return view("director.approval.history-show", compact("document"));
+    }
+
+    /**
+     * Download PDF dokumen yang sudah diproses (read-only untuk Director).
+     *
+     * Hanya dokumen berstatus Published/Rejected + Generated yang boleh diunduh
+     * (scope riwayat Director). Dokumen lain dianggap tidak tersedia (404).
+     */
+    public function downloadDocument(\App\Models\Document $document)
+    {
+        $allowedStatuses = [
+            \App\Enums\DocumentStatus::Published,
+            \App\Enums\DocumentStatus::Rejected,
+        ];
+
+        if ($document->document_source !== \App\Enums\DocumentSource::Generated
+            || ! in_array($document->status, $allowedStatuses, true)) {
+            abort(404, "Dokumen tidak tersedia.");
+        }
+
+        if (! $document->file_path || ! Storage::disk("public")->exists($document->file_path)) {
+            abort(404, "File PDF tidak ditemukan.");
+        }
+
+        return Storage::disk("public")->download($document->file_path, $document->nama_file . ".pdf");
     }
 
     /**
