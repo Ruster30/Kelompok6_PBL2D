@@ -10,23 +10,6 @@ use App\Http\Controllers\Vendor\TugasController;
 use App\Http\Controllers\Vendor\DokumentasiController;
 use App\Http\Controllers\Vendor\NotifikasiController;
 
-
-Route::get('/d', function () {
-    return view('welcome');
-    Route::get('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
-        ->name('settings.pin');
-
-    Route::post('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
-        ->name('settings.pin.store');
-
-    Route::match(['put', 'patch'], '/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
-        ->name('settings.pin.update');
-
-});
-
 Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
 
 /*
@@ -53,23 +36,12 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/vendor/dashboard', function () {
+Route::get('/vendor/dashboard', function () {
         if (request()->user()->role !== 'vendor') {
             abort(403);
         }
         return view('vendor.ringkasan');
     })->name('vendor.dashboard');
-    Route::get('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
-        ->name('settings.pin');
-
-    Route::post('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
-        ->name('settings.pin.store');
-
-    Route::match(['put', 'patch'], '/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
-        ->name('settings.pin.update');
 
 });
 
@@ -78,17 +50,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
-        ->name('settings.pin');
-
-    Route::post('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
-        ->name('settings.pin.store');
-
-    Route::match(['put', 'patch'], '/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
-        ->name('settings.pin.update');
 
 });
 
@@ -325,24 +286,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/cms/clients/{client}', [App\Http\Controllers\Admin\CmsController::class, 'updateClient'])->name('admin.cms.updateClient');
     Route::delete('/cms/clients/{client}', [App\Http\Controllers\Admin\CmsController::class, 'destroyClient'])->name('admin.cms.destroyClient');
     
-    // Settings
+// Settings
     Route::get('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
     Route::put('/settings/update', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
     Route::put('/settings/update-password', [App\Http\Controllers\Admin\SettingsController::class, 'updatePassword'])->name('admin.settings.updatePassword');
 
-    Route::get('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
-        ->name('settings.pin');
-
-    Route::post('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
-        ->name('settings.pin.store');
-
-    Route::match(['put', 'patch'], '/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
-        ->name('settings.pin.update');
-
-});       
+});
 
 /*
 |

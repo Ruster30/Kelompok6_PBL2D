@@ -263,7 +263,7 @@
     // â”€â”€â”€ Info jenis dokumen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const JENIS_DESC = {
         proposal: {
-            icon: 'ðŸ“„', label: 'Proposal Event',
+            icon: '📄', label: 'Proposal Event',
             desc: 'Dokumen proposal lengkap meliputi profil perusahaan, data client & event, konsep, layanan, timeline, vendor, RAB, dan syarat & ketentuan.',
             color: '#6366f1'
         },
@@ -547,7 +547,7 @@
             document.getElementById('event_id').dispatchEvent(new Event('change'));
             document.getElementById('jenis_dokumen').dispatchEvent(new Event('change'));
         });
-ï»¿    @endif
+@endif
 
     // Payment Scheme Functions (khusus Invoice)
     let docTotalDibayarKlien = 0;

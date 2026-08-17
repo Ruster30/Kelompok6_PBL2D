@@ -179,6 +179,43 @@ class WorkflowHardeningTest extends TestCase
         $this->assertNull($second->fresh()->numbering);
     }
 
+    public function test_document_number_exactly_100_characters_is_accepted(): void
+    {
+        $document = $this->makeDraftDocument();
+        $number = str_repeat('N', 100);
+
+        app(DocumentNumberService::class)->setManualNumber($document, $number, $this->adminUser);
+
+        $this->assertSame($number, $document->fresh()->numbering?->document_number);
+    }
+
+    public function test_document_number_over_100_characters_is_rejected_safely(): void
+    {
+        $document = $this->makeDraftDocument();
+        $number = str_repeat('N', 101);
+
+        $service = app(DocumentNumberService::class);
+
+        try {
+            $service->setManualNumber($document, $number, $this->adminUser);
+            $this->fail('Nomor lebih dari 100 karakter seharusnya ditolak.');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('nomor_surat', $e->errors());
+        }
+
+        $this->assertNull($document->fresh()->numbering);
+
+        // Jalur HTTP juga harus menolak via validasi normal (tanpa 500 / DB exception).
+        $response = $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.set_number', $document->id), [
+                'nomor_surat' => str_repeat('N', 101),
+            ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHasErrors('nomor_surat');
+        $this->assertNull($document->fresh()->numbering);
+    }
+
     public function test_verification_token_is_a_valid_uuid_v4(): void
     {
         Storage::fake('public');

@@ -47,7 +47,7 @@
         <form method="POST" action="{{ route('admin.document_builder.set_number', $document->id) }}" style="display:flex;gap:12px;align-items:flex-end;">
             @csrf
             <div style="flex:1;">
-                <input type="text" name="nomor_surat" value="{{ $currentNumber ?? '' }}" class="form-input" style="width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;font-family:monospace;" placeholder="Contoh: 001/SPK-ALPH/VIII/2026" required maxlength="255" {{ $isDraft ? '' : 'readonly' }}>
+                <input type="text" name="nomor_surat" value="{{ $currentNumber ?? '' }}" class="form-input" style="width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;font-family:monospace;" placeholder="Contoh: 001/SPK-ALPH/VIII/2026" required maxlength="100" {{ $isDraft ? '' : 'readonly' }}>
                 @error('nomor_surat')
                 <div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ $message }}</div>
                 @enderror
