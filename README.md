@@ -275,3 +275,11 @@ Catatan:
 - Belum ada CI di repository ini.
 
 ---
+
+# Dokumentasi Tambahan
+
+- [Panduan Deployment Produksi](docs/PRODUCTION.md) — konfigurasi environment produksi, cache/storage, migration, backup & recovery, keamanan seeder.
+- [Panduan Testing](docs/TESTING.md) — struktur test dan konvensi database test.
+- Dokumentasi teknis lengkap terdapat pada folder [docs](docs/).
+
+---
