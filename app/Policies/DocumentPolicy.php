@@ -101,30 +101,10 @@ class DocumentPolicy
             : Response::deny('Hanya Director yang dapat menerbitkan dokumen.');
     }
 
-    public function generateNumber(User $user, Document $document): Response
-    {
-        return $user->isDirector()
-            ? Response::allow()
-            : Response::deny('Hanya Director yang dapat memberikan nomor dokumen.');
-    }
-
-    public function generateQr(User $user, Document $document): Response
-    {
-        return $user->isDirector()
-            ? Response::allow()
-            : Response::deny('Hanya Director yang dapat menghasilkan QR Code.');
-    }
-
     public function archive(User $user, Document $document): Response
     {
         return $user->isAdmin()
             ? Response::allow()
             : Response::deny('Hanya Admin yang dapat mengarsipkan dokumen.');
-    }
-
-    public function verify(?User $user, Document $document): Response
-    {
-        // Verifikasi publik — guest diperbolehkan
-        return Response::allow();
     }
 }

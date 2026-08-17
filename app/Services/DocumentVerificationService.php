@@ -13,7 +13,7 @@ use Illuminate\Validation\ValidationException;
 /**
  * DocumentVerificationService
  *
- * Mengelola Verification Token — identitas permanen setiap dokumen Published.
+ * Mengelola Verification Token ï¿½ identitas permanen setiap dokumen Published.
  *
  * Business Rules:
  * - Token hanya dibuat saat status Published.
@@ -79,15 +79,5 @@ class DocumentVerificationService
         ]);
 
         return $token;
-    }
-
-    /**
-     * Ambil token yang sudah ada (tanpa membuat baru).
-     */
-    public function getVerificationToken(Document $document): ?string
-    {
-        $existing = $this->qrRepository->findByDocument($document->id);
-
-        return $existing?->verification_token;
     }
 }

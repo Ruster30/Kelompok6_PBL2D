@@ -226,27 +226,6 @@
                             <small class="text-muted">{{ $document->created_at->format('d M Y, H:i') }}</small>
                         </div>
                     </li>
-                    <li class="d-flex align-items-center py-2 border-bottom">
-                        <i class="bi bi-clock-fill text-secondary me-3 fs-5"></i>
-                        <div>
-                            <div class="fw-medium">Submitted</div>
-                            <small class="text-muted">-</small>
-                        </div>
-                    </li>
-                    <li class="d-flex align-items-center py-2 border-bottom">
-                        <i class="bi bi-clock-fill text-secondary me-3 fs-5"></i>
-                        <div>
-                            <div class="fw-medium">Approved</div>
-                            <small class="text-muted">-</small>
-                        </div>
-                    </li>
-                    <li class="d-flex align-items-center py-2">
-                        <i class="bi bi-clock-fill text-secondary me-3 fs-5"></i>
-                        <div>
-                            <div class="fw-medium">Published</div>
-                            <small class="text-muted">-</small>
-                        </div>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -293,40 +272,6 @@
                 <p class="text-muted fw-medium mb-1">QR belum diterbitkan.</p>
                 <small class="text-muted" style="font-size:11px;">Dokumen belum dipublikasikan.</small>
                 @endif
-            </div>
-        </div>
-    </div>
-
-    {{-- --- APPROVAL HISTORY -------------------------------- --}}
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white border-bottom-0 pt-3 px-3">
-                <h5 class="fw-bold mb-0">
-                    <i class="fas fa-clipboard-list me-2 text-secondary"></i>Approval History
-                </h5>
-            </div>
-            <div class="card-body pt-2 px-3 d-flex align-items-center justify-content-center text-center">
-                <div class="py-3">
-                    <i class="fas fa-inbox text-muted" style="font-size:36px;opacity:0.4;"></i>
-                    <p class="text-muted mt-2 mb-0">Belum ada riwayat approval.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- --- CATATAN DIRECTOR -------------------------------- --}}
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-bottom-0 pt-3 px-3">
-                <h5 class="fw-bold mb-0">
-                    <i class="fas fa-sticky-note me-2 text-secondary"></i>Catatan Director
-                </h5>
-            </div>
-            <div class="card-body pt-2 px-3 d-flex align-items-center justify-content-center text-center py-4">
-                <div>
-                    <i class="fas fa-pen text-muted" style="font-size:36px;opacity:0.3;"></i>
-                    <p class="text-muted mt-2 mb-0">Catatan akan tersedia setelah proses review.</p>
-                </div>
             </div>
         </div>
     </div>

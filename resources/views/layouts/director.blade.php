@@ -71,6 +71,13 @@
         }
         .page-content { padding: 20px; flex: 1; overflow-y: auto; }
         .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; }
+
+        /* Badge status dokumen (dipakai x-document-status-badge / DocumentStatus::badge) */
+        .badge-mendatang { background: #DBEAFE; color: #1E40AF; }
+        .badge-pending   { background: #FEF3C7; color: #92400E; }
+        .badge-selesai   { background: #DCFCE7; color: #0f766e; }
+        .badge-ditolak   { background: #FEE2E2; color: #991B1B; }
+        .badge-purple    { background: #F3E8FF; color: #7E22CE; }
     </style>
 </head>
 <body>

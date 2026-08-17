@@ -72,24 +72,6 @@ class DocumentVerificationLog extends Model
         return $this->status === self::STATUS_VALID;
     }
 
-    /** Apakah QR sudah expired? */
-    public function isExpired(): bool
-    {
-        return $this->status === self::STATUS_EXPIRED;
-    }
-
-    /** Apakah token tidak valid? */
-    public function isInvalid(): bool
-    {
-        return $this->status === self::STATUS_INVALID;
-    }
-
-    /** Apakah terindikasi manipulasi? */
-    public function isTampered(): bool
-    {
-        return $this->status === self::STATUS_TAMPERED;
-    }
-
     // ── Relationships ───────────────────────────────────────
 
     /** QR yang diverifikasi */
