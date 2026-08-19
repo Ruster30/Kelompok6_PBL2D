@@ -14,6 +14,7 @@ use App\Models\DocumentVerificationLog;
 use App\Models\Event;
 use App\Models\User;
 use App\Services\DdmsSettingService;
+use App\Services\DocumentBuilderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -338,5 +339,184 @@ class PerDocumentDdmsTest extends TestCase
             ->get(route('admin.document_builder.preview', $uploaded->id))
             ->assertOk()
             ->assertSee('Non-DDMS');
+    }
+
+    // ── 11I.7A — Nomor manual Non-DDMS + sinkronisasi PDF ─────────
+
+    private function generateNonDdms(string $jenis = 'surat_kontrak'): Document
+    {
+        Storage::fake('public');
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.generate'), [
+                'event_id' => $this->event->id,
+                'jenis_dokumen' => $jenis,
+            ])
+            ->assertRedirect();
+
+        return Document::where('event_id', $this->event->id)->latest('id')->firstOrFail();
+    }
+
+    private function setNumber(Document $document, string $number)
+    {
+        return $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.set_number', $document->id), [
+                'nomor_surat' => $number,
+            ]);
+    }
+
+    public function test_non_ddms_document_can_receive_manual_number(): void
+    {
+        $doc = $this->generateNonDdms();
+        $this->assertFalse($doc->uses_ddms);
+
+        $this->setNumber($doc, '001/SPK-ALPH/VIII/2026')->assertRedirect();
+
+        $this->assertSame('001/SPK-ALPH/VIII/2026', $doc->fresh()->numbering?->document_number);
+    }
+
+    public function test_non_ddms_pdf_is_regenerated_after_manual_number(): void
+    {
+        $doc = $this->generateNonDdms();
+        $this->assertNotEmpty($doc->file_path);
+
+        $initial = Storage::disk('public')->get($doc->file_path);
+        $this->assertIsString($initial);
+        $this->assertStringStartsWith('%PDF-', $initial);
+
+        $this->event->load(['client', 'contract', 'invoices']);
+
+        $htmlBefore = view('admin.pdf_templates.surat_kontrak', [
+            'event' => $this->event, 'document' => $doc, 'nilaiKontrak' => 0, 'layoutPath' => null,
+        ])->render();
+        $this->assertStringContainsString('BELUM DITERBITKAN', $htmlBefore);
+
+        $this->setNumber($doc, '001/SPK-ALPH/VIII/2026')->assertRedirect();
+
+        $regenerated = Storage::disk('public')->get($doc->file_path);
+        $this->assertIsString($regenerated);
+        $this->assertStringStartsWith('%PDF-', $regenerated);
+        // PDF benar-benar dirender ulang (bukan file lama).
+        $this->assertNotSame($initial, $regenerated);
+
+        $refreshed = $doc->refresh();
+
+        $htmlAfter = view('admin.pdf_templates.surat_kontrak', [
+            'event' => $this->event, 'document' => $refreshed, 'nilaiKontrak' => 0, 'layoutPath' => null,
+        ])->render();
+        $this->assertStringContainsString('001/SPK-ALPH/VIII/2026', $htmlAfter);
+        $this->assertStringNotContainsString('BELUM DITERBITKAN', $htmlAfter);
+    }
+
+    public function test_non_ddms_numbering_does_not_publish_document(): void
+    {
+        $doc = $this->generateNonDdms();
+
+        $this->setNumber($doc, '001/SPK-ALPH/VIII/2026')->assertRedirect();
+
+        $fresh = $doc->fresh();
+        $this->assertFalse($fresh->uses_ddms);
+        $this->assertSame(DocumentStatus::Draft, $fresh->status);
+        $this->assertSame('001/SPK-ALPH/VIII/2026', $fresh->numbering?->document_number);
+        $this->assertSame(0, DocumentQrVerification::where('document_id', $doc->id)->count());
+    }
+
+    public function test_non_ddms_numbered_pdf_has_no_ddms_qr(): void
+    {
+        $doc = $this->generateNonDdms();
+
+        $this->setNumber($doc, '001/SPK-ALPH/VIII/2026')->assertRedirect();
+
+        $pdf = Storage::disk('public')->get($doc->file_path);
+        $this->assertIsString($pdf);
+        $this->assertStringStartsWith('%PDF-', $pdf);
+
+        // Tidak ada referensi QR DDMS di PDF.
+        $this->assertStringNotContainsString('document-qr', $pdf);
+
+        // Partial signature QR kosong untuk dokumen Non-DDMS.
+        $qrHtml = view('admin.pdf_templates.partials.signature_qr', [
+            'document' => $doc->refresh(),
+        ])->render();
+        $this->assertSame('', trim($qrHtml));
+    }
+
+    public function test_pdf_regeneration_failure_is_reported_not_silently_successful(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('documents/p6_fail.pdf', '%PDF-1.4 original-proxy');
+
+        $doc = Document::create([
+            'event_id' => $this->event->id,
+            'tipe' => 'proposal',
+            'nama_file' => 'p6_fail.pdf',
+            'status' => DocumentStatus::Draft,
+            'document_source' => DocumentSource::Generated,
+            'uses_ddms' => false,
+            'file_path' => 'documents/p6_fail.pdf',
+        ]);
+
+        // Induksi kegagalan regenerasi PDF secara deterministik (tanpa hack permission).
+        $this->mock(DocumentBuilderService::class, function ($mock) {
+            $mock->shouldReceive('regenerateFinalPdf')
+                ->andThrow(new \RuntimeException('simulated disk failure'));
+        });
+
+        $response = $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.set_number', $doc->id), [
+                'nomor_surat' => '001/SPK-X',
+            ]);
+
+        // TIDAK sukses diam-diam: user menerima error eksplisit.
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+
+        // Dokumen tidak di-publish; tidak ada token/QR; status/source tidak berubah.
+        $fresh = $doc->fresh();
+        $this->assertSame(DocumentStatus::Draft, $fresh->status);
+        $this->assertFalse($fresh->uses_ddms);
+        $this->assertSame(DocumentSource::Generated, $fresh->document_source);
+        $this->assertSame(0, DocumentQrVerification::where('document_id', $doc->id)->count());
+
+        // Nomor telah tersimpan (DB authoritative); kegagalan hanya pada sinkronisasi PDF —
+        // user diberi tahu via error, dan retry akan memperbaiki PDF.
+        $this->assertSame('001/SPK-X', $fresh->numbering?->document_number);
+
+        // PDF lama tidak dihapus/dirusak oleh kegagalan.
+        $this->assertSame('%PDF-1.4 original-proxy', Storage::disk('public')->get($doc->file_path));
+    }
+
+    public function test_numbering_recovers_after_regeneration_failure(): void
+    {
+        // Skenario: setelah kegagalan regenerasi (backend sehat kembali),
+        // operasi set nomor yang sama berhasil dan PDF berisi nomor.
+        $doc = Document::create([
+            'event_id' => $this->event->id,
+            'tipe' => 'proposal',
+            'nama_file' => 'p6_recover.pdf',
+            'status' => DocumentStatus::Draft,
+            'document_source' => DocumentSource::Generated,
+            'uses_ddms' => false,
+            'file_path' => 'documents/p6_recover.pdf',
+        ]);
+
+        Storage::fake('public');
+        Storage::disk('public')->put($doc->file_path, '%PDF-1.4 old');
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.set_number', $doc->id), [
+                'nomor_surat' => '001/SPK-X',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $after = $doc->fresh();
+        $this->assertSame('001/SPK-X', $after->numbering?->document_number);
+        $this->assertSame(DocumentStatus::Draft, $after->status);
+        $this->assertFalse($after->uses_ddms);
+        $this->assertSame(0, DocumentQrVerification::where('document_id', $doc->id)->count());
+
+        // PDF benar-benar diregenerasi (bukan file lama).
+        $this->assertNotSame('%PDF-1.4 old', Storage::disk('public')->get($doc->file_path));
     }
 }

@@ -259,15 +259,37 @@ class DocumentBuilderController extends Controller
      */
     public function setDocumentNumber(Document $document, UpdateDocumentNumberRequest $request)
     {
-        $this->numberService->setManualNumber(
-            document: $document,
-            number:   $request->input("nomor_surat"),
-            setBy:    $request->user(),
-        );
+        try {
+            $this->numberService->setManualNumber(
+                document: $document,
+                number:   $request->input("nomor_surat"),
+                setBy:    $request->user(),
+            );
+
+            // Sinkronisasi PDF: render ulang dokumen Generated (builder) agar nomor manual tampil,
+            // tanpa mengubah status/Draft, tanpa publish, tanpa token/QR.
+            if ($document->document_source === \App\Enums\DocumentSource::Generated) {
+                $fresh = $document->refresh()->load(["numbering", "event"]);
+                $jenis = $fresh->tipe === "kontrak" ? "surat_kontrak" : $fresh->tipe;
+                $this->service->regenerateFinalPdf($fresh, $fresh->event, $jenis);
+            }
+        } catch (\Throwable $e) {
+            // Jangan laporkan sukses bila PDF tidak berhasil disinkronkan.
+            // PDF lama TIDAK dihapus/dirusak; DB rollback tidak aman karena storage
+            // tidak dapat di-rollback — karenanya ditangani dengan error eksplisit.
+            \Log::error("Gagal menyimpan nomor / meregenerasi PDF dokumen", [
+                "document_id" => $document->id,
+                "error" => $e->getMessage(),
+            ]);
+
+            return redirect()
+                ->route("admin.document_builder.preview", $document->id)
+                ->with("error", "Nomor surat tidak dapat disimpan / PDF gagal diperbarui. Silakan coba lagi.");
+        }
 
         return redirect()
             ->route("admin.document_builder.preview", $document->id)
-            ->with("success", "Nomor surat berhasil disimpan.");
+            ->with("success", "Nomor surat berhasil disimpan dan PDF diperbarui.");
     }
 
     /**
