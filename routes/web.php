@@ -198,6 +198,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         ->name('admin.document_builder.print-doc');
     Route::post('/document-builder/{document}/submit',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'submitApproval'])
+        ->middleware(\App\Http\Middleware\EnsureDdmsEnabled::class)
         ->name('admin.document_builder.submit');
 
     Route::delete('/document-builder/{document}',
@@ -290,6 +291,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
     Route::put('/settings/update', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
     Route::put('/settings/update-password', [App\Http\Controllers\Admin\SettingsController::class, 'updatePassword'])->name('admin.settings.updatePassword');
+    Route::post('/settings/ddms-toggle', [App\Http\Controllers\Admin\SettingsController::class, 'toggleDdms'])->name('admin.settings.ddms-toggle');
 
 });
 
@@ -484,6 +486,7 @@ Route::get('/history/{document}',
         ->name('approval.show');
     Route::post('/approval/{document}/approve',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'approve'])
+        ->middleware(\App\Http\Middleware\EnsureDdmsEnabled::class)
         ->name('approval.approve');
 
     Route::post('/approval/{document}/reject',
@@ -491,6 +494,7 @@ Route::get('/history/{document}',
         ->name('approval.reject');
     Route::post('/approval/{document}/publish',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'publish'])
+        ->middleware(\App\Http\Middleware\EnsureDdmsEnabled::class)
         ->name('approval.publish');
 
     Route::get('/settings/pin',

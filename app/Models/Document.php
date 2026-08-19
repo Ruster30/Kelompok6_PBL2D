@@ -104,6 +104,7 @@ class Document extends Model
         'updated_by',
         'is_archived',
         'document_source',
+        'uses_ddms',
         'archived_at',
     ];
 
@@ -116,6 +117,7 @@ class Document extends Model
             'file_size'         => 'integer',
             'is_archived'       => 'boolean',
             'document_source'   => DocumentSource::class,
+            'uses_ddms'         => 'boolean',
             'archived_at'       => 'datetime',
         ];
     }

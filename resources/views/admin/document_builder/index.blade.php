@@ -170,6 +170,23 @@
                 <input type="hidden" id="denahFilePath" value="{{ $selectedEventId ? $events->firstWhere('id', $selectedEventId)?->layout_denah : '' }}">
             </div>
 
+            {{-- Mode DDMS / Non-DDMS --}}
+            <div style="margin-bottom:24px;">
+                <label style="display:flex;align-items:flex-start;gap:10px;cursor:{{ $ddmsEnabled ? 'pointer' : 'not-allowed' }};">
+                    <input type="checkbox" id="uses_ddms" name="uses_ddms" value="1"
+                           style="margin-top:3px;"
+                           {{ $ddmsEnabled ? 'checked' : 'disabled' }}>
+                    <div>
+                        <div style="font-weight:600;font-size:13.5px;color:#0f172a;">Gunakan DDMS</div>
+                        @if($ddmsEnabled)
+                            <small style="color:#64748b;font-size:12px;">Dokumen ini akan melalui approval Director, PIN approval, QR, dan verifikasi publik.</small>
+                        @else
+                            <small style="color:#dc2626;font-size:12px;">DDMS sedang dinonaktifkan oleh administrator. Dokumen akan dibuat sebagai dokumen biasa.</small>
+                        @endif
+                    </div>
+                </label>
+            </div>
+
             {{-- Tombol Generate --}}
             <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
                 <button type="button" id="btnGenerate"
@@ -468,7 +485,10 @@
             form.method = 'POST';
             form.action = GENERATE_URL;
 
-            [['_token', CSRF], ['event_id', eventId], ['jenis_dokumen', jenis]].forEach(([k, v]) => {
+            const ddmsCheck = document.getElementById('uses_ddms');
+            const usesDdms = ddmsCheck && !ddmsCheck.disabled && ddmsCheck.checked ? 1 : 0;
+
+            [['_token', CSRF], ['event_id', eventId], ['jenis_dokumen', jenis], ['uses_ddms', usesDdms]].forEach(([k, v]) => {
                 const i = document.createElement('input');
                 i.type = 'hidden'; i.name = k; i.value = v;
                 form.appendChild(i);

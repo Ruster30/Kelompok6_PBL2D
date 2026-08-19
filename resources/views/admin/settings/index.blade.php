@@ -23,6 +23,52 @@
 
 <div class="card">
     <div class="card-header block">
+        <div class="card-title">DDMS</div>
+        <p class="text-sm text-muted mt-1">Status Digital Document Management System.</p>
+    </div>
+    <div class="p-6">
+        @if(session('success'))
+            <div class="alert alert-success d-flex align-items-center mb-3">
+                <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger d-flex align-items-center mb-3">
+                <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+            </div>
+        @endif
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <div class="fw-semibold mb-1">
+                    Status DDMS:
+                    <span class="badge {{ $ddmsEnabled ? 'bg-success' : 'bg-danger' }}">
+                        {{ $ddmsEnabled ? 'Aktif' : 'Nonaktif' }}
+                    </span>
+                </div>
+                @if($ddmsEnabled)
+                    <p class="text-muted small mb-0">DDMS aktif. Pembuatan dan alur dokumen DDMS tersedia.</p>
+                @else
+                    <p class="text-muted small mb-0">DDMS sedang dinonaktifkan. Pembuatan/alur dokumen DDMS baru tidak tersedia.</p>
+                @endif
+            </div>
+            <form method="POST" action="{{ route('admin.settings.ddms-toggle') }}">
+                @csrf
+                @if($ddmsEnabled)
+                    <button type="submit" name="enabled" value="0" class="btn btn-outline-danger">
+                        <i class="fas fa-power-off me-1"></i> Nonaktifkan DDMS
+                    </button>
+                @else
+                    <button type="submit" name="enabled" value="1" class="btn btn-outline-success">
+                        <i class="fas fa-power-off me-1"></i> Aktifkan DDMS
+                    </button>
+                @endif
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-5">
+    <div class="card-header block">
         <div class="card-title">Profil Pribadi</div>
         <p class="text-sm text-muted mt-1">Perbarui informasi pribadi Anda.</p>
     </div>

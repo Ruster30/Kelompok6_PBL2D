@@ -24,6 +24,7 @@ class DocumentBuilderController extends Controller
         private readonly PaymentSchemeService $paymentSchemeService,
         private readonly DocumentApprovalService $approvalService,
         private readonly DocumentNumberService $numberService,
+        private readonly \App\Services\DdmsSettingService $ddmsSettingService,
     ) {}
 
     /**
@@ -35,6 +36,7 @@ class DocumentBuilderController extends Controller
             "events"           => Event::orderBy("nama_event")->get(),
             "selectedEventId"  => $request->integer("event_id"),
             "selectedJenis"    => $request->get("jenis_dokumen", ""),
+            "ddmsEnabled"      => $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1",
             "latestDocuments"  => Document::query()
                 ->where("document_source", DocumentSource::Generated)
                 ->when($request->integer("event_id"), fn($q, $id) => $q->where("event_id", $id))
@@ -60,7 +62,10 @@ class DocumentBuilderController extends Controller
     {
         $document->loadMissing(["event.client", "numbering", "qrVerification"]);
 
-        return view("admin.document_builder.preview", compact("document"));
+        return view("admin.document_builder.preview", [
+            "document"    => $document,
+            "ddmsEnabled" => $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1",
+        ]);
     }
 
     /**
@@ -71,10 +76,15 @@ class DocumentBuilderController extends Controller
         $data = $request->validate([
             "event_id"      => "required|exists:events,id",
             "jenis_dokumen" => "required|in:proposal,surat_kontrak,invoice,rab",
+            "uses_ddms"     => ["nullable", "boolean"],
         ]);
 
+        // Per-document mode: global master switch menang; checkbox hanya dipercaya saat DDMS ON.
+        $ddmsEnabled = $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1";
+        $usesDdms    = $ddmsEnabled && filter_var($data["uses_ddms"] ?? false, FILTER_VALIDATE_BOOLEAN);
+
         $event    = Event::with("client")->findOrFail($data["event_id"]);
-        $document = $this->service->generateAndSave($event, $data["jenis_dokumen"]);
+        $document = $this->service->generateAndSave($event, $data["jenis_dokumen"], $usesDdms);
 
         return redirect()
             ->route("admin.document_builder.preview", $document->id)

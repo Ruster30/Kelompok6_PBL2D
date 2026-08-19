@@ -6,16 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Services\AdminSettingsService;
+use App\Services\DdmsSettingService;
+use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
     public function __construct(
-        private AdminSettingsService $settingsService
+        private AdminSettingsService $settingsService,
+        private DdmsSettingService $ddmsSettingService,
     ) {}
 
     public function index()
     {
-        return view("admin.settings.index");
+        return view("admin.settings.index", [
+            "ddmsEnabled" => $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1",
+        ]);
     }
 
     public function update(UpdateProfileRequest $request)
@@ -37,5 +42,28 @@ class SettingsController extends Controller
         }
 
         return back()->with("success", $result["success"]);
+    }
+
+    /**
+     * Ubah status global DDMS (ON/OFF).
+     * Hanya admin (route group 'admin' + AdminMiddleware).
+     */
+    public function toggleDdms(Request $request)
+    {
+        $validated = $request->validate([
+            "enabled" => "required|in:0,1",
+        ]);
+
+        $enabled = $validated["enabled"] === "1" ? "1" : "0";
+
+        $this->ddmsSettingService->updateSetting(
+            "ddms_enabled",
+            $enabled,
+            "Toggle global DDMS (1 = aktif, 0 = nonaktif)",
+        );
+
+        $status = $enabled === "1" ? "diaktifkan" : "dinonaktifkan";
+
+        return back()->with("success", "DDMS berhasil {$status}.");
     }
 }

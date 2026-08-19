@@ -91,6 +91,7 @@ class WorkflowHardeningTest extends TestCase
             'nama_file' => 'h4_draft_' . \Illuminate\Support\Str::random(6) . '.pdf',
             'status' => DocumentStatus::Draft,
             'document_source' => DocumentSource::Generated,
+            'uses_ddms' => true,
             'file_path' => 'documents/h4_draft.pdf',
         ]);
     }
@@ -103,6 +104,7 @@ class WorkflowHardeningTest extends TestCase
             'nama_file' => 'h4_approved_' . \Illuminate\Support\Str::random(6) . '.pdf',
             'status' => DocumentStatus::Approved,
             'document_source' => DocumentSource::Generated,
+            'uses_ddms' => true,
             'file_path' => 'documents/h4_approved.pdf',
         ]);
 
@@ -292,6 +294,7 @@ class WorkflowHardeningTest extends TestCase
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
                 'jenis_dokumen' => 'proposal',
+                'uses_ddms' => 1,
             ])
             ->assertRedirect();
 
