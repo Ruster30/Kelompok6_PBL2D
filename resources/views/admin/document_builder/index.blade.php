@@ -62,6 +62,7 @@
                     </label>
                     <select name="jenis_dokumen" id="jenis_dokumen" class="form-input" required>
                         <option value="">-- Pilih Jenis Dokumen --</option>
+                        <option value="proposal"      @selected($selectedJenis === 'proposal')>📄 Proposal</option>
                         <option value="surat_kontrak" @selected($selectedJenis === 'surat_kontrak')>📑 Surat Kontrak</option>
                         <option value="invoice"       @selected($selectedJenis === 'invoice')>🧾 Invoice</option>
                         <option value="rab"           @selected($selectedJenis === 'rab')>📊 RAB (Rencana Anggaran Biaya)</option>
@@ -254,6 +255,10 @@
     const CSRF         = document.querySelector('meta[name="csrf-token"]')?.content
                          || '{{ csrf_token() }}';
 
+    // Default DDMS per jenis surat (hanya initial UI state).
+    const DDMS_DEFAULTS  = @json($ddmsDefaults);
+    const DDMS_ENABLED   = @json($ddmsEnabled);
+
     // â”€â”€â”€ Info event â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     document.getElementById('event_id').addEventListener('change', function () {
         const opt = this.options[this.selectedIndex];
@@ -278,6 +283,15 @@
     });
 
     // â”€â”€â”€ Info jenis dokumen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Sinkronisasi default DDMS per jenis (initial UI state only).
+    function syncDdmsDefault(jenis) {
+        if (!DDMS_ENABLED) return; // global OFF: checkbox disabled, jangan ubah.
+        const chk = document.getElementById('uses_ddms');
+        if (!chk || !DDMS_DEFAULTS.hasOwnProperty(jenis)) return;
+        // Set initial state dari default; admin tetap dapat mengubah manual.
+        chk.checked = !!DDMS_DEFAULTS[jenis];
+    }
+
     const JENIS_DESC = {
         proposal: {
             icon: '📄', label: 'Proposal Event',
@@ -326,6 +340,11 @@
         } else {
             denahSection.style.display = 'none';
         }
+
+        // Sinkronkan checkbox "Gunakan DDMS" dengan default per jenis.
+        // HANYA initial state: admin tetap dapat mengubahnya secara manual.
+        // Jika global OFF, checkbox dinonaktifkan (forced Non-DDMS) — tidak diubah di sini.
+        syncDdmsDefault(this.value);
         const d = JENIS_DESC[this.value];
         document.getElementById('jenisInfoContent').innerHTML = `
             <div style="background:${d.color}10;border:1px solid ${d.color}30;border-radius:8px;padding:12px 16px;font-size:13px;">

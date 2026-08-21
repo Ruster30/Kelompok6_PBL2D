@@ -19,7 +19,8 @@ class SettingsController extends Controller
     public function index()
     {
         return view("admin.settings.index", [
-            "ddmsEnabled" => $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1",
+            "ddmsEnabled"   => $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1",
+            "ddmsDefaults"  => $this->ddmsSettingService->getDdmsDefaults(),
         ]);
     }
 
@@ -65,5 +66,41 @@ class SettingsController extends Controller
         $status = $enabled === "1" ? "diaktifkan" : "dinonaktifkan";
 
         return back()->with("success", "DDMS berhasil {$status}.");
+    }
+
+    /**
+     * Simpan default DDMS per jenis surat (Proposal, Surat Kontrak, Invoice, RAB).
+     *
+     * Setting ini HANYA default untuk initial UI state di halaman Generate.
+     * Tidak memengaruhi dokumen existing dan tidak membatasi keputusan admin
+     * saat membuat dokumen baru (admin tetap dapat mengubah checkbox).
+     *
+     * Hanya admin (route group 'admin' + AdminMiddleware).
+     */
+    public function updateDdmsDefaults(Request $request)
+    {
+        $validated = $request->validate([
+            "ddms_default_proposal"       => "required|in:0,1",
+            "ddms_default_surat_kontrak" => "required|in:0,1",
+            "ddms_default_invoice"        => "required|in:0,1",
+            "ddms_default_rab"            => "required|in:0,1",
+        ]);
+
+        $keys = [
+            "ddms_default_proposal",
+            "ddms_default_surat_kontrak",
+            "ddms_default_invoice",
+            "ddms_default_rab",
+        ];
+
+        foreach ($keys as $key) {
+            $this->ddmsSettingService->updateSetting(
+                $key,
+                $validated[$key] === "1" ? "1" : "0",
+                "Default DDMS per jenis surat (1 = DDMS, 0 = Non-DDMS)",
+            );
+        }
+
+        return back()->with("success", "Default DDMS per jenis surat berhasil disimpan.");
     }
 }

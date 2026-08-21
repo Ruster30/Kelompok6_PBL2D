@@ -37,6 +37,7 @@ class DocumentBuilderController extends Controller
             "selectedEventId"  => $request->integer("event_id"),
             "selectedJenis"    => $request->get("jenis_dokumen", ""),
             "ddmsEnabled"      => $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1",
+            "ddmsDefaults"     => $this->ddmsSettingService->getDdmsDefaults(),
             "latestDocuments"  => Document::query()
                 ->where("document_source", DocumentSource::Generated)
                 ->when($request->integer("event_id"), fn($q, $id) => $q->where("event_id", $id))
@@ -80,6 +81,8 @@ class DocumentBuilderController extends Controller
         ]);
 
         // Per-document mode: global master switch menang; checkbox hanya dipercaya saat DDMS ON.
+        // Default per jenis HANYA untuk initial UI state (lihat index + blade).
+        // Keputusan final tetap dari request (UI selalu mengirim checkbox uses_ddms).
         $ddmsEnabled = $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1";
         $usesDdms    = $ddmsEnabled && filter_var($data["uses_ddms"] ?? false, FILTER_VALIDATE_BOOLEAN);
 

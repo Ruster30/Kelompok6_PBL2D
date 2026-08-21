@@ -12,6 +12,7 @@ use App\Models\DocumentNumbering;
 use App\Models\DocumentQrVerification;
 use App\Models\DocumentVerificationLog;
 use App\Models\Event;
+use App\Models\Invoice;
 use App\Models\User;
 use App\Services\DdmsSettingService;
 use App\Services\DocumentBuilderService;
@@ -78,6 +79,17 @@ class PerDocumentDdmsTest extends TestCase
             $enabled ? '1' : '0',
             'toggle',
         );
+    }
+
+    private function setDdmsDefault(string $jenis, bool $value): void
+    {
+        $key = match ($jenis) {
+            'proposal'      => 'ddms_default_proposal',
+            'surat_kontrak' => 'ddms_default_surat_kontrak',
+            'invoice'       => 'ddms_default_invoice',
+            'rab'           => 'ddms_default_rab',
+        };
+        app(DdmsSettingService::class)->updateSetting($key, $value ? '1' : '0', 'default');
     }
 
     private function makeDoc(DocumentStatus $status, bool $usesDdms, bool $withNumbering = false): Document
@@ -183,6 +195,254 @@ class PerDocumentDdmsTest extends TestCase
 
         $doc = Document::where('event_id', $this->event->id)->firstOrFail();
         $this->assertFalse($doc->uses_ddms);
+    }
+
+    // ── 11I.8 A — Default settings ────────────────────────────────
+
+    public function test_default_proposal_is_on(): void
+    {
+        $this->assertTrue(
+            app(DdmsSettingService::class)->getSettingValue('ddms_default_proposal', '1') === '1'
+        );
+        $this->assertTrue(app(DdmsSettingService::class)->getDdmsDefaults()['proposal']);
+    }
+
+    public function test_default_surat_kontrak_is_on(): void
+    {
+        $this->assertTrue(
+            app(DdmsSettingService::class)->getSettingValue('ddms_default_surat_kontrak', '1') === '1'
+        );
+        $this->assertTrue(app(DdmsSettingService::class)->getDdmsDefaults()['surat_kontrak']);
+    }
+
+    public function test_default_invoice_is_off(): void
+    {
+        $this->assertTrue(
+            app(DdmsSettingService::class)->getSettingValue('ddms_default_invoice', '0') === '0'
+        );
+        $this->assertFalse(app(DdmsSettingService::class)->getDdmsDefaults()['invoice']);
+    }
+
+    public function test_default_rab_is_off(): void
+    {
+        $this->assertTrue(
+            app(DdmsSettingService::class)->getSettingValue('ddms_default_rab', '0') === '0'
+        );
+        $this->assertFalse(app(DdmsSettingService::class)->getDdmsDefaults()['rab']);
+    }
+
+    // ── 11I.8 B — Settings persistence ────────────────────────────
+
+    public function test_admin_can_change_each_default_and_it_persists(): void
+    {
+        $this->actingAs($this->adminUser)
+            ->put(route('admin.settings.ddms-defaults'), [
+                'ddms_default_proposal'       => '0',
+                'ddms_default_surat_kontrak' => '0',
+                'ddms_default_invoice'        => '1',
+                'ddms_default_rab'            => '1',
+            ])
+            ->assertRedirect();
+
+        $defaults = app(DdmsSettingService::class)->getDdmsDefaults();
+        $this->assertFalse($defaults['proposal']);
+        $this->assertFalse($defaults['surat_kontrak']);
+        $this->assertTrue($defaults['invoice']);
+        $this->assertTrue($defaults['rab']);
+
+        // Tersimpan di ddms_settings.
+        $this->assertSame('0', app(DdmsSettingService::class)->getSettingValue('ddms_default_proposal'));
+        $this->assertSame('1', app(DdmsSettingService::class)->getSettingValue('ddms_default_invoice'));
+    }
+
+    public function test_non_admin_cannot_change_ddms_defaults(): void
+    {
+        $this->actingAs($this->clientUser)
+            ->put(route('admin.settings.ddms-defaults'), [
+                'ddms_default_proposal' => '0',
+                'ddms_default_surat_kontrak' => '0',
+                'ddms_default_invoice' => '1',
+                'ddms_default_rab' => '1',
+            ])
+            ->assertForbidden();
+    }
+
+    // ── 11I.8 C — Generate mengikuti default ─────────────────────
+
+    public function test_proposal_default_on_generate_without_override_is_ddms(): void
+    {
+        $this->setDdmsDefault('proposal', true);
+
+        // Tanpa override: checkbox mengikuti default (ON) -> UI mengirim uses_ddms=1.
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.generate'), [
+                'event_id' => $this->event->id,
+                'jenis_dokumen' => 'proposal',
+                'uses_ddms' => 1,
+            ])
+            ->assertRedirect();
+
+        $doc = Document::where('event_id', $this->event->id)->firstOrFail();
+        $this->assertTrue($doc->uses_ddms);
+    }
+
+    public function test_invoice_default_off_generate_without_override_is_non_ddms(): void
+    {
+        $this->setDdmsDefault('invoice', false);
+        $this->makeInvoice();
+
+        // Tanpa override: checkbox mengikuti default (OFF) -> UI mengirim uses_ddms=0.
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.generate'), [
+                'event_id' => $this->event->id,
+                'jenis_dokumen' => 'invoice',
+                'uses_ddms' => 0,
+            ])
+            ->assertRedirect();
+
+        $doc = Document::where('event_id', $this->event->id)->firstOrFail();
+        $this->assertFalse($doc->uses_ddms);
+    }
+
+    // ── 11I.8 D — Manual override ────────────────────────────────
+
+    public function test_proposal_default_on_with_uncheck_is_non_ddms(): void
+    {
+        $this->setDdmsDefault('proposal', true);
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.generate'), [
+                'event_id' => $this->event->id,
+                'jenis_dokumen' => 'proposal',
+                'uses_ddms' => 0,
+            ])
+            ->assertRedirect();
+
+        $doc = Document::where('event_id', $this->event->id)->firstOrFail();
+        $this->assertFalse($doc->uses_ddms);
+    }
+
+    public function test_invoice_default_off_with_check_is_ddms(): void
+    {
+        $this->setDdmsDefault('invoice', false);
+        $this->makeInvoice();
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.generate'), [
+                'event_id' => $this->event->id,
+                'jenis_dokumen' => 'invoice',
+                'uses_ddms' => 1,
+            ])
+            ->assertRedirect();
+
+        $doc = Document::where('event_id', $this->event->id)->firstOrFail();
+        $this->assertTrue($doc->uses_ddms);
+    }
+
+    private function makeInvoice(): Invoice
+    {
+        return Invoice::create([
+            'event_id' => $this->event->id,
+            'nomor_invoice' => 'INV-TEST-001',
+            'total_invoice' => 1000000,
+            'status_invoice' => 'belum_bayar',
+            'tanggal_invoice' => now()->toDateString(),
+        ]);
+    }
+
+    // ── 11I.8 E — Global OFF ─────────────────────────────────────
+
+    public function test_global_off_proposal_default_on_generate_forces_non_ddms(): void
+    {
+        $this->setDdmsEnabled(false);
+        $this->setDdmsDefault('proposal', true);
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.generate'), [
+                'event_id' => $this->event->id,
+                'jenis_dokumen' => 'proposal',
+            ])
+            ->assertRedirect();
+
+        $doc = Document::where('event_id', $this->event->id)->firstOrFail();
+        $this->assertFalse($doc->uses_ddms);
+    }
+
+    public function test_global_off_request_uses_ddms_true_still_forced_false(): void
+    {
+        $this->setDdmsEnabled(false);
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.generate'), [
+                'event_id' => $this->event->id,
+                'jenis_dokumen' => 'proposal',
+                'uses_ddms' => 1,
+            ])
+            ->assertRedirect();
+
+        $doc = Document::where('event_id', $this->event->id)->firstOrFail();
+        $this->assertFalse($doc->uses_ddms);
+    }
+
+    public function test_global_off_does_not_change_per_jenis_defaults(): void
+    {
+        $this->setDdmsDefault('proposal', true);
+        $this->setDdmsDefault('invoice', false);
+
+        $this->setDdmsEnabled(false);
+        $this->setDdmsEnabled(true);
+
+        $defaults = app(DdmsSettingService::class)->getDdmsDefaults();
+        $this->assertTrue($defaults['proposal']);
+        $this->assertFalse($defaults['invoice']);
+    }
+
+    // ── 11I.8 F — Existing documents ─────────────────────────────
+
+    public function test_changing_default_does_not_change_existing_document(): void
+    {
+        $this->setDdmsDefault('proposal', true);
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.generate'), [
+                'event_id' => $this->event->id,
+                'jenis_dokumen' => 'proposal',
+                'uses_ddms' => 1,
+            ])
+            ->assertRedirect();
+
+        $doc = Document::where('event_id', $this->event->id)->firstOrFail();
+        $this->assertTrue($doc->uses_ddms);
+
+        // Admin mengubah default proposal menjadi OFF.
+        $this->setDdmsDefault('proposal', false);
+
+        $this->assertTrue($doc->fresh()->uses_ddms);
+    }
+
+    // ── 11I.8 UI — settings page & builder defaults ──────────────
+
+    public function test_settings_page_shows_default_per_jenis_section(): void
+    {
+        $this->actingAs($this->adminUser)
+            ->get(route('admin.settings.index'))
+            ->assertOk()
+            ->assertSee('Default DDMS per Jenis Surat')
+            ->assertSee('Proposal')
+            ->assertSee('Surat Kontrak')
+            ->assertSee('Invoice')
+            ->assertSee('RAB');
+    }
+
+    public function test_builder_ui_passes_default_map(): void
+    {
+        $this->setDdmsDefault('invoice', false);
+        $this->setDdmsDefault('rab', false);
+
+        $this->actingAs($this->adminUser)
+            ->get(route('admin.document_builder.index'))
+            ->assertOk()
+            ->assertSee('Gunakan DDMS');
     }
 
     // ── Non-DDMS blocked from DDMS workflow ──────────────────────

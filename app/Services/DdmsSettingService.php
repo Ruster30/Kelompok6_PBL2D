@@ -48,6 +48,28 @@ class DdmsSettingService
     }
 
     /**
+     * Ambil default DDMS per jenis surat sebagai map boolean.
+     *
+     * Nilai default (jika setting belum tersedia):
+     *   proposal       = "1"
+     *   surat_kontrak  = "1"
+     *   invoice        = "0"
+     *   rab            = "0"
+     *
+     * Setting ini HANYA default untuk initial UI state.
+     * Keputusan final tetap diambil dari request generate + master switch global.
+     */
+    public function getDdmsDefaults(): array
+    {
+        return [
+            'proposal'       => $this->getSettingValue('ddms_default_proposal', '1') === '1',
+            'surat_kontrak'  => $this->getSettingValue('ddms_default_surat_kontrak', '1') === '1',
+            'invoice'        => $this->getSettingValue('ddms_default_invoice', '0') === '1',
+            'rab'            => $this->getSettingValue('ddms_default_rab', '0') === '1',
+        ];
+    }
+
+    /**
      * Update atau buat setting (upsert)
      *
      * @throws \InvalidArgumentException Jika key kosong

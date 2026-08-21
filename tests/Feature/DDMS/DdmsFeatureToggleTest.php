@@ -85,6 +85,17 @@ class DdmsFeatureToggleTest extends TestCase
         );
     }
 
+    private function setDdmsDefault(string $jenis, bool $value): void
+    {
+        $key = match ($jenis) {
+            'proposal'      => 'ddms_default_proposal',
+            'surat_kontrak' => 'ddms_default_surat_kontrak',
+            'invoice'       => 'ddms_default_invoice',
+            'rab'           => 'ddms_default_rab',
+        };
+        app(DdmsSettingService::class)->updateSetting($key, $value ? '1' : '0', 'default');
+    }
+
     private function makeDraftDocument(): Document
     {
         return Document::create([
@@ -357,5 +368,56 @@ class DdmsFeatureToggleTest extends TestCase
         ])->render();
 
         $this->assertSame('', trim($renderedDraft));
+    }
+
+    // ── 11I.8 G — Regression ──────────────────────────────────────
+
+    public function test_default_settings_do_not_alter_global_toggle_semantics(): void
+    {
+        // Mengubah default per jenis tidak memengaruhi master switch global.
+        $this->setDdmsDefault('proposal', false);
+        $this->setDdmsDefault('invoice', true);
+
+        $this->assertSame('1', app(DdmsSettingService::class)->getSettingValue('ddms_enabled', '1'));
+
+        // Global OFF tetap memblokir alur DDMS terlepas dari default apapun.
+        $this->setDdmsEnabled(false);
+        $this->setDdmsDefault('proposal', true);
+
+        $response = $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.generate'), [
+                'event_id' => $this->event->id,
+                'jenis_dokumen' => 'proposal',
+                'uses_ddms' => 1,
+            ]);
+
+        $response->assertRedirect();
+        $doc = Document::latest('id')->first();
+        $this->assertFalse($doc->uses_ddms);
+    }
+
+    public function test_ddms_full_workflow_still_works_with_non_default_proposal_setting(): void
+    {
+        $this->setDdmsDefault('proposal', false);
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.generate'), [
+                'event_id' => $this->event->id,
+                'jenis_dokumen' => 'proposal',
+                'uses_ddms' => 1,
+            ])
+            ->assertRedirect();
+
+        $doc = Document::where('event_id', $this->event->id)->firstOrFail();
+        $this->assertTrue($doc->uses_ddms);
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.set_number', $doc->id), ['nomor_surat' => 'G-001'])
+            ->assertRedirect();
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.submit', $doc->id))
+            ->assertRedirect();
+        $this->assertSame(DocumentStatus::Pending, $doc->fresh()->status);
     }
 }

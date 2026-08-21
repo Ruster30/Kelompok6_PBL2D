@@ -292,6 +292,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/settings/update', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
     Route::put('/settings/update-password', [App\Http\Controllers\Admin\SettingsController::class, 'updatePassword'])->name('admin.settings.updatePassword');
     Route::post('/settings/ddms-toggle', [App\Http\Controllers\Admin\SettingsController::class, 'toggleDdms'])->name('admin.settings.ddms-toggle');
+    Route::put('/settings/ddms-defaults', [App\Http\Controllers\Admin\SettingsController::class, 'updateDdmsDefaults'])->name('admin.settings.ddms-defaults');
 
 });
 
