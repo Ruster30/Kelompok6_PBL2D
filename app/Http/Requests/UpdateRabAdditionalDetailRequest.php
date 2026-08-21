@@ -16,10 +16,13 @@ class UpdateRabAdditionalDetailRequest extends FormRequest
         return [
             'fee_enabled'  => 'boolean',
             'fee_percent'  => 'required|numeric|min:0|max:100',
+            'fee_nominal'  => 'nullable|numeric|min:0',
             'ppn_enabled'  => 'boolean',
             'ppn_percent'  => 'required|numeric|min:0|max:100',
+            'ppn_nominal'  => 'nullable|numeric|min:0',
             'pph_enabled'  => 'boolean',
             'pph_percent'  => 'required|numeric|min:0|max:100',
+            'pph_nominal'  => 'nullable|numeric|min:0',
         ];
     }
 
