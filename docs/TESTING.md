@@ -95,5 +95,38 @@ php artisan test --testsuite=Models
 ## Catatan
 
 - Konfigurasi testsuite terdapat di `phpunit.xml`
-- Test database menggunakan SQLite in-memory (`:memory:`)
 - Namespace test mengikuti PSR-4 dengan prefix `Tests\`
+
+## Konvensi Database Test
+
+Test suite **wajib menggunakan MySQL**, bukan SQLite.
+
+- Nama database test: `alpha_corp_test`
+- Konfigurasi test tersedia di `.env.testing` (MySQL)
+- Test harus dijalankan **sekuensial** (jangan paralel terhadap database test yang sama)
+- `phpunit.xml` masih mengarah ke `sqlite :memory:`, tetapi **tidak kompatibel** dengan rantai migration yang ada (ada migration MySQL-only, misalnya `ALTER TABLE users MODIFY COLUMN role ENUM(...)`). Jangan ubah migration hanya untuk menyesuaikan SQLite.
+
+Jalankan dengan environment override MySQL agar sesuai `.env.testing`:
+
+```bash
+# PowerShell (Windows)
+$env:DB_CONNECTION='mysql'; $env:DB_DATABASE='alpha_corp_test'; $env:DB_USERNAME='root'; $env:DB_PASSWORD=''
+php artisan test --env=testing
+
+# Bash (Linux/macOS)
+DB_CONNECTION=mysql DB_DATABASE=alpha_corp_test DB_USERNAME=root DB_PASSWORD= \
+  php artisan test --env=testing
+```
+
+Contoh untuk suite spesifik:
+
+```bash
+php artisan test tests/Feature/DDMS tests/Unit/DDMS --env=testing
+php artisan test tests/Feature/Client/ClientDashboardEventTest.php --env=testing
+```
+
+Catatan:
+- Jika MySQL belum aktif, test tidak dapat dijalankan — hidupkan dulu MySQL lokal.
+- Jangan mengubah `phpunit.xml` / `.env.testing` / migration untuk memaksa test lewat.
+- Belum ada CI di repository ini.
+- Perintah `composer test` tetap tersedia, namun tetap membutuhkan environment override MySQL di atas agar berjalan.

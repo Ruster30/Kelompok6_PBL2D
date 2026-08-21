@@ -87,9 +87,9 @@ class DocumentNumberService
             ]);
         }
 
-        if (strlen($number) > 255) {
+        if (strlen($number) > 100) {
             throw ValidationException::withMessages([
-                "nomor_surat" => "Nomor surat maksimal 255 karakter.",
+                "nomor_surat" => "Nomor surat maksimal 100 karakter.",
             ]);
         }
     }

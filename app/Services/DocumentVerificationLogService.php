@@ -8,7 +8,6 @@ use App\Models\DocumentQrVerification;
 use App\Models\DocumentVerificationLog;
 use App\Models\User;
 use App\Repositories\Contracts\DocumentVerificationLogRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 
 /**
  * DocumentVerificationLogService
@@ -56,26 +55,6 @@ class DocumentVerificationLogService
     }
 
     /**
-     * Catat verifikasi expired (token ditemukan, sudah melewati expires_at).
-     */
-    public function logExpiredVerification(
-        DocumentQrVerification $verification,
-        ?User $verifiedBy,
-        string $ipAddress,
-        string $userAgent,
-        string $source = DocumentVerificationLog::SOURCE_PUBLIC,
-    ): DocumentVerificationLog {
-        return $this->createLog(
-            $verification,
-            DocumentVerificationLog::STATUS_EXPIRED,
-            $verifiedBy,
-            $ipAddress,
-            $userAgent,
-            $source,
-        );
-    }
-
-    /**
      * Catat verifikasi invalid (token tidak ditemukan di database).
      *
      * KETERBATASAN SKEMA:
@@ -109,44 +88,6 @@ class DocumentVerificationLogService
             'membutuhkan referensi ke document_qr_verifications yang valid. ' .
             'Lihat PHPDoc method ini untuk opsi solusi di masa depan.'
         );
-    }
-
-    /**
-     * Catat verifikasi tampered (indikasi manipulasi data QR/dokumen).
-     */
-    public function logTamperedVerification(
-        DocumentQrVerification $verification,
-        ?User $verifiedBy,
-        string $ipAddress,
-        string $userAgent,
-        string $source = DocumentVerificationLog::SOURCE_PUBLIC,
-    ): DocumentVerificationLog {
-        return $this->createLog(
-            $verification,
-            DocumentVerificationLog::STATUS_TAMPERED,
-            $verifiedBy,
-            $ipAddress,
-            $userAgent,
-            $source,
-        );
-    }
-
-    // ── Query Methods ────────────────────────────────────────
-
-    /**
-     * Ambil log verifikasi terbaru.
-     */
-    public function findRecent(int $limit = 20): Collection
-    {
-        return $this->logRepository->findRecent($limit);
-    }
-
-    /**
-     * Hitung jumlah log berdasarkan status.
-     */
-    public function countByStatus(string $status): int
-    {
-        return $this->logRepository->countByStatus($status);
     }
 
     // ── Private Helper ───────────────────────────────────────

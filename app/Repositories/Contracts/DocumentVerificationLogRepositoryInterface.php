@@ -6,6 +6,7 @@ namespace App\Repositories\Contracts;
 
 use App\Models\DocumentVerificationLog;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface DocumentVerificationLogRepositoryInterface
 {
@@ -26,4 +27,15 @@ interface DocumentVerificationLogRepositoryInterface
 
     /** Buat log verifikasi baru */
     public function create(array $data): DocumentVerificationLog;
+
+    /** Paginate logs dengan filter dan search */
+    public function paginateWithFilters(
+        int $page = 1,
+        int $perPage = 20,
+        ?string $status = null,
+        ?string $dateFrom = null,
+        ?string $dateTo = null,
+        ?string $source = null,
+        ?string $search = null
+    ): LengthAwarePaginator;
 }

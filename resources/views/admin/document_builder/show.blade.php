@@ -161,7 +161,7 @@
                 </h5>
             </div>
             <div class="card-body pt-2 px-3 d-flex align-items-center">
-                @php $nomor = optional($document->numbering)->nomor_dokumen; @endphp
+                @php $nomor = optional($document->numbering)->document_number; @endphp
                 @if($nomor)
                 <span class="fw-medium">{{ $nomor }}</span>
                 @else

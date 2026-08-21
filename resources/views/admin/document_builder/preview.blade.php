@@ -47,7 +47,7 @@
         <form method="POST" action="{{ route('admin.document_builder.set_number', $document->id) }}" style="display:flex;gap:12px;align-items:flex-end;">
             @csrf
             <div style="flex:1;">
-                <input type="text" name="nomor_surat" value="{{ $currentNumber ?? '' }}" class="form-input" style="width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;font-family:monospace;" placeholder="Contoh: 001/SPK-ALPH/VIII/2026" required maxlength="255" {{ $isDraft ? '' : 'readonly' }}>
+                <input type="text" name="nomor_surat" value="{{ $currentNumber ?? '' }}" class="form-input" style="width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;font-family:monospace;" placeholder="Contoh: 001/SPK-ALPH/VIII/2026" required maxlength="100" {{ $isDraft ? '' : 'readonly' }}>
                 @error('nomor_surat')
                 <div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ $message }}</div>
                 @enderror
@@ -80,13 +80,25 @@
     </div>
 
     {{-- Submit & Delete --}}
-    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        @if($ddmsEnabled && $document->uses_ddms)
         <form method="POST" action="{{ route("admin.document_builder.submit", $document->id) }}">
             @csrf
             <button type="submit" style="background:#6366f1;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
                 <i class="fas fa-paper-plane"></i> Submit Approval
             </button>
         </form>
+        @elseif(! $ddmsEnabled)
+        <span class="text-muted" style="font-size:13px;display:inline-flex;align-items:center;gap:6px;">
+            <i class="fas fa-exclamation-triangle"></i>
+            DDMS sedang dinonaktifkan oleh administrator. Pembuatan/alur dokumen DDMS baru tidak tersedia.
+        </span>
+        @else
+        <span class="text-muted" style="font-size:13px;display:inline-flex;align-items:center;gap:6px;">
+            <i class="fas fa-file-alt"></i>
+            Dokumen ini tidak menggunakan DDMS.
+        </span>
+        @endif
 
         <form method="POST" action="{{ route("admin.document_builder.destroy", $document->id) }}" onsubmit="return confirm('Hapus draft dokumen ini? Tindakan ini tidak dapat dibatalkan.');">
             @csrf
@@ -121,6 +133,14 @@
                 <td style="padding:6px 0;">
                     <span class="badge badge-{{ $document->tipe === 'kontrak' ? 'aktif' : ($document->tipe === 'invoice' ? 'selesai' : ($document->tipe === 'rab' ? 'pending' : 'mendatang')) }}" style="font-size:12px;padding:4px 8px;">
                         {{ $document->tipe_label }}
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:6px 0;color:#64748b;">Mode</td>
+                <td style="padding:6px 0;">
+                    <span class="badge {{ $document->uses_ddms ? 'bg-success' : 'bg-secondary' }}" style="font-size:12px;padding:4px 8px;">
+                        {{ $document->uses_ddms ? 'DDMS' : 'Non-DDMS' }}
                     </span>
                 </td>
             </tr>

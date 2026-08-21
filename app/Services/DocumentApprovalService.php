@@ -12,7 +12,6 @@ use App\Repositories\Contracts\DocumentApprovalRepositoryInterface;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\Contracts\DocumentNumberingRepositoryInterface;
 use App\Repositories\Contracts\DocumentRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Services\DirectorPinService;
 use App\Services\DocumentNumberService;
@@ -63,6 +62,10 @@ class DocumentApprovalService
     public function submit(Document $document, User $submittedBy): DocumentApproval
     {
         return DB::transaction(function () use ($document, $submittedBy): DocumentApproval {
+            if (! $document->uses_ddms) {
+                throw new \App\Exceptions\DDMS\DDMSException('Dokumen ini tidak menggunakan DDMS.');
+            }
+
             if (! $document->isDraft()) {
                 throw new \App\Exceptions\DDMS\DDMSException(
                     'Hanya dokumen dengan status Draft yang dapat diajukan approval. ' .
@@ -184,24 +187,6 @@ class DocumentApprovalService
         });
     }
 
-    // ── Query Methods ────────────────────────────────────────
-
-    public function findPending(): Collection
-    {
-        return $this->approvalRepository->findPending();
-    }
-
-    public function findByDocument(Document $document): Collection
-    {
-        return $this->approvalRepository->findByDocument($document->id);
-    }
-
-    public function getLatest(Document $document): ?DocumentApproval
-    {
-        return $this->approvalRepository->findLatestByDocument($document->id);
-    }
-
-
     /**
      * Ambil dokumen yang menunggu approval Director.
      * Menampilkan Generated documents berstatus Pending (menunggu review) atau Approved (menunggu Publish).
@@ -224,31 +209,6 @@ class DocumentApprovalService
 
 
 
-    /**
-     * Ambil detail dokumen untuk review Director.
-     * Hanya Generated + Pending. Jika tidak memenuhi, abort 404.
-     */
-    public function getDocumentForReview(int $id): Document
-    {
-        $document = Document::query()
-            ->where("id", $id)
-            ->where("status", \App\Enums\DocumentStatus::Pending)
-            ->where("document_source", \App\Enums\DocumentSource::Generated)
-            ->with([
-                "event.client",
-                "template",
-                "user",
-                "updatedBy",
-                "numbering",
-                "approvals",
-            ])
-            ->firstOrFail();
-
-        return $document;
-    }
-
-
-
     // -- Director Approve -------------------------------
 
     /**
@@ -261,6 +221,10 @@ class DocumentApprovalService
         $this->pinService->verifyPin($director, $pin);
 
         return DB::transaction(function () use ($document, $director): Document {
+            if (! $document->uses_ddms) {
+                throw new \App\Exceptions\DDMS\DDMSException('Dokumen ini tidak menggunakan DDMS.');
+            }
+
             if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
                 throw new \App\Exceptions\DDMS\DDMSException(
                     "Hanya dokumen Generated yang dapat diapprove."
@@ -321,6 +285,10 @@ class DocumentApprovalService
         $this->pinService->verifyPin($director, $pin);
 
         return DB::transaction(function () use ($document, $director, $reason): Document {
+            if (! $document->uses_ddms) {
+                throw new \App\Exceptions\DDMS\DDMSException('Dokumen ini tidak menggunakan DDMS.');
+            }
+
             if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
                 throw new \App\Exceptions\DDMS\DDMSException(
                     "Hanya dokumen Generated yang dapat direject."
@@ -394,6 +362,12 @@ class DocumentApprovalService
     public function publishDocument(Document $document, User $publisher): Document
     {
         return DB::transaction(function () use ($document, $publisher): Document {
+            if (! $document->uses_ddms) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "publish" => "Dokumen ini tidak menggunakan DDMS.",
+                ]);
+            }
+
             if ($document->status !== \App\Enums\DocumentStatus::Approved) {
                 throw \Illuminate\Validation\ValidationException::withMessages([
                     "publish" => "Hanya dokumen berstatus Approved yang dapat dipublish.",

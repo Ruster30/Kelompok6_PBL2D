@@ -16,7 +16,7 @@ class UpdateDocumentNumberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nomor_surat" => "required|string|max:255",
+            "nomor_surat" => "required|string|max:100",
         ];
     }
 
@@ -25,7 +25,7 @@ class UpdateDocumentNumberRequest extends FormRequest
         return [
             "nomor_surat.required" => "Nomor surat wajib diisi.",
             "nomor_surat.string"   => "Nomor surat harus berupa teks.",
-            "nomor_surat.max"      => "Nomor surat maksimal 255 karakter.",
+            "nomor_surat.max"      => "Nomor surat maksimal 100 karakter.",
         ];
     }
 }

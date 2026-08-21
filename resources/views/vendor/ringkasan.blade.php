@@ -150,7 +150,7 @@
                                 {{ $tugas->event->nama_event ?? '-' }}
 
                                 @if($tugas->deadline)
-                                    â€¢ Deadline:
+                                    • Deadline:
                                     {{ \Carbon\Carbon::parse($tugas->deadline)->format('d/m/Y') }}
                                 @endif
 

@@ -74,7 +74,7 @@ class DocumentBuilderService
         $nilaiKontrak = $event->total_invoice ?: app(RabService::class)->getTotalDibayarKlien($event->id);
 
 
-        // Layout/Denah image — path absolut untuk DomPDF
+        // Layout/Denah image ï¿½ path absolut untuk DomPDF
         $layoutPath = null;
         if ($event->layout_denah && Storage::disk("public")->exists($event->layout_denah)) {
             $layoutPath = Storage::disk("public")->path($event->layout_denah);
@@ -271,6 +271,7 @@ private function generateRab(Event $event, ?Document $document = null): array
         string $namaFile,
         string $filePath,
         string $tipe,
+        bool $usesDdms = true,
     ): Document
     {
         return Document::create([
@@ -280,6 +281,7 @@ private function generateRab(Event $event, ?Document $document = null): array
             "file_path"        => $filePath,
             "tipe"             => $tipe,
             "document_source"  => \App\Enums\DocumentSource::Generated,
+            "uses_ddms"        => $usesDdms,
         ]);
     }
 
@@ -421,7 +423,7 @@ private function generateRab(Event $event, ?Document $document = null): array
      * Generate dokumen, simpan ke storage dan database.
      * Public API untuk DocumentBuilderController.
      */
-    public function generateAndSave(Event $event, string $jenisDokumen): Document
+    public function generateAndSave(Event $event, string $jenisDokumen, bool $usesDdms = true): Document
     {
         $generated = $this->generate($event, $jenisDokumen);
 
@@ -448,6 +450,7 @@ private function generateRab(Event $event, ?Document $document = null): array
             namaFile: $this->labelJenis($jenisDokumen) . " - " . $event->nama_event,
             filePath: $path,
             tipe:     $tipeEnum,
+            usesDdms: $usesDdms,
         );
 
         return $document;

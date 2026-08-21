@@ -571,7 +571,7 @@ class PublicVerificationTest extends TestCase
         $response->assertHeader("X-Frame-Options", "DENY");
         $response->assertHeader("X-Content-Type-Options", "nosniff");
         $response->assertHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
-        $response->assertHeader("Content-Security-Policy", "default-src 'self'");
+        $response->assertHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net");
     }
 
     public function test_invalid_token_response_includes_security_headers()
@@ -581,7 +581,7 @@ class PublicVerificationTest extends TestCase
         $response->assertHeader("X-Frame-Options", "DENY");
         $response->assertHeader("X-Content-Type-Options", "nosniff");
         $response->assertHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
-        $response->assertHeader("Content-Security-Policy", "default-src 'self'");
+        $response->assertHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net");
     }
 
     public function test_draft_document_response_includes_security_headers()
@@ -617,6 +617,6 @@ class PublicVerificationTest extends TestCase
         $response->assertHeader("X-Frame-Options", "DENY");
         $response->assertHeader("X-Content-Type-Options", "nosniff");
         $response->assertHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
-        $response->assertHeader("Content-Security-Policy", "default-src 'self'");
+        $response->assertHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net");
     }
 }

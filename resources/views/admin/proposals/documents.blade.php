@@ -370,7 +370,7 @@ function debounce(fn, delay) {
 
 // â”€â”€â”€ Modal Kirim ke Client â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function bukaModalKirim(docId, docName) {
-    document.getElementById('formKirim').action = '/admin/proposals/' + docId + '/send';
+    document.getElementById('formKirim').action = '/admin/documents/' + docId + '/send';
     document.querySelector('#modalDocName span').textContent = docName;
     const modal = document.getElementById('modalKirim');
     modal.style.display = 'flex';

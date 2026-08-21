@@ -23,6 +23,96 @@
 
 <div class="card">
     <div class="card-header block">
+        <div class="card-title">DDMS</div>
+        <p class="text-sm text-muted mt-1">Status Digital Document Management System.</p>
+    </div>
+    <div class="p-6">
+        @if(session('success'))
+            <div class="alert alert-success d-flex align-items-center mb-3">
+                <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger d-flex align-items-center mb-3">
+                <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+            </div>
+        @endif
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <div class="fw-semibold mb-1">
+                    Status DDMS:
+                    <span class="badge {{ $ddmsEnabled ? 'bg-success' : 'bg-danger' }}">
+                        {{ $ddmsEnabled ? 'Aktif' : 'Nonaktif' }}
+                    </span>
+                </div>
+                @if($ddmsEnabled)
+                    <p class="text-muted small mb-0">DDMS aktif. Pembuatan dan alur dokumen DDMS tersedia.</p>
+                @else
+                    <p class="text-muted small mb-0">DDMS sedang dinonaktifkan. Pembuatan/alur dokumen DDMS baru tidak tersedia.</p>
+                @endif
+            </div>
+            <form method="POST" action="{{ route('admin.settings.ddms-toggle') }}">
+                @csrf
+                @if($ddmsEnabled)
+                    <button type="submit" name="enabled" value="0" class="btn btn-outline-danger">
+                        <i class="fas fa-power-off me-1"></i> Nonaktifkan DDMS
+                    </button>
+                @else
+                    <button type="submit" name="enabled" value="1" class="btn btn-outline-success">
+                        <i class="fas fa-power-off me-1"></i> Aktifkan DDMS
+                    </button>
+                @endif
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-5">
+    <div class="card-header block">
+        <div class="card-title">Default DDMS per Jenis Surat</div>
+        <p class="text-sm text-muted mt-1">Tentukan secara default apakah setiap jenis surat menggunakan alur DDMS. Ini hanya nilai awal; admin tetap dapat mengubah pilihan saat membuat dokumen di halaman Generate.</p>
+    </div>
+    <form method="POST" action="{{ route('admin.settings.ddms-defaults') }}" class="p-6">
+        @csrf
+        @method('PUT')
+        <div class="ddms-default-list">
+            @php
+                $ddmsDefaultItems = [
+                    'ddms_default_proposal'       => ['label' => 'Proposal',       'key' => 'proposal'],
+                    'ddms_default_surat_kontrak'  => ['label' => 'Surat Kontrak',  'key' => 'surat_kontrak'],
+                    'ddms_default_invoice'        => ['label' => 'Invoice',        'key' => 'invoice'],
+                    'ddms_default_rab'            => ['label' => 'RAB',            'key' => 'rab'],
+                ];
+            @endphp
+            @foreach($ddmsDefaultItems as $name => $item)
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid #e2e8f0;">
+                    <div>
+                        <div class="fw-semibold mb-1">{{ $item['label'] }}</div>
+                        <small class="text-muted">Secara default menggunakan alur DDMS</small>
+                    </div>
+                    <div class="ddms-toggle" role="radiogroup" aria-label="{{ $item['label'] }}">
+                        <label style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-right:14px;">
+                            <input type="radio" name="{{ $name }}" value="1" {{ !empty($ddmsDefaults[$item['key']]) ? 'checked' : '' }}>
+                            <span class="badge bg-success">ON</span>
+                        </label>
+                        <label style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                            <input type="radio" name="{{ $name }}" value="0" {{ empty($ddmsDefaults[$item['key']]) ? 'checked' : '' }}>
+                            <span class="badge bg-danger">OFF</span>
+                        </label>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <div class="mt-5">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Simpan Default
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="card mt-5">
+    <div class="card-header block">
         <div class="card-title">Profil Pribadi</div>
         <p class="text-sm text-muted mt-1">Perbarui informasi pribadi Anda.</p>
     </div>
