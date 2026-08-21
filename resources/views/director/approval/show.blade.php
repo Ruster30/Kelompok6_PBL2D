@@ -348,11 +348,6 @@
                     <p class="text-muted mb-0">Tidak ada aksi yang tersedia untuk status ini.</p>
                 @endif
 
-                @if(session('success'))
-                <div class="alert alert-success mt-3 mb-0">
-                    <i class="bi bi-check-circle me-1"></i> {{ session('success') }}
-                </div>
-                @endif
             </div>
         </div>
     </div>
@@ -444,7 +439,7 @@
                 <p class="text-muted small mb-3">
                     Dokumen telah disetujui. Klik Publish untuk menerbitkan dokumen secara resmi.
                 </p>
-                <form method="POST" action="{{ route('director.approval.publish', $document->id) }}" onsubmit="return confirm('Publish dokumen ini? Dokumen akan terkunci permanen.');">
+                <form method="POST" action="{{ route('director.approval.publish', $document->id) }}" id="publishForm" onsubmit="return swalPublish(this, 'Publish Dokumen?', 'Dokumen akan dipublikasikan dan dikunci secara permanen. Setelah dipublish, dokumen tidak dapat diubah kembali.');">
                     @csrf
                     <button type="submit" class="btn btn-success">
                         <i class="bi bi-check2-circle me-1"></i> Publish
