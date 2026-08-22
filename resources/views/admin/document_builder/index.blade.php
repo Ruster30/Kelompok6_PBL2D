@@ -62,7 +62,6 @@
                     </label>
                     <select name="jenis_dokumen" id="jenis_dokumen" class="form-input" required>
                         <option value="">-- Pilih Jenis Dokumen --</option>
-                        <option value="proposal"      @selected($selectedJenis === 'proposal')>📄 Proposal</option>
                         <option value="surat_kontrak" @selected($selectedJenis === 'surat_kontrak')>📑 Surat Kontrak</option>
                         <option value="invoice"       @selected($selectedJenis === 'invoice')>🧾 Invoice</option>
                         <option value="rab"           @selected($selectedJenis === 'rab')>📊 RAB (Rencana Anggaran Biaya)</option>
@@ -293,11 +292,6 @@
     }
 
     const JENIS_DESC = {
-        proposal: {
-            icon: '📄', label: 'Proposal Event',
-            desc: 'Dokumen proposal lengkap meliputi profil perusahaan, data client & event, konsep, layanan, timeline, vendor, RAB, dan syarat & ketentuan.',
-            color: '#6366f1'
-        },
         surat_kontrak: {
             icon: '📑', label: 'Surat Kontrak',
             desc: 'Kontrak resmi antara EO dan client mencakup nomor kontrak, nilai kontrak, hak & kewajiban, ketentuan pembayaran, masa berlaku, dan area tanda tangan.',
