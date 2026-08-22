@@ -49,20 +49,6 @@ class DocumentQrVerification extends Model
         ];
     }
 
-    // ── Helper Methods ──────────────────────────────────────
-
-    /** Apakah QR sudah melewati masa berlaku? */
-    public function isExpired(): bool
-    {
-        return $this->expires_at !== null && $this->expires_at->isPast();
-    }
-
-    /** Apakah QR masih berlaku? */
-    public function isValid(): bool
-    {
-        return ! $this->isExpired();
-    }
-
     // ── Relationships ───────────────────────────────────────
 
     /** Dokumen yang memiliki QR ini */

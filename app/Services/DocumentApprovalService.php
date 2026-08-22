@@ -10,12 +10,13 @@ use App\Models\User;
 use App\Exceptions\DDMS\ApprovalNotPendingException;
 use App\Repositories\Contracts\DocumentApprovalRepositoryInterface;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\Contracts\DocumentNumberingRepositoryInterface;
 use App\Repositories\Contracts\DocumentRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Services\DirectorPinService;
 use App\Services\DocumentNumberService;
 use App\Services\DocumentQrCodeService;
+use App\Services\DocumentVerificationService;
 
 /**
  * DocumentApprovalService
@@ -38,9 +39,11 @@ class DocumentApprovalService
     public function __construct(
         private readonly DocumentApprovalRepositoryInterface $approvalRepository,
         private readonly DocumentRepositoryInterface $documentRepository,
+        private readonly DocumentNumberingRepositoryInterface $numberingRepository,
         private readonly DirectorPinService $pinService,
         private readonly DocumentNumberService $numberService,
         private readonly DocumentQrCodeService $qrCodeService,
+        private readonly DocumentVerificationService $verificationService,
     ) {}
 
     // ── Submit ───────────────────────────────────────────────
@@ -59,11 +62,22 @@ class DocumentApprovalService
     public function submit(Document $document, User $submittedBy): DocumentApproval
     {
         return DB::transaction(function () use ($document, $submittedBy): DocumentApproval {
+            if (! $document->uses_ddms) {
+                throw new \App\Exceptions\DDMS\DDMSException('Dokumen ini tidak menggunakan DDMS.');
+            }
+
             if (! $document->isDraft()) {
                 throw new \App\Exceptions\DDMS\DDMSException(
                     'Hanya dokumen dengan status Draft yang dapat diajukan approval. ' .
-                    "Status saat ini: {$document->status}."
+                    "Status saat ini: {$document->status->value}."
                 );
+            }
+
+            // Business Rule: Nomor surat wajib diisi sebelum submit
+            if (! $document->numbering || ! $document->numbering->document_number) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "nomor_surat" => "Nomor surat wajib diisi sebelum dokumen dikirim ke Director.",
+                ]);
             }
 
             // Cegah duplicate submission: jika sudah ada approval pending
@@ -173,27 +187,9 @@ class DocumentApprovalService
         });
     }
 
-    // ── Query Methods ────────────────────────────────────────
-
-    public function findPending(): Collection
-    {
-        return $this->approvalRepository->findPending();
-    }
-
-    public function findByDocument(Document $document): Collection
-    {
-        return $this->approvalRepository->findByDocument($document->id);
-    }
-
-    public function getLatest(Document $document): ?DocumentApproval
-    {
-        return $this->approvalRepository->findLatestByDocument($document->id);
-    }
-
-
     /**
      * Ambil dokumen yang menunggu approval Director.
-     * Hanya menampilkan Generated documents dengan status Pending.
+     * Menampilkan Generated documents berstatus Pending (menunggu review) atau Approved (menunggu Publish).
      */
     public function getPendingDocuments(
         ?string $search = null,
@@ -202,7 +198,7 @@ class DocumentApprovalService
     ): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return Document::query()
-            ->where("status", \App\Enums\DocumentStatus::Pending)
+            ->whereIn("status", [\App\Enums\DocumentStatus::Pending, \App\Enums\DocumentStatus::Approved])
             ->where("document_source", \App\Enums\DocumentSource::Generated)
             ->when($search, fn($q, $v) => $q->where("nama_file", "like", "%{$v}%"))
             ->when($category, fn($q, $v) => $q->where("document_category", $v))
@@ -213,141 +209,22 @@ class DocumentApprovalService
 
 
 
-    /**
-     * Ambil detail dokumen untuk review Director.
-     * Hanya Generated + Pending. Jika tidak memenuhi, abort 404.
-     */
-    public function getDocumentForReview(int $id): Document
-    {
-        $document = Document::query()
-            ->where("id", $id)
-            ->where("status", \App\Enums\DocumentStatus::Pending)
-            ->where("document_source", \App\Enums\DocumentSource::Generated)
-            ->with([
-                "event.client",
-                "template",
-                "user",
-                "updatedBy",
-                "numbering",
-                "approvals",
-            ])
-            ->firstOrFail();
-
-        return $document;
-    }
-
-
-
-    // -- Director Approve -------------------------------------
-
-    /**
-     * Approve dokumen oleh Director.
-     * Validasi: Generated + Pending.
-     */
-    public function approveDocument(Document $document, User $director, string $pin): Document
-    {
-        // Verifikasi PIN sebelum proses approval
-        $this->pinService->verifyPin($director, $pin);
-
-        return DB::transaction(function () use ($document, $director): Document {
-            if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
-                throw new \App\Exceptions\DDMS\DDMSException(
-                    "Hanya dokumen Generated yang dapat diapprove."
-                );
-            }
-
-            if ($document->status !== \App\Enums\DocumentStatus::Pending) {
-                throw new \App\Exceptions\DDMS\DDMSException(
-                    "Hanya dokumen dengan status Pending yang dapat diapprove. Status saat ini: {$document->status->value}."
-                );
-            }
-
-            // Buat atau update approval record
-            $approval = $this->approvalRepository->findLatestByDocument($document->id);
-
-            if (!$approval || !$approval->isPending()) {
-                $approval = $this->approvalRepository->create([
-                    "document_id"   => $document->id,
-                    "submitted_by"  => $document->user_id ?? $director->id,
-                    "status"        => \App\Models\DocumentApproval::STATUS_PENDING,
-                    "submitted_at"  => now(),
-                ]);
-            }
-
-            // Gunakan method approve() yang sudah ada
-            $this->approve($approval, $director);
-
-            // Generate nomor dokumen otomatis
-            $this->numberService->generate($document, $director);
-
-            Log::info("Dokumen diapprove oleh Director", [
-                "document_id" => $document->id,
-                "director_id" => $director->id,
-            ]);
-
-            return $document->fresh();
-        });
-    }
-
-    // -- Director Reject --------------------------------------
-
-    /**
-     * Reject dokumen oleh Director.
-     * Validasi: Generated + Pending.
-     */
-    public function rejectDocument(Document $document, User $director, string $reason, string $pin): Document
-    {
-        // Verifikasi PIN sebelum proses reject
-        $this->pinService->verifyPin($director, $pin);
-
-        return DB::transaction(function () use ($document, $director, $reason): Document {
-            if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
-                throw new \App\Exceptions\DDMS\DDMSException(
-                    "Hanya dokumen Generated yang dapat direject."
-                );
-            }
-
-            if ($document->status !== \App\Enums\DocumentStatus::Pending) {
-                throw new \App\Exceptions\DDMS\DDMSException(
-                    "Hanya dokumen dengan status Pending yang dapat direject. Status saat ini: {$document->status->value}."
-                );
-            }
-
-            // Buat atau update approval record
-            $approval = $this->approvalRepository->findLatestByDocument($document->id);
-
-            if (!$approval || !$approval->isPending()) {
-                $approval = $this->approvalRepository->create([
-                    "document_id"   => $document->id,
-                    "submitted_by"  => $document->user_id ?? $director->id,
-                    "status"        => \App\Models\DocumentApproval::STATUS_PENDING,
-                    "submitted_at"  => now(),
-                ]);
-            }
-
-            // Gunakan method reject() yang sudah ada
-            $this->reject($approval, $director, $reason);
-
-            Log::info("Dokumen direject oleh Director", [
-                "document_id" => $document->id,
-                "director_id" => $director->id,
-                "reason"      => $reason,
-            ]);
-
-            return $document->fresh();
-        });
-    }
-
-
-    // -- Director Approve (tanpa PIN) --------------------------
+    // -- Director Approve -------------------------------
 
     /**
      * Approve dokumen oleh Director.
      * Mencari approval pending, lalu memproses approve.
      */
-    public function directorApprove(Document $document, User $director): Document
+    public function directorApprove(Document $document, User $director, string $pin): Document
     {
+        // Verifikasi PIN sebelum proses approval (fail-fast, di luar transaction)
+        $this->pinService->verifyPin($director, $pin);
+
         return DB::transaction(function () use ($document, $director): Document {
+            if (! $document->uses_ddms) {
+                throw new \App\Exceptions\DDMS\DDMSException('Dokumen ini tidak menggunakan DDMS.');
+            }
+
             if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
                 throw new \App\Exceptions\DDMS\DDMSException(
                     "Hanya dokumen Generated yang dapat diapprove."
@@ -371,11 +248,8 @@ class DocumentApprovalService
             // Gunakan method approve() yang sudah ada (validasi + update)
             $this->approve($approval, $director);
             
-            // Generate nomor dokumen otomatis setelah approve
-            $this->numberService->generate($document, $director);
-
-            // Generate QR Code setelah nomor berhasil
-            $this->qrCodeService->generate($document, $director);
+            // Nomor surat sudah diinput manual oleh Admin sebelum submit
+            // (tidak ada auto-generation)
 
             // Refresh object agar relasi numbering dan qrVerification termuat
             $document->refresh()->load([
@@ -383,7 +257,8 @@ class DocumentApprovalService
                 "qrVerification",
             ]);
 
-            // Regenerate PDF Final � replace file lama dengan PDF yang memuat nomor, QR, status
+            // Regenerate PDF Final � replace file lama dengan PDF yang memuat nomor dan status
+            // (QR dibuat terpisah saat Publish, tidak lagi saat Approve)
             $event = $document->event;
             $jenis = $document->tipe === 'kontrak' ? 'surat_kontrak' : $document->tipe;
             app(DocumentBuilderService::class)->regenerateFinalPdf($document, $event, $jenis);
@@ -398,15 +273,22 @@ class DocumentApprovalService
         });
     }
 
-    // -- Director Reject (tanpa PIN) ---------------------------
+    // -- Director Reject --------------------------------
 
     /**
      * Reject dokumen oleh Director.
      * Mencari approval pending, lalu memproses reject.
      */
-    public function directorReject(Document $document, User $director, string $reason): Document
+    public function directorReject(Document $document, User $director, string $reason, string $pin): Document
     {
+        // Verifikasi PIN sebelum proses reject (fail-fast, di luar transaction)
+        $this->pinService->verifyPin($director, $pin);
+
         return DB::transaction(function () use ($document, $director, $reason): Document {
+            if (! $document->uses_ddms) {
+                throw new \App\Exceptions\DDMS\DDMSException('Dokumen ini tidak menggunakan DDMS.');
+            }
+
             if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
                 throw new \App\Exceptions\DDMS\DDMSException(
                     "Hanya dokumen Generated yang dapat direject."
@@ -442,7 +324,7 @@ class DocumentApprovalService
 
     /**
      * Ambil riwayat dokumen yang sudah diproses Director.
-     * Status: Approved atau Rejected, Source: Generated.
+     * Status: Published atau Rejected (dokumen selesai diproses); Source: Generated.
      */
     public function getHistory(
         ?string $search = null,
@@ -451,7 +333,7 @@ class DocumentApprovalService
     ): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return \App\Models\Document::query()
-            ->whereIn("status", [\App\Enums\DocumentStatus::Approved, \App\Enums\DocumentStatus::Rejected])
+            ->whereIn("status", [\App\Enums\DocumentStatus::Published, \App\Enums\DocumentStatus::Rejected])
             ->where("document_source", \App\Enums\DocumentSource::Generated)
             ->when($search, function ($q, $v) {
                 $q->where(function ($q2) use ($v) {
@@ -465,5 +347,75 @@ class DocumentApprovalService
             ->with(["event.client", "numbering", "approvals.approvedBy"])
             ->orderBy("updated_at", "desc")
             ->paginate($perPage);
+    }
+
+    // -- Publish ----------------------------------------------
+
+    /**
+     * Publish dokumen yang sudah disetujui.
+     *
+     * Business Rules:
+     * - Status harus Approved.
+     * - Document Source harus Generated.
+     * - Nomor surat harus sudah ada.
+     */
+    public function publishDocument(Document $document, User $publisher): Document
+    {
+        return DB::transaction(function () use ($document, $publisher): Document {
+            if (! $document->uses_ddms) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "publish" => "Dokumen ini tidak menggunakan DDMS.",
+                ]);
+            }
+
+            if ($document->status !== \App\Enums\DocumentStatus::Approved) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "publish" => "Hanya dokumen berstatus Approved yang dapat dipublish.",
+                ]);
+            }
+
+            if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "publish" => "Hanya dokumen Generated yang dapat dipublish.",
+                ]);
+            }
+
+            $numbering = $this->numberingRepository->findByDocument($document->id);
+            if (! $numbering || ! $numbering->document_number) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "publish" => "Nomor surat wajib diisi sebelum dokumen dipublish.",
+                ]);
+            }
+
+            // Update status ke Published
+            $this->documentRepository->update($document, [
+                "status" => Document::STATUS_PUBLISHED,
+            ]);
+
+            Log::info("Dokumen dipublish", [
+                "document_id" => $document->id,
+                "document_number" => $numbering->document_number,
+                "published_by" => $publisher->id,
+            ]);
+
+            // Pastikan Verification Token tersedia (tanpa QR)
+            $this->verificationService->getOrCreateVerificationToken($document);
+
+            // Phase 11G.1: QR otomatis dibuat setelah Publish (menggunakan Verification Token)
+            $this->qrCodeService->getOrCreateQrCode($document);
+
+            // Reload Document + relasi terbaru (numbering + qrVerification) sebelum render PDF.
+            // Tidak mengandalkan lazy loading; memastikan PDF final tidak pernah stale.
+            $document->refresh()->load([
+                "numbering",
+                "qrVerification",
+            ]);
+
+            // Phase 11G.2A: Regenerate PDF Final agar selalu berisi QR terbaru.
+            // Hanya render ulang; tidak membuat QR/token/nomor surat baru.
+            app(DocumentBuilderService::class)->regeneratePublishedPdf($document);
+
+            return $document->fresh();
+        });
     }
 }

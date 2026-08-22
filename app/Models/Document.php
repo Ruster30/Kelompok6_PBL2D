@@ -104,6 +104,7 @@ class Document extends Model
         'updated_by',
         'is_archived',
         'document_source',
+        'uses_ddms',
         'archived_at',
     ];
 
@@ -116,6 +117,7 @@ class Document extends Model
             'file_size'         => 'integer',
             'is_archived'       => 'boolean',
             'document_source'   => DocumentSource::class,
+            'uses_ddms'         => 'boolean',
             'archived_at'       => 'datetime',
         ];
     }
@@ -221,6 +223,26 @@ class Document extends Model
     public function isDraft(): bool
     {
         return $this->status === \App\Enums\DocumentStatus::Draft;
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === \App\Enums\DocumentStatus::Pending;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === \App\Enums\DocumentStatus::Approved;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === \App\Enums\DocumentStatus::Rejected;
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->status === \App\Enums\DocumentStatus::Published;
     }
 
     public function numberingPrefix(): string

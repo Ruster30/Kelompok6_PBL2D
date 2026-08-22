@@ -22,8 +22,8 @@
                 <label class="form-label small text-muted">Status</label>
                 <select name="status" class="form-select">
                     <option value="">Semua</option>
-                    <option value="approved" @selected(request('status') === 'approved')>Approved</option>
                     <option value="rejected" @selected(request('status') === 'rejected')>Rejected</option>
+                    <option value="published" @selected(request('status') === 'published')>Published</option>
                 </select>
             </div>
             <div class="col-md-3 d-grid">
@@ -76,6 +76,7 @@
     $statusColors = [
         "approved" => ["bg" => "#dcfce7", "border" => "#86efac", "text" => "#166534"],
         "rejected" => ["bg" => "#fee2e2", "border" => "#fca5a5", "text" => "#991b1b"],
+        "published" => ["bg" => "#e0e7ff", "border" => "#a5b4fc", "text" => "#3730a3"],
         "pending" => ["bg" => "#fef3c7", "border" => "#fcd34d", "text" => "#92400e"],
         "draft" => ["bg" => "#f1f5f9", "border" => "#cbd5e1", "text" => "#475569"],
     ];

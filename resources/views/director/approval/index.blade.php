@@ -7,7 +7,7 @@
 <div class="page-header">
     <div class="page-header-left">
         <h1>Approval Dashboard</h1>
-        <p>Daftar dokumen yang menunggu persetujuan Director.</p>
+        <p>Daftar dokumen yang menunggu proses Director (review atau publish).</p>
     </div>
 </div>
 
@@ -21,7 +21,7 @@
                         <i class="bi bi-clock-history text-warning fs-4"></i>
                     </div>
                     <div>
-                        <p class="text-muted small mb-0">Pending Documents</p>
+                        <p class="text-muted small mb-0">Menunggu Proses</p>
                         <h3 class="fw-bold mb-0">{{ $pendingCount }}</h3>
                     </div>
                 </div>
@@ -133,7 +133,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center py-5">
+                        <td colspan="8" class="text-center py-5">
                             <i class="bi bi-inbox text-muted" style="font-size:36px;opacity:0.4;"></i>
                             <p class="text-muted mt-2 mb-0">Tidak ada dokumen yang menunggu approval.</p>
                         </td>

@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use App\Enums\DocumentStatus;
 use App\Models\User;
 use App\Services\DocumentApprovalService;
+use App\Services\DocumentNumberService;
+use App\Http\Requests\Admin\UpdateDocumentNumberRequest;
 use App\Http\Requests\UploadDenahRequest;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,6 +23,8 @@ class DocumentBuilderController extends Controller
         private readonly DocumentBuilderService $service,
         private readonly PaymentSchemeService $paymentSchemeService,
         private readonly DocumentApprovalService $approvalService,
+        private readonly DocumentNumberService $numberService,
+        private readonly \App\Services\DdmsSettingService $ddmsSettingService,
     ) {}
 
     /**
@@ -32,6 +36,8 @@ class DocumentBuilderController extends Controller
             "events"           => Event::orderBy("nama_event")->get(),
             "selectedEventId"  => $request->integer("event_id"),
             "selectedJenis"    => $request->get("jenis_dokumen", ""),
+            "ddmsEnabled"      => $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1",
+            "ddmsDefaults"     => $this->ddmsSettingService->getDdmsDefaults(),
             "latestDocuments"  => Document::query()
                 ->where("document_source", DocumentSource::Generated)
                 ->when($request->integer("event_id"), fn($q, $id) => $q->where("event_id", $id))
@@ -57,7 +63,10 @@ class DocumentBuilderController extends Controller
     {
         $document->loadMissing(["event.client", "numbering", "qrVerification"]);
 
-        return view("admin.document_builder.preview", compact("document"));
+        return view("admin.document_builder.preview", [
+            "document"    => $document,
+            "ddmsEnabled" => $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1",
+        ]);
     }
 
     /**
@@ -67,11 +76,18 @@ class DocumentBuilderController extends Controller
     {
         $data = $request->validate([
             "event_id"      => "required|exists:events,id",
-            "jenis_dokumen" => "required|in:proposal,surat_kontrak,invoice,rab",
+            "jenis_dokumen" => "required|in:surat_kontrak,invoice,rab",
+            "uses_ddms"     => ["nullable", "boolean"],
         ]);
 
+        // Per-document mode: global master switch menang; checkbox hanya dipercaya saat DDMS ON.
+        // Default per jenis HANYA untuk initial UI state (lihat index + blade).
+        // Keputusan final tetap dari request (UI selalu mengirim checkbox uses_ddms).
+        $ddmsEnabled = $this->ddmsSettingService->getSettingValue("ddms_enabled", "1") === "1";
+        $usesDdms    = $ddmsEnabled && filter_var($data["uses_ddms"] ?? false, FILTER_VALIDATE_BOOLEAN);
+
         $event    = Event::with("client")->findOrFail($data["event_id"]);
-        $document = $this->service->generateAndSave($event, $data["jenis_dokumen"]);
+        $document = $this->service->generateAndSave($event, $data["jenis_dokumen"], $usesDdms);
 
         return redirect()
             ->route("admin.document_builder.preview", $document->id)
@@ -240,6 +256,48 @@ class DocumentBuilderController extends Controller
     /**
      * Upload denah/layout untuk event.
      */
+
+    /**
+     * Simpan nomor surat manual oleh Admin.
+     */
+    public function setDocumentNumber(Document $document, UpdateDocumentNumberRequest $request)
+    {
+        try {
+            $this->numberService->setManualNumber(
+                document: $document,
+                number:   $request->input("nomor_surat"),
+                setBy:    $request->user(),
+            );
+
+            // Sinkronisasi PDF: render ulang dokumen Generated (builder) agar nomor manual tampil,
+            // tanpa mengubah status/Draft, tanpa publish, tanpa token/QR.
+            if ($document->document_source === \App\Enums\DocumentSource::Generated) {
+                $fresh = $document->refresh()->load(["numbering", "event"]);
+                $jenis = $fresh->tipe === "kontrak" ? "surat_kontrak" : $fresh->tipe;
+                $this->service->regenerateFinalPdf($fresh, $fresh->event, $jenis);
+            }
+        } catch (\Throwable $e) {
+            // Jangan laporkan sukses bila PDF tidak berhasil disinkronkan.
+            // PDF lama TIDAK dihapus/dirusak; DB rollback tidak aman karena storage
+            // tidak dapat di-rollback — karenanya ditangani dengan error eksplisit.
+            \Log::error("Gagal menyimpan nomor / meregenerasi PDF dokumen", [
+                "document_id" => $document->id,
+                "error" => $e->getMessage(),
+            ]);
+
+            return redirect()
+                ->route("admin.document_builder.preview", $document->id)
+                ->with("error", "Nomor surat tidak dapat disimpan / PDF gagal diperbarui. Silakan coba lagi.");
+        }
+
+        return redirect()
+            ->route("admin.document_builder.preview", $document->id)
+            ->with("success", "Nomor surat berhasil disimpan dan PDF diperbarui.");
+    }
+
+    /**
+     * Upload denah/layout untuk event.
+     */
     public function uploadDenah(UploadDenahRequest $request)
     {
         $event = Event::findOrFail($request->event_id);
@@ -307,7 +365,7 @@ class DocumentBuilderController extends Controller
     {
         $base = $request->validate([
             "event_id"      => "required|exists:events,id",
-            "jenis_dokumen" => "required|in:proposal,surat_kontrak,invoice,rab",
+            "jenis_dokumen" => "required|in:surat_kontrak,invoice,rab",
         ]);
 
         if ($base["jenis_dokumen"] === "invoice" && $request->has("jenis_pembayaran")) {

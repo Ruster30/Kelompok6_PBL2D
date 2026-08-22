@@ -19,6 +19,7 @@ class DocumentFactory extends Factory
             'nama_file' => fake()->word() . '.pdf',
             'file_path' => 'documents/' . fake()->uuid() . '.pdf',
             'tipe' => fake()->randomElement(['proposal', 'kontrak', 'invoice', 'rab']),
+            'uses_ddms' => true,
         ];
     }
 }

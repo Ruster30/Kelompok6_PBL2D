@@ -21,6 +21,9 @@ interface DocumentQrVerificationRepositoryInterface
     /** Buat QR verification baru */
     public function create(array $data): DocumentQrVerification;
 
+    /** Update data QR verification */
+    public function update(DocumentQrVerification $qrVerification, array $data): DocumentQrVerification;
+
     /** Hapus QR verification */
     public function delete(DocumentQrVerification $qrVerification): void;
 }

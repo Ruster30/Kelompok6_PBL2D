@@ -8,97 +8,104 @@ use App\Models\Document;
 use App\Models\User;
 use App\Repositories\Contracts\DocumentNumberingRepositoryInterface;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 /**
  * DocumentNumberService
  *
- * Menghasilkan nomor dokumen resmi otomatis setelah approval.
- * Format: SEQ/COMPANY/PREFIX/ROMAN_MONTH/YEAR
- * Contoh: 001/ALPHA/KONTRAK/VIII/2026
+ * Mengelola nomor dokumen resmi yang diinput MANUAL oleh Admin.
+ * Tidak ada lagi auto-generation.
+ *
+ * Business Rules:
+ * - Nomor wajib diisi.
+ * - Nomor harus unik.
+ * - Nomor hanya boleh diubah saat status Draft.
  */
 class DocumentNumberService
 {
-    private const COMPANY_CODE = 'ALPHA';
-
     public function __construct(
         private readonly DocumentNumberingRepositoryInterface $numberingRepository,
     ) {}
 
     /**
-     * Generate nomor dokumen untuk dokumen yang sudah Approved.
-     * Jika nomor sudah ada, return nomor yang sudah ada.
+     * Simpan nomor surat yang diinput manual oleh Admin.
      */
-    public function generate(Document $document, User $generatedBy): string
+    public function setManualNumber(Document $document, string $number, User $setBy): void
     {
-        // Cek apakah sudah punya nomor
+        // Business Rule: Hanya Draft yang boleh membuat/mengubah nomor surat
+        if ($document->status !== \App\Enums\DocumentStatus::Draft) {
+            throw ValidationException::withMessages([
+                "nomor_surat" => "Nomor surat tidak dapat diubah karena dokumen sudah dikirim untuk proses approval.",
+            ]);
+        }
+
+        $this->validateNumber($number);
+
+        // Business Rule: Nomor harus unik
+        if (! $this->isNumberAvailable($number, $document->id)) {
+            throw ValidationException::withMessages([
+                "nomor_surat" => "Nomor surat sudah digunakan oleh dokumen lain.",
+            ]);
+        }
+
+        // Simpan / update pada tabel document_numberings
         $existing = $this->numberingRepository->findByDocument($document->id);
+
         if ($existing) {
-            return $existing->document_number;
+            $this->numberingRepository->update($existing, [
+                "document_number" => $number,
+                "generated_by"    => $setBy->id,
+            ]);
+        } else {
+            $this->numberingRepository->create([
+                "document_id"     => $document->id,
+                "document_number" => $number,
+                "prefix"          => "MANUAL",
+                "year"            => (int) now()->format("Y"),
+                "sequence_number" => 0,
+                "generated_by"    => $setBy->id,
+            ]);
         }
 
-        // Validasi workflow
-        if ($document->document_source !== \App\Enums\DocumentSource::Generated) {
-            throw new \App\Exceptions\DDMS\DDMSException(
-                "Hanya dokumen Generated yang dapat diberikan nomor."
-            );
-        }
-
-        $prefix  = $document->numberingPrefix();
-        $year    = (int) now()->format('Y');
-        $month   = (int) now()->format('n');
-        $company = config('document.default_company_code', 'ALPH');
-
-        // Dapatkan nomor urut berikutnya (atomic via lockForUpdate)
-        $sequence = $this->numberingRepository->nextSequence($prefix, $year);
-        $seqPadded = str_pad((string) $sequence, 3, '0', STR_PAD_LEFT);
-
-        $documentNumber = sprintf(
-            "%s/%s-%s/%s/%s",
-            $seqPadded,
-            $prefix,
-            $company,
-            $this->romanMonth($month),
-            $year
-        );
-
-        // Simpan ke tabel document_numberings
-        $this->numberingRepository->create([
-            'document_id'     => $document->id,
-            'document_number' => $documentNumber,
-            'prefix'          => $prefix,
-            'year'            => $year,
-            'sequence_number' => $sequence,
-            'generated_by'    => $generatedBy->id,
+        Log::info("Nomor surat diinput manual", [
+            "document_id" => $document->id,
+            "document_number" => $number,
+            "set_by" => $setBy->id,
         ]);
-
-        Log::info('Nomor dokumen berhasil dibuat', [
-            'document_id'     => $document->id,
-            'document_number' => $documentNumber,
-            'generated_by'    => $generatedBy->id,
-        ]);
-
-        return $documentNumber;
     }
 
     /**
-     * Konversi angka bulan ke Romawi.
+     * Validasi format nomor surat.
      */
-    private function romanMonth(int $month): string
+    public function validateNumber(string $number): void
     {
-        return match ($month) {
-            1  => 'I',
-            2  => 'II',
-            3  => 'III',
-            4  => 'IV',
-            5  => 'V',
-            6  => 'VI',
-            7  => 'VII',
-            8  => 'VIII',
-            9  => 'IX',
-            10 => 'X',
-            11 => 'XI',
-            12 => 'XII',
-            default => '',
-        };
+        $number = trim($number);
+
+        if ($number === "") {
+            throw ValidationException::withMessages([
+                "nomor_surat" => "Nomor surat wajib diisi.",
+            ]);
+        }
+
+        if (strlen($number) > 100) {
+            throw ValidationException::withMessages([
+                "nomor_surat" => "Nomor surat maksimal 100 karakter.",
+            ]);
+        }
+    }
+
+    /**
+     * Cek apakah nomor surat masih tersedia (belum dipakai dokumen lain).
+     */
+    public function isNumberAvailable(string $number, ?int $excludeDocumentId = null): bool
+    {
+        $existing = $this->numberingRepository->findByNumber(trim($number));
+
+        if (! $existing) {
+            return true;
+        }
+
+        // Jika nomor dipakai dokumen yang sama, anggap tersedia (update)
+        return $excludeDocumentId !== null && $existing->document_id === $excludeDocumentId;
     }
 }

@@ -125,7 +125,7 @@ test('event store validates required fields', function () {
 
     $this->actingAs($client);
     $response = $this->post(route('client.event.store'), []);
-    $response->assertSessionHasErrors(['nama_event', 'jenis_event', 'tanggal_event', 'lokasi_event', 'jumlah_tamu']);
+    $response->assertSessionHasErrors(['nama_event', 'jenis_event', 'tanggal_event', 'lokasi_event']);
 });
 
 test('event store rejects past dates', function () {

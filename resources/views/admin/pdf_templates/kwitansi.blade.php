@@ -159,7 +159,8 @@
         <div class="signature-area">
             <div class="signature-box">
                 <div class="signature-label">Hormat Kami,</div>
-                <div class="signature-space"></div>
+                <div class="signature-space" style="height:44px;"></div>
+                @include('admin.pdf_templates.partials.signature_qr')
                 <div class="signature-name">{{ $companyName ?? 'Alpha Organizer' }}</div>
             </div>
         </div>
@@ -177,8 +178,6 @@
         </div>
     </div>
 
-{{-- Approval Metadata --}}
-@include('admin.pdf_templates.partials.verification')
 
 </body>
 </html>

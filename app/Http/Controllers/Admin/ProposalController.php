@@ -72,7 +72,12 @@ class ProposalController extends Controller
 
     public function destroy(Document $document)
     {
-        $this->proposalService->deleteDocument($document);
+        try {
+            $this->proposalService->deleteDocument($document);
+        } catch (\App\Exceptions\DDMS\DDMSException $e) {
+            return redirect()->route('admin.documents.index')
+                ->with('error', $e->getMessage());
+        }
 
         return redirect()->route('admin.documents.index')
             ->with('success', 'Dokumen berhasil dihapus.');

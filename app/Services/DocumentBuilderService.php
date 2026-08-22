@@ -28,6 +28,10 @@ class DocumentBuilderService
     public function generate(Event $event, string $jenisDokumen, ?Document $document = null): array
     {
         return match ($jenisDokumen) {
+            // Proposal is no longer a Document Builder GENERATION type (blocked at
+            // controller validation + UI). The arm is kept solely so historical
+            // generated Proposal records (document_source=generated) remain
+            // readable/downloadable and can be re-rendered for manual numbering.
             'proposal'       => $this->generateProposal($event, $document),
             'surat_kontrak'  => $this->generateSuratKontrak($event, $document),
             'invoice'        => $this->generateInvoice($event, $document),
@@ -37,7 +41,7 @@ class DocumentBuilderService
         };
     }
 
-    // ─── PROPOSAL ───────────────────────────────────────────────────────────
+    // ─── PROPOSAL (historical/regeneration only — NOT a Document Builder type) ─
 
     private function generateProposal(Event $event, ?Document $document = null): array
     {
@@ -74,7 +78,7 @@ class DocumentBuilderService
         $nilaiKontrak = $event->total_invoice ?: app(RabService::class)->getTotalDibayarKlien($event->id);
 
 
-        // Layout/Denah image � path absolut untuk DomPDF
+        // Layout/Denah image � path absolut untuk DomPDF
         $layoutPath = null;
         if ($event->layout_denah && Storage::disk("public")->exists($event->layout_denah)) {
             $layoutPath = Storage::disk("public")->path($event->layout_denah);
@@ -271,6 +275,7 @@ private function generateRab(Event $event, ?Document $document = null): array
         string $namaFile,
         string $filePath,
         string $tipe,
+        bool $usesDdms = true,
     ): Document
     {
         return Document::create([
@@ -280,6 +285,7 @@ private function generateRab(Event $event, ?Document $document = null): array
             "file_path"        => $filePath,
             "tipe"             => $tipe,
             "document_source"  => \App\Enums\DocumentSource::Generated,
+            "uses_ddms"        => $usesDdms,
         ]);
     }
 
@@ -421,7 +427,7 @@ private function generateRab(Event $event, ?Document $document = null): array
      * Generate dokumen, simpan ke storage dan database.
      * Public API untuk DocumentBuilderController.
      */
-    public function generateAndSave(Event $event, string $jenisDokumen): Document
+    public function generateAndSave(Event $event, string $jenisDokumen, bool $usesDdms = true): Document
     {
         $generated = $this->generate($event, $jenisDokumen);
 
@@ -448,6 +454,7 @@ private function generateRab(Event $event, ?Document $document = null): array
             namaFile: $this->labelJenis($jenisDokumen) . " - " . $event->nama_event,
             filePath: $path,
             tipe:     $tipeEnum,
+            usesDdms: $usesDdms,
         );
 
         return $document;
@@ -481,5 +488,33 @@ private function generateRab(Event $event, ?Document $document = null): array
         }
 
         \Log::info('PDF Final regenerated', ['document_id' => $document->id]);
+    }
+
+    /**
+     * Regenerate PDF final untuk dokumen Published.
+     *
+     * Method ini HANYA bertugas:
+     * - reload relasi terbaru (numbering + qrVerification)
+     * - render ulang PDF
+     * - overwrite file PDF lama (file_path yang sama)
+     *
+     * TIDAK membuat nomor surat, verification token, maupun QR code.
+     * TIDAK mengubah status dokumen ataupun approval.
+     * QR memakai dari qr_path yang sudah ada (tidak pernah digenerate ulang).
+     * Backward compatible untuk dokumen lama yang sudah Published.
+     */
+    public function regeneratePublishedPdf(Document $document): void
+    {
+        // Reload relasi terbaru agar tidak terjadi PDF stale.
+        $document->refresh()->load([
+            'numbering',
+            'qrVerification',
+        ]);
+
+        $event = $document->event;
+        $jenis = $document->tipe === 'kontrak' ? 'surat_kontrak' : $document->tipe;
+
+        // Render ulang PDF dan overwrite file lama.
+        $this->regenerateFinalPdf($document, $event, $jenis);
     }
 }

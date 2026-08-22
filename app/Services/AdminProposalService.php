@@ -60,6 +60,15 @@ class AdminProposalService
 
     public function deleteDocument(Document $document): void
     {
+        // Dokumen Published tidak boleh dihapus permanen.
+        // Melindungi QR verification dan audit trail verifikasi
+        // (FK cascade: documents -> document_qr_verifications -> document_verification_logs).
+        if ($document->isPublished()) {
+            throw new \App\Exceptions\DDMS\DDMSException(
+                'Dokumen yang sudah dipublish tidak dapat dihapus permanen karena menyimpan riwayat verifikasi.'
+            );
+        }
+
         if ($document->file_path) { Storage::disk('public')->delete($document->file_path); }
         $this->documentRepository->delete($document);
     }

@@ -58,10 +58,15 @@
                         </td>
                         <td style="padding:12px;border-bottom:1px solid #f1f5f9;">
                             <x-document-status-badge :status="$document->status" />
+                            @if($document->uses_ddms)
+                                <span class="badge bg-success" style="font-size:11px;padding:3px 6px;margin-left:4px;">DDMS</span>
+                            @else
+                                <span class="badge bg-secondary" style="font-size:11px;padding:3px 6px;margin-left:4px;">Non-DDMS</span>
+                            @endif
                         </td>
                         <td style="padding:12px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569;">
                             @if($document->numbering)
-                                {{ $document->numbering->nomor_dokumen }}
+                                {{ $document->numbering->document_number }}
                             @else
                                 -
                             @endif

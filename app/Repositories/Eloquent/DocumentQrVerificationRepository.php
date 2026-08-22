@@ -36,6 +36,13 @@ class DocumentQrVerificationRepository implements DocumentQrVerificationReposito
         return $this->model->create($data);
     }
 
+    public function update(DocumentQrVerification $qrVerification, array $data): DocumentQrVerification
+    {
+        $qrVerification->update($data);
+
+        return $qrVerification->fresh();
+    }
+
     public function delete(DocumentQrVerification $qrVerification): void
     {
         $qrVerification->delete();

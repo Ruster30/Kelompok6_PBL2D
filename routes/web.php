@@ -10,23 +10,6 @@ use App\Http\Controllers\Vendor\TugasController;
 use App\Http\Controllers\Vendor\DokumentasiController;
 use App\Http\Controllers\Vendor\NotifikasiController;
 
-
-Route::get('/d', function () {
-    return view('welcome');
-    Route::get('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
-        ->name('settings.pin');
-
-    Route::post('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
-        ->name('settings.pin.store');
-
-    Route::match(['put', 'patch'], '/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
-        ->name('settings.pin.update');
-
-});
-
 Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
 
 /*
@@ -53,23 +36,12 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/vendor/dashboard', function () {
+Route::get('/vendor/dashboard', function () {
         if (request()->user()->role !== 'vendor') {
             abort(403);
         }
         return view('vendor.ringkasan');
     })->name('vendor.dashboard');
-    Route::get('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
-        ->name('settings.pin');
-
-    Route::post('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
-        ->name('settings.pin.store');
-
-    Route::match(['put', 'patch'], '/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
-        ->name('settings.pin.update');
 
 });
 
@@ -78,17 +50,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
-        ->name('settings.pin');
-
-    Route::post('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
-        ->name('settings.pin.store');
-
-    Route::match(['put', 'patch'], '/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
-        ->name('settings.pin.update');
 
 });
 
@@ -97,6 +58,8 @@ Route::middleware('auth')->group(function () {
 // ========================================
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/verification-audit', [App\Http\Controllers\Admin\VerificationAuditController::class, 'index'])->name('admin.verification-audit.index');
+    Route::get('/verification-audit/{log}', [App\Http\Controllers\Admin\VerificationAuditController::class, 'show'])->name('admin.verification-audit.show');
 
     // --- Kelola Klien ---
     // Route ini mengelola akun user dengan role='client'.
@@ -235,6 +198,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         ->name('admin.document_builder.print-doc');
     Route::post('/document-builder/{document}/submit',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'submitApproval'])
+        ->middleware(\App\Http\Middleware\EnsureDdmsEnabled::class)
         ->name('admin.document_builder.submit');
 
     Route::delete('/document-builder/{document}',
@@ -244,6 +208,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/document-builder/{document}/rename',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'renameDraft'])
         ->name('admin.document_builder.rename');
+    Route::post('/document-builder/{document}/number',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'setDocumentNumber'])
+        ->name('admin.document_builder.set_number');
     Route::get('/document-builder/{document}',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'show'])
         ->name('admin.document_builder.show');
@@ -320,24 +287,14 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/cms/clients/{client}', [App\Http\Controllers\Admin\CmsController::class, 'updateClient'])->name('admin.cms.updateClient');
     Route::delete('/cms/clients/{client}', [App\Http\Controllers\Admin\CmsController::class, 'destroyClient'])->name('admin.cms.destroyClient');
     
-    // Settings
+// Settings
     Route::get('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
     Route::put('/settings/update', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
     Route::put('/settings/update-password', [App\Http\Controllers\Admin\SettingsController::class, 'updatePassword'])->name('admin.settings.updatePassword');
+    Route::post('/settings/ddms-toggle', [App\Http\Controllers\Admin\SettingsController::class, 'toggleDdms'])->name('admin.settings.ddms-toggle');
+    Route::put('/settings/ddms-defaults', [App\Http\Controllers\Admin\SettingsController::class, 'updateDdmsDefaults'])->name('admin.settings.ddms-defaults');
 
-    Route::get('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
-        ->name('settings.pin');
-
-    Route::post('/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
-        ->name('settings.pin.store');
-
-    Route::match(['put', 'patch'], '/settings/pin',
-        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
-        ->name('settings.pin.update');
-
-});       
+});
 
 /*
 |
@@ -507,6 +464,11 @@ Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->
         Route::get('/dashboard', [App\Http\Controllers\Director\DirectorApprovalController::class, 'dashboard'])
         ->name('dashboard');
 
+    Route::get('/verification-audit', [App\Http\Controllers\Admin\VerificationAuditController::class, 'index'])
+        ->name('verification-audit.index');
+    Route::get('/verification-audit/{log}', [App\Http\Controllers\Admin\VerificationAuditController::class, 'show'])
+        ->name('verification-audit.show');
+
     Route::get('/approval',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'index'])
         ->name('approval.index');
@@ -514,19 +476,27 @@ Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'history'])
         ->name('approval.history');
 
-    Route::get('/history/{document}',
+Route::get('/history/{document}',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'historyShow'])
         ->name('approval.history-show');
+    Route::get('/history/{document}/download',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'downloadDocument'])
+        ->name('approval.history-download');
     Route::get('/approval/{document}',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'show'])
         ->name('approval.show');
     Route::post('/approval/{document}/approve',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'approve'])
+        ->middleware(\App\Http\Middleware\EnsureDdmsEnabled::class)
         ->name('approval.approve');
 
     Route::post('/approval/{document}/reject',
         [App\Http\Controllers\Director\DirectorApprovalController::class, 'reject'])
         ->name('approval.reject');
+    Route::post('/approval/{document}/publish',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'publish'])
+        ->middleware(\App\Http\Middleware\EnsureDdmsEnabled::class)
+        ->name('approval.publish');
 
     Route::get('/settings/pin',
         [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
@@ -542,4 +512,12 @@ Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->
 
 });
 
+// Public Document Verification
+Route::get('/verify/{token}', [App\Http\Controllers\PublicVerificationController::class, 'verify'])
+    ->middleware(['throttle:30,1', 'security-headers'])
+    ->name('verify.document');
 require __DIR__.'/auth.php';
+
+
+
+

@@ -240,3 +240,46 @@ npm run dev
 Project ini sedang dikembangkan sebagai bagian dari tugas/proyek Sistem Informasi Manajemen Event Alpha.corp.
 
 ---
+
+# Pengujian (Testing)
+
+## Konvensi Test Database
+
+Test suite (khususnya DDMS) **wajib menggunakan MySQL**, bukan SQLite.
+
+- Nama database test: `alpha_corp_test`
+- Konfigurasi test sudah tersedia di `.env.testing` (MySQL).
+- `phpunit.xml` masih mengarah ke `sqlite :memory:`, tetapi **tidak kompatibel** dengan rantai migration yang ada (ada migration MySQL-only, misalnya `ALTER TABLE users MODIFY COLUMN role ENUM(...)`). Jangan ubah migration hanya untuk menyesuaikan SQLite.
+
+## Cara Menjalankan Test
+
+Test harus dijalankan **sekuensial** (jangan paralel terhadap database test yang sama).
+
+Jalankan dengan environment override MySQL agar sesuai `.env.testing`:
+
+```bash
+DB_CONNECTION=mysql DB_DATABASE=alpha_corp_test DB_USERNAME=root DB_PASSWORD= \
+php artisan test --env=testing
+```
+
+Contoh untuk suite spesifik:
+
+```bash
+DB_CONNECTION=mysql DB_DATABASE=alpha_corp_test DB_USERNAME=root DB_PASSWORD= \
+php artisan test tests/Feature/DDMS --env=testing
+```
+
+Catatan:
+- Jika MySQL belum aktif, test tidak dapat dijalankan — hidupkan dulu MySQL lokal.
+- Jangan mengubah `phpunit.xml` / `.env.testing` / migration untuk memaksa test lewat.
+- Belum ada CI di repository ini.
+
+---
+
+# Dokumentasi Tambahan
+
+- [Panduan Deployment Produksi](docs/PRODUCTION.md) — konfigurasi environment produksi, cache/storage, migration, backup & recovery, keamanan seeder.
+- [Panduan Testing](docs/TESTING.md) — struktur test dan konvensi database test.
+- Dokumentasi teknis lengkap terdapat pada folder [docs](docs/).
+
+---

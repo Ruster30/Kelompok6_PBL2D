@@ -209,15 +209,14 @@ tbody td {
     <div class="ttd-left"></div>
     <div class="ttd-right">
         <div class="ttd-date">Padang, {{ now()->translatedFormat('d F Y') }}</div>
-        <div class="ttd-hormat">Hormat kami,</div>
+        <div class="ttd-hormat" style="margin-bottom:8px;">Hormat kami,</div>
+        @include('admin.pdf_templates.partials.signature_qr')
         <div class="ttd-name">Kurnia Fajar Viliano S.Tr.Kom</div>
         <div class="ttd-jabatan">Head Of Alpha Organizer</div>
     </div>
 </div>
 
 
-{{-- Approval Metadata --}}
-@include('admin.pdf_templates.partials.verification')
 
 </body>
 </html>

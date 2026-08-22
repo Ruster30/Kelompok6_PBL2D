@@ -71,6 +71,13 @@
         }
         .page-content { padding: 20px; flex: 1; overflow-y: auto; }
         .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; }
+
+        /* Badge status dokumen (dipakai x-document-status-badge / DocumentStatus::badge) */
+        .badge-mendatang { background: #DBEAFE; color: #1E40AF; }
+        .badge-pending   { background: #FEF3C7; color: #92400E; }
+        .badge-selesai   { background: #DCFCE7; color: #0f766e; }
+        .badge-ditolak   { background: #FEE2E2; color: #991B1B; }
+        .badge-purple    { background: #F3E8FF; color: #7E22CE; }
     </style>
 </head>
 <body>
@@ -94,6 +101,9 @@
         </a>
         <a href="{{ route('director.approval.history') }}" class="nav-item @if(request()->routeIs('director.approval.history*')) active @endif">
             <i class="fas fa-history"></i> Riwayat Approval
+        </a>
+        <a href="{{ route('director.verification-audit.index') }}" class="nav-item @if(request()->routeIs('director.verification-audit*')) active @endif">
+            <i class="fas fa-shield-alt"></i> Verifikasi Audit
         </a>
 
         <div class="nav-section">Keamanan</div>
@@ -125,24 +135,16 @@
     </header>
 
     <main class="page-content">
-        @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-1"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
-        @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle me-1"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
+        <x-alert type="success" />
+        <x-alert type="error" />
+        <x-alert-dismiss />
         
         @yield('content')
     </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<x-swal-helper />
 @stack('scripts')
 
 </body>

@@ -170,6 +170,23 @@
                 <input type="hidden" id="denahFilePath" value="{{ $selectedEventId ? $events->firstWhere('id', $selectedEventId)?->layout_denah : '' }}">
             </div>
 
+            {{-- Mode DDMS / Non-DDMS --}}
+            <div style="margin-bottom:24px;">
+                <label style="display:flex;align-items:flex-start;gap:10px;cursor:{{ $ddmsEnabled ? 'pointer' : 'not-allowed' }};">
+                    <input type="checkbox" id="uses_ddms" name="uses_ddms" value="1"
+                           style="margin-top:3px;"
+                           {{ $ddmsEnabled ? 'checked' : 'disabled' }}>
+                    <div>
+                        <div style="font-weight:600;font-size:13.5px;color:#0f172a;">Gunakan DDMS</div>
+                        @if($ddmsEnabled)
+                            <small style="color:#64748b;font-size:12px;">Dokumen ini akan melalui approval Director, PIN approval, QR, dan verifikasi publik.</small>
+                        @else
+                            <small style="color:#dc2626;font-size:12px;">DDMS sedang dinonaktifkan oleh administrator. Dokumen akan dibuat sebagai dokumen biasa.</small>
+                        @endif
+                    </div>
+                </label>
+            </div>
+
             {{-- Tombol Generate --}}
             <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
                 <button type="button" id="btnGenerate"
@@ -237,6 +254,10 @@
     const CSRF         = document.querySelector('meta[name="csrf-token"]')?.content
                          || '{{ csrf_token() }}';
 
+    // Default DDMS per jenis surat (hanya initial UI state).
+    const DDMS_DEFAULTS  = @json($ddmsDefaults);
+    const DDMS_ENABLED   = @json($ddmsEnabled);
+
     // â”€â”€â”€ Info event â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     document.getElementById('event_id').addEventListener('change', function () {
         const opt = this.options[this.selectedIndex];
@@ -261,12 +282,16 @@
     });
 
     // â”€â”€â”€ Info jenis dokumen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Sinkronisasi default DDMS per jenis (initial UI state only).
+    function syncDdmsDefault(jenis) {
+        if (!DDMS_ENABLED) return; // global OFF: checkbox disabled, jangan ubah.
+        const chk = document.getElementById('uses_ddms');
+        if (!chk || !DDMS_DEFAULTS.hasOwnProperty(jenis)) return;
+        // Set initial state dari default; admin tetap dapat mengubah manual.
+        chk.checked = !!DDMS_DEFAULTS[jenis];
+    }
+
     const JENIS_DESC = {
-        proposal: {
-            icon: 'ðŸ“„', label: 'Proposal Event',
-            desc: 'Dokumen proposal lengkap meliputi profil perusahaan, data client & event, konsep, layanan, timeline, vendor, RAB, dan syarat & ketentuan.',
-            color: '#6366f1'
-        },
         surat_kontrak: {
             icon: '📑', label: 'Surat Kontrak',
             desc: 'Kontrak resmi antara EO dan client mencakup nomor kontrak, nilai kontrak, hak & kewajiban, ketentuan pembayaran, masa berlaku, dan area tanda tangan.',
@@ -309,6 +334,11 @@
         } else {
             denahSection.style.display = 'none';
         }
+
+        // Sinkronkan checkbox "Gunakan DDMS" dengan default per jenis.
+        // HANYA initial state: admin tetap dapat mengubahnya secara manual.
+        // Jika global OFF, checkbox dinonaktifkan (forced Non-DDMS) — tidak diubah di sini.
+        syncDdmsDefault(this.value);
         const d = JENIS_DESC[this.value];
         document.getElementById('jenisInfoContent').innerHTML = `
             <div style="background:${d.color}10;border:1px solid ${d.color}30;border-radius:8px;padding:12px 16px;font-size:13px;">
@@ -468,7 +498,10 @@
             form.method = 'POST';
             form.action = GENERATE_URL;
 
-            [['_token', CSRF], ['event_id', eventId], ['jenis_dokumen', jenis]].forEach(([k, v]) => {
+            const ddmsCheck = document.getElementById('uses_ddms');
+            const usesDdms = ddmsCheck && !ddmsCheck.disabled && ddmsCheck.checked ? 1 : 0;
+
+            [['_token', CSRF], ['event_id', eventId], ['jenis_dokumen', jenis], ['uses_ddms', usesDdms]].forEach(([k, v]) => {
                 const i = document.createElement('input');
                 i.type = 'hidden'; i.name = k; i.value = v;
                 form.appendChild(i);
@@ -547,7 +580,7 @@
             document.getElementById('event_id').dispatchEvent(new Event('change'));
             document.getElementById('jenis_dokumen').dispatchEvent(new Event('change'));
         });
-ï»¿    @endif
+@endif
 
     // Payment Scheme Functions (khusus Invoice)
     let docTotalDibayarKlien = 0;

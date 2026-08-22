@@ -61,8 +61,6 @@ class DocumentVerificationLog extends Model
     {
         return [
             'verified_at'          => 'datetime',
-            'status'               => VerificationStatus::class,
-            'verification_source'  => VerificationSource::class,
         ];
     }
 
@@ -72,24 +70,6 @@ class DocumentVerificationLog extends Model
     public function isValid(): bool
     {
         return $this->status === self::STATUS_VALID;
-    }
-
-    /** Apakah QR sudah expired? */
-    public function isExpired(): bool
-    {
-        return $this->status === self::STATUS_EXPIRED;
-    }
-
-    /** Apakah token tidak valid? */
-    public function isInvalid(): bool
-    {
-        return $this->status === self::STATUS_INVALID;
-    }
-
-    /** Apakah terindikasi manipulasi? */
-    public function isTampered(): bool
-    {
-        return $this->status === self::STATUS_TAMPERED;
     }
 
     // ── Relationships ───────────────────────────────────────
