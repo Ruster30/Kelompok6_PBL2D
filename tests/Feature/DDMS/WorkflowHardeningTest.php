@@ -293,7 +293,7 @@ class WorkflowHardeningTest extends TestCase
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
                 'uses_ddms' => 1,
             ])
             ->assertRedirect();

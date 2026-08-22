@@ -88,7 +88,6 @@ class DdmsFeatureToggleTest extends TestCase
     private function setDdmsDefault(string $jenis, bool $value): void
     {
         $key = match ($jenis) {
-            'proposal'      => 'ddms_default_proposal',
             'surat_kontrak' => 'ddms_default_surat_kontrak',
             'invoice'       => 'ddms_default_invoice',
             'rab'           => 'ddms_default_rab',
@@ -220,7 +219,7 @@ class DdmsFeatureToggleTest extends TestCase
         $response = $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
                 'uses_ddms' => 1,
             ]);
 
@@ -298,7 +297,7 @@ class DdmsFeatureToggleTest extends TestCase
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
             ])
             ->assertRedirect();
 
@@ -375,19 +374,19 @@ class DdmsFeatureToggleTest extends TestCase
     public function test_default_settings_do_not_alter_global_toggle_semantics(): void
     {
         // Mengubah default per jenis tidak memengaruhi master switch global.
-        $this->setDdmsDefault('proposal', false);
+        $this->setDdmsDefault('surat_kontrak', false);
         $this->setDdmsDefault('invoice', true);
 
         $this->assertSame('1', app(DdmsSettingService::class)->getSettingValue('ddms_enabled', '1'));
 
         // Global OFF tetap memblokir alur DDMS terlepas dari default apapun.
         $this->setDdmsEnabled(false);
-        $this->setDdmsDefault('proposal', true);
+        $this->setDdmsDefault('surat_kontrak', true);
 
         $response = $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
                 'uses_ddms' => 1,
             ]);
 
@@ -396,14 +395,14 @@ class DdmsFeatureToggleTest extends TestCase
         $this->assertFalse($doc->uses_ddms);
     }
 
-    public function test_ddms_full_workflow_still_works_with_non_default_proposal_setting(): void
+    public function test_ddms_full_workflow_still_works_with_non_default_surat_kontrak_setting(): void
     {
-        $this->setDdmsDefault('proposal', false);
+        $this->setDdmsDefault('surat_kontrak', false);
 
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
                 'uses_ddms' => 1,
             ])
             ->assertRedirect();

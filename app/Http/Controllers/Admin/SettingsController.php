@@ -69,7 +69,10 @@ class SettingsController extends Controller
     }
 
     /**
-     * Simpan default DDMS per jenis surat (Proposal, Surat Kontrak, Invoice, RAB).
+     * Simpan default DDMS per jenis surat (Surat Kontrak, Invoice, RAB).
+     *
+     * Proposal dikecualikan karena dibuat secara manual (upload), bukan
+     * di-generate dan tidak mengikuti alur DDMS.
      *
      * Setting ini HANYA default untuk initial UI state di halaman Generate.
      * Tidak memengaruhi dokumen existing dan tidak membatasi keputusan admin
@@ -80,14 +83,12 @@ class SettingsController extends Controller
     public function updateDdmsDefaults(Request $request)
     {
         $validated = $request->validate([
-            "ddms_default_proposal"       => "required|in:0,1",
             "ddms_default_surat_kontrak" => "required|in:0,1",
             "ddms_default_invoice"        => "required|in:0,1",
             "ddms_default_rab"            => "required|in:0,1",
         ]);
 
         $keys = [
-            "ddms_default_proposal",
             "ddms_default_surat_kontrak",
             "ddms_default_invoice",
             "ddms_default_rab",

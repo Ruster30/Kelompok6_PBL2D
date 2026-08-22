@@ -76,7 +76,7 @@ class DocumentBuilderController extends Controller
     {
         $data = $request->validate([
             "event_id"      => "required|exists:events,id",
-            "jenis_dokumen" => "required|in:proposal,surat_kontrak,invoice,rab",
+            "jenis_dokumen" => "required|in:surat_kontrak,invoice,rab",
             "uses_ddms"     => ["nullable", "boolean"],
         ]);
 
@@ -365,7 +365,7 @@ class DocumentBuilderController extends Controller
     {
         $base = $request->validate([
             "event_id"      => "required|exists:events,id",
-            "jenis_dokumen" => "required|in:proposal,surat_kontrak,invoice,rab",
+            "jenis_dokumen" => "required|in:surat_kontrak,invoice,rab",
         ]);
 
         if ($base["jenis_dokumen"] === "invoice" && $request->has("jenis_pembayaran")) {

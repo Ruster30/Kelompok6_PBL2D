@@ -10,6 +10,7 @@ use App\Models\Document;
 use App\Models\DocumentApproval;
 use App\Models\DocumentNumbering;
 use App\Models\DocumentQrVerification;
+use App\Models\DocumentSend;
 use App\Models\DocumentVerificationLog;
 use App\Models\Event;
 use App\Models\Invoice;
@@ -17,6 +18,7 @@ use App\Models\User;
 use App\Services\DdmsSettingService;
 use App\Services\DocumentBuilderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -84,7 +86,6 @@ class PerDocumentDdmsTest extends TestCase
     private function setDdmsDefault(string $jenis, bool $value): void
     {
         $key = match ($jenis) {
-            'proposal'      => 'ddms_default_proposal',
             'surat_kontrak' => 'ddms_default_surat_kontrak',
             'invoice'       => 'ddms_default_invoice',
             'rab'           => 'ddms_default_rab',
@@ -161,7 +162,7 @@ class PerDocumentDdmsTest extends TestCase
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
                 'uses_ddms' => 1,
             ])
             ->assertRedirect();
@@ -175,7 +176,7 @@ class PerDocumentDdmsTest extends TestCase
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
                 'uses_ddms' => 1,
             ])
             ->assertRedirect();
@@ -189,7 +190,7 @@ class PerDocumentDdmsTest extends TestCase
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
             ])
             ->assertRedirect();
 
@@ -197,15 +198,7 @@ class PerDocumentDdmsTest extends TestCase
         $this->assertFalse($doc->uses_ddms);
     }
 
-    // ── 11I.8 A — Default settings ────────────────────────────────
-
-    public function test_default_proposal_is_on(): void
-    {
-        $this->assertTrue(
-            app(DdmsSettingService::class)->getSettingValue('ddms_default_proposal', '1') === '1'
-        );
-        $this->assertTrue(app(DdmsSettingService::class)->getDdmsDefaults()['proposal']);
-    }
+    // ── 11I.8 A — Default settings (Proposal dikecualikan: upload manual, bukan DDMS) ──
 
     public function test_default_surat_kontrak_is_on(): void
     {
@@ -237,7 +230,6 @@ class PerDocumentDdmsTest extends TestCase
     {
         $this->actingAs($this->adminUser)
             ->put(route('admin.settings.ddms-defaults'), [
-                'ddms_default_proposal'       => '0',
                 'ddms_default_surat_kontrak' => '0',
                 'ddms_default_invoice'        => '1',
                 'ddms_default_rab'            => '1',
@@ -245,13 +237,11 @@ class PerDocumentDdmsTest extends TestCase
             ->assertRedirect();
 
         $defaults = app(DdmsSettingService::class)->getDdmsDefaults();
-        $this->assertFalse($defaults['proposal']);
         $this->assertFalse($defaults['surat_kontrak']);
         $this->assertTrue($defaults['invoice']);
         $this->assertTrue($defaults['rab']);
 
         // Tersimpan di ddms_settings.
-        $this->assertSame('0', app(DdmsSettingService::class)->getSettingValue('ddms_default_proposal'));
         $this->assertSame('1', app(DdmsSettingService::class)->getSettingValue('ddms_default_invoice'));
     }
 
@@ -259,7 +249,6 @@ class PerDocumentDdmsTest extends TestCase
     {
         $this->actingAs($this->clientUser)
             ->put(route('admin.settings.ddms-defaults'), [
-                'ddms_default_proposal' => '0',
                 'ddms_default_surat_kontrak' => '0',
                 'ddms_default_invoice' => '1',
                 'ddms_default_rab' => '1',
@@ -269,21 +258,21 @@ class PerDocumentDdmsTest extends TestCase
 
     // ── 11I.8 C — Generate mengikuti default ─────────────────────
 
-    public function test_proposal_default_on_generate_without_override_is_ddms(): void
+    public function test_proposal_cannot_be_generated_through_builder(): void
     {
-        $this->setDdmsDefault('proposal', true);
+        $before = Document::count();
 
-        // Tanpa override: checkbox mengikuti default (ON) -> UI mengirim uses_ddms=1.
+        // Proposal bukan tipe yang di-generate oleh Document Builder.
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
                 'jenis_dokumen' => 'proposal',
-                'uses_ddms' => 1,
             ])
-            ->assertRedirect();
+            ->assertSessionHasErrors('jenis_dokumen');
 
-        $doc = Document::where('event_id', $this->event->id)->firstOrFail();
-        $this->assertTrue($doc->uses_ddms);
+        // Tidak ada dokumen Proposal baru yang tercipta.
+        $this->assertSame($before, Document::count());
+        $this->assertSame(0, Document::where('tipe', 'proposal')->where('document_source', \App\Enums\DocumentSource::Generated)->count());
     }
 
     public function test_invoice_default_off_generate_without_override_is_non_ddms(): void
@@ -306,20 +295,19 @@ class PerDocumentDdmsTest extends TestCase
 
     // ── 11I.8 D — Manual override ────────────────────────────────
 
-    public function test_proposal_default_on_with_uncheck_is_non_ddms(): void
+    public function test_proposal_generation_rejected_even_with_ddms_flag(): void
     {
-        $this->setDdmsDefault('proposal', true);
+        $before = Document::count();
 
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
                 'jenis_dokumen' => 'proposal',
-                'uses_ddms' => 0,
+                'uses_ddms' => 1,
             ])
-            ->assertRedirect();
+            ->assertSessionHasErrors('jenis_dokumen');
 
-        $doc = Document::where('event_id', $this->event->id)->firstOrFail();
-        $this->assertFalse($doc->uses_ddms);
+        $this->assertSame($before, Document::count());
     }
 
     public function test_invoice_default_off_with_check_is_ddms(): void
@@ -352,15 +340,15 @@ class PerDocumentDdmsTest extends TestCase
 
     // ── 11I.8 E — Global OFF ─────────────────────────────────────
 
-    public function test_global_off_proposal_default_on_generate_forces_non_ddms(): void
+    public function test_global_off_surat_kontrak_default_on_generate_forces_non_ddms(): void
     {
         $this->setDdmsEnabled(false);
-        $this->setDdmsDefault('proposal', true);
+        $this->setDdmsDefault('surat_kontrak', true);
 
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
             ])
             ->assertRedirect();
 
@@ -375,7 +363,7 @@ class PerDocumentDdmsTest extends TestCase
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
                 'uses_ddms' => 1,
             ])
             ->assertRedirect();
@@ -386,14 +374,14 @@ class PerDocumentDdmsTest extends TestCase
 
     public function test_global_off_does_not_change_per_jenis_defaults(): void
     {
-        $this->setDdmsDefault('proposal', true);
+        $this->setDdmsDefault('surat_kontrak', true);
         $this->setDdmsDefault('invoice', false);
 
         $this->setDdmsEnabled(false);
         $this->setDdmsEnabled(true);
 
         $defaults = app(DdmsSettingService::class)->getDdmsDefaults();
-        $this->assertTrue($defaults['proposal']);
+        $this->assertTrue($defaults['surat_kontrak']);
         $this->assertFalse($defaults['invoice']);
     }
 
@@ -401,12 +389,12 @@ class PerDocumentDdmsTest extends TestCase
 
     public function test_changing_default_does_not_change_existing_document(): void
     {
-        $this->setDdmsDefault('proposal', true);
+        $this->setDdmsDefault('surat_kontrak', true);
 
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
                 'uses_ddms' => 1,
             ])
             ->assertRedirect();
@@ -414,21 +402,21 @@ class PerDocumentDdmsTest extends TestCase
         $doc = Document::where('event_id', $this->event->id)->firstOrFail();
         $this->assertTrue($doc->uses_ddms);
 
-        // Admin mengubah default proposal menjadi OFF.
-        $this->setDdmsDefault('proposal', false);
+        // Admin mengubah default surat_kontrak menjadi OFF.
+        $this->setDdmsDefault('surat_kontrak', false);
 
         $this->assertTrue($doc->fresh()->uses_ddms);
     }
 
     // ── 11I.8 UI — settings page & builder defaults ──────────────
 
-    public function test_settings_page_shows_default_per_jenis_section(): void
+    public function test_settings_page_shows_default_per_jenis_section_without_proposal(): void
     {
         $this->actingAs($this->adminUser)
             ->get(route('admin.settings.index'))
             ->assertOk()
             ->assertSee('Default DDMS per Jenis Surat')
-            ->assertSee('Proposal')
+            ->assertDontSee('Proposal')
             ->assertSee('Surat Kontrak')
             ->assertSee('Invoice')
             ->assertSee('RAB');
@@ -518,7 +506,7 @@ class PerDocumentDdmsTest extends TestCase
         $this->actingAs($this->adminUser)
             ->post(route('admin.document_builder.generate'), [
                 'event_id' => $this->event->id,
-                'jenis_dokumen' => 'proposal',
+                'jenis_dokumen' => 'surat_kontrak',
                 'uses_ddms' => 1,
             ])
             ->assertRedirect();
@@ -778,5 +766,99 @@ class PerDocumentDdmsTest extends TestCase
 
         // PDF benar-benar diregenerasi (bukan file lama).
         $this->assertNotSame('%PDF-1.4 old', Storage::disk('public')->get($doc->file_path));
+    }
+
+    // ── 11I.8 Proposal = Manual Upload Only ─────────────────────────
+
+    public function test_builder_ui_does_not_contain_proposal_option(): void
+    {
+        $this->actingAs($this->adminUser)
+            ->get(route('admin.document_builder.index'))
+            ->assertOk()
+            ->assertDontSee('value="proposal"', false)
+            ->assertSee('value="surat_kontrak"', false)
+            ->assertSee('value="invoice"', false)
+            ->assertSee('value="rab"', false);
+    }
+
+    private function uploadManualProposal(): Document
+    {
+        Storage::fake('public');
+
+        $file = UploadedFile::fake()->create('proposal-event.pdf', 50, 'application/pdf');
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.documents.upload'), [
+                'file'     => $file,
+                'event_id' => $this->event->id,
+                'tipe'     => 'proposal',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        return Document::where('event_id', $this->event->id)
+            ->where('tipe', 'proposal')
+            ->latest('id')
+            ->firstOrFail();
+    }
+
+    public function test_manual_proposal_upload_is_non_ddms(): void
+    {
+        $doc = $this->uploadManualProposal();
+
+        // Uploaded Proposal harus non-DDMS dan bukan hasil generate.
+        $this->assertSame(DocumentSource::Uploaded, $doc->document_source);
+        $this->assertFalse($doc->uses_ddms);
+        $this->assertSame(DocumentStatus::Draft, $doc->status);
+        $this->assertSame(0, DocumentQrVerification::where('document_id', $doc->id)->count());
+        $this->assertSame(0, DocumentApproval::where('document_id', $doc->id)->count());
+    }
+
+    public function test_manual_proposal_can_be_sent_without_ddms_side_effects(): void
+    {
+        $doc = $this->uploadManualProposal();
+
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.documents.send', $doc->id), [
+                'client_id' => $this->clientUser->id,
+                'pesan'     => 'Berikut proposal event Anda.',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $doc->refresh();
+        $this->assertFalse($doc->uses_ddms);
+        // Tidak ada approval/QR/verification yang tercipta dari pengiriman dokumen biasa.
+        $this->assertSame(0, DocumentApproval::where('document_id', $doc->id)->count());
+        $this->assertSame(0, DocumentQrVerification::where('document_id', $doc->id)->count());
+        $this->assertSame(1, DocumentSend::where('document_id', $doc->id)->count());
+    }
+
+    public function test_uploaded_proposal_cannot_enter_ddms_workflow(): void
+    {
+        $doc = $this->uploadManualProposal();
+
+        // Submit ke alur DDMS harus ditolak (dokumen non-DDMS).
+        $this->actingAs($this->adminUser)
+            ->post(route('admin.document_builder.submit', $doc->id))
+            ->assertRedirect()
+            ->assertSessionHas('error');
+        $this->assertSame(DocumentStatus::Draft, $doc->fresh()->status);
+
+        // Approve/publish hanya untuk dokumen DDMS; non-DDMS ditolak.
+        $doc->update(['status' => DocumentStatus::Pending]);
+        $this->actingAs($this->directorUser)
+            ->post(route('director.approval.approve', $doc->id), ['pin' => '123456'])
+            ->assertRedirect()
+            ->assertSessionHas('error');
+        $this->assertSame(DocumentStatus::Pending, $doc->fresh()->status);
+
+        $doc->update(['status' => DocumentStatus::Approved]);
+        $this->actingAs($this->directorUser)
+            ->post(route('director.approval.publish', $doc->id))
+            ->assertRedirect()
+            ->assertSessionHas('error');
+        $this->assertSame(DocumentStatus::Approved, $doc->fresh()->status);
+        $this->assertSame(0, DocumentQrVerification::where('document_id', $doc->id)->count());
     }
 }

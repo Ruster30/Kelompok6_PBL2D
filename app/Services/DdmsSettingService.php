@@ -62,7 +62,6 @@ class DdmsSettingService
     public function getDdmsDefaults(): array
     {
         return [
-            'proposal'       => $this->getSettingValue('ddms_default_proposal', '1') === '1',
             'surat_kontrak'  => $this->getSettingValue('ddms_default_surat_kontrak', '1') === '1',
             'invoice'        => $this->getSettingValue('ddms_default_invoice', '0') === '1',
             'rab'            => $this->getSettingValue('ddms_default_rab', '0') === '1',

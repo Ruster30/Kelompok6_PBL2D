@@ -28,6 +28,10 @@ class DocumentBuilderService
     public function generate(Event $event, string $jenisDokumen, ?Document $document = null): array
     {
         return match ($jenisDokumen) {
+            // Proposal is no longer a Document Builder GENERATION type (blocked at
+            // controller validation + UI). The arm is kept solely so historical
+            // generated Proposal records (document_source=generated) remain
+            // readable/downloadable and can be re-rendered for manual numbering.
             'proposal'       => $this->generateProposal($event, $document),
             'surat_kontrak'  => $this->generateSuratKontrak($event, $document),
             'invoice'        => $this->generateInvoice($event, $document),
@@ -37,7 +41,7 @@ class DocumentBuilderService
         };
     }
 
-    // ─── PROPOSAL ───────────────────────────────────────────────────────────
+    // ─── PROPOSAL (historical/regeneration only — NOT a Document Builder type) ─
 
     private function generateProposal(Event $event, ?Document $document = null): array
     {
