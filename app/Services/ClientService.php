@@ -407,7 +407,6 @@ class ClientService
                 'judul'   => 'Negosiasi Selesai Penawaran Diterima',
                 'pesan'   => 'Client ' . Auth::user()->name . ' menerima penawaran revisi untuk event ' . $event->nama_event . '. Timeline otomatis telah diisi.',
                 'tipe'    => 'sukses',
-                'dibaca'  => false,
             ]);
         });
     }

@@ -64,7 +64,7 @@ class Event extends Model
     {
         return $this->hasMany(Proposal::class, 'event_id');
     }
-    
+
     // Relasi ke negosiasi (dari client)
     public function negotiations()
     {
