@@ -462,6 +462,65 @@ private function generateRab(Event $event, ?Document $document = null): array
 
     public function regenerateFinalPdf(Document $document, Event $event, string $jenisDokumen): void
     {
+        // Skip only for non-DDMS Proposal documents under proposals/ path.
+        // DDMS Proposal documents will be regenerated with canonical template
+        // so that DocumentNumbering.number and QR verification appear.
+        if ($document->tipe === Document::TIPE_PROPOSAL
+            && str_starts_with((string) $document->file_path, 'proposals/')
+            && ! $document->uses_ddms) {
+            \Log::info('Skipping PDF regeneration for canonical Surat Penawaran document (non-DDMS)', [
+                'document_id' => $document->id,
+                'file_path'   => $document->file_path,
+            ]);
+            return;
+        }
+
+        // For DDMS Proposal + proposals/ path, render using canonical template
+        // so that DocumentNumbering.number and QR verification appear.
+        if ($document->tipe === Document::TIPE_PROPOSAL
+            && str_starts_with((string) $document->file_path, 'proposals/')
+            && $document->uses_ddms) {
+            $ddmsNumber = $document->numbering?->document_number;
+
+            $data = [
+                'event'       => $event,
+                'nomor_surat' => $event->nomor_surat_override
+                    ?? $ddmsNumber
+                    ?? $document->proposal?->nomor_proposal
+                    ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), $this->proposalRepository->getEventCount($event->id)),
+                'tanggal_surat' => $document->tanggal_proposal?->format('Y-m-d')
+                    ?? now()->format('Y-m-d'),
+                'perihal'      => $document->proposal?->perihal
+                    ?? $event->perihal ?? 'Surat Penawaran Pameran Otomotif',
+                'document'     => $document,
+            ];
+
+            $pdf = Pdf::loadView('admin.requests.surat_penawaran_pdf', [
+                'event'         => $event,
+                'data'          => $data,
+            ])->setPaper('a4', 'portrait');
+            $pdfContent = $pdf->output();
+            Storage::disk('public')->put($document->file_path, $pdfContent);
+
+            // Verification similar to original code
+            $storedPath = Storage::disk('public')->path($document->file_path);
+            \Log::info("PDF write verification", [
+                "path" => $storedPath,
+                "filesize" => file_exists($storedPath) ? filesize($storedPath) : 0,
+                "md5_content" => md5($pdfContent),
+                "md5_file" => file_exists($storedPath) ? md5_file($storedPath) : "N/A",
+                "filemtime" => file_exists($storedPath) ? filemtime($storedPath) : 0,
+            ]);
+
+            if ($document->file_path !== $document->file_path) {
+                $document->update(['file_path' => $document->file_path]);
+            } else {
+                \Log::info("file_path unchanged (same path): " . $document->file_path);
+            }
+
+            \Log::info('PDF Final regenerated (DDMS Proposal)', ['document_id' => $document->id]);
+            return;
+        }
 
         $generated = $this->generate($event, $jenisDokumen, $document);
         $pdf = $generated['pdf'];

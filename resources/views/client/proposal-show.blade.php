@@ -173,7 +173,7 @@
                 <td style="border:none;padding:1px 4px;min-width:90px;">No. Surat</td>
                 <td style="border:none;padding:1px 8px 1px 4px;">:</td>
                 <td style="border:none;padding:1px 4px;">
-                    {{ $event->nomor_surat_override ?? $proposal->nomor_proposal ?? '-' }}
+                    {{ $event->nomor_surat_override ?? $proposal->document?->numbering?->document_number ?? $proposal->nomor_proposal ?? '-' }}
                 </td>
             </tr>
             <tr>

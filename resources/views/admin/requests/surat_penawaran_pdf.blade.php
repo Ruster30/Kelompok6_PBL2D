@@ -44,6 +44,10 @@ p {
     $nomorSurat   = $pdfData['nomor_surat']   ?? '-';
     $tanggalSurat = $pdfData['tanggal_surat'] ?? now()->format('Y-m-d');
     $perihal      = $pdfData['perihal']        ?? ($event->perihal ?? 'Surat Penawaran Pameran Otomotif');
+    $document     = $pdfData['document'] ?? null; // dari AdminProposalService::exportPdfData()
+    $usesDdms     = $document?->uses_ddms ?? false;
+    $statusPublished = $document?->status === \App\Enums\DocumentStatus::Published ?? false;
+    $hasQrPath = $document?->qrVerification?->qr_path ?? false;
 @endphp
 
 @include('admin.pdf_templates.partials.header')
@@ -62,7 +66,13 @@ p {
     <tr>
         <td style="width:72px;">No. Surat</td>
         <td style="width:14px;">:</td>
-        <td>{{ $nomorSurat }}</td>
+        <td>
+    @if($usesDdms && $document?->numbering)
+        {{ $document->numbering->document_number }}
+    @else
+        {{ $nomorSurat }}
+    @endif
+</td>
     </tr>
     <tr>
         <td>Lampiran</td>
@@ -242,6 +252,15 @@ p {
             Direktur
         </td>
     </tr>
+    @if($usesDdms && $statusPublished && $hasQrPath)
+    <tr>
+        <td style="text-align:center; padding-top:10px;">
+            <img src="{{ storage_path('app/public/' . $document->qrVerification->qr_path) }}"
+                 style="width:96px;height:96px;display:block;margin:0 auto 6px;" alt="">
+            <div style="font-size:9px; color:#64748b;">Scan QR untuk verifikasi keaslian dokumen</div>
+        </td>
+    </tr>
+    @endif
 </table>
 
 {{-- Garis teal penutup --}}

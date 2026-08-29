@@ -10,6 +10,7 @@ use App\Http\Requests\Admin\UploadDocumentRequest;
 use App\Models\Document;
 use App\Models\Event;
 use App\Services\AdminProposalService;
+use App\Services\DdmsSettingService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -19,6 +20,7 @@ class ProposalController extends Controller
 {
     public function __construct(
         private AdminProposalService $proposalService,
+        private DdmsSettingService $ddmsSettingService,
     ) {}
 
     public function index(Request $request)
@@ -87,6 +89,24 @@ class ProposalController extends Controller
     {
         $data = $this->proposalService->getSuratPenawaranData($event);
 
+        $ddmsEnabled = $this->ddmsSettingService->getSettingValue('ddms_enabled', '1') === '1';
+        $data['ddmsEnabled'] = $ddmsEnabled;
+        $data['ddmsDefaultPenawaran'] = $this->ddmsSettingService->getSettingValue('ddms_default_penawaran', '0') === '1';
+
+        $latest = $event->latestProposal;
+        $document = ($latest && $latest->document && $latest->document->uses_ddms) ? $latest->document : null;
+        $usesDdmsActive = (bool) $document;
+        $docStatus = $usesDdmsActive ? $document->status->value : null;
+        $ddmsApproved = in_array($docStatus, ['approved', 'published'], true);
+
+        $data['latestProposal'] = $latest;
+        $data['usesDdmsActive'] = $usesDdmsActive;
+        $data['ddmsDocument'] = $document;
+        $data['ddmsApproved'] = $ddmsApproved;
+        $data['ddmsStatusLabel'] = $document ? $document->status->label() : null;
+        $data['ddmsDocNumber'] = ($document && $document->numbering) ? $document->numbering->document_number : null;
+        $data['canSendProposal'] = $this->proposalService->canSendProposal($event);
+
         return view('admin.requests.surat_penawaran', $data);
     }
 
@@ -117,6 +137,33 @@ class ProposalController extends Controller
 
         return redirect()->route('admin.requests.index')
             ->with('success', 'Surat penawaran berhasil dikirim ke client.');
+    }
+
+    public function masukKeDdms(Request $request, Event $event)
+    {
+        if ($this->proposalService->checkProposalLocked($event)) {
+            return redirect()
+                ->route('admin.requests.surat-penawaran', $event->id)
+                ->with('error', 'Surat penawaran telah diterima oleh client sehingga tidak dapat dikirim ulang.');
+        }
+
+        $validated = $request->validate([
+            'uses_ddms'     => 'nullable|boolean',
+            'nomor_surat'   => 'nullable|string|max:100',
+            'tanggal_surat' => 'nullable|date',
+        ]);
+
+        $document = $this->proposalService->masukKeDdms($event, $validated);
+
+        if (! $document) {
+            // Fallback NON-DDMS (global DDMS OFF): proposal langsung dikirim.
+            return redirect()->route('admin.requests.index')
+                ->with('success', 'Surat penawaran berhasil dikirim ke client.');
+        }
+
+        return redirect()
+            ->route('admin.document_builder.preview', $document->id)
+            ->with('success', 'Proposal berhasil dibuat sebagai draft DDMS. Silakan lanjutkan proses approval.');
     }
 
     public function exportPdf(Event $event)
@@ -152,7 +199,9 @@ class ProposalController extends Controller
                 ->with('error', 'Surat penawaran telah diterima oleh client sehingga tidak dapat direvisi.');
         }
 
-        $this->proposalService->kirimRevisiPenawaran($event);
+        $this->proposalService->kirimRevisiPenawaran($event, [
+            'uses_ddms' => $request->input('uses_ddms'),
+        ]);
 
         return redirect()
             ->route('admin.requests.surat-penawaran', $event->id)

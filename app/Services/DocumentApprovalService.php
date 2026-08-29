@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\Models\Document;
 use App\Models\DocumentApproval;
+use App\Models\Notification;
+use App\Models\Proposal;
 use App\Models\User;
 use App\Exceptions\DDMS\ApprovalNotPendingException;
 use App\Repositories\Contracts\DocumentApprovalRepositoryInterface;
@@ -247,7 +249,11 @@ class DocumentApprovalService
 
             // Gunakan method approve() yang sudah ada (validasi + update)
             $this->approve($approval, $director);
-            
+
+            // Notify Admin atas keputusan Director (Phase 11I.10G) — hanya
+            // untuk Proposal DDMS; Client TIDAK di-notify di sini.
+            $this->notifyAdminProposalApproved($document);
+
             // Nomor surat sudah diinput manual oleh Admin sebelum submit
             // (tidak ada auto-generation)
 
@@ -311,6 +317,10 @@ class DocumentApprovalService
 
             // Gunakan method reject() yang sudah ada (validasi + update)
             $this->reject($approval, $director, $reason);
+
+            // Notify Admin atas keputusan Director (Phase 11I.10G) — hanya
+            // untuk Proposal DDMS; Client TIDAK di-notify di sini.
+            $this->notifyAdminProposalRejected($document, $reason);
 
             Log::info("Dokumen direject oleh Director", [
                 "document_id" => $document->id,
@@ -416,6 +426,71 @@ class DocumentApprovalService
             app(DocumentBuilderService::class)->regeneratePublishedPdf($document);
 
             return $document->fresh();
+        });
+    }
+
+    // ── Director Decision Notification (Phase 11I.10G) ────────
+
+    /**
+     * Notify ALL Admin ketika Director menyetujui sebuah Proposal DDMS.
+     * Hanya untuk document->tipe === proposal DAN uses_ddms.
+     * Client TIDAK di-notify.
+     */
+    private function notifyAdminProposalApproved(Document $document): void
+    {
+        if ($document->tipe !== Document::TIPE_PROPOSAL || ! $document->uses_ddms) {
+            return;
+        }
+
+        $version = Proposal::where('document_id', $document->id)->value('versi') ?? '?';
+
+        $this->notifyAdmins(
+            'Surat Penawaran Disetujui Director',
+            'Surat Penawaran versi ' . $version . ' telah disetujui Director dan siap dikirim ke client.',
+            'sukses'
+        );
+    }
+
+    /**
+     * Notify ALL Admin ketika Director menolak sebuah Proposal DDMS.
+     * Hanya untuk document->tipe === proposal DAN uses_ddms.
+     * Client TIDAK di-notify.
+     */
+    private function notifyAdminProposalRejected(Document $document, string $reason): void
+    {
+        if ($document->tipe !== Document::TIPE_PROPOSAL || ! $document->uses_ddms) {
+            return;
+        }
+
+        $version = Proposal::where('document_id', $document->id)->value('versi') ?? '?';
+
+        $pesan = 'Surat Penawaran versi ' . $version
+            . ' ditolak Director. Silakan periksa dokumen dan lakukan perbaikan.';
+        if ($reason !== null && $reason !== '') {
+            $pesan .= ' Alasan: ' . $reason;
+        }
+
+        $this->notifyAdmins(
+            'Surat Penawaran Ditolak Director',
+            $pesan,
+            'peringatan'
+        );
+    }
+
+    /**
+     * Kirim Notification ke seluruh user dengan role admin,
+     * mengikuti pola existing project (ClientService::createEvent).
+     */
+    private function notifyAdmins(string $judul, string $pesan, string $tipe): void
+    {
+        User::where('role', 'admin')->each(function (User $admin) use ($judul, $pesan, $tipe) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'judul'   => $judul,
+                'pesan'   => $pesan,
+                'tipe'    => $tipe,
+                'dibaca'  => false,
+            ]);
         });
     }
 }

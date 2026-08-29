@@ -105,6 +105,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         [App\Http\Controllers\Admin\ProposalController::class, 'kirimPenawaran'])
         ->name('admin.requests.kirim-penawaran');
 
+    // Masuk ke DDMS: buat Proposal + Document draft (tanpa kirim ke client),
+    // lalu redirect ke halaman Document Builder (Phase 11I.10F).
+    Route::post('/requests/{event}/masuk-ke-ddms',
+        [App\Http\Controllers\Admin\ProposalController::class, 'masukKeDdms'])
+        ->name('admin.requests.masuk-ke-ddms');
+
     // Export PDF langsung (download)
     Route::get('/requests/{event}/export-pdf',
         [App\Http\Controllers\Admin\ProposalController::class, 'exportPdf'])

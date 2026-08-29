@@ -17,6 +17,7 @@ class Proposal extends Model
         'status',
         'tanggal_proposal',
         'is_active',
+        'document_id',
     ];
 
     protected function casts(): array
@@ -33,7 +34,25 @@ class Proposal extends Model
         return $this->belongsTo(Event::class, 'event_id');
     }
 
+    /**
+     * DDMS Document layer for this Surat Penawaran.
+     * One Proposal version links to exactly one Document (nullable for old proposals).
+     */
+    public function document()
+    {
+        return $this->belongsTo(Document::class);
+    }
+
     // ─── Accessors & Helpers ─────────────────────────────────
+
+    /**
+     * Reads DDMS flag from the linked Document (DDMS layer only).
+     * Proposal itself does NOT store uses_ddms.
+     */
+    public function getUsesDdmsAttribute(): bool
+    {
+        return (bool) ($this->document?->uses_ddms);
+    }
 
     /** CSS class badge sesuai status proposal */
     public function getBadgeClassAttribute(): string

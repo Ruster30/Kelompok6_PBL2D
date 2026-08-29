@@ -63,24 +63,105 @@
                     style="border-color:#f59e0b; color:#b45309;">
                 <i class="fas fa-pen"></i> Edit Surat
             </button>
+
             @if(!$event->latestProposal)
-            <form action="{{ route('admin.requests.kirim-penawaran', $event->id) }}" method="POST" style="display:inline;" id="form-kirim-penawaran">
-                @csrf
-                <input type="hidden" name="nomor_surat" value="{{ $nomorSurat }}">
-                <input type="hidden" name="tanggal_surat" value="{{ now()->format('Y-m-d') }}">
-                <button type="submit" class="btn btn-primary"
-                        onclick="return confirmKirimPenawaran(this.form)">
-                    <i class="fas fa-paper-plane"></i> Kirim Penawaran
-                </button>
-            </form>
+                {{-- ── PEMBUATAN AWAL (v1) ── --}}
+                @php
+                    $ddmsMode = $ddmsEnabled && $ddmsDefaultPenawaran;
+                @endphp
+                <div style="display:inline-flex; align-items:center; gap:6px; margin-right:10px; vertical-align:middle;">
+                    <input type="checkbox" name="uses_ddms_toggle" id="chk-penawaran-ddms" value="1"
+                           {{ $ddmsMode ? 'checked' : '' }}
+                           {{ $ddmsEnabled ? '' : 'disabled' }}
+                           onchange="toggleDdmsEntry(this.checked)"
+                           style="width:15px; height:15px; accent-color:#14b8a6; cursor:pointer;">
+                    <label for="chk-penawaran-ddms" style="font-size:12px; color:#334155; cursor:{{ $ddmsEnabled ? 'pointer' : 'not-allowed' }};">
+                        Gunakan DDMS untuk Surat Penawaran
+                    </label>
+                </div>
+
+                {{-- NON-DDMS: Kirim Penawaran langsung ke Client (nomor dari form) --}}
+                <form action="{{ route('admin.requests.kirim-penawaran', $event->id) }}" method="POST"
+                      style="{{ $ddmsMode ? 'display:none;' : 'display:inline;' }}" id="form-kirim-penawaran">
+                    @csrf
+                    <input type="hidden" name="nomor_surat" value="{{ $nomorSurat }}">
+                    <input type="hidden" name="tanggal_surat" value="{{ now()->format('Y-m-d') }}">
+                    <input type="hidden" name="uses_ddms" value="0">
+                    <button type="submit" class="btn btn-primary"
+                            onclick="return confirmKirimPenawaran(this.form)">
+                        <i class="fas fa-paper-plane"></i> Kirim Penawaran
+                    </button>
+                </form>
+
+                {{-- DDMS: Masuk ke DDMS (buat Proposal + Document draft).
+                     Nomor surat TIDAK dikirim dari form — dikelola via Document Builder. --}}
+                <form action="{{ route('admin.requests.masuk-ke-ddms', $event->id) }}" method="POST"
+                      style="{{ $ddmsMode ? 'display:inline;' : 'display:none;' }}" id="form-masuk-ddms">
+                    @csrf
+                    <input type="hidden" name="uses_ddms" value="1">
+                    <input type="hidden" name="tanggal_surat" value="{{ now()->format('Y-m-d') }}">
+                    <button type="submit" class="btn btn-primary"
+                            style="background:#14b8a6; border-color:#14b8a6;"
+                            title="Nomor dokumen dikelola melalui Document Builder (DDMS).">
+                        <i class="fas fa-layer-group"></i> Masuk ke DDMS
+                    </button>
+                </form>
             @else
-            <form action="{{ route('admin.requests.kirim-revisi-penawaran', $event->id) }}" method="POST" style="display:inline;">
-                @csrf
-                <button type="submit" class="btn btn-primary"
-                        onclick="return swalSend(this.form, 'Kirim Revisi Penawaran?', 'Revisi penawaran akan dikirim ke client.')">
-                    <i class="fas fa-sync-alt"></i> Revisi Penawaran
-                </button>
-            </form>
+                {{-- ── PROPOSAL SUDAH ADA ── --}}
+                @if($usesDdmsActive)
+                    {{-- Banner status & nomor dokumen DDMS (sumber: DocumentNumbering) --}}
+                    <div style="display:inline-block; vertical-align:middle; margin-right:10px; padding:6px 12px; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; font-size:12px; color:#065f46;">
+                        <strong>DDMS: AKTIF</strong><br>
+                        Status: {{ $ddmsStatusLabel ?? '-' }}<br>
+                        Nomor Dokumen: {{ $ddmsDocNumber ?? 'Belum diatur (atur di Document Builder)' }}
+                    </div>
+
+                    {{-- Buka DDMS: navigasi ke Document Builder existing --}}
+                    <a href="{{ route('admin.document_builder.preview', $ddmsDocument->id) }}"
+                       class="btn btn-outline" style="border-color:#14b8a6; color:#0d9488;">
+                        <i class="fas fa-external-link-alt"></i> Buka DDMS
+                    </a>
+
+                    @if($ddmsApproved)
+                        {{-- approved/published → Kirim ke Client AKTIF --}}
+                        <form action="{{ route('admin.requests.kirim-revisi-penawaran', $event->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            <input type="hidden" name="uses_ddms" value="1">
+                            <button type="submit" class="btn btn-primary"
+                                    onclick="return confirmKirimPenawaran(this.form)">
+                                <i class="fas fa-paper-plane"></i> Kirim ke Client
+                            </button>
+                        </form>
+                        {{-- Masuk ke DDMS (untuk membuat revisi v2 → Document B) --}}
+                        <form action="{{ route('admin.requests.masuk-ke-ddms', $event->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            <input type="hidden" name="uses_ddms" value="1">
+                            <input type="hidden" name="tanggal_surat" value="{{ now()->format('Y-m-d') }}">
+                            <button type="submit" class="btn btn-outline"
+                                    style="border-color:#14b8a6; color:#0d9488;"
+                                    title="Nomor dokumen dikelola melalui Document Builder (DDMS).">
+                                <i class="fas fa-layer-group"></i> Masuk ke DDMS (Revisi)
+                            </button>
+                        </form>
+                    @else
+                        {{-- Document belum approved → Kirim ke Client DISABLED --}}
+                        <button type="button" class="btn btn-primary" disabled data-ddms-locked
+                                style="background:#cbd5e1; border-color:#cbd5e1; color:#64748b; cursor:not-allowed;"
+                                title="Surat Penawaran dapat dikirim ke Client setelah Document DDMS disetujui Director.">
+                            <i class="fas fa-paper-plane"></i> Kirim ke Client
+                        </button>
+                    @endif
+                @else
+                    {{-- NON-DDMS (revisi) ── --}}
+                    <form action="{{ route('admin.requests.kirim-revisi-penawaran', $event->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        <input type="hidden" name="uses_ddms" value="0">
+                        <button type="submit" class="btn btn-primary"
+                                onclick="return swalSend(this.form, 'Kirim Revisi Penawaran?', 'Revisi penawaran akan dikirim ke client.')">
+                            <i class="fas fa-sync-alt"></i> Revisi Penawaran
+                        </button>
+                    </form>
+                @endif
             @endif
         @endif
         </div>
@@ -145,12 +226,18 @@
                 <td style="border:none; padding:1px 8px 1px 4px;">:</td>
                 <td style="border:none; padding:1px 4px;">
                     {{-- VIEW --}}
-                    <span class="field-view" id="view-nomor_surat">{{ $nomorSurat }}</span>
+                    <span class="field-view" id="view-nomor_surat">{{ $usesDdmsActive ? ($ddmsDocNumber ?? $nomorSurat) : $nomorSurat }}</span>
                     {{-- EDIT --}}
-                    <input class="field-edit surat-input" id="edit-nomor_surat"
-                           type="text" name="nomor_surat_override"
-                           value="{{ $nomorSurat }}"
-                           style="display:none;">
+                    @if($usesDdmsActive)
+                        <span class="field-edit" style="display:none; font-size:12px; color:#0d9488;">
+                            Nomor dokumen dikelola melalui Document Builder (DDMS aktif).
+                        </span>
+                    @else
+                        <input class="field-edit surat-input" id="edit-nomor_surat"
+                               type="text" name="nomor_surat_override"
+                               value="{{ $nomorSurat }}"
+                               style="display:none;">
+                    @endif
                 </td>
             </tr>
             <tr>
@@ -484,6 +571,17 @@ function confirmKirimPenawaran(formEl) {
  * Toggle mode view â†” edit pada halaman Preview Surat Penawaran.
  * Hanya mengubah visibilitas elemen â€” desain surat tidak berubah.
  */
+/**
+ * Toggle antara form "Kirim Penawaran" (NON-DDMS) dan "Masuk ke DDMS"
+ * (DDMS) pada pembuatan awal Surat Penawaran, mengikuti checkbox.
+ */
+function toggleDdmsEntry(checked) {
+    const fKirim = document.getElementById('form-kirim-penawaran');
+    const fDdms  = document.getElementById('form-masuk-ddms');
+    if (fKirim) fKirim.style.display = checked ? 'none' : 'inline';
+    if (fDdms)  fDdms.style.display  = checked ? 'inline' : 'none';
+}
+
 function toggleEditMode(editOn) {
     const viewEls   = document.querySelectorAll('.field-view');
     const editEls   = document.querySelectorAll('.field-edit');
