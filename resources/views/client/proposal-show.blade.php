@@ -1,4 +1,4 @@
-@extends('layouts.client')
+﻿@extends('layouts.client')
 @section('title','Surat Penawaran')
 @section('page-title','Surat Penawaran')
 
@@ -41,12 +41,23 @@
         </span>
 
         {{-- Unduh PDF --}}
-        <a href="{{ route('client.proposals.export-pdf', $proposal->id) }}" target="_blank"
-           style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
-                  border:1.5px solid var(--border);border-radius:8px;font-size:13px;
-                  font-weight:600;color:var(--dark);text-decoration:none;background:white;">
-            <i class="bi bi-download"></i> Unduh PDF
-        </a>
+        @if ($proposal->document && $proposal->document->uses_ddms && $proposal->document->isPublished())
+            {{-- DDMS Published: tampilkan link download PDF final --}}
+            <a href="{{ route('client.proposals.export-pdf', $proposal->id) }}" target="_blank"
+               style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
+                      border:1.5px solid var(--border);border-radius:8px;font-size:13px;
+                      font-weight:600;color:var(--dark);text-decoration:none;background:white;">
+                <i class="bi bi-download"></i> Unduh PDF Final DDMS
+            </a>
+        @else
+            {{-- Non-DDMS atau DDMS belum Published: unduh PDF biasa --}}
+            <a href="{{ route('client.proposals.export-pdf', $proposal->id) }}" target="_blank"
+               style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
+                      border:1.5px solid var(--border);border-radius:8px;font-size:13px;
+                      font-weight:600;color:var(--dark);text-decoration:none;background:white;">
+                <i class="bi bi-download"></i> Unduh PDF
+            </a>
+        @endif
 
         {{-- Tombol aksi respon --}}
         @if(!in_array($proposal->status, ['diterima','ditolak']))
@@ -133,11 +144,25 @@
     </div>
 </div>
 
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-     SURAT PENAWARAN â€” format identik dengan tampilan admin
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+{{-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+     SURAT PENAWARAN Ã¢â‚¬â€ format identik dengan tampilan admin
+     Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â --}}
 <div style="background:#f1f5f9;padding:24px;border-radius:12px;margin-bottom:24px;">
-<div style="background:white;max-width:820px;margin:0 auto;padding:0;border-radius:8px;
+@if ($proposal->document && $proposal->document->uses_ddms && $proposal->document->isPublished())
+    {{-- DDMS Published: tampilkan PDF final dari Document.file_path --}}
+    {{-- Gunakan route admin.documents.{id}/preview yang sudah ada --}}
+    {{-- Route ini serve Document.file_path sebagai PDF inline --}}
+    {{-- Jangan generate PDF baru --}}
+    {{-- Tampilkan PDF identik dengan Document Builder --}}
+{{-- Embed PDF menggunakan iframe --}}
+    <iframe
+        src="{{ route('client.proposals.document.preview', $proposal->document->id) }}"
+        style="width:100%;height:600px;border:none;"
+        title="Preview Surat Penawaran DDMS Published"
+    ></iframe>
+@else
+    {{-- Non-DDMS atau DDMS belum Published: tampilkan HTML preview existing --}}
+    <div style="background:white;max-width:820px;margin:0 auto;padding:0;border-radius:8px;
             box-shadow:0 2px 12px rgba(0,0,0,0.08);font-family:'Times New Roman',serif;
             font-size:13px;line-height:1.7;color:#111;overflow:hidden;">
 
@@ -310,10 +335,11 @@
         </div>
 
     </div>{{-- /badan-surat --}}
-</div>{{-- /surat --}}
+</div>{{-- /surat --}}\
+@endif
 </div>{{-- /bg-wrapper --}}
 
-{{-- â”€â”€ Riwayat Proposal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- Ã¢â€â‚¬Ã¢â€â‚¬ Riwayat Proposal Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
 @if($proposal->event->proposals->count() > 1)
 
 <div style="max-width:820px;margin:0 auto 24px;">
@@ -379,7 +405,7 @@
 
 @endif
 
-{{-- â”€â”€ Riwayat Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+{{-- Ã¢â€â‚¬Ã¢â€â‚¬ Riwayat Negosiasi Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
 @if($negotiations->isNotEmpty())
 <div style="max-width:820px;margin:0 auto 24px;">
     <div class="settings-card">
@@ -445,3 +471,4 @@
 }
 </style>
 @endpush
+

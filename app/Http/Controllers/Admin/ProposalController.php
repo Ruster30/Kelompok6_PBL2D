@@ -103,6 +103,7 @@ class ProposalController extends Controller
         $data['usesDdmsActive'] = $usesDdmsActive;
         $data['ddmsDocument'] = $document;
         $data['ddmsApproved'] = $ddmsApproved;
+        $data['canEditSurat'] = $this->proposalService->canEditDdmsProposal($event);
         $data['ddmsStatusLabel'] = $document ? $document->status->label() : null;
         $data['ddmsDocNumber'] = ($document && $document->numbering) ? $document->numbering->document_number : null;
         $data['canSendProposal'] = $this->proposalService->canSendProposal($event);
@@ -117,6 +118,9 @@ class ProposalController extends Controller
                 ->route('admin.requests.surat-penawaran', $event->id)
                 ->with('error', 'Surat penawaran telah diterima oleh client sehingga tidak dapat direvisi.');
         }
+
+        // Server-side guard: DDMS edit lock
+        $this->proposalService->assertDdmsCanEdit($event);
 
         $this->proposalService->updateSuratPenawaran($event, $request->validated());
 
@@ -168,6 +172,22 @@ class ProposalController extends Controller
 
     public function exportPdf(Event $event)
     {
+        $event->load(['latestProposal', 'latestProposal.document']);
+
+        $latest = $event->latestProposal;
+
+        // DDMS Published: download PDF final langsung dari Document.file_path.
+        // Jangan generate ulang PDF (gunakan file yang sudah dipublish dengan QR + numbering).
+        if ($latest && $latest->document && $latest->document->uses_ddms
+            && $latest->document->isPublished()
+            && $latest->document->file_path
+            && Storage::disk('public')->exists($latest->document->file_path)) {
+            return Storage::disk('public')->download(
+                $latest->document->file_path,
+                'Surat-Penawaran-' . Str::slug($event->nama_event) . '.pdf'
+            );
+        }
+
         $data = $this->proposalService->exportPdfData($event);
 
         $pdf = Pdf::loadView('admin.requests.surat_penawaran_pdf', $data)

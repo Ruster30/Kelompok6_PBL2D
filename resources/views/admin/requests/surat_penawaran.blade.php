@@ -58,11 +58,26 @@
                 Revisi Penawaran
             </button>
         @else
-            {{-- Tombol Edit Surat --}}
-            <button type="button" class="btn btn-outline" id="btn-edit-surat" onclick="toggleEditMode(true)"
-                    style="border-color:#f59e0b; color:#b45309;">
-                <i class="fas fa-pen"></i> Edit Surat
-            </button>
+            @if($usesDdmsActive && !$canEditSurat)
+                {{-- DDMS active & status tidak mengizinkan edit --}}
+                <button type="button"
+                        class="btn btn-outline"
+                        disabled
+                        style="border-color:#cbd5e1;
+                            color:#94a3b8;
+                            background:#f8fafc;
+                            cursor:not-allowed;"
+                        title="Edit Surat dikunci oleh DDMS pada status dokumen {{ $ddmsStatusLabel ?? '-' }}. Gunakan DDMS untuk memperbarui.">
+                    <i class="fas fa-lock"></i>
+                    Edit Surat
+                </button>
+            @else
+                {{-- Tombol Edit Surat --}}
+                <button type="button" class="btn btn-outline" id="btn-edit-surat" onclick="toggleEditMode(true)"
+                        style="border-color:#f59e0b; color:#b45309;">
+                    <i class="fas fa-pen"></i> Edit Surat
+                </button>
+            @endif
 
             @if(!$event->latestProposal)
                 {{-- ── PEMBUATAN AWAL (v1) ── --}}
@@ -210,6 +225,19 @@
 {{-- Preview Surat --}}
 <div style="background:#f1f5f9; padding:24px; border-radius:12px;">
 <div id="surat-preview" style="background:white; max-width:820px; margin:0 auto; padding:0; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.08); font-family:'Times New Roman',serif; font-size:13px; line-height:1.7; color:#111; overflow:hidden;">
+@if ($usesDdmsActive && $ddmsDocument && $ddmsDocument->isPublished())
+    {{-- DDMS Published: tampilkan PDF final dari Document.file_path --}}
+    {{-- Gunakan route existing: admin.documents.{id}/preview --}}
+    {{-- Route ini serve Document.file_path sebagai PDF inline --}}
+    {{-- Jangan generate PDF baru --}}
+    {{-- Tampilkan PDF identik dengan Document Builder --}}
+    {{-- Embed PDF menggunakan iframe --}}
+    <iframe
+        src="{{ route('admin.documents.preview', $ddmsDocument->id) }}"
+        style="width:100%;height:600px;border:none;"
+        title="Preview Surat Penawaran DDMS Published"
+    ></iframe>
+@else
 
     {{-- KOP SURAT (tidak dapat diedit - template tetap) --}}
     @include('admin.pdf_templates.partials.header_web')
@@ -450,7 +478,8 @@
         </div>
 
     </div>{{-- /badan-surat --}}
-</div>{{-- /surat-preview --}}
+</div>@endif
+{{-- /surat-preview --}}
 </div>
 
 </form>{{-- /form-edit-surat --}}

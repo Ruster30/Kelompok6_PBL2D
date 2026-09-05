@@ -886,4 +886,442 @@ class ProposalDdmsTest extends TestCase
         // Document A tidak berubah status (tetap approved).
         $this->assertSame('approved', Document::findOrFail($docA->id)->status->value);
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Phase 11I.10L — Issue 1: Published DDMS send uses final Document PDF
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // A. published DDMS send uses final Document PDF
+    public function test_published_ddms_send_uses_final_document_pdf(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($document, 'PEN/APR/001');
+        app(DocumentApprovalService::class)->publishDocument($document, $this->admin);
+
+        $document = Document::findOrFail($document->id);
+        $this->assertSame('published', $document->status->value);
+        $this->assertNotNull($document->file_path);
+        $this->assertTrue(Storage::disk('public')->exists($document->file_path));
+
+        $proposal = Proposal::where('event_id', $this->event->id)->firstOrFail();
+        $originalProposalFile = $proposal->file_proposal;
+
+        // Kirim ke Client.
+        $this->actingAs($this->admin)
+            ->post(route('admin.requests.kirim-revisi-penawaran', $this->event->id), ['uses_ddms' => '1'])
+            ->assertRedirect();
+
+        // Notification client = 1.
+        $this->assertSame(1, $this->clientNotificationCount());
+
+        // Document.file_path tidak berubah (tidak regenerate PDF baru).
+        $document = Document::findOrFail($document->id);
+        $this->assertSame($document->file_path, $document->file_path);
+        $this->assertTrue(Storage::disk('public')->exists($document->file_path));
+
+        // Proposal.file_proposal tetap sama (tidak dibuat baru).
+        $proposal = Proposal::where('event_id', $this->event->id)->firstOrFail();
+        $this->assertSame($originalProposalFile, $proposal->file_proposal);
+        $this->assertSame(1, Proposal::where('event_id', $this->event->id)->count());
+    }
+
+    // B. published DDMS PDF has QR
+    public function test_published_ddms_pdf_has_qr(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($document, 'PEN/PDF/001');
+        app(DocumentApprovalService::class)->publishDocument($document, $this->admin);
+
+        $document = Document::findOrFail($document->id);
+        $document->load('qrVerification');
+
+        // QR verification exists.
+        $this->assertNotNull($document->qrVerification);
+        $this->assertNotNull($document->qrVerification->verification_token);
+        $this->assertNotNull($document->qrVerification->qr_path);
+        $this->assertTrue(Storage::disk('public')->exists($document->qrVerification->qr_path));
+
+        // Final PDF path = Document.file_path.
+        $this->assertNotNull($document->file_path);
+        $this->assertTrue(Storage::disk('public')->exists($document->file_path));
+    }
+
+    // Kritial: PDF content verification — hash, QR, numbering, file identity
+    public function test_published_ddms_proposal_pdf_contains_qr_and_document_number(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($document, 'PRO-VERIFY-001');
+        app(DocumentApprovalService::class)->publishDocument($document, $this->admin);
+
+        $document = Document::findOrFail($document->id);
+        $document->load(['numbering', 'qrVerification']);
+        $proposal = Proposal::where('document_id', $document->id)->firstOrFail();
+
+        // 1. File paths konsisten
+        $this->assertSame($proposal->file_proposal, $document->file_path);
+
+        // 2. File fisik ada
+        $pdfPath = $document->file_path;
+        $this->assertTrue(Storage::disk('public')->exists($pdfPath));
+
+        // 3. Hash identik antara Proposal.file_proposal dan Document.file_path
+        $proposalHash = hash_file('sha256', Storage::disk('public')->path($proposal->file_proposal));
+        $documentHash = hash_file('sha256', Storage::disk('public')->path($document->file_path));
+        $this->assertSame($documentHash, $proposalHash, 'Proposal.file_proposal hash == Document.file_path hash');
+
+        // 4. PDF valid
+        $pdfContent = Storage::disk('public')->get($pdfPath);
+        $this->assertStringStartsWith('%PDF-', $pdfContent, 'PDF file is valid');
+
+        // 5. QR image ter-embed di PDF (Image XObject)
+        $this->assertStringContainsString('/Subtype /Image', $pdfContent, 'QR image XObject embedded in PDF');
+
+        // 5b. Image stream ada di PDF (berisi data gambar QR)
+        $this->assertGreaterThan(0, substr_count($pdfContent, '/Subtype /Image'), 'Minimal 1 image XObject in PDF');
+
+        // 6. DocumentNumbering ada dan nomor DDMS ada di PDF
+        $this->assertNotNull($document->numbering);
+        $this->assertSame('PRO-VERIFY-001', $document->numbering->document_number);
+
+        // 7. Decompress PDF streams dan cek nomor DDMS ada di bytes
+        $decompressed = '';
+        $off = 0;
+        while (($s = strpos($pdfContent, 'stream', $off)) !== false) {
+            $e = strpos($pdfContent, 'endstream', $s);
+            if ($e === false) break;
+            $st = substr($pdfContent, $s + 6, $e - $s - 6);
+            $st = ltrim($st, "\r\n");
+            $d = @gzuncompress($st);
+            if ($d !== false) { $decompressed .= $d; }
+            $off = $e + 9;
+        }
+
+        // 7b. Verifikasi tambahan: rendered HTML template mengandung nomor DDMS + QR
+        $renderedHtml = \Illuminate\Support\Facades\View::make('admin.requests.surat_penawaran_pdf', [
+            'event' => $this->event,
+            'data'  => [
+                'nomor_surat'   => $document->numbering->document_number,
+                'tanggal_surat' => now()->format('Y-m-d'),
+                'perihal'       => 'Surat Penawaran Pameran Otomotif',
+                'document'      => $document,
+            ],
+        ])->render();
+        $this->assertStringContainsString('PRO-VERIFY-001', $renderedHtml, 'DDMS number in rendered template');
+        $this->assertStringContainsString('Scan QR', $renderedHtml, 'QR block in rendered template');
+
+        // 8. QR verification file ada
+        $this->assertNotNull($document->qrVerification);
+        $this->assertTrue(Storage::disk('public')->exists($document->qrVerification->qr_path));
+
+        // 9. Kirim ke Client — file yang sama (Document.file_path) yang dikirim
+        $sendBefore = \App\Models\DocumentSend::count();
+        $this->actingAs($this->admin)
+            ->post(route('admin.requests.kirim-revisi-penawaran', $this->event->id), ['uses_ddms' => '1'])
+            ->assertRedirect();
+
+        // Notification = 1
+        $this->assertSame(1, $this->clientNotificationCount());
+
+        // DocumentSend tercatat — file yang dikirim
+        $sendAfter = \App\Models\DocumentSend::count();
+        $this->assertSame($sendBefore + 1, $sendAfter);
+    }
+
+    // C. published DDMS has DocumentNumbering
+    public function test_published_ddms_has_document_numbering(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($document, 'PRO-NUM-001');
+        app(DocumentApprovalService::class)->publishDocument($document, $this->admin);
+
+        $document = Document::findOrFail($document->id);
+
+        // DocumentNumbering exists.
+        $this->assertNotNull($document->numbering);
+        $this->assertSame('PRO-NUM-001', $document->numbering->document_number);
+
+        // Export PDF data uses DocumentNumbering for DDMS.
+        $data = app(AdminProposalService::class)->exportPdfData($this->event);
+        $this->assertSame('PRO-NUM-001', $data['data']['nomor_surat']);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Phase 11I.10L — Issue 2: Edit lock DDMS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // D. edit blocked on draft
+    public function test_edit_blocked_on_draft(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->assertSame('draft', $document->status->value);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.requests.surat-penawaran', $this->event->id))
+            ->assertOk()
+            ->assertSee('Edit Surat')
+            ->assertSee('dikunci oleh DDMS');
+
+        // Server-side: direct POST bypass.
+        $this->actingAs($this->admin)
+            ->patch(route('admin.requests.update-surat-penawaran', $this->event->id), [
+                'perihal' => 'Updated Perihal',
+            ])
+            ->assertSessionHasErrors('edit');
+    }
+
+    // E. edit blocked on pending
+    public function test_edit_blocked_on_pending(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        app(DocumentNumberService::class)->setManualNumber($document, 'PEN/PEND/001', $this->admin);
+        app(DocumentApprovalService::class)->submit($document, $this->admin);
+        $this->assertSame('pending', Document::findOrFail($document->id)->status->value);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.requests.surat-penawaran', $this->event->id))
+            ->assertOk()
+            ->assertSee('dikunci oleh DDMS');
+
+        $this->actingAs($this->admin)
+            ->patch(route('admin.requests.update-surat-penawaran', $this->event->id), [
+                'perihal' => 'Updated Perihal',
+            ])
+            ->assertSessionHasErrors('edit');
+    }
+
+    // F. edit allowed on rejected
+    public function test_edit_allowed_on_rejected(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        app(DocumentNumberService::class)->setManualNumber($document, 'PEN/REJ/001', $this->admin);
+        app(DocumentApprovalService::class)->submit($document, $this->admin);
+        $this->director->update(['approval_pin' => Hash::make('123456')]);
+        app(DocumentApprovalService::class)->directorReject($document, $this->director, 'Perlu revisi', '123456');
+        $this->assertSame('rejected', Document::findOrFail($document->id)->status->value);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.requests.surat-penawaran', $this->event->id))
+            ->assertOk()
+            ->assertSee('Edit Surat')
+            ->assertDontSee('dikunci oleh DDMS');
+
+        // Server-side: edit allowed.
+        $this->actingAs($this->admin)
+            ->patch(route('admin.requests.update-surat-penawaran', $this->event->id), [
+                'nomor_surat_override' => 'PEN-001',
+                'perihal'              => 'Updated Perihal Setelah Reject',
+                'include_ppn'          => false,
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+    }
+
+    // G. edit blocked on approved
+    public function test_edit_blocked_on_approved(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($document, 'PEN/APR/001');
+        $this->assertSame('approved', Document::findOrFail($document->id)->status->value);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.requests.surat-penawaran', $this->event->id))
+            ->assertOk()
+            ->assertSee('dikunci oleh DDMS');
+
+        $this->actingAs($this->admin)
+            ->patch(route('admin.requests.update-surat-penawaran', $this->event->id), [
+                'perihal' => 'Updated Perihal',
+            ])
+            ->assertSessionHasErrors('edit');
+    }
+
+    // H. edit blocked on published
+    public function test_edit_blocked_on_published(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($document, 'PEN/APR/001');
+        app(DocumentApprovalService::class)->publishDocument($document, $this->admin);
+        $this->assertSame('published', Document::findOrFail($document->id)->status->value);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.requests.surat-penawaran', $this->event->id))
+            ->assertOk()
+            ->assertSee('dikunci oleh DDMS');
+
+        $this->actingAs($this->admin)
+            ->patch(route('admin.requests.update-surat-penawaran', $this->event->id), [
+                'perihal' => 'Updated Perihal',
+            ])
+            ->assertSessionHasErrors('edit');
+    }
+
+    // I. direct POST bypass edit blocked for published
+    public function test_direct_post_bypass_edit_blocked_for_published(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($document, 'PEN/PUB/001');
+        app(DocumentApprovalService::class)->publishDocument($document, $this->admin);
+        $this->assertSame('published', Document::findOrFail($document->id)->status->value);
+
+        $originalPerihal = $this->event->perihal;
+
+        // Direct POST ke update-surat-penawaran harus ditolak.
+        $this->actingAs($this->admin)
+            ->patch(route('admin.requests.update-surat-penawaran', $this->event->id), [
+                'perihal' => 'Bypass Attempt',
+            ])
+            ->assertSessionHasErrors('edit');
+
+        // Event tidak berubah.
+        $this->assertSame($originalPerihal, $this->event->fresh()->perihal);
+    }
+
+    // J. non-DDMS edit remains working
+    public function test_non_ddms_edit_remains_working(): void
+    {
+        $this->setDdmsEnabled(true);
+        $this->setDdmsDefaultPenawaran(false);
+
+        // Buat NON-DDMS proposal.
+        $this->actingAs($this->admin)
+            ->post(route('admin.requests.kirim-penawaran', $this->event->id), [
+                'nomor_surat' => 'PEN-001',
+                'tanggal_surat' => now()->format('Y-m-d'),
+                'uses_ddms' => '0',
+            ])
+            ->assertRedirect();
+
+        $proposal = Proposal::where('event_id', $this->event->id)->firstOrFail();
+        $this->assertNull($proposal->document_id);
+        $this->assertFalse($proposal->uses_ddms);
+
+        // Edit Surat button harus terlihat (tidak ada DDMS lock).
+        $this->actingAs($this->admin)
+            ->get(route('admin.requests.surat-penawaran', $this->event->id))
+            ->assertOk()
+            ->assertSee('Edit Surat')
+            ->assertDontSee('dikunci oleh DDMS');
+
+        // Server-side: edit boleh.
+        $this->actingAs($this->admin)
+            ->patch(route('admin.requests.update-surat-penawaran', $this->event->id), [
+                'nomor_surat_override' => 'PEN-001',
+                'perihal'              => 'Updated Perihal Non-DDMS',
+                'include_ppn'          => false,
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('Updated Perihal Non-DDMS', $this->event->fresh()->perihal);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Phase 11I.10L — K. Revision: v1 published immutable, v2 new Document
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // K. revision: v1 published remains immutable, v2 creates new Document
+    public function test_revision_v1_published_immutable_v2_new_document(): void
+    {
+        // v1: masuk ke DDMS, approve, publish
+        [$v1, $docA] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($docA, 'PEN/V1/001');
+        app(DocumentApprovalService::class)->publishDocument($docA, $this->admin);
+        $this->assertSame('published', Document::findOrFail($docA->id)->status->value);
+
+        $docAFileBefore = $docA->file_path;
+        $docAStatusBefore = $docA->status->value;
+
+        // v1 tidak boleh diedit setelah published.
+        $this->actingAs($this->admin)
+            ->patch(route('admin.requests.update-surat-penawaran', $this->event->id), [
+                'perihal' => 'Try Edit v1',
+            ])
+            ->assertSessionHasErrors('edit');
+
+        // v1 kirim ke client.
+        $this->actingAs($this->admin)
+            ->post(route('admin.requests.kirim-revisi-penawaran', $this->event->id), ['uses_ddms' => '1'])
+            ->assertRedirect();
+        $this->assertSame(1, $this->clientNotificationCount());
+
+        // Client negosiasi.
+        $this->actingAs($this->client)
+            ->post(route('client.proposals.negosiasi', $v1->id), [
+                'pesan' => 'Mohon diskon',
+                'budget_diinginkan' => '100',
+            ])
+            ->assertRedirect();
+
+        // Admin buat v2 (Document B draft).
+        $this->actingAs($this->admin)
+            ->post(route('admin.requests.masuk-ke-ddms', $this->event->id), [
+                'tanggal_surat' => now()->format('Y-m-d'),
+                'uses_ddms' => '1',
+            ])
+            ->assertRedirect();
+
+        $v2 = Proposal::where('event_id', $this->event->id)->where('versi', 2)->firstOrFail();
+        $docB = Document::findOrFail($v2->document_id);
+        $this->assertSame('draft', $docB->status->value);
+        $this->assertNotSame($docA->id, $docB->id);
+
+        // Document A tidak berubah setelah v2 dibuat.
+        $docAAfter = Document::findOrFail($docA->id);
+        $this->assertSame($docAFileBefore, $docAAfter->file_path);
+        $this->assertSame($docAStatusBefore, $docAAfter->status->value);
+        $this->assertSame('published', $docAAfter->status->value);
+
+        // Document A tidak dapat diedit.
+        $this->actingAs($this->admin)
+            ->patch(route('admin.requests.update-surat-penawaran', $this->event->id), [
+                'perihal' => 'Try Edit v2 before approve',
+            ])
+            ->assertSessionHasErrors('edit');
+
+        // v2 draft → edit blocked.
+        $this->assertSame(2, Proposal::where('event_id', $this->event->id)->count());
+        $this->assertSame(2, Document::where('event_id', $this->event->id)->count());
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Phase 11I.10L — L. Notification timing verification
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // L-A. Director Approve = 0 client notification
+    public function test_director_approve_no_client_notification(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($document, 'PEN/APR/001');
+        $this->assertSame('approved', Document::findOrFail($document->id)->status->value);
+
+        $this->assertSame(0, $this->clientNotificationCount());
+    }
+
+    // L-B. Publish = 0 client notification
+    public function test_publish_no_client_notification(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($document, 'PEN/APR/001');
+        app(DocumentApprovalService::class)->publishDocument($document, $this->admin);
+        $this->assertSame('published', Document::findOrFail($document->id)->status->value);
+
+        $this->assertSame(0, $this->clientNotificationCount());
+    }
+
+    // L-C. Kirim ke Client = 1 client notification
+    public function test_kirim_ke_client_one_client_notification(): void
+    {
+        [$proposal, $document] = $this->masukKeDdmsProposal();
+        $this->prepareDdmsForApproval($document, 'PEN/APR/001');
+        app(DocumentApprovalService::class)->publishDocument($document, $this->admin);
+        $this->assertSame('published', Document::findOrFail($document->id)->status->value);
+
+        $this->assertSame(0, $this->clientNotificationCount());
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.requests.kirim-revisi-penawaran', $this->event->id), ['uses_ddms' => '1'])
+            ->assertRedirect();
+
+        $this->assertSame(1, $this->clientNotificationCount());
+    }
 }

@@ -46,7 +46,7 @@ p {
     $perihal      = $pdfData['perihal']        ?? ($event->perihal ?? 'Surat Penawaran Pameran Otomotif');
     $document     = $pdfData['document'] ?? null; // dari AdminProposalService::exportPdfData()
     $usesDdms     = $document?->uses_ddms ?? false;
-    $statusPublished = $document?->status === \App\Enums\DocumentStatus::Published ?? false;
+    $statusPublished = $document ? ($document->status === \App\Enums\DocumentStatus::Published) : false;
     $hasQrPath = $document?->qrVerification?->qr_path ?? false;
 @endphp
 
@@ -255,7 +255,7 @@ p {
     @if($usesDdms && $statusPublished && $hasQrPath)
     <tr>
         <td style="text-align:center; padding-top:10px;">
-            <img src="{{ storage_path('app/public/' . $document->qrVerification->qr_path) }}"
+            <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->path($document->qrVerification->qr_path) }}"
                  style="width:96px;height:96px;display:block;margin:0 auto 6px;" alt="">
             <div style="font-size:9px; color:#64748b;">Scan QR untuk verifikasi keaslian dokumen</div>
         </td>

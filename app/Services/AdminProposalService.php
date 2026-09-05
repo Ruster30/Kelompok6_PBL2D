@@ -93,6 +93,42 @@ class AdminProposalService
         return $event->activeProposal && $event->activeProposal->status === 'diterima';
     }
 
+    /**
+     * Cek apakah Proposal DDMS dapat diedit (Edit Surat).
+     *
+     * Aturan DDMS (Phase 11I.10L):
+     * - draft      -> TIDAK BOLEH (gunakan DDMS)
+     * - pending    -> TIDAK BOLEH
+     * - rejected   -> BOLEH (Director menolak, Admin perbaiki)
+     * - approved   -> TIDAK BOLEH
+     * - published  -> TIDAK BOLEH
+     * - Non-DDMS   -> selalu BOLEH (behavior existing)
+     */
+    public function canEditDdmsProposal(Event $event): bool
+    {
+        $latest = $event->latestProposal;
+        if ($latest && $latest->document && $latest->document->uses_ddms) {
+            $status = $latest->document->status->value;
+            return $status === Document::STATUS_REJECTED;
+        }
+
+        return true;
+    }
+
+    /**
+     * Server-side guard untuk Edit Surat pada Proposal DDMS.
+     * Mencegah bypass tombol disabled via direct POST / DevTools.
+     * Throw ValidationException bila status DDMS tidak mengizinkan edit.
+     */
+    public function assertDdmsCanEdit(Event $event): void
+    {
+        if (! $this->canEditDdmsProposal($event)) {
+            throw ValidationException::withMessages([
+                'edit' => 'Surat Penawaran dengan DDMS tidak dapat diedit pada status dokumen saat ini. Gunakan DDMS untuk memperbarui.',
+            ]);
+        }
+    }
+
     public function updateSuratPenawaran(Event $event, array $data): void { $event->update($data); }
 
     /**
@@ -116,28 +152,28 @@ class AdminProposalService
     {
         $event->load(['client', 'rabs', 'activeProposal']);
  
-        // Nomor resmi:
+         // Nomor resmi:
         //   NON-DDMS -> Proposal.nomor_proposal (input Admin)
         //   DDMS      -> DocumentNumbering.document_number (lewat Proposal.document_id
         //               -> Document.id -> DocumentNumbering.document_id)
         // Jangan tampilkan placeholder Proposal.nomor_proposal jika DocumentNumbering
         // sudah tersedia untuk proposal DDMS.
-        $ddmsNumber = $event->activeProposal?->document?->numbering?->document_number;
+        $ddmsNumber = $event->latestProposal?->document?->numbering?->document_number;
 
         // Sumber nomor surat final (aturan Phase 11I.10K):
         //   NON-DDMS → Proposal.nomor_proposal (input Admin)
         //   DDMS      → DocumentNumbering.document_number (via Proposal.document_id → Document.id → Document.numbering → DocumentNumbering)
-        $ddmsNumber = $event->activeProposal?->document?->numbering?->document_number;
+        $ddmsNumber = $event->latestProposal?->document?->numbering?->document_number;
 
         $data = [
             'nomor_surat'  => $event->nomor_surat_override
                 ?? $ddmsNumber
-                ?? $event->activeProposal?->nomor_proposal
+                ?? $event->latestProposal?->nomor_proposal
                 ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), $this->proposalRepository->getEventCount($event->id)),
-            'tanggal_surat' => $event->activeProposal?->tanggal_proposal?->format('Y-m-d')
+            'tanggal_surat' => $event->latestProposal?->tanggal_proposal?->format('Y-m-d')
                 ?? now()->format('Y-m-d'),
             'perihal'      => $event->perihal ?? 'Surat Penawaran Pameran Otomotif',
-            'document'     => $event->activeProposal?->document, // untuk template QR/numbering
+            'document'     => $event->latestProposal?->document, // untuk template QR/numbering
         ];
  
         return compact('event', 'data');
@@ -175,6 +211,24 @@ class AdminProposalService
         // Kirim hanya memberi notifikasi ke Client pada Proposal yang ada;
         // TIDAK membuat versi Proposal baru maupun Document baru.
         if ($latest && $latest->document && $latest->document->uses_ddms) {
+            $document = $latest->document;
+
+            // Sinkikan Proposal.file_proposal ke Document.file_path jika berbeda.
+            // Document.file_path adalah source of truth PDF final DDMS (berisi numbering + QR).
+            if ($document->file_path && $latest->file_proposal !== $document->file_path) {
+                $latest->update(['file_proposal' => $document->file_path]);
+            }
+
+            // Untuk Proposal DDMS yang sudah Published: kirim PDF final dari
+            // Document.file_path (bukan Proposal.file_proposal yang lama).
+            // Reuse sendDocumentToClient() yang sudah ada untuk email attachment
+            // menggunakan Document.file_path (PDF final berisi numbering + QR).
+            if ($document->isPublished()) {
+                $this->sendDocumentToClient($document, $event->client_id, $data['pesan'] ?? null);
+                return;
+            }
+
+            // Approved (belum Published) atau status lain: hanya notifikasi.
             $this->notifyClientProposalSent($event);
             return;
         }
@@ -436,7 +490,43 @@ class AdminProposalService
     public function setujuiNegosiasi(Event $event): void
     {
         $proposal = $event->activeProposal ?? $event->latestProposal;
-        if ($proposal) { $this->proposalRepository->update($proposal, ['status' => 'diterima']); }
+
+        if ($proposal) {
+            // 1. Deactivate the current active proposal (becomes historical)
+            $this->proposalRepository->deactivateActive($event->id);
+
+            // 2. Update the old proposal status to 'diterima'
+            $this->proposalRepository->update($proposal, ['status' => 'diterima']);
+        }
+
+        // --- DETERMINE IF OLD PROPOSAL USES DDMS (before deactivation) ---
+        $oldUsesDdms = false;
+        if ($proposal && $proposal->document && $proposal->document->uses_ddms) {
+            $oldUsesDdms = true;
+        }
+
+        // 3. Create a new proposal with the next version number
+        $version = $this->proposalRepository->getNextVersion($event->id);
+        $newProposal = $this->proposalRepository->create([
+            'event_id' => $event->id,
+            'versi' => $version,
+            'status' => 'negosiasi',
+            'is_active' => true,
+            'tanggal_proposal' => now()->format('Y-m-d'),
+        ]);
+
+        // 4. If old proposal used DDMS, create NEW Document v2 for v2
+        if ($oldUsesDdms) {
+            // Get the old document file path to reuse as base for new document
+            $oldFilePath = $proposal->document ? $proposal->document->file_path : null;
+
+            // Create new Document v2 using existing helper createProposalDocument()
+            $document = $this->createProposalDocument($event, $oldFilePath);
+
+            // Link Document v2 to Proposal v2
+            $newProposal->update(['document_id' => $document->id]);
+        }
+
         $event->update(['status_event' => 'diproses']);
         TimelineAutoFill::negosiasiSelesai($event, $this->proposalRepository->getLatestNegotiation($event->id));
         Notification::create(['user_id' => $event->client_id, 'judul' => 'Negosiasi Disetujui', 'pesan' => 'Negosiasi untuk event ' . $event->nama_event . ' telah disetujui.', 'tipe' => 'sukses']);
