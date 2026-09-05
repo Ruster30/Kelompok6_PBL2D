@@ -246,21 +246,17 @@ p {
     <tr>
         <td>
             Padang, {{ \Carbon\Carbon::parse($tanggalSurat)->translatedFormat('d F Y') }}<br>
-            Hormat kami,<br>
+            Hormat kami,
+            
+            @if($usesDdms && $statusPublished && $hasQrPath)
+            @include('admin.pdf_templates.partials.signature_qr')
+            @endif
+            
             <div class="ttd-space"></div>
             <span class="ttd-nama">Kurnia Fajar Viliano S.Tr.Kom</span><br>
             Direktur
         </td>
     </tr>
-    @if($usesDdms && $statusPublished && $hasQrPath)
-    <tr>
-        <td style="text-align:center; padding-top:10px;">
-            <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->path($document->qrVerification->qr_path) }}"
-                 style="width:96px;height:96px;display:block;margin:0 auto 6px;" alt="">
-            <div style="font-size:9px; color:#64748b;">Scan QR untuk verifikasi keaslian dokumen</div>
-        </td>
-    </tr>
-    @endif
 </table>
 
 {{-- Garis teal penutup --}}
