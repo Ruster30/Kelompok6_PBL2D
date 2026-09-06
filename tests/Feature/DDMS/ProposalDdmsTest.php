@@ -1007,7 +1007,9 @@ class ProposalDdmsTest extends TestCase
             ],
         ])->render();
         $this->assertStringContainsString('PRO-VERIFY-001', $renderedHtml, 'DDMS number in rendered template');
-        $this->assertStringContainsString('Scan QR', $renderedHtml, 'QR block in rendered template');
+        $this->assertStringContainsString('qr_path', $renderedHtml, 'QR block in rendered template');
+$this->assertNotNull($document->qrVerification);
+$this->assertTrue(Storage::disk('public')->exists($document->qrVerification->qr_path));
 
         // 8. QR verification file ada
         $this->assertNotNull($document->qrVerification);
