@@ -12,6 +12,9 @@ use App\Interfaces\RabRepositoryInterface;
 use App\Interfaces\TaskRepositoryInterface;
 use App\Interfaces\TimelineRepositoryInterface;
 use App\Interfaces\VendorRepositoryInterface;
+use App\Models\DocumentVerificationLog;
+use App\Models\Notification;
+use App\Policies\VerificationAuditPolicy;
 use App\Repositories\DocumentRepository;
 use App\Repositories\EventVendorRepository;
 use App\Repositories\FeedbackRepository;
@@ -22,9 +25,10 @@ use App\Repositories\RabRepository;
 use App\Repositories\TaskRepository;
 use App\Repositories\TimelineRepository;
 use App\Repositories\VendorRepository;
-use Illuminate\Support\ServiceProvider;
-use App\Models\Notification;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -44,6 +48,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Gate::policy(DocumentVerificationLog::class, VerificationAuditPolicy::class);
+        Paginator::useBootstrapFive();
+
         View::composer('*', function ($view) {
             $unreadNotifications = 0;
 

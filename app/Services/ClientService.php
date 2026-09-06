@@ -200,13 +200,19 @@ class ClientService
 
         $path = request()->file('bukti_pembayaran')->store('payments', 'public');
 
-        // Tentukan jenis pembayaran berdasarkan urutan invoice
-        $firstInvoice = $invoice->event->invoices()
-            ->whereIn('status_invoice', ['belum_bayar', 'menunggu_verifikasi', 'dp_lunas', 'lunas', 'menunggu_dp'])
-            ->orderBy('id', 'asc')
-            ->first();
-        $isDp = $firstInvoice && $firstInvoice->id === $invoice->id
-            && $invoice->event->invoices()->whereIn('status_invoice', ['belum_bayar', 'menunggu_verifikasi', 'dp_lunas', 'lunas'])->count() > 1;
+        // Tentukan jenis pembayaran berdasarkan skema pembayaran event
+        $scheme = app(PaymentSchemeService::class)->getScheme($invoice->event_id);
+
+        if ($scheme && $scheme->jenis_pembayaran === 'dp_dan_pelunasan') {
+            // DP + Pelunasan: invoice pertama adalah DP
+            $firstInvoice = $invoice->event->invoices()
+                ->orderBy('id', 'asc')
+                ->first();
+            $isDp = $firstInvoice && $firstInvoice->id === $invoice->id;
+        } else {
+            // Full payment atau tanpa skema: selalu pelunasan
+            $isDp = false;
+        }
 
         Payment::create([
             'invoice_id'        => $invoice->id,
@@ -295,7 +301,9 @@ class ClientService
     {
         $eIds = $this->clientEventIds();
 
-        $proposal = Proposal::whereIn('event_id', $eIds)->findOrFail($id);
+        $proposal = Proposal::whereIn('event_id', $eIds)
+            ->with(['document', 'document.numbering', 'document.qrVerification'])
+            ->findOrFail($id);
 
         $latestProposal = Proposal::where('event_id', $proposal->event_id)
             ->where('is_active', true)
@@ -401,7 +409,6 @@ class ClientService
                 'judul'   => 'Negosiasi Selesai Penawaran Diterima',
                 'pesan'   => 'Client ' . Auth::user()->name . ' menerima penawaran revisi untuk event ' . $event->nama_event . '. Timeline otomatis telah diisi.',
                 'tipe'    => 'sukses',
-                'dibaca'  => false,
             ]);
         });
     }
@@ -451,5 +458,6 @@ class ClientService
             ->update(['dibaca' => true]);
     }
 }
+
 
 

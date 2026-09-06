@@ -22,7 +22,7 @@
 
     <div class="table-responsive">
 
-        <table class="table custom-table align-middle mb-0">
+        <table class="table card-view-mobile custom-table align-middle mb-0">
 
             <thead>
                 <tr>
@@ -145,7 +145,7 @@
                                 data-tugas-id="{{ $t->id }}"
                                 data-tugas-nama="{{ $t->nama_tugas }}"
                             >
-                                <i class="bi bi-pencil-square"></i> Update
+                                <i class="bi bi-pencil-square"></i>
                             </button>
                             <button
                                 class="action-btn action-btn-gray"
@@ -154,7 +154,7 @@
                                 data-tugas-id="{{ $t->id }}"
                                 data-tugas-nama="{{ $t->nama_tugas }}"
                             >
-                                <i class="bi bi-camera"></i> Dokumentasi
+                                <i class="bi bi-camera"></i> 
                             </button>
                         </div>
                     </td>

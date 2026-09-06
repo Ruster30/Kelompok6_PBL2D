@@ -26,6 +26,13 @@ p {
 }
 .indent { text-indent: 24px; }
 
+/* ─── HEADER ─── */
+.header-tbl { width: 100%; border-collapse: collapse; }
+.header-tbl td { vertical-align: top; }
+.logo-img { width: 130px; }
+.contact-col { text-align: right; font-size: 9.5px; line-height: 2.1; }
+.divider-thick { margin-top: 7px; border-top: 4px solid #00b8b0; }
+.divider-thin  { border-top: 1.5px solid #00b8b0; margin-top: 2px; }
 .ttd-space { padding-bottom: 50px; }
 .ttd-nama  { font-weight: bold; text-decoration: underline; }
 </style>
@@ -37,33 +44,13 @@ p {
     $nomorSurat   = $pdfData['nomor_surat']   ?? '-';
     $tanggalSurat = $pdfData['tanggal_surat'] ?? now()->format('Y-m-d');
     $perihal      = $pdfData['perihal']        ?? ($event->perihal ?? 'Surat Penawaran Pameran Otomotif');
+    $document     = $pdfData['document'] ?? null; // dari AdminProposalService::exportPdfData()
+    $usesDdms     = $document?->uses_ddms ?? false;
+    $statusPublished = $document ? ($document->status === \App\Enums\DocumentStatus::Published) : false;
+    $hasQrPath = $document?->qrVerification?->qr_path ?? false;
 @endphp
 
-{{-- ── KOP ─────────────────────────────────────── --}}
-<table style="width:100%; margin-bottom:8px;">
-    <tr>
-        <td style="width:35%;" valign="middle">
-            <img src="{{ public_path('images/landing/logo.png') }}"
-                 alt="Alpha Organizer" height="58">
-        </td>
-        <td style="width:65%;" valign="middle" align="right"
-            style="font-size:10px; line-height:1.9; color:#1e293b;">
-            <span style="font-size:10px; line-height:1.9; color:#1e293b;">
-                +62 822-3318-1883<br>
-                alphaorganizer1209@gmail.com<br>
-                Jl.Air Dingin No.25 Kec.Koto Tangah, Kota Padang
-            </span>
-        </td>
-    </tr>
-</table>
-
-{{-- Garis teal ganda --}}
-<table style="width:100%; margin-bottom:2px;">
-    <tr><td style="border-top:2.5px solid #14b8a6; font-size:1px;">&nbsp;</td></tr>
-</table>
-<table style="width:100%; margin-bottom:14px;">
-    <tr><td style="border-top:1px solid #14b8a6; font-size:1px;">&nbsp;</td></tr>
-</table>
+@include('admin.pdf_templates.partials.header')
 
 {{-- ── TANGGAL ──────────────────────────────────── --}}
 <table style="width:100%; margin-bottom:10px;">
@@ -79,7 +66,13 @@ p {
     <tr>
         <td style="width:72px;">No. Surat</td>
         <td style="width:14px;">:</td>
-        <td>{{ $nomorSurat }}</td>
+        <td>
+    @if($usesDdms && $document?->numbering)
+        {{ $document->numbering->document_number }}
+    @else
+        {{ $nomorSurat }}
+    @endif
+</td>
     </tr>
     <tr>
         <td>Lampiran</td>
@@ -175,7 +168,10 @@ p {
                     <td style="text-align:center; vertical-align:top;">:</td>
                     <td>
                         <strong>{{ $event->rentang_anggaran ?? '-' }}
-                        ( Exclude Ppn &amp; Pph )*</strong>
+                        @if($event->include_ppn ?? true)
+                            ( Include PPN &amp; PPh )*
+                        @endif
+                        </strong>
                         @if($event->terbilang ?? null)
                         <br><span style="font-size:10px;">({{ $event->terbilang }})</span>
                         @endif
@@ -250,7 +246,12 @@ p {
     <tr>
         <td>
             Padang, {{ \Carbon\Carbon::parse($tanggalSurat)->translatedFormat('d F Y') }}<br>
-            Hormat kami,<br>
+            Hormat kami,
+            
+            @if($usesDdms && $statusPublished && $hasQrPath)
+            @include('admin.pdf_templates.partials.signature_qr')
+            @endif
+            
             <div class="ttd-space"></div>
             <span class="ttd-nama">Kurnia Fajar Viliano S.Tr.Kom</span><br>
             Direktur

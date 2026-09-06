@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Analitik')
 @section('page-title', 'Analitik')
@@ -230,6 +230,27 @@
     .analytics-table tr:hover {
         background: #f8fafc;
     }
+    .period-btn {
+        padding: 7px 16px;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: #475569;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .period-btn:hover {
+        border-color: #14b8a6;
+        color: #0d9488;
+        background: #f0fdfa;
+    }
+    .period-active {
+        background: #14b8a6 !important;
+        color: white !important;
+        border-color: #14b8a6 !important;
+    }
     @media print {
         .analytics-actions, .filter-card, .btn-export { display: none; }
     }
@@ -238,7 +259,14 @@
 <div class="analytics-header">
     <div class="analytics-header-left">
         <h1>Dashboard Analitik</h1>
-        <p>Ringkasan performa bisnis dan operasional periode {{ $filters['year'] }}{{ $filters['month'] ? ' - ' . \Carbon\Carbon::create()->month((int) $filters['month'])->translatedFormat('F') : '' }}</p>
+        <p>Ringkasan performa bisnis dan operasional
+            @php
+                $periodLabels = ['today'=>'Hari Ini','yesterday'=>'Kemarin','last_7_days'=>'7 Hari Terakhir','last_30_days'=>'30 Hari Terakhir','this_week'=>'Minggu Ini','this_month'=>'Bulan Ini','this_year'=>'Tahun Ini','custom'=>'Rentang Tanggal','all'=>'Semua Data'];
+                $label = $periodLabels[$activePeriod ?? 'all'] ?? 'Semua Data';
+            @endphp
+            <strong>{{ $label }}</strong>
+            @if(($activePeriod ?? 'all') === 'all')&mdash; {{ $filters['year'] }}@endif
+        </p>
     </div>
     <div class="analytics-actions">
         <button onclick="window.print()" class="btn-export btn-print">
@@ -255,7 +283,62 @@
 
 <!-- Filter Card -->
 <div class="filter-card">
-    <form method="GET" action="{{ route('admin.analytics.index') }}">
+    <form method="GET" action="{{ route('admin.analytics.index') }}" id="analyticsForm">
+        <input type="hidden" name="period" id="filterPeriod" value="{{ $activePeriod ?? 'all' }}">
+        <input type="hidden" name="start_date" id="filterStartDate" value="{{ $startDate ?? '' }}">
+        <input type="hidden" name="end_date" id="filterEndDate" value="{{ $endDate ?? '' }}">
+
+        <!-- Period Quick Filters -->
+        <div style="margin-bottom:16px;">
+            <label style="display:block; font-size:13px; font-weight:500; color:#475569; margin-bottom:8px;">Periode</label>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                @php
+                    $periods = [
+                        'today' => 'Hari Ini',
+                        'yesterday' => 'Kemarin',
+                        'last_7_days' => '7 Hari Terakhir',
+                        'last_30_days' => '30 Hari Terakhir',
+                        'this_week' => 'Minggu Ini',
+                        'this_month' => 'Bulan Ini',
+                        'this_year' => 'Tahun Ini',
+                        'custom' => 'Rentang Tanggal',
+                        'all' => 'Semua Data',
+                    ];
+                @endphp
+                @foreach($periods as $key => $label)
+                    <button type="button"
+                        class="period-btn {{ ($activePeriod ?? 'all') === $key ? 'period-active' : '' }}"
+                        data-period="{{ $key }}"
+                        onclick="setPeriod('{{ $key }}')">{{ $label }}</button>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Custom Date Range (shown only when period=custom) -->
+        <div id="customDateRange" style="display:none; margin-bottom:16px; padding:12px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;">
+            <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <div class="filter-group" style="margin-bottom:0;">
+                    <label>Dari Tanggal</label>
+                    <input type="date" name="start_date_input" id="startDateInput"
+                           value="{{ $startDate ?? '' }}"
+                           style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px;"
+                           onchange="document.getElementById('filterStartDate').value=this.value">
+                </div>
+                <div class="filter-group" style="margin-bottom:0;">
+                    <label>Sampai Tanggal</label>
+                    <input type="date" name="end_date_input" id="endDateInput"
+                           value="{{ $endDate ?? '' }}"
+                           style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px;"
+                           onchange="document.getElementById('filterEndDate').value=this.value">
+                </div>
+                <button type="submit" class="btn-filter" style="padding:9px 16px; font-size:13px;">
+                    <i class="fas fa-check"></i> Terapkan
+                </button>
+            </div>
+        </div>
+
+        <hr style="border:none; border-top:1px solid #e2e8f0; margin-bottom:16px;">
+
         <div class="filter-grid">
             <div class="filter-group">
                 <label>Tahun</label>
@@ -303,6 +386,32 @@
         </div>
     </form>
 </div>
+
+<script>
+function setPeriod(period) {
+    document.getElementById('filterPeriod').value = period;
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('period-active'));
+    document.querySelector(`.period-btn[data-period="${period}"]`).classList.add('period-active');
+
+    if (period === 'custom') {
+        document.getElementById('customDateRange').style.display = 'block';
+    } else {
+        document.getElementById('customDateRange').style.display = 'none';
+        // Clear date inputs for non-custom periods
+        document.getElementById('filterStartDate').value = '';
+        document.getElementById('filterEndDate').value = '';
+        document.getElementById('startDateInput').value = '';
+        document.getElementById('endDateInput').value = '';
+        // Submit form immediately for quick periods
+        document.getElementById('analyticsForm').submit();
+    }
+}
+
+// Show custom date range if already selected
+if (document.getElementById('filterPeriod').value === 'custom') {
+    document.getElementById('customDateRange').style.display = 'block';
+}
+</script>
 
 <!-- Statistics Cards -->
 <div class="stats-grid-analytics">

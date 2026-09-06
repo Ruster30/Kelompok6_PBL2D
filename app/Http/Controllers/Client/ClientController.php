@@ -9,9 +9,11 @@ use App\Http\Requests\Client\SubmitNegosiasiRequest;
 use App\Models\Document;
 use App\Models\Proposal;
 use App\Services\ClientService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
@@ -139,6 +141,53 @@ class ClientController extends Controller
         return redirect()
             ->route('client.proposals.show', $id)
             ->with('success', 'Penawaran diterima! Timeline event telah disiapkan secara otomatis.');
+    }
+
+    public function exportProposalPdf(Proposal $proposal)
+    {
+        // Pastikan proposal milik event dari client yang sedang login
+        $eventIds = \App\Models\Event::where('client_id', Auth::id())->pluck('id');
+        abort_unless($eventIds->contains($proposal->event_id), 403, 'Anda tidak memiliki akses ke Surat Penawaran ini.');
+
+        $event = $proposal->event->load(['client', 'rabs', 'activeProposal']);
+
+        // Eager-load Document + relations (numbering, qrVerification) untuk DDMS check.
+        $proposal->load(['document', 'document.numbering', 'document.qrVerification']);
+        $document = $proposal->document;
+
+        // DDMS Published: kirimkan PDF final dari Document.file_path.
+        // Jangan generate ulang PDF (gunakan file yang sudah dipublish dengan QR + numbering).
+        if ($document && $document->uses_ddms
+            && $document->isPublished()
+            && $document->file_path
+            && Storage::disk('public')->exists($document->file_path)) {
+            return Storage::disk('public')->download(
+                $document->file_path,
+                'Surat-Penawaran-' . Str::slug($event->nama_event) . '.pdf'
+            );
+        }
+
+        // NON-DDMS atau DDMS belum Published: generate PDF dari template.
+        // Sumber nomor resmi:
+        //   DDMS      -> DocumentNumbering.document_number (via Proposal.document_id -> Document -> numbering)
+        //   NON-DDMS  -> Proposal.nomor_proposal (dari form Admin)
+        $data = [
+            'nomor_surat'   => $event->nomor_surat_override
+                ?? $document?->numbering?->document_number
+                ?? $proposal->nomor_proposal
+                ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), $event->id),
+            'tanggal_surat' => $proposal->tanggal_proposal?->format('Y-m-d')
+                ?? now()->format('Y-m-d'),
+            'perihal'       => $event->perihal ?? 'Surat Penawaran Pameran Otomotif',
+            'document'      => $document,
+        ];
+
+        $pdf = Pdf::loadView('admin.requests.surat_penawaran_pdf', compact('event', 'data'))
+            ->setPaper('a4', 'portrait');
+
+        $filename = 'Surat-Penawaran-' . Str::slug($event->nama_event) . '.pdf';
+
+        return $pdf->download($filename);
     }
 
     // ========== DOCUMENTS ==========

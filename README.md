@@ -168,49 +168,63 @@ npm run dev
 
 # Screenshot Proyek
 
-## Login Page
+## Public Website
 
-Tambahkan screenshot halaman login di sini.
+### Beranda
+![Beranda](https://github.com/user-attachments/assets/2dad3a34-65da-4fb9-84eb-259733c660cb)
 
-```text
-docs/screenshots/login.png
-```
+### Tentang Kami
+![Tentang Kami](https://github.com/user-attachments/assets/5a5792f9-d870-4fdd-9364-3395c4a40f35)
 
-## Dashboard Admin
+### Layanan Event
+![Layanan](https://github.com/user-attachments/assets/4a0ae9a1-1baa-4a7e-887e-07e901f0a276)
 
-Tambahkan screenshot dashboard admin di sini.
+### Portofolio Event
+![Portofolio](https://github.com/user-attachments/assets/cccee5b1-1793-42da-ae40-298e8f37843a)
 
-```text
-docs/screenshots/dashboard-admin.png
-```
+### Tim Kami
+![Tim](https://github.com/user-attachments/assets/75b72ac5-5c06-4af3-a29e-6daa9cb611a4)
 
-## Kelola Event
+## Authentication
 
-Tambahkan screenshot fitur pengelolaan event.
+### Halaman Login
+![Login](https://github.com/user-attachments/assets/cb70990f-53cd-4c21-bc94-a12744e748b7)
 
-```text
-docs/screenshots/event-management.png
-```
+### Halaman Register
+![Register](https://github.com/user-attachments/assets/eb5ba378-1cdb-4cd8-b175-dfa36cecec41)
 
-## Proposal dan RAB
+## Client Portal
 
-Tambahkan screenshot proposal dan RAB.
+### Dashboard Klien
+![Dashboard Klien](https://github.com/user-attachments/assets/6fecf68c-540c-401d-9857-117897dd4f95)
 
-```text
-docs/screenshots/proposal-rab.png
-```
+### Pemesanan Layanan Event
+![Pemesanan](https://github.com/user-attachments/assets/26b050f0-95bb-4040-bc8e-e8b683ff99b7)
 
-## Pembayaran
+### Surat Penawaran
+![Surat Penawaran](https://github.com/user-attachments/assets/c8bbc7b2-f6bb-4778-9191-59222c599c8a)
 
-Tambahkan screenshot fitur pembayaran.
+## Admin Portal
 
-```text
-docs/screenshots/payment.png
-```
+### Dashboard Admin
+![Dashboard Admin](https://github.com/user-attachments/assets/4096c388-bca3-477a-ab08-b9f2e0569b54)
 
----
+### Kelola Layanan Event
+![Kelola Event](https://github.com/user-attachments/assets/e671a4f9-9005-49be-8532-ed7b1c11f3be)
 
-# Tim Pengembang
+### Kelola Vendor
+![Kelola Vendor](https://github.com/user-attachments/assets/9e22bfb7-767e-44ee-b5c4-36b4c7c5b199)
+
+### Kelola RAB
+![Kelola RAB](https://github.com/user-attachments/assets/12eb2215-d5bd-4fea-86a6-f2763ca7ca90)
+
+## Vendor Portal
+
+### Dashboard Vendor
+![Dashboard Vendor](https://github.com/user-attachments/assets/1c3446d6-3e73-4182-924b-a1bfb17d1501)
+
+### Tugas Event
+![Tugas Event](https://github.com/user-attachments/assets/19d60594-3d8c-410f-9505-3e7d4b62542b)# Tim Pengembang
 
 * Ahmad Ridho Hadaffi  : Project Manager
 * Salwa Febriani       : System Analyst
@@ -224,5 +238,48 @@ docs/screenshots/payment.png
 - On Development
 
 Project ini sedang dikembangkan sebagai bagian dari tugas/proyek Sistem Informasi Manajemen Event Alpha.corp.
+
+---
+
+# Pengujian (Testing)
+
+## Konvensi Test Database
+
+Test suite (khususnya DDMS) **wajib menggunakan MySQL**, bukan SQLite.
+
+- Nama database test: `alpha_corp_test`
+- Konfigurasi test sudah tersedia di `.env.testing` (MySQL).
+- `phpunit.xml` masih mengarah ke `sqlite :memory:`, tetapi **tidak kompatibel** dengan rantai migration yang ada (ada migration MySQL-only, misalnya `ALTER TABLE users MODIFY COLUMN role ENUM(...)`). Jangan ubah migration hanya untuk menyesuaikan SQLite.
+
+## Cara Menjalankan Test
+
+Test harus dijalankan **sekuensial** (jangan paralel terhadap database test yang sama).
+
+Jalankan dengan environment override MySQL agar sesuai `.env.testing`:
+
+```bash
+DB_CONNECTION=mysql DB_DATABASE=alpha_corp_test DB_USERNAME=root DB_PASSWORD= \
+php artisan test --env=testing
+```
+
+Contoh untuk suite spesifik:
+
+```bash
+DB_CONNECTION=mysql DB_DATABASE=alpha_corp_test DB_USERNAME=root DB_PASSWORD= \
+php artisan test tests/Feature/DDMS --env=testing
+```
+
+Catatan:
+- Jika MySQL belum aktif, test tidak dapat dijalankan — hidupkan dulu MySQL lokal.
+- Jangan mengubah `phpunit.xml` / `.env.testing` / migration untuk memaksa test lewat.
+- Belum ada CI di repository ini.
+
+---
+
+# Dokumentasi Tambahan
+
+- [Panduan Deployment Produksi](docs/PRODUCTION.md) — konfigurasi environment produksi, cache/storage, migration, backup & recovery, keamanan seeder.
+- [Panduan Testing](docs/TESTING.md) — struktur test dan konvensi database test.
+- Dokumentasi teknis lengkap terdapat pada folder [docs](docs/).
 
 ---

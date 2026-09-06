@@ -131,7 +131,7 @@ body {
 }
 
 .navbar-logo {
-    height: 50px;
+    height: 100px;
     width: auto;
     object-fit: contain;
     transition: .3s;
@@ -980,26 +980,41 @@ select.form-control-dark option {
     margin-bottom: .75rem;
 }
 
-.social-icon {
+.footer-social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: .875rem;
+    font-weight: 500;
+    transition: color .2s, transform .2s;
+}
+
+.footer-social-link:hover {
+    color: var(--accent);
+    transform: translateX(4px);
+}
+
+.footer-social-link .social-icon {
     width: 36px;
     height: 36px;
     background: var(--bg-card);
     border: 1px solid var(--bg-card-border);
-    border-radius: 50%;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-muted);
-    text-decoration: none;
-    font-size: .9rem;
+    font-size: .95rem;
     transition: all .2s;
+    flex-shrink: 0;
 }
 
-.social-icon:hover {
+.footer-social-link:hover .social-icon {
     background: var(--accent);
     border-color: var(--accent);
     color: var(--bg-dark);
-    transform: translateY(-2px);
 }
 
 /* ============================================
@@ -1314,4 +1329,16 @@ body {
     .footer-main .col-6 {
         width: 50% !important;
     }
+}
+/* ---- Focus Visible for Accessibility ---- */
+:focus-visible {
+    outline: 2px solid #2DD4BF;
+    outline-offset: 2px;
+}
+a:focus-visible,
+button:focus-visible,
+.nav-link:focus-visible,
+.btn:focus-visible {
+    outline: 2px solid #2DD4BF;
+    outline-offset: 2px;
 }

@@ -16,6 +16,7 @@ class KirimPenawaranRequest extends FormRequest
         return [
             'nomor_surat'   => 'required|string|max:100',
             'tanggal_surat' => 'required|date',
+            'uses_ddms'     => 'nullable|boolean',
         ];
     }
 }

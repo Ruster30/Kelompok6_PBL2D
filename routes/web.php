@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ClientController;
@@ -9,15 +9,6 @@ use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Vendor\TugasController;
 use App\Http\Controllers\Vendor\DokumentasiController;
 use App\Http\Controllers\Vendor\NotifikasiController;
-
-Route::get('/d', function () {
-    return view('welcome');
-});
-
-Route::get('/profil', function () {
-    echo '<h1>Profil</h1>';
-    return '<p>Jurusan Teknologi Informasi - Politeknik Negeri Padang</p>';
-});
 
 Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index']);
 
@@ -38,17 +29,20 @@ Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
     } elseif ($role === 'vendor') {
         return redirect()->route('vendor.ringkasan');
+    } elseif ($role === 'director') {
+        return redirect()->route('director.dashboard');
     }
     return app(ClientController::class)->dashboard();
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/vendor/dashboard', function () {
+Route::get('/vendor/dashboard', function () {
         if (request()->user()->role !== 'vendor') {
             abort(403);
         }
         return view('vendor.ringkasan');
     })->name('vendor.dashboard');
+
 });
 
 
@@ -56,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
 });
 
 // ========================================
@@ -63,6 +58,8 @@ Route::middleware('auth')->group(function () {
 // ========================================
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/verification-audit', [App\Http\Controllers\Admin\VerificationAuditController::class, 'index'])->name('admin.verification-audit.index');
+    Route::get('/verification-audit/{log}', [App\Http\Controllers\Admin\VerificationAuditController::class, 'show'])->name('admin.verification-audit.show');
 
     // --- Kelola Klien ---
     // Route ini mengelola akun user dengan role='client'.
@@ -107,6 +104,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/requests/{event}/kirim-penawaran',
         [App\Http\Controllers\Admin\ProposalController::class, 'kirimPenawaran'])
         ->name('admin.requests.kirim-penawaran');
+
+    // Masuk ke DDMS: buat Proposal + Document draft (tanpa kirim ke client),
+    // lalu redirect ke halaman Document Builder (Phase 11I.10F).
+    Route::post('/requests/{event}/masuk-ke-ddms',
+        [App\Http\Controllers\Admin\ProposalController::class, 'masukKeDdms'])
+        ->name('admin.requests.masuk-ke-ddms');
 
     // Export PDF langsung (download)
     Route::get('/requests/{event}/export-pdf',
@@ -186,10 +189,41 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/document-builder',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'index'])
         ->name('admin.document_builder.index');
+    Route::post('/document-builder/generate',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'generate'])
+        ->name('admin.document_builder.generate');
+    Route::get('/document-builder/{document}/preview',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'previewDocument'])
+        ->name('admin.document_builder.preview');
+    Route::get('/document-builder/{document}/download',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'downloadDocument'])
+        ->name('admin.document_builder.download-doc');
+
+    Route::get('/document-builder/{document}/print',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'printDocument'])
+        ->name('admin.document_builder.print-doc');
+    Route::post('/document-builder/{document}/submit',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'submitApproval'])
+        ->middleware(\App\Http\Middleware\EnsureDdmsEnabled::class)
+        ->name('admin.document_builder.submit');
+
+    Route::delete('/document-builder/{document}',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'destroyDraft'])
+        ->name('admin.document_builder.destroy');
+
+    Route::put('/document-builder/{document}/rename',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'renameDraft'])
+        ->name('admin.document_builder.rename');
+    Route::post('/document-builder/{document}/number',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'setDocumentNumber'])
+        ->name('admin.document_builder.set_number');
+    Route::get('/document-builder/{document}',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'show'])
+        ->name('admin.document_builder.show');
 
     Route::post('/document-builder/preview',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'preview'])
-        ->name('admin.document_builder.preview');
+        ->name('admin.document_builder.preview-pdf');
 
     Route::post('/document-builder/download',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'download'])
@@ -202,6 +236,18 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/document-builder/send',
         [App\Http\Controllers\Admin\DocumentBuilderController::class, 'sendToClient'])
         ->name('admin.document_builder.send');
+
+    Route::post('/document-builder/upload-denah',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'uploadDenah'])
+        ->name('admin.document_builder.upload_denah');
+
+    Route::get('/document-builder/denah-status/{event}',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'denahStatus'])
+        ->name('admin.document_builder.denah_status');
+
+    Route::delete('/document-builder/hapus-denah/{event}',
+        [App\Http\Controllers\Admin\DocumentBuilderController::class, 'hapusDenah'])
+        ->name('admin.document_builder.hapus_denah');
 
     // Documentation
     Route::get('/documentation', [App\Http\Controllers\Admin\DocumentationController::class, 'index'])->name('admin.documentation.index');
@@ -247,23 +293,22 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/cms/clients/{client}', [App\Http\Controllers\Admin\CmsController::class, 'updateClient'])->name('admin.cms.updateClient');
     Route::delete('/cms/clients/{client}', [App\Http\Controllers\Admin\CmsController::class, 'destroyClient'])->name('admin.cms.destroyClient');
     
-    // Settings
+// Settings
     Route::get('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
     Route::put('/settings/update', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
     Route::put('/settings/update-password', [App\Http\Controllers\Admin\SettingsController::class, 'updatePassword'])->name('admin.settings.updatePassword');
+    Route::post('/settings/ddms-toggle', [App\Http\Controllers\Admin\SettingsController::class, 'toggleDdms'])->name('admin.settings.ddms-toggle');
+    Route::put('/settings/ddms-defaults', [App\Http\Controllers\Admin\SettingsController::class, 'updateDdmsDefaults'])->name('admin.settings.ddms-defaults');
 
-    // (duplikasi routes sudah dihapus)
 });
 
-require __DIR__.'/auth.php';
-
 /*
-|â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+|
 |  CLIENT DASHBOARD ROUTES
 |  Semua dilindungi middleware 'auth'
 |  Prefix URL  : /client/...
 |  Prefix name : client....
-|â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+|
 */
 
 
@@ -274,33 +319,33 @@ Route::post('/feedback', [FeedbackController::class, 'store'])
     ->name('feedback.store');
 
 Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->group(function () {
-    // â”€â”€ Ringkasan / Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Ringkasan / Dashboard 
     Route::get('/',                         [ClientController::class, 'dashboard'])
          ->name('dashboard');
  
-    // â”€â”€ Event Terdaftar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Event Terdaftar 
     Route::get('/events',                   [ClientController::class, 'events'])
          ->name('events');
  
-    // â”€â”€ Ajukan Event Baru â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Ajukan Event Baru 
     Route::get('/event/create',             [ClientController::class, 'eventCreate'])
          ->name('event.create');
     Route::post('/event',                   [ClientController::class, 'eventStore'])
          ->name('event.store');
  
-    // â”€â”€ Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Timeline 
     Route::get('/timeline',                 [ClientController::class, 'timeline'])
          ->name('timeline');
     Route::get('/timeline/{id}',            [ClientController::class, 'timeline'])
          ->name('timeline.show');
  
-    // â”€â”€ Anggaran & Faktur â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Anggaran & Faktur 
     Route::get('/invoices',                 [ClientController::class, 'invoices'])
          ->name('invoices');
     Route::post('/invoices/{id}/bayar',     [ClientController::class, 'bayar'])
          ->name('invoices.bayar');
  
-    // â”€â”€ Surat Penawaran â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Surat Penawaran 
     Route::get('/proposals/{tab?}',         [ClientController::class, 'proposals'])
         ->where('tab', 'penawaran|proposal|rab|kontrak|laporan|kwitansi')
         ->name('proposals');
@@ -308,21 +353,24 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::get('/proposals/{id}',           [ClientController::class, 'proposalShow'])
          ->name('proposals.show');
 
+    Route::get('/proposals/{proposal}/export-pdf', [ClientController::class, 'exportProposalPdf'])
+         ->name('proposals.export-pdf');
+
     Route::get('/proposals/{id}/negosiasi-form',
         [App\Http\Controllers\Client\ClientController::class, 'negosiasiForm'])
         ->name('proposals.negosiasi.form');
     
-    // â”€â”€ Terima Penawaran LANGSUNG (tanpa negosiasi) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Terima Penawaran LANGSUNG (tanpa negosiasi) 
     Route::post('/proposals/{id}/terima',
         [App\Http\Controllers\Client\ClientController::class, 'terimaProposal'])
         ->name('proposals.terima');
 
-    // â”€â”€ Ajukan Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Ajukan Negosiasi 
     Route::post('/proposals/{id}/negosiasi',
         [App\Http\Controllers\Client\ClientController::class, 'submitNegosiasi'])
         ->name('proposals.negosiasi');
 
-    // â”€â”€ Terima Penawaran Revisi SETELAH Negosiasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Terima Penawaran Revisi SETELAH Negosiasi 
     Route::post('/proposals/{id}/terima-setelah-negosiasi',
         [App\Http\Controllers\Client\ClientController::class, 'terimaSetelahNegosiasi'])
         ->name('proposals.terima-setelah-negosiasi');
@@ -333,7 +381,7 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::get('/proposals/document/{document}/download', [ClientController::class, 'documentDownload'])
         ->name('proposals.document.download');
  
-    // â”€â”€ Pengaturan Akun â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Pengaturan Akun  
     Route::get('/settings',                 [ClientController::class, 'settings'])
          ->name('settings');
     Route::put('/settings/profile',         [ClientController::class, 'settingsProfile'])
@@ -341,12 +389,24 @@ Route::middleware(['auth', 'client.role'])->prefix('client')->name('client.')->g
     Route::put('/settings/password',        [ClientController::class, 'settingsPassword'])
          ->name('settings.password');
  
-    // â”€â”€ Notifikasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-     Route::get('/notifications', [ClientController::class, 'notifications'])
+    //  Notifikasi  
+    Route::get('/notifications', [ClientController::class, 'notifications'])
     ->name('notifications');
 
     Route::post('/notifications/read', [ClientController::class, 'notifRead'])
     ->name('notif.read');
+
+    Route::get('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
+        ->name('settings.pin');
+
+    Route::post('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
+        ->name('settings.pin.store');
+
+    Route::match(['put', 'patch'], '/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
+        ->name('settings.pin.update');
 
 });
    
@@ -388,6 +448,82 @@ Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'vendor.role'])->g
     // Redirect root /vendor ke ringkasan
     Route::redirect('/', '/vendor/ringkasan');
 
+    Route::get('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
+        ->name('settings.pin');
+
+    Route::post('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
+        ->name('settings.pin.store');
+
+    Route::match(['put', 'patch'], '/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
+        ->name('settings.pin.update');
+
 });
+
+// --------------------------------------------------------------------------
+// Director Routes
+// --------------------------------------------------------------------------
+Route::prefix('director')->name('director.')->middleware(['auth', 'director'])->group(function () {
+
+        Route::get('/dashboard', [App\Http\Controllers\Director\DirectorApprovalController::class, 'dashboard'])
+        ->name('dashboard');
+
+    Route::get('/verification-audit', [App\Http\Controllers\Admin\VerificationAuditController::class, 'index'])
+        ->name('verification-audit.index');
+    Route::get('/verification-audit/{log}', [App\Http\Controllers\Admin\VerificationAuditController::class, 'show'])
+        ->name('verification-audit.show');
+
+    Route::get('/approval',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'index'])
+        ->name('approval.index');
+    Route::get('/history',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'history'])
+        ->name('approval.history');
+
+Route::get('/history/{document}',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'historyShow'])
+        ->name('approval.history-show');
+    Route::get('/history/{document}/download',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'downloadDocument'])
+        ->name('approval.history-download');
+    Route::get('/approval/{document}',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'show'])
+        ->name('approval.show');
+    Route::post('/approval/{document}/approve',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'approve'])
+        ->middleware(\App\Http\Middleware\EnsureDdmsEnabled::class)
+        ->name('approval.approve');
+
+    Route::post('/approval/{document}/reject',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'reject'])
+        ->name('approval.reject');
+    Route::post('/approval/{document}/publish',
+        [App\Http\Controllers\Director\DirectorApprovalController::class, 'publish'])
+        ->middleware(\App\Http\Middleware\EnsureDdmsEnabled::class)
+        ->name('approval.publish');
+
+    Route::get('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'create'])
+        ->name('settings.pin');
+
+    Route::post('/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'store'])
+        ->name('settings.pin.store');
+
+    Route::match(['put', 'patch'], '/settings/pin',
+        [App\Http\Controllers\Director\DirectorPinController::class, 'update'])
+        ->name('settings.pin.update');
+
+});
+
+// Public Document Verification
+Route::get('/verify/{token}', [App\Http\Controllers\PublicVerificationController::class, 'verify'])
+    ->middleware(['throttle:30,1', 'security-headers'])
+    ->name('verify.document');
+require __DIR__.'/auth.php';
+
+
 
 

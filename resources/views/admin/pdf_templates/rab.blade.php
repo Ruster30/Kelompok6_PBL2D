@@ -165,7 +165,7 @@ tbody td {
 
     @if($rabItems->count())
     <tr class="sum-jumlah">
-        <td colspan="3">JUMLAH (Subtotal Vendor)</td>
+        <td colspan="3">TOTAL</td>
         <td>Rp</td>
         <td class="text-right">{{ number_format($total, 0, '.', '.') }}</td>
     </tr>
@@ -177,7 +177,7 @@ tbody td {
     </tr>
     @endif
     <tr class="sum-total">
-        <td colspan="3">DPP</td>
+        <td colspan="3">SUBTOTAL</td>
         <td>Rp</td>
         <td class="text-right">{{ number_format($dpp, 0, '.', '.') }}</td>
     </tr>
@@ -196,7 +196,7 @@ tbody td {
     </tr>
     @endif
     <tr class="sum-grand">
-        <td colspan="3">TOTAL DIBAYAR KLIEN</td>
+        <td colspan="3">GRANDTOTAL</td>
         <td>Rp</td>
         <td class="text-right">{{ number_format($grandTotal, 0, '.', '.') }}</td>
     </tr>
@@ -209,11 +209,14 @@ tbody td {
     <div class="ttd-left"></div>
     <div class="ttd-right">
         <div class="ttd-date">Padang, {{ now()->translatedFormat('d F Y') }}</div>
-        <div class="ttd-hormat">Hormat kami,</div>
+        <div class="ttd-hormat" style="margin-bottom:8px;">Hormat kami,</div>
+        @include('admin.pdf_templates.partials.signature_qr')
         <div class="ttd-name">Kurnia Fajar Viliano S.Tr.Kom</div>
         <div class="ttd-jabatan">Head Of Alpha Organizer</div>
     </div>
 </div>
+
+
 
 </body>
 </html>

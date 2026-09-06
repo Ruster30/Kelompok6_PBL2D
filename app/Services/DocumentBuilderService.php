@@ -25,21 +25,25 @@ class DocumentBuilderService
      * Generate PDF sesuai jenis dokumen.
      * Mengembalikan ['pdf' => PDF instance, 'filename' => string]
      */
-    public function generate(Event $event, string $jenisDokumen): array
+    public function generate(Event $event, string $jenisDokumen, ?Document $document = null): array
     {
         return match ($jenisDokumen) {
-            'proposal'       => $this->generateProposal($event),
-            'surat_kontrak'  => $this->generateSuratKontrak($event),
-            'invoice'        => $this->generateInvoice($event),
-            'rab'            => $this->generateRab($event),
-            'kwitansi'       => $this->generateKwitansi($event),
+            // Proposal is no longer a Document Builder GENERATION type (blocked at
+            // controller validation + UI). The arm is kept solely so historical
+            // generated Proposal records (document_source=generated) remain
+            // readable/downloadable and can be re-rendered for manual numbering.
+            'proposal'       => $this->generateProposal($event, $document),
+            'surat_kontrak'  => $this->generateSuratKontrak($event, $document),
+            'invoice'        => $this->generateInvoice($event, $document),
+            'rab'            => $this->generateRab($event, $document),
+            'kwitansi'       => $this->generateKwitansi($event, null, $document),
             default          => throw new \InvalidArgumentException("Jenis dokumen tidak dikenal: {$jenisDokumen}"),
         };
     }
 
-    // ─── PROPOSAL ───────────────────────────────────────────────────────────
+    // ─── PROPOSAL (historical/regeneration only — NOT a Document Builder type) ─
 
-    private function generateProposal(Event $event): array
+    private function generateProposal(Event $event, ?Document $document = null): array
     {
         $event->load([
             'client',
@@ -56,7 +60,7 @@ class DocumentBuilderService
         $totalRab  = app(RabService::class)->getTotalDibayarKlien($event->id);
 
         $pdf = Pdf::loadView('admin.pdf_templates.proposal', compact(
-            'event', 'services', 'teams', 'rabItems', 'timelines', 'vendors', 'totalRab'
+            'event', 'services', 'teams', 'rabItems', 'timelines', 'vendors', 'totalRab', 'document'
         ))->setPaper('a4', 'portrait');
 
         $filename = 'proposal-' . Str::slug($event->nama_event) . '-' . now()->format('YmdHis') . '.pdf';
@@ -66,17 +70,25 @@ class DocumentBuilderService
 
     // ─── SURAT KONTRAK ──────────────────────────────────────────────────────
 
-    private function generateSuratKontrak(Event $event): array
+    private function generateSuratKontrak(Event $event, ?Document $document = null): array
     {
         $event->load(['client', 'contract', 'invoices']);
 
-        $nomorKontrak = sprintf('KTR-%s-%03d', now()->format('Ymd'), Contract::whereDate('created_at', today())->count() + 1);
         // Gunakan total_invoice dari Event Model (invoice utama saja) atau total RAB
         $nilaiKontrak = $event->total_invoice ?: app(RabService::class)->getTotalDibayarKlien($event->id);
 
+
+        // Layout/Denah image � path absolut untuk DomPDF
+        $layoutPath = null;
+        if ($event->layout_denah && Storage::disk("public")->exists($event->layout_denah)) {
+            $layoutPath = Storage::disk("public")->path($event->layout_denah);
+        }
+
         $pdf = Pdf::loadView('admin.pdf_templates.surat_kontrak', compact(
-            'event', 'nomorKontrak', 'nilaiKontrak'
+            'event', 'nilaiKontrak', 'document', 'layoutPath'
         ))->setPaper('a4', 'portrait');
+
+
 
         $filename = 'kontrak-' . Str::slug($event->nama_event) . '-' . now()->format('YmdHis') . '.pdf';
 
@@ -85,7 +97,7 @@ class DocumentBuilderService
 
     // ─── INVOICE ────────────────────────────────────────────────────────────
 
-        private function generateInvoice(Event $event): array
+        private function generateInvoice(Event $event, ?Document $document = null): array
     {
         $event->load(['client', 'invoices.payments', 'rabs']);
 
@@ -138,13 +150,14 @@ class DocumentBuilderService
             'pphAktif', 'pphNominal', 'grandTotal',
             'paymentScheme', 'dpPersen', 'dpNominal', 'sisaPelunasan',
             'companyAddress', 'companyPhone', 'companyEmail', 'bank',
+            'document'
         ))->setPaper('a4', 'portrait');
 
         $filename = 'invoice-' . Str::slug($event->nama_event) . '-' . now()->format('YmdHis') . '.pdf';
 
         return ['pdf' => $pdf, 'filename' => $filename, 'jenis' => 'invoice'];
     }
-private function generateRab(Event $event): array
+private function generateRab(Event $event, ?Document $document = null): array
     {
         $event->load(['client']);
 
@@ -153,7 +166,7 @@ private function generateRab(Event $event): array
         $additionalDetail = RabAdditionalDetail::where('event_id', $event->id)->first();
 
         $pdf = Pdf::loadView('admin.pdf_templates.rab', compact(
-            'event', 'rabItems', 'total', 'additionalDetail'
+            'event', 'rabItems', 'total', 'additionalDetail', 'document'
         ))->setPaper('a4', 'portrait');
 
         $filename = 'rab-' . Str::slug($event->nama_event) . '-' . now()->format('YmdHis') . '.pdf';
@@ -252,6 +265,30 @@ private function generateRab(Event $event): array
         }
     }
 
+    /**
+     * Simpan dokumen hasil generate ke database.
+     * Method terpusat agar document_source selalu Generated.
+     */
+    private function storeGeneratedDocument(
+        Event $event,
+        ?int $userId,
+        string $namaFile,
+        string $filePath,
+        string $tipe,
+        bool $usesDdms = true,
+    ): Document
+    {
+        return Document::create([
+            "event_id"         => $event->id,
+            "user_id"          => $userId,
+            "nama_file"        => $namaFile,
+            "file_path"        => $filePath,
+            "tipe"             => $tipe,
+            "document_source"  => \App\Enums\DocumentSource::Generated,
+            "uses_ddms"        => $usesDdms,
+        ]);
+    }
+
     private function labelJenis(string $jenis): string
     {
         return match ($jenis) {
@@ -304,13 +341,13 @@ private function generateRab(Event $event): array
     /**
      * Generate Kwitansi via generate() dispatch.
      */
-    private function generateKwitansiWithLabel(Event $event, ?string $labelOverride = null): array
+    private function generateKwitansiWithLabel(Event $event, ?string $labelOverride = null, ?Document $document = null): array
     {
-        $generated = $this->generate($event, 'kwitansi');
+        $generated = $this->generate($event, 'kwitansi', $document);
         return $generated;
     }
 
-    private function generateKwitansi(Event $event, ?string $labelOverride = null): array
+    private function generateKwitansi(Event $event, ?string $labelOverride = null, ?Document $document = null): array
     {
         $event->load(['client', 'invoices.payments']);
 
@@ -349,7 +386,7 @@ private function generateRab(Event $event): array
         $pdf = Pdf::loadView('admin.pdf_templates.kwitansi', compact(
             'event', 'invoice', 'nomorKwitansi', 'companyLogo', 'companyName',
             'companyAddress', 'companyPhone', 'companyEmail',
-            'jenisPembayaranLabel', 'nominal', 'tanggalKwitansi',
+            'jenisPembayaranLabel', 'nominal', 'tanggalKwitansi', 'document',
         ))->setPaper('a4', 'portrait');
 
         $filename = 'kwitansi-' . Str::slug($event->nama_event) . '-' . now()->format('YmdHis') . '.pdf';
@@ -381,4 +418,162 @@ private function generateRab(Event $event): array
         return $document;
     }
 
+
+
+    /**
+     * Generate ulang PDF Final setelah Approval.
+     */
+    /**
+     * Generate dokumen, simpan ke storage dan database.
+     * Public API untuk DocumentBuilderController.
+     */
+    public function generateAndSave(Event $event, string $jenisDokumen, bool $usesDdms = true): Document
+    {
+        $generated = $this->generate($event, $jenisDokumen);
+
+        $pdf      = $generated["pdf"];
+        $filename = $generated["filename"];
+        $jenis    = $generated["jenis"];
+
+        $path = "documents/" . $filename;
+        $pdfContent = $pdf->output();
+        Storage::disk("public")->put($path, $pdfContent);
+
+        $tipeEnum = match ($jenis) {
+            "proposal"      => "proposal",
+            "surat_kontrak" => "kontrak",
+            "invoice"       => "invoice",
+            "rab"           => "rab",
+            "kwitansi"      => "kwitansi",
+            default         => "lainnya",
+        };
+
+        $document = $this->storeGeneratedDocument(
+            event:    $event,
+            userId:   auth()->id(),
+            namaFile: $this->labelJenis($jenisDokumen) . " - " . $event->nama_event,
+            filePath: $path,
+            tipe:     $tipeEnum,
+            usesDdms: $usesDdms,
+        );
+
+        return $document;
+    }
+
+    public function regenerateFinalPdf(Document $document, Event $event, string $jenisDokumen): void
+    {
+        // Skip only for non-DDMS Proposal documents under proposals/ path.
+        // DDMS Proposal documents will be regenerated with canonical template
+        // so that DocumentNumbering.number and QR verification appear.
+        if ($document->tipe === Document::TIPE_PROPOSAL
+            && str_starts_with((string) $document->file_path, 'proposals/')
+            && ! $document->uses_ddms) {
+            \Log::info('Skipping PDF regeneration for canonical Surat Penawaran document (non-DDMS)', [
+                'document_id' => $document->id,
+                'file_path'   => $document->file_path,
+            ]);
+            return;
+        }
+
+        // For DDMS Proposal + proposals/ path, render using canonical template
+        // so that DocumentNumbering.number and QR verification appear.
+        if ($document->tipe === Document::TIPE_PROPOSAL
+            && str_starts_with((string) $document->file_path, 'proposals/')
+            && $document->uses_ddms) {
+            $ddmsNumber = $document->numbering?->document_number;
+
+            $data = [
+                'event'       => $event,
+                'nomor_surat' => $event->nomor_surat_override
+                    ?? $ddmsNumber
+                    ?? $document->proposal?->nomor_proposal
+                    ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), $this->proposalRepository->getEventCount($event->id)),
+                'tanggal_surat' => $document->tanggal_proposal?->format('Y-m-d')
+                    ?? now()->format('Y-m-d'),
+                'perihal'      => $document->proposal?->perihal
+                    ?? $event->perihal ?? 'Surat Penawaran Pameran Otomotif',
+                'document'     => $document,
+            ];
+
+            $pdf = Pdf::loadView('admin.requests.surat_penawaran_pdf', [
+                'event'         => $event,
+                'data'          => $data,
+            ])->setPaper('a4', 'portrait');
+            $pdfContent = $pdf->output();
+            Storage::disk('public')->put($document->file_path, $pdfContent);
+
+            // Verification similar to original code
+            $storedPath = Storage::disk('public')->path($document->file_path);
+            \Log::info("PDF write verification", [
+                "path" => $storedPath,
+                "filesize" => file_exists($storedPath) ? filesize($storedPath) : 0,
+                "md5_content" => md5($pdfContent),
+                "md5_file" => file_exists($storedPath) ? md5_file($storedPath) : "N/A",
+                "filemtime" => file_exists($storedPath) ? filemtime($storedPath) : 0,
+            ]);
+
+            if ($document->file_path !== $document->file_path) {
+                $document->update(['file_path' => $document->file_path]);
+            } else {
+                \Log::info("file_path unchanged (same path): " . $document->file_path);
+            }
+
+            \Log::info('PDF Final regenerated (DDMS Proposal)', ['document_id' => $document->id]);
+            return;
+        }
+
+        $generated = $this->generate($event, $jenisDokumen, $document);
+        $pdf = $generated['pdf'];
+        $path = $document->file_path ?? 'documents/' . $generated['filename'];
+
+        $pdfContent = $pdf->output();
+        Storage::disk('public')->put($path, $pdfContent);
+
+        // VERIFY: Pastikan file yang disimpan identik
+        $storedPath = Storage::disk('public')->path($path);
+        \Log::info("PDF write verification", [
+            "path" => $path,
+            "filesize" => file_exists($storedPath) ? filesize($storedPath) : 0,
+            "md5_content" => md5($pdfContent),
+            "md5_file" => file_exists($storedPath) ? md5_file($storedPath) : "N/A",
+            "filemtime" => file_exists($storedPath) ? filemtime($storedPath) : 0,
+        ]);
+
+        if ($document->file_path !== $path) {
+            $document->update(['file_path' => $path]);
+            \Log::info("file_path updated to: " . $path);
+        } else {
+            \Log::info("file_path unchanged (same path): " . $path);
+        }
+
+        \Log::info('PDF Final regenerated', ['document_id' => $document->id]);
+    }
+
+    /**
+     * Regenerate PDF final untuk dokumen Published.
+     *
+     * Method ini HANYA bertugas:
+     * - reload relasi terbaru (numbering + qrVerification)
+     * - render ulang PDF
+     * - overwrite file PDF lama (file_path yang sama)
+     *
+     * TIDAK membuat nomor surat, verification token, maupun QR code.
+     * TIDAK mengubah status dokumen ataupun approval.
+     * QR memakai dari qr_path yang sudah ada (tidak pernah digenerate ulang).
+     * Backward compatible untuk dokumen lama yang sudah Published.
+     */
+    public function regeneratePublishedPdf(Document $document): void
+    {
+        // Reload relasi terbaru agar tidak terjadi PDF stale.
+        $document->refresh()->load([
+            'numbering',
+            'qrVerification',
+        ]);
+
+        $event = $document->event;
+        $jenis = $document->tipe === 'kontrak' ? 'surat_kontrak' : $document->tipe;
+
+        // Render ulang PDF dan overwrite file lama.
+        $this->regenerateFinalPdf($document, $event, $jenis);
+    }
 }

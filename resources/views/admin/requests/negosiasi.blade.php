@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Riwayat Negosiasi')
 @section('page-title', 'Admin Dashboard')
@@ -12,12 +12,21 @@
         <i class="fas fa-arrow-left"></i> Kembali ke Request
     </a>
 
-    {{-- Tombol Revisi Penawaran --}}
-    @if($event->latestProposal && $event->latestProposal->status === 'negosiasi')
-        <a href="{{ route('admin.requests.surat-penawaran', $event->id) }}" class="btn btn-primary">
-            <i class="fas fa-edit"></i> Revisi Penawaran
+    <div style="display:flex; gap:10px; align-items:center;">
+        {{-- Tombol Lihat RAB --}}
+        <a href="{{ route('admin.rab.index', ['event_id' => $event->id]) }}"
+           class="btn btn-outline"
+           style="border-color:#14b8a6; color:#14b8a6;">
+            <i class="fas fa-calculator"></i> Lihat RAB
         </a>
-    @endif
+
+        {{-- Tombol Revisi Penawaran --}}
+        @if($event->latestProposal && $event->latestProposal->status === 'negosiasi')
+            <a href="{{ route('admin.requests.surat-penawaran', $event->id) }}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Revisi Penawaran
+            </a>
+        @endif
+    </div>
 </div>
 
 <div class="card" style="margin-bottom:20px;">

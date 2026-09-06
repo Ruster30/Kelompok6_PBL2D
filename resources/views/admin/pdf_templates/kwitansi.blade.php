@@ -2,93 +2,182 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Kwitansi</title>
+    <title>Kwitansi - {{ $companyName ?? 'Alpha Organizer' }}</title>
     <style>
-        @page { margin: 28px; }
-        body { font-family: DejaVu Sans, sans-serif; color: #444; font-size: 12px; line-height: 1.5; }
+        @page { margin: 25px 35px; }
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            color: #333;
+            font-size: 11px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
         * { box-sizing: border-box; }
-        .clearfix::after { content: ""; display: block; clear: both; }
-        h1, h2, h3, h4, h5 { margin: 0; }
-        table { width: 100%; border-collapse: collapse; }
-        .header { border-bottom: 3px solid #1E88E5; padding-bottom: 18px; margin-bottom: 28px; }
-        .company { float: left; width: 55%; }
-        .company img { height: 70px; margin-bottom: 8px; }
-        .company-name { font-size: 22px; font-weight: bold; color: #163A70; }
-        .company-info { color: #666; font-size: 11px; margin-top: 4px; }
-        .receipt-box { float: right; width: 38%; text-align: right; }
-        .receipt-title { font-size: 34px; font-weight: bold; color: #163A70; letter-spacing: 2px; margin-bottom: 12px; }
-        .receipt-table { width: 100%; font-size: 12px; }
-        .receipt-table td { padding: 4px 0; }
-        .receipt-table td:first-child { font-weight: bold; width: 45%; color: #555; }
-        .status-paid { display: inline-block; padding: 6px 18px; border-radius: 30px; background: #43A047; color: white; font-size: 12px; font-weight: bold; letter-spacing: 1px; }
-        .card { border: 1px solid #E3E3E3; border-radius: 6px; padding: 15px; }
-        .card-title { font-size: 14px; font-weight: bold; color: #163A70; border-bottom: 2px solid #1E88E5; padding-bottom: 6px; margin-bottom: 12px; }
-        .detail-table td { padding: 6px 0; vertical-align: top; }
-        .detail-table td:first-child { width: 30%; font-weight: bold; color: #555; }
-        .amount-box { margin-top: 20px; text-align: center; padding: 20px; border: 2px dashed #1E88E5; border-radius: 8px; }
-        .amount-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 2px; }
-        .amount-value { font-size: 28px; font-weight: bold; color: #163A70; margin-top: 6px; }
-        .amount-terbilang { font-size: 12px; color: #666; margin-top: 4px; font-style: italic; }
-        .footer { margin-top: 40px; text-align: center; color: #999; font-size: 10px; border-top: 1px solid #E3E3E3; padding-top: 12px; }
-        .signature-area { margin-top: 30px; }
-        .signature-left { float: left; width: 45%; }
-        .signature-right { float: right; width: 45%; text-align: right; }
-        .signature-space { height: 70px; }
-        .signature-label { font-size: 11px; color: #888; }
-        .badge-payment-type { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; background: #E3F2FD; color: #1565C0; }
+
+        /* ─── LAYOUT ─── */
+        .main { margin-top: 22px; }
+
+        .headline { text-align: center; margin-bottom: 20px; }
+        .headline h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0d9488;
+            letter-spacing: 4px;
+            margin: 0 0 10px 0;
+            line-height: 1;
+        }
+        .headline-info {
+            font-size: 11px;
+            line-height: 1.8;
+            color: #555;
+        }
+        .headline-info td { padding: 1px 0; vertical-align: top; }
+        .headline-info td.lbl { width: 100px; font-weight: 600; color: #333; }
+        .headline-info td.sep { width: 12px; text-align: center; }
+        .headline-info td.val { color: #333; }
+
+        /* ─── CARD ─── */
+        .card { margin-bottom: 20px; }
+        .card-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0f172a;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #0d9488;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-tbl { width: 100%; border-collapse: collapse; }
+        .info-tbl td {
+            padding: 5px 0;
+            vertical-align: top;
+            font-size: 11px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .info-tbl tr:last-child td { border-bottom: none; }
+        .info-tbl td.lbl { width: 120px; color: #64748b; font-weight: 600; }
+        .info-tbl td.sep { width: 14px; text-align: center; color: #94a3b8; }
+        .info-tbl td.val { color: #1e293b; }
+
+        /* ─── AMOUNT ─── */
+        .amount-box {
+            margin: 24px 0;
+            text-align: center;
+            padding: 20px 24px;
+            border: 2px solid #0d9488;
+            border-radius: 6px;
+            background: #f0fdfa;
+        }
+        .amount-label {
+            font-size: 10px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+        .amount-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0f172a;
+            margin: 8px 0 4px;
+            letter-spacing: 1px;
+        }
+        .amount-terbilang {
+            font-size: 11px;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* ─── SIGNATURE ─── */
+        .signature-area { margin-top: 36px; }
+        .signature-box {
+            width: 260px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .signature-label {
+            font-size: 11px;
+            color: #64748b;
+        }
+        .signature-space { height: 68px; }
+        .signature-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 2px;
+        }
+
+        /* ─── FOOTER ─── */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 9.5px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+            line-height: 1.7;
+        }
+        .footer strong { color: #64748b; }
     </style>
 </head>
 <body>
-    <div class="header clearfix">
-        <div class="company">
-            @if(!empty($companyLogo))
-                <img src="{{ $companyLogo }}" alt="Logo">
-            @endif
-            <div class="company-name">{{ $companyName ?? 'Alpha Organizer' }}</div>
-            <div class="company-info">
-                {{ $companyAddress ?? '' }}<br>
-                Telp: {{ $companyPhone ?? '' }} | Email: {{ $companyEmail ?? '' }}
-            </div>
-        </div>
-        <div class="receipt-box">
-            <div class="receipt-title">KWITANSI</div>
-            <table class="receipt-table">
-                <tr><td>No. Kwitansi</td><td>: {{ $nomorKwitansi }}</td></tr>
-                <tr><td>Tanggal</td><td>: {{ \Carbon\Carbon::parse($tanggalKwitansi)->format("d M Y") }}</td></tr>
-                <tr><td>Status</td><td>: <span class="status-paid">LUNAS</span></td></tr>
+
+    @include('admin.pdf_templates.partials.header')
+
+    {{-- ─── HEADLINE ─── ─── ─── ─── ─── ─── ─── ─── --}}
+    <div class="main">
+        <div class="headline">
+            <h1>KWITANSI</h1>
+            <table class="headline-info">
+                <tr><td class="lbl">No. Kwitansi</td><td class="sep">:</td><td class="val">{{ $nomorKwitansi }}</td></tr>
+                <tr><td class="lbl">Tanggal</td><td class="sep">:</td><td class="val">{{ \Carbon\Carbon::parse($tanggalKwitansi)->format('d M Y') }}</td></tr>
+                <tr><td class="lbl">Status</td><td class="sep">:</td><td class="val"><span class="status-lunas">LUNAS</span></td></tr>
             </table>
         </div>
-    </div>
-    <div class="card">
-        <div class="card-title">INFORMASI PEMBAYARAN</div>
-        <table class="detail-table">
-            <tr><td>Nama Event</td><td>: {{ $event->nama_event }}</td></tr>
-            <tr><td>Klien</td><td>: {{ $event->client->name ?? '-' }}</td></tr>
-            <tr><td>Jenis Pembayaran</td><td>: <span class="badge-payment-type">{{ $jenisPembayaranLabel }}</span></td></tr>
-            <tr><td>No. Invoice</td><td>: {{ $invoice->nomor_invoice ?? '-' }}</td></tr>
-        </table>
-    </div>
-    <div class="amount-box">
-        <div class="amount-label">Telah Diterima Sejumlah</div>
-        <div class="amount-value">Rp {{ number_format($nominal, 0, ',', '.') }}</div>
-        <div class="amount-terbilang">{{ $terbilang ?? '' }}</div>
-    </div>
-    <div class="signature-area clearfix">
-        <div class="signature-left">
-            <div class="signature-label">Mengetahui,</div>
-            <div class="signature-space"></div>
-            <div class="signature-label">({{ $companyName ?? 'Alpha Organizer' }})</div>
+
+        {{-- ─── INFO ─── ─── ─── ─── ─── ─── ─── ─── --}}
+        <div class="card">
+            <div class="card-title">Informasi Pembayaran</div>
+            <table class="info-tbl">
+                <tr><td class="lbl">No. Invoice</td><td class="sep">:</td><td class="val">{{ $invoice->nomor_invoice ?? '-' }}</td></tr>
+                <tr><td class="lbl">Nama Event</td><td class="sep">:</td><td class="val">{{ $event->nama_event ?? '-' }}</td></tr>
+                <tr><td class="lbl">Klien</td><td class="sep">:</td><td class="val">{{ $event->client->name ?? '-' }}</td></tr>
+                <tr><td class="lbl">Pembayaran</td><td class="sep">:</td><td class="val">{{ $jenisPembayaranLabel }}</td></tr>
+            </table>
         </div>
-        <div class="signature-right">
-            <div class="signature-label">Hormat Kami,</div>
-            <div class="signature-space"></div>
-            <div class="signature-label">({{ $event->client->name ?? 'Client' }})</div>
+
+        {{-- ─── AMOUNT ─── ─── ─── ─── ─── ─── ─── ─── --}}
+        <div class="amount-box">
+            <div class="amount-label">Telah Diterima Sejumlah</div>
+            <div class="amount-value">Rp {{ number_format($nominal, 0, ',', '.') }}</div>
+            <div class="amount-terbilang">{{ $terbilang ?? '' }}</div>
+        </div>
+
+        {{-- ─── SIGNATURE ─── ─── ─── ─── ─── ─── ─── ─── --}}
+        <div class="signature-area">
+            <div class="signature-box">
+                <div class="signature-label">Hormat Kami,</div>
+                <div class="signature-space" style="height:44px;"></div>
+                @include('admin.pdf_templates.partials.signature_qr')
+                <div class="signature-name">{{ $companyName ?? 'Alpha Organizer' }}</div>
+            </div>
+        </div>
+
+        {{-- ─── FOOTER ─── ─── ─── ─── ─── ─── ─── ─── --}}
+        <div class="footer">
+            @php
+                $footerEmail = 'alphaorganizer1209@gmail.com';
+                $footerPhone = '+62 822-3318-1883';
+                $footerAddress = 'Jl.Air Dingin No.25 Kec.Koto Tangah, Kota Padang';
+            @endphp
+            <strong>{{ $companyName ?? 'Alpha Organizer' }}</strong><br>
+            {{ $footerEmail }} | {{ $footerPhone }}<br>
+            {{ $footerAddress }}
         </div>
     </div>
-    <div class="footer">
-        <strong>{{ $companyName ?? 'Alpha Organizer' }}</strong><br>
-        {{ $companyAddress ?? '' }}<br>
-        Telp: {{ $companyPhone ?? '' }} | Email: {{ $companyEmail ?? '' }}
-    </div>
+
+
 </body>
 </html>

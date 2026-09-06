@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Anggaran (RAB)')
 @section('page-title', 'Anggaran (RAB)')
@@ -22,6 +22,11 @@
         <button class="btn btn-primary" onclick="openAddRab()">
             <i class="fas fa-plus"></i> Tambah Item
         </button>
+        <a href="{{ route('admin.document_builder.index', ['event_id' => $selectedEvent->id, 'jenis_dokumen' => 'rab']) }}"
+           class="btn btn-outline"
+           style="border-color:#14b8a6; color:#14b8a6;">
+            <i class="fas fa-file-invoice"></i> Generate RAB
+        </a>
         @endif
     </div>
 </div>
@@ -35,6 +40,26 @@
     </div>
 </div>
 @else
+
+{{-- ── Kebutuhan Event dari Client (Read Only) ── --}}
+<div style="margin-bottom:20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden;">
+    <div style="display:flex; align-items:center; gap:10px; padding:14px 20px; background:#fff; border-bottom:1px solid #e2e8f0;">
+        <div style="width:34px; height:34px; background:#eff6ff; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#3b82f6; font-size:15px; flex-shrink:0;">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <div>
+            <div style="font-size:14px; font-weight:700; color:#0f172a; line-height:1.2;">Kebutuhan Event dari Client</div>
+            <div style="font-size:12px; color:#94a3b8; margin-top:1px;">Informasi ini diisi oleh client saat mengajukan event &mdash; hanya baca.</div>
+        </div>
+    </div>
+    <div style="padding:16px 20px;">
+        @if(!empty($selectedEvent->detail_kebutuhan))
+            <div style="font-size:13.5px; color:#334155; line-height:1.75; white-space:pre-wrap;">{{ $selectedEvent->detail_kebutuhan }}</div>
+        @else
+            <div style="font-size:13px; color:#94a3b8; font-style:italic;">Belum ada kebutuhan tambahan dari client.</div>
+        @endif
+    </div>
+</div>
 
 {{-- Summary Cards --}}
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
@@ -146,8 +171,8 @@
                             <td style="font-weight:600;">Fee EO</td>
                             <td>
                                 <div class="form-check form-switch" style="display:flex; align-items:center; gap:8px; margin:0; padding:0; min-height:auto;">
-                                            <input type="hidden" name="fee_enabled" value="0">
-                                            <input class="form-check-input" type="checkbox" role="switch"
+                                    <input type="hidden" name="fee_enabled" value="0">
+                                    <input class="form-check-input" type="checkbox" role="switch"
                                            id="fee_enabled" name="fee_enabled" value="1"
                                            style="cursor:pointer; width:40px; height:22px; margin:0;"
                                            {{ $additionalDetail && $additionalDetail->fee_enabled ? 'checked' : '' }}
@@ -163,18 +188,26 @@
                                        value="{{ $additionalDetail?->fee_percent ?? 10 }}"
                                        min="0" max="100" step="0.01"
                                        {{ $additionalDetail && $additionalDetail->fee_enabled ? '' : 'disabled' }}
-                                       oninput="hitungRincian()">
+                                       oninput="onPercentChange('fee')">
                             </td>
                             <td>
-                                <span id="fee_nominal" style="font-weight:600; color:#0f766e;">Rp 0</span>
+                                {{-- Fee EO: nominal read-only (dihitung otomatis dari %) --}}
+                                <input type="number" name="fee_nominal" id="fee_nominal_input"
+                                       class="form-input" style="width:120px; padding:6px 10px;"
+                                       placeholder="Otomatis"
+                                       value="{{ $additionalDetail && $additionalDetail->fee_nominal !== null ? (int)$additionalDetail->fee_nominal : '' }}"
+                                       min="0" step="1"
+                                       {{ $additionalDetail && $additionalDetail->fee_enabled ? '' : 'disabled' }}
+                                       oninput="onNominalChange('fee')">
                             </td>
                         </tr>
                         {{-- PPN --}}
                         <tr>
                             <td style="font-weight:600;">PPN</td>
                             <td>
-                                <div class="form-check form-switch" style="display:flex; align-items:center; gap:8px; margin:0; padding:0; min-height:auto;">                                            <input type="hidden" name="ppn_enabled" value="0">
-                                            <input class="form-check-input" type="checkbox" role="switch"
+                                <div class="form-check form-switch" style="display:flex; align-items:center; gap:8px; margin:0; padding:0; min-height:auto;">
+                                    <input type="hidden" name="ppn_enabled" value="0">
+                                    <input class="form-check-input" type="checkbox" role="switch"
                                            id="ppn_enabled" name="ppn_enabled" value="1"
                                            style="cursor:pointer; width:40px; height:22px; margin:0;"
                                            {{ $additionalDetail && $additionalDetail->ppn_enabled ? 'checked' : '' }}
@@ -190,18 +223,25 @@
                                        value="{{ $additionalDetail?->ppn_percent ?? 11 }}"
                                        min="0" max="100" step="0.01"
                                        {{ $additionalDetail && $additionalDetail->ppn_enabled ? '' : 'disabled' }}
-                                       oninput="hitungRincian()">
+                                       oninput="onPercentChange('ppn')">
                             </td>
                             <td>
-                                <span id="ppn_nominal" style="font-weight:600; color:#0f766e;">Rp 0</span>
+                                <input type="number" name="ppn_nominal" id="ppn_nominal_input"
+                                       class="form-input" style="width:120px; padding:6px 10px;"
+                                       placeholder="Otomatis"
+                                       value="{{ $additionalDetail && $additionalDetail->ppn_nominal !== null ? (int)$additionalDetail->ppn_nominal : '' }}"
+                                       min="0" step="1"
+                                       {{ $additionalDetail && $additionalDetail->ppn_enabled ? '' : 'disabled' }}
+                                       oninput="onNominalChange('ppn')">
                             </td>
                         </tr>
                         {{-- PPh --}}
                         <tr>
                             <td style="font-weight:600;">PPh</td>
                             <td>
-                                <div class="form-check form-switch" style="display:flex; align-items:center; gap:8px; margin:0; padding:0; min-height:auto;">                                            <input type="hidden" name="pph_enabled" value="0">
-                                            <input class="form-check-input" type="checkbox" role="switch"
+                                <div class="form-check form-switch" style="display:flex; align-items:center; gap:8px; margin:0; padding:0; min-height:auto;">
+                                    <input type="hidden" name="pph_enabled" value="0">
+                                    <input class="form-check-input" type="checkbox" role="switch"
                                            id="pph_enabled" name="pph_enabled" value="1"
                                            style="cursor:pointer; width:40px; height:22px; margin:0;"
                                            {{ $additionalDetail && $additionalDetail->pph_enabled ? 'checked' : '' }}
@@ -217,10 +257,16 @@
                                        value="{{ $additionalDetail?->pph_percent ?? 2 }}"
                                        min="0" max="100" step="0.01"
                                        {{ $additionalDetail && $additionalDetail->pph_enabled ? '' : 'disabled' }}
-                                       oninput="hitungRincian()">
+                                       oninput="onPercentChange('pph')">
                             </td>
                             <td>
-                                <span id="pph_nominal" style="font-weight:600; color:#0f766e;">Rp 0</span>
+                                <input type="number" name="pph_nominal" id="pph_nominal_input"
+                                       class="form-input" style="width:120px; padding:6px 10px;"
+                                       placeholder="Otomatis"
+                                       value="{{ $additionalDetail && $additionalDetail->pph_nominal !== null ? (int)$additionalDetail->pph_nominal : '' }}"
+                                       min="0" step="1"
+                                       {{ $additionalDetail && $additionalDetail->pph_enabled ? '' : 'disabled' }}
+                                       oninput="onNominalChange('pph')">
                             </td>
                         </tr>
                     </tbody>
@@ -241,7 +287,7 @@
         </div>
         <div style="padding:16px 20px;">
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e2e8f0; font-size:14px;">
-                <span style="color:#64748b;">Subtotal Vendor</span>
+                <span style="color:#64748b;">Total</span>
                 <span id="ringkasan_subtotal" style="font-weight:600; color:#0f172a;">Rp {{ number_format($rabItems->sum('subtotal_biaya'), 0, ',', '.') }}</span>
             </div>
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e2e8f0; font-size:14px;">
@@ -249,7 +295,7 @@
                 <span id="ringkasan_fee" style="font-weight:500;">Rp 0</span>
             </div>
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:2px solid #cbd5e1; font-size:14px; font-weight:600;">
-                <span style="color:#0f172a;">DPP</span>
+                <span style="color:#0f172a;">Subtotal</span>
                 <span id="ringkasan_dpp" style="color:#0f172a;">Rp 0</span>
             </div>
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e2e8f0; font-size:14px;">
@@ -258,10 +304,11 @@
             </div>
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:2px solid #0f172a; font-size:14px;">
                 <span style="color:#64748b;">PPh</span>
-                <span id="ringkasan_pph" style="font-weight:500; color:#dc2626;">Rp 0</span>
+                {{-- PPh berwarna hijau karena ditambahkan ke Grandtotal --}}
+                <span id="ringkasan_pph" style="font-weight:500; color:#16a34a;">Rp 0</span>
             </div>
             <div style="display:flex; justify-content:space-between; padding:12px 0 0 0; font-size:16px;">
-                <span style="font-weight:700; color:#0f172a;">TOTAL DIBAYAR KLIEN</span>
+                <span style="font-weight:700; color:#0f172a;">Grandtotal</span>
                 <span id="ringkasan_total" style="font-weight:800; font-size:18px; color:#0f766e;">Rp 0</span>
             </div>
         </div>
@@ -381,12 +428,22 @@ function hitungSubtotal() {
 // Rincian Tambahan Functions
 var subtotalRAB = {{ $rabItems->sum('subtotal_biaya') }};
 
+// Flag untuk mendeteksi apakah admin sudah mengubah nominal secara manual.
+// Jika true, perubahan persentase TIDAK akan menimpa nominal input.
+var manualNominal = {
+    fee: {{ $additionalDetail && $additionalDetail->fee_nominal !== null ? 'true' : 'false' }},
+    ppn: {{ $additionalDetail && $additionalDetail->ppn_nominal !== null ? 'true' : 'false' }},
+    pph: {{ $additionalDetail && $additionalDetail->pph_nominal !== null ? 'true' : 'false' }},
+};
+
 function toggleComponent(type) {
     var enabled = document.getElementById(type + '_enabled').checked;
     var percentInput = document.getElementById(type + '_percent');
+    var nominalInput = document.getElementById(type + '_nominal_input');
     var statusLabel = document.getElementById(type + '_status_label');
 
     percentInput.disabled = !enabled;
+    nominalInput.disabled = !enabled;
 
     if (enabled) {
         statusLabel.innerText = 'AKTIF';
@@ -399,6 +456,46 @@ function toggleComponent(type) {
     hitungRincian();
 }
 
+/**
+ * Dipanggil saat admin mengubah nilai PERSENTASE.
+ * Jika belum ada manual override, hitung ulang nominal otomatis.
+ * Jika sudah ada manual override, biarkan nominal seperti apa adanya.
+ */
+function onPercentChange(type) {
+    if (!manualNominal[type]) {
+        // Tidak ada override manual: hitung ulang nominal dari persentase
+        hitungRincian();
+    } else {
+        // Ada override manual: cukup recalculate ringkasan total saja
+        hitungRincian();
+    }
+}
+
+/**
+ * Dipanggil saat admin mengubah nilai NOMINAL secara manual.
+ * Tandai sebagai manual override agar persentase tidak menimpa.
+ */
+function onNominalChange(type) {
+    var nominalInput = document.getElementById(type + '_nominal_input');
+    if (nominalInput.value === '') {
+        // Input dikosongkan = hapus override manual, kembali ke auto
+        manualNominal[type] = false;
+    } else {
+        manualNominal[type] = true;
+    }
+    hitungRincian();
+}
+
+/**
+ * Fungsi inti: hitung semua nominal dan update Ringkasan Total.
+ *
+ * Rumus:
+ *   Subtotal = Total RAB + Fee EO
+ *   Grandtotal = Subtotal + PPN + PPh
+ *
+ * Jika nominal di-input manual → gunakan nilai tersebut.
+ * Jika nominal dikosongkan → hitung dari persentase.
+ */
 function hitungRincian() {
     var fee_enabled = document.getElementById('fee_enabled').checked;
     var ppn_enabled = document.getElementById('ppn_enabled').checked;
@@ -408,37 +505,64 @@ function hitungRincian() {
     var ppn_pct = parseFloat(document.getElementById('ppn_percent').value) || 0;
     var pph_pct = parseFloat(document.getElementById('pph_percent').value) || 0;
 
-    // Fee EO berdasarkan subtotal vendor
-    var fee_nominal = fee_enabled ? (subtotalRAB * fee_pct / 100) : 0;
-
-    // DPP = Subtotal Vendor + Fee EO
-    var dpp = subtotalRAB + fee_nominal;
-
-    // PPN dan PPh dihitung dari DPP
-    var ppn_nominal = ppn_enabled ? (dpp * ppn_pct / 100) : 0;
-    var pph_nominal = pph_enabled ? (dpp * pph_pct / 100) : 0;
-
-    // Nominal per komponen (tabel kiri)
-    document.getElementById('fee_nominal').innerText = 'Rp ' + fee_nominal.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
-    document.getElementById('ppn_nominal').innerText = 'Rp ' + ppn_nominal.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
-    document.getElementById('pph_nominal').innerText = 'Rp ' + pph_nominal.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
-
-    // Ringkasan Total (kanan)
-    document.getElementById('ringkasan_fee').innerText = 'Rp ' + fee_nominal.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
+    // ── Fee EO ──────────────────────────────────────────
+    var fee_nominal = 0;
     if (fee_enabled) {
-        document.getElementById('ringkasan_fee').style.color = '#16a34a';
+        var feeInput = document.getElementById('fee_nominal_input');
+        if (manualNominal.fee && feeInput.value !== '') {
+            fee_nominal = parseFloat(feeInput.value) || 0;
+        } else {
+            fee_nominal = subtotalRAB * fee_pct / 100;
+            // Update input supaya admin bisa lihat nilai otomatis
+            feeInput.value = Math.round(fee_nominal);
+        }
     } else {
-        document.getElementById('ringkasan_fee').style.color = '#94a3b8';
+        document.getElementById('fee_nominal_input').value = '';
     }
 
-    document.getElementById('ringkasan_dpp').innerText = 'Rp ' + dpp.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
+    // Subtotal = Total RAB + Fee EO
+    var subtotal = subtotalRAB + fee_nominal;
+
+    // ── PPN ─────────────────────────────────────────────
+    var ppn_nominal = 0;
+    if (ppn_enabled) {
+        var ppnInput = document.getElementById('ppn_nominal_input');
+        if (manualNominal.ppn && ppnInput.value !== '') {
+            ppn_nominal = parseFloat(ppnInput.value) || 0;
+        } else {
+            ppn_nominal = subtotal * ppn_pct / 100;
+            ppnInput.value = Math.round(ppn_nominal);
+        }
+    } else {
+        document.getElementById('ppn_nominal_input').value = '';
+    }
+
+    // ── PPh ─────────────────────────────────────────────
+    var pph_nominal = 0;
+    if (pph_enabled) {
+        var pphInput = document.getElementById('pph_nominal_input');
+        if (manualNominal.pph && pphInput.value !== '') {
+            pph_nominal = parseFloat(pphInput.value) || 0;
+        } else {
+            pph_nominal = subtotal * pph_pct / 100;
+            pphInput.value = Math.round(pph_nominal);
+        }
+    } else {
+        document.getElementById('pph_nominal_input').value = '';
+    }
+
+    // ── Ringkasan Total (kanan) ──────────────────────────
+    document.getElementById('ringkasan_fee').innerText = 'Rp ' + fee_nominal.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
+    document.getElementById('ringkasan_fee').style.color = fee_enabled ? '#16a34a' : '#94a3b8';
+
+    document.getElementById('ringkasan_dpp').innerText = 'Rp ' + subtotal.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
 
     document.getElementById('ringkasan_ppn').innerText = 'Rp ' + ppn_nominal.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
     document.getElementById('ringkasan_pph').innerText = 'Rp ' + pph_nominal.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
 
-    // Total = DPP + PPN - PPh
-    var total = dpp + ppn_nominal - pph_nominal;
-    document.getElementById('ringkasan_total').innerText = 'Rp ' + total.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
+    // Grandtotal = Subtotal + PPN + PPh (PPh DITAMBAHKAN)
+    var grandtotal = subtotal + ppn_nominal + pph_nominal;
+    document.getElementById('ringkasan_total').innerText = 'Rp ' + grandtotal.toLocaleString('id-ID', {minimumFractionDigits:0, maximumFractionDigits:0});
 }
 
 // Initialize on page load

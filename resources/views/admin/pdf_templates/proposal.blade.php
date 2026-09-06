@@ -280,7 +280,9 @@
         <div style="display:table-cell;width:50%;text-align:center;vertical-align:bottom;">
             <div>Padang, {{ now()->format('d F Y') }}</div>
             <div style="margin-top:4px;color:#64748b;">CV. Alpha Multi Organizer</div>
-            <div style="margin-top:60px;border-top:1px solid #1e293b;display:inline-block;padding-top:4px;min-width:140px;">
+            <div style="height:44px;"></div>
+            @include('admin.pdf_templates.partials.signature_qr')
+            <div style="border-top:1px solid #1e293b;display:inline-block;padding-top:4px;min-width:160px;">
                 Direktur
             </div>
         </div>
@@ -298,6 +300,8 @@
     Dokumen ini digenerate otomatis oleh sistem Alpha Organizer pada {{ now()->format('d M Y, H:i') }} WIB.
     Dokumen ini sah tanpa tanda tangan basah jika telah disetujui secara digital.
 </div>
+
+
 
 </body>
 </html>

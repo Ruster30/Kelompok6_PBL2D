@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Surat Penawaran')
 @section('page-title', 'Surat Penawaran')
@@ -14,7 +14,13 @@
     </a>
     <div style="display:flex; gap:10px;" id="action-bar-buttons">
         {{-- Tombol mode VIEW (default) --}}
-        <div id="btn-group-view">
+        <div id="btn-group-view" style="display:flex; gap:10px; align-items:center;">
+            {{-- Tombol Lihat RAB --}}
+            <a href="{{ route('admin.rab.index', ['event_id' => $event->id]) }}"
+               class="btn btn-outline"
+               style="border-color:#14b8a6; color:#14b8a6;">
+                <i class="fas fa-calculator"></i> Lihat RAB
+            </a>
             <a href="{{ route('admin.requests.export-pdf', $event->id) }}"
                class="btn btn-outline" target="_blank">
                 <i class="fas fa-download"></i> Export PDF
@@ -52,29 +58,125 @@
                 Revisi Penawaran
             </button>
         @else
-            {{-- Tombol Edit Surat --}}
-            <button type="button" class="btn btn-outline" id="btn-edit-surat" onclick="toggleEditMode(true)"
-                    style="border-color:#f59e0b; color:#b45309;">
-                <i class="fas fa-pen"></i> Edit Surat
-            </button>
-            @if(!$event->latestProposal)
-            <form action="{{ route('admin.requests.kirim-penawaran', $event->id) }}" method="POST" style="display:inline;" id="form-kirim-penawaran">
-                @csrf
-                <input type="hidden" name="nomor_surat" value="{{ $nomorSurat }}">
-                <input type="hidden" name="tanggal_surat" value="{{ now()->format('Y-m-d') }}">
-                <button type="submit" class="btn btn-primary"
-                        onclick="return confirmKirimPenawaran(this.form)">
-                    <i class="fas fa-paper-plane"></i> Kirim Penawaran
+            @if($usesDdmsActive && !$canEditSurat)
+                {{-- DDMS active & status tidak mengizinkan edit --}}
+                <button type="button"
+                        class="btn btn-outline"
+                        disabled
+                        style="border-color:#cbd5e1;
+                            color:#94a3b8;
+                            background:#f8fafc;
+                            cursor:not-allowed;"
+                        title="Edit Surat dikunci oleh DDMS pada status dokumen {{ $ddmsStatusLabel ?? '-' }}. Gunakan DDMS untuk memperbarui.">
+                    <i class="fas fa-lock"></i>
+                    Edit Surat
                 </button>
-            </form>
             @else
-            <form action="{{ route('admin.requests.kirim-revisi-penawaran', $event->id) }}" method="POST" style="display:inline;">
-                @csrf
-                <button type="submit" class="btn btn-primary"
-                        onclick="return swalSend(this.form, 'Kirim Revisi Penawaran?', 'Revisi penawaran akan dikirim ke client.')">
-                    <i class="fas fa-sync-alt"></i> Revisi Penawaran
+                {{-- Tombol Edit Surat --}}
+                <button type="button" class="btn btn-outline" id="btn-edit-surat" onclick="toggleEditMode(true)"
+                        style="border-color:#f59e0b; color:#b45309;">
+                    <i class="fas fa-pen"></i> Edit Surat
                 </button>
-            </form>
+            @endif
+
+            @if(!$event->latestProposal)
+                {{-- ── PEMBUATAN AWAL (v1) ── --}}
+                @php
+                    $ddmsMode = $ddmsEnabled && $ddmsDefaultPenawaran;
+                @endphp
+                <div style="display:inline-flex; align-items:center; gap:6px; margin-right:10px; vertical-align:middle;">
+                    <input type="checkbox" name="uses_ddms_toggle" id="chk-penawaran-ddms" value="1"
+                           {{ $ddmsMode ? 'checked' : '' }}
+                           {{ $ddmsEnabled ? '' : 'disabled' }}
+                           onchange="toggleDdmsEntry(this.checked)"
+                           style="width:15px; height:15px; accent-color:#14b8a6; cursor:pointer;">
+                    <label for="chk-penawaran-ddms" style="font-size:12px; color:#334155; cursor:{{ $ddmsEnabled ? 'pointer' : 'not-allowed' }};">
+                        Gunakan DDMS untuk Surat Penawaran
+                    </label>
+                </div>
+
+                {{-- NON-DDMS: Kirim Penawaran langsung ke Client (nomor dari form) --}}
+                <form action="{{ route('admin.requests.kirim-penawaran', $event->id) }}" method="POST"
+                      style="{{ $ddmsMode ? 'display:none;' : 'display:inline;' }}" id="form-kirim-penawaran">
+                    @csrf
+                    <input type="hidden" name="nomor_surat" value="{{ $nomorSurat }}">
+                    <input type="hidden" name="tanggal_surat" value="{{ now()->format('Y-m-d') }}">
+                    <input type="hidden" name="uses_ddms" value="0">
+                    <button type="submit" class="btn btn-primary"
+                            onclick="return confirmKirimPenawaran(this.form)">
+                        <i class="fas fa-paper-plane"></i> Kirim Penawaran
+                    </button>
+                </form>
+
+                {{-- DDMS: Masuk ke DDMS (buat Proposal + Document draft).
+                     Nomor surat TIDAK dikirim dari form — dikelola via Document Builder. --}}
+                <form action="{{ route('admin.requests.masuk-ke-ddms', $event->id) }}" method="POST"
+                      style="{{ $ddmsMode ? 'display:inline;' : 'display:none;' }}" id="form-masuk-ddms">
+                    @csrf
+                    <input type="hidden" name="uses_ddms" value="1">
+                    <input type="hidden" name="tanggal_surat" value="{{ now()->format('Y-m-d') }}">
+                    <button type="submit" class="btn btn-primary"
+                            style="background:#14b8a6; border-color:#14b8a6;"
+                            title="Nomor dokumen dikelola melalui Document Builder (DDMS).">
+                        <i class="fas fa-layer-group"></i> Masuk ke DDMS
+                    </button>
+                </form>
+            @else
+                {{-- ── PROPOSAL SUDAH ADA ── --}}
+                @if($usesDdmsActive)
+                    {{-- Banner status & nomor dokumen DDMS (sumber: DocumentNumbering) --}}
+                    <div style="display:inline-block; vertical-align:middle; margin-right:10px; padding:6px 12px; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; font-size:12px; color:#065f46;">
+                        <strong>DDMS: AKTIF</strong><br>
+                        Status: {{ $ddmsStatusLabel ?? '-' }}<br>
+                        Nomor Dokumen: {{ $ddmsDocNumber ?? 'Belum diatur (atur di Document Builder)' }}
+                    </div>
+
+                    {{-- Buka DDMS: navigasi ke Document Builder existing --}}
+                    <a href="{{ route('admin.document_builder.preview', $ddmsDocument->id) }}"
+                       class="btn btn-outline" style="border-color:#14b8a6; color:#0d9488;">
+                        <i class="fas fa-external-link-alt"></i> Buka DDMS
+                    </a>
+
+                    @if($ddmsApproved)
+                        {{-- approved/published → Kirim ke Client AKTIF --}}
+                        <form action="{{ route('admin.requests.kirim-revisi-penawaran', $event->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            <input type="hidden" name="uses_ddms" value="1">
+                            <button type="submit" class="btn btn-primary"
+                                    onclick="return confirmKirimPenawaran(this.form)">
+                                <i class="fas fa-paper-plane"></i> Kirim ke Client
+                            </button>
+                        </form>
+                        {{-- Masuk ke DDMS (untuk membuat revisi v2 → Document B) --}}
+                        <form action="{{ route('admin.requests.masuk-ke-ddms', $event->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            <input type="hidden" name="uses_ddms" value="1">
+                            <input type="hidden" name="tanggal_surat" value="{{ now()->format('Y-m-d') }}">
+                            <button type="submit" class="btn btn-outline"
+                                    style="border-color:#14b8a6; color:#0d9488;"
+                                    title="Nomor dokumen dikelola melalui Document Builder (DDMS).">
+                                <i class="fas fa-layer-group"></i> Masuk ke DDMS (Revisi)
+                            </button>
+                        </form>
+                    @else
+                        {{-- Document belum approved → Kirim ke Client DISABLED --}}
+                        <button type="button" class="btn btn-primary" disabled data-ddms-locked
+                                style="background:#cbd5e1; border-color:#cbd5e1; color:#64748b; cursor:not-allowed;"
+                                title="Surat Penawaran dapat dikirim ke Client setelah Document DDMS disetujui Director.">
+                            <i class="fas fa-paper-plane"></i> Kirim ke Client
+                        </button>
+                    @endif
+                @else
+                    {{-- NON-DDMS (revisi) ── --}}
+                    <form action="{{ route('admin.requests.kirim-revisi-penawaran', $event->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        <input type="hidden" name="uses_ddms" value="0">
+                        <button type="submit" class="btn btn-primary"
+                                onclick="return swalSend(this.form, 'Kirim Revisi Penawaran?', 'Revisi penawaran akan dikirim ke client.')">
+                            <i class="fas fa-sync-alt"></i> Revisi Penawaran
+                        </button>
+                    </form>
+                @endif
             @endif
         @endif
         </div>
@@ -100,23 +202,45 @@
     @csrf
     @method('PATCH')
 
+{{-- ── Kebutuhan Event dari Client (Read Only) ── --}}
+<div style="margin-bottom:20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden;">
+    <div style="display:flex; align-items:center; gap:10px; padding:14px 20px; background:#fff; border-bottom:1px solid #e2e8f0;">
+        <div style="width:34px; height:34px; background:#eff6ff; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#3b82f6; font-size:15px; flex-shrink:0;">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <div>
+            <div style="font-size:14px; font-weight:700; color:#0f172a; line-height:1.2;">Kebutuhan Event dari Client</div>
+            <div style="font-size:12px; color:#94a3b8; margin-top:1px;">Informasi ini diisi oleh client saat mengajukan event &mdash; hanya baca.</div>
+        </div>
+    </div>
+    <div style="padding:16px 20px;">
+        @if(!empty($event->detail_kebutuhan))
+            <div style="font-size:13.5px; color:#334155; line-height:1.75; white-space:pre-wrap;">{{ $event->detail_kebutuhan }}</div>
+        @else
+            <div style="font-size:13px; color:#94a3b8; font-style:italic;">Belum ada kebutuhan tambahan dari client.</div>
+        @endif
+    </div>
+</div>
+
 {{-- Preview Surat --}}
 <div style="background:#f1f5f9; padding:24px; border-radius:12px;">
 <div id="surat-preview" style="background:white; max-width:820px; margin:0 auto; padding:0; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.08); font-family:'Times New Roman',serif; font-size:13px; line-height:1.7; color:#111; overflow:hidden;">
+@if ($usesDdmsActive && $ddmsDocument && $ddmsDocument->isPublished())
+    {{-- DDMS Published: tampilkan PDF final dari Document.file_path --}}
+    {{-- Gunakan route existing: admin.documents.{id}/preview --}}
+    {{-- Route ini serve Document.file_path sebagai PDF inline --}}
+    {{-- Jangan generate PDF baru --}}
+    {{-- Tampilkan PDF identik dengan Document Builder --}}
+    {{-- Embed PDF menggunakan iframe --}}
+    <iframe
+        src="{{ route('admin.documents.preview', $ddmsDocument->id) }}"
+        style="width:100%;height:600px;border:none;"
+        title="Preview Surat Penawaran DDMS Published"
+    ></iframe>
+@else
 
     {{-- KOP SURAT (tidak dapat diedit - template tetap) --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:20px 40px 14px;">
-        <div>
-            <div style="font-size:30px; font-weight:900; color:#1a6fa8; letter-spacing:3px; font-family:'Arial Black',Arial,sans-serif; line-height:1;">ALPHA</div>
-            <div style="font-size:10px; letter-spacing:5px; color:#1a6fa8; font-family:Arial,sans-serif; font-weight:700; margin-top:2px;">ORGANIZER</div>
-        </div>
-        <div style="text-align:right; font-size:11.5px; font-family:Arial,sans-serif; color:#333; line-height:1.9;">
-            <div>+62 822-3318-1883</div>
-            <div>alphaorganizer1209@gmail.com</div>
-            <div>Jl.Air Dingin No.25 Kec.Koto Tangah, Kota Padang</div>
-        </div>
-    </div>
-    <div style="height:3px; background:#1a6fa8; margin:0;"></div>
+    @include('admin.pdf_templates.partials.header_web')
 
     {{-- BADAN SURAT --}}
     <div style="padding:24px 40px 40px;">
@@ -130,12 +254,18 @@
                 <td style="border:none; padding:1px 8px 1px 4px;">:</td>
                 <td style="border:none; padding:1px 4px;">
                     {{-- VIEW --}}
-                    <span class="field-view" id="view-nomor_surat">{{ $nomorSurat }}</span>
+                    <span class="field-view" id="view-nomor_surat">{{ $usesDdmsActive ? ($ddmsDocNumber ?? $nomorSurat) : $nomorSurat }}</span>
                     {{-- EDIT --}}
-                    <input class="field-edit surat-input" id="edit-nomor_surat"
-                           type="text" name="nomor_surat_override"
-                           value="{{ $nomorSurat }}"
-                           style="display:none;">
+                    @if($usesDdmsActive)
+                        <span class="field-edit" style="display:none; font-size:12px; color:#0d9488;">
+                            Nomor dokumen dikelola melalui Document Builder (DDMS aktif).
+                        </span>
+                    @else
+                        <input class="field-edit surat-input" id="edit-nomor_surat"
+                               type="text" name="nomor_surat_override"
+                               value="{{ $nomorSurat }}"
+                               style="display:none;">
+                    @endif
                 </td>
             </tr>
             <tr>
@@ -168,7 +298,7 @@
         {{-- Kepada (tidak dapat diedit) --}}
         <div style="margin-bottom:8px;">
             Kepada Yth<br>
-            Kepala Cabang Dealer Mobil <strong>{{ $event->client->name ?? 'Bapak/Ibu Client' }}</strong>
+            <strong>{{ $event->client->name ?? 'Bapak/Ibu Client' }}</strong>
         </div>
         <div style="margin-bottom:16px;">
             Di,<br>
@@ -178,11 +308,10 @@
         <hr style="border:none; border-top:0.5px solid #bbb; margin:10px 0 14px;">
 
         {{-- Pembuka (tidak dapat diedit - template tetap) --}}
-        <p style="text-align:justify; margin-bottom:14px;">
+        <p style="text-align:justify;margin-bottom:14px;">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dengan hormat, kami dari <strong>CV. Alpha Multi Organizer</strong>
-            Perusahaan yang bergerak di bidang Event Organizer. Dengan ini menawarkan kegiatan pameran
-            pameran otomotif mobil kepada <strong>{{ $event->client->name ?? 'Client' }}</strong>
-            di Basko City Mall Padang, maka dengan ini kami mengajukan surat penawaran <strong>"Special Price"</strong> sebagai berikut :
+            Perusahaan yang bergerak di bidang Event Organizer. Dengan ini menawarkan kegiatan <strong>{{ $event->jenis_event }}</strong> kepada <strong>{{ $event->client->name ?? 'Client' }}</strong>
+            di <strong>{{ $event->lokasi_event ?? '-' }}</strong>, maka dengan ini kami mengajukan surat penawaran <strong>"Special Price"</strong> sebagai berikut :
         </p>
 
         {{-- Rincian --}}
@@ -265,7 +394,11 @@
                             <td style="border:none; padding:2px 3px;">
                                 {{-- VIEW --}}
                                 <span class="field-view" id="view-price">
-                                    <strong>{{ $event->rentang_anggaran ?? '-' }} <small>(Exclude Ppn &amp; Pph)*</small></strong><br>
+                                    <strong>{{ $event->rentang_anggaran ?? '-' }}
+                                    @if($event->include_ppn ?? true)
+                                        <small>(Include PPN &amp; PPh)*</small>
+                                    @endif
+                                    </strong><br>
                                     @if($event->terbilang ?? null)
                                     <small>({{ $event->terbilang }})</small>
                                     @endif
@@ -276,7 +409,14 @@
                                            value="{{ $event->rentang_anggaran }}"
                                            placeholder="cth: Rp 15.000.000,-"
                                            style="width:200px;">
-                                    <small style="display:block; margin-top:4px; color:#64748b;">(Exclude Ppn &amp; Pph)*</small>
+                                    {{-- Checkbox Include PPN: hidden + checkbox agar false pun terkirim --}}
+                                    <input type="hidden" name="include_ppn" value="0">
+                                    <label style="display:flex; align-items:center; gap:6px; margin-top:6px; font-size:12px; color:#334155; cursor:pointer; font-family:Arial,sans-serif;">
+                                        <input type="checkbox" name="include_ppn" value="1" id="chk-include-ppn"
+                                               {{ ($event->include_ppn ?? true) ? 'checked' : '' }}
+                                               style="width:14px; height:14px; accent-color:#1a6fa8; cursor:pointer;">
+                                        Include PPN &amp; PPh
+                                    </label>
                                     <input type="text" name="terbilang" class="surat-input"
                                            value="{{ $event->terbilang }}"
                                            placeholder="Terbilang (opsional)"
@@ -295,41 +435,37 @@
                 <td style="border:none; padding:3px 4px; vertical-align:top;">
                     {{-- VIEW --}}
                     <span class="field-view" id="view-detail_kebutuhan">
-                        @if($event->detail_kebutuhan ?? null)
-                            {!! nl2br(e($event->detail_kebutuhan)) !!}
-                        @else
-                            1. Manajemen acara penuh (Full Event Management)<br>
-                            2. Koordinasi vendor dan logistik<br>
-                            3. Setup dan dekorasi standar sesuai tema<br>
-                            4. Tim lapangan profesional selama acara berlangsung
-                        @endif
                     </span>
                     {{-- EDIT --}}
                     <textarea class="field-edit surat-input" id="edit-detail_kebutuhan"
                               name="detail_kebutuhan"
                               rows="5"
                               style="display:none; width:100%; resize:vertical;"
-                              placeholder="Tulis fasilitas/kebutuhan (satu per baris)...">{{ $event->detail_kebutuhan }}</textarea>
+                              placeholder="Tulis fasilitas/kebutuhan (satu per baris)..."></textarea>
                 </td>
             </tr>
         </table>
 
         {{-- Ketentuan lain (tidak dapat diedit - template tetap) --}}
-        <div style="font-weight:700; margin-bottom:6px;">V.&nbsp;&nbsp;Ketentuan lain :</div>
-        <ol style="padding-left:22px; margin-bottom:14px; list-style-type:lower-alpha; font-size:13px;">
+        <div style="font-weight:700; margin-bottom:6px; display:flex; gap: 11px;">
+            <div style="border:none; padding:3px 4px; font-weight:700; vertical-align:top;">V.</div>
+            <div style="border:none; padding:3px 4px; vertical-align:top;">Ketentuan lain :</div>
+            <div style="border:none; padding:3px 4px; vertical-align:top; text-align:center;">:</div>
+        </div>
+        <ol style="padding-left:48px; margin-bottom:14px; list-style-type:lower-alpha; font-size:13px;">
             <li style="margin-bottom:5px; text-align:justify;">Loading In dan Out Barang Jam 22.00 wib sd selesai dan wajib diberitahukan kepada manajemen Alpha Organizer.</li>
             <li style="margin-bottom:5px; text-align:justify;">Segala bentuk izin dan pajak diurus sendiri oleh penyewa.</li>
             <li style="margin-bottom:5px; text-align:justify;">Pembayaran dilakukan melalui Transfer <strong>Bank BRI A.n CV ALPHA MULTI ORGANIZER No Rek. 005801006983568</strong>.</li>
             <li style="margin-bottom:5px; text-align:justify;">Biaya yang tersebut diatas belum termasuk biaya SPSI (jika ada)</li>
-            <li style="margin-bottom:5px; text-align:justify;">Pemakai Jasa Penyelenggara wajib mematuhi semua peraturan dan tata tertib yang berlaku di Basko City Mall Padang.</li>
+            <li style="margin-bottom:5px; text-align:justify;">Pemakai Jasa Penyelenggara wajib mematuhi semua peraturan dan tata tertib yang berlaku di {{ $event->lokasi_event ?? '-' }}.</li>
             <li style="margin-bottom:5px; text-align:justify;">Pemakai Jasa Penyelenggara wajib mengasuransikan produknya selama pameran berlangsung. Kerusakan dan kehilangan barang di saat pameran yang diakibatkan oleh human error dan forced majure bukan tanggung jawab dari pemakai jasa penyelenggara.</li>
         </ol>
 
         {{-- Penutup (tidak dapat diedit) --}}
-        <p style="text-align:justify; margin-top:14px;">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Apabila ada hal-hal yang perlu dipertanyakan, silahkan menghubungi Sdra. Fajar Viliano
-            0895-4013-00022 atau melalui email : alphaorganizer1209@gmail.com. Demikianlah surat
-            penawaran ini kami buat, Atas perhatian dan kerjasamanya kami ucapkan terimakasih.
+        <p style="text-align:justify;margin-bottom:14px;">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dengan hormat, kami dari <strong>CV. Alpha Multi Organizer</strong>
+            Perusahaan yang bergerak di bidang Event Organizer. Dengan ini menawarkan kegiatan <strong>{{ $event->jenis_event }}</strong> kepada <strong>{{ $event->client->name ?? 'Client' }}</strong>
+            di <strong>{{ $event->lokasi_event ?? '-' }}</strong>, maka dengan ini kami mengajukan surat penawaran <strong>"Special Price"</strong> sebagai berikut :
         </p>
 
         {{-- Tanda Tangan (tidak dapat diedit) --}}
@@ -342,7 +478,8 @@
         </div>
 
     </div>{{-- /badan-surat --}}
-</div>{{-- /surat-preview --}}
+</div>@endif
+{{-- /surat-preview --}}
 </div>
 
 </form>{{-- /form-edit-surat --}}
@@ -351,7 +488,13 @@
 
 @push('styles')
 <style>
-/* â”€â”€ Input dalam surat â”€â”€ */
+/* ─── HEADER ─── */
+.logo-img { width: 130px; }
+.contact-col { text-align: right; font-size: 11.5px; line-height: 2.1; color: #333; font-family: Arial, sans-serif; }
+.divider-thick { margin-top: 7px; border-top: 4px solid #00b8b0; }
+.divider-thin  { border-top: 1.5px solid #00b8b0; margin-top: 2px; }
+
+/* ── Input dalam surat ── */
 .surat-input {
     font-family: 'Times New Roman', serif;
     font-size: 13px;
@@ -457,6 +600,17 @@ function confirmKirimPenawaran(formEl) {
  * Toggle mode view â†” edit pada halaman Preview Surat Penawaran.
  * Hanya mengubah visibilitas elemen â€” desain surat tidak berubah.
  */
+/**
+ * Toggle antara form "Kirim Penawaran" (NON-DDMS) dan "Masuk ke DDMS"
+ * (DDMS) pada pembuatan awal Surat Penawaran, mengikuti checkbox.
+ */
+function toggleDdmsEntry(checked) {
+    const fKirim = document.getElementById('form-kirim-penawaran');
+    const fDdms  = document.getElementById('form-masuk-ddms');
+    if (fKirim) fKirim.style.display = checked ? 'none' : 'inline';
+    if (fDdms)  fDdms.style.display  = checked ? 'inline' : 'none';
+}
+
 function toggleEditMode(editOn) {
     const viewEls   = document.querySelectorAll('.field-view');
     const editEls   = document.querySelectorAll('.field-edit');

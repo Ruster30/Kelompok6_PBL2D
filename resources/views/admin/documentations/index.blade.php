@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Pusat Dokumentasi')
 @section('page-title', 'Pusat Dokumentasi')
@@ -78,7 +78,7 @@
         Belum ada file yang diunggah untuk dokumentasi ini.
     </div>
     @else
-    <div class="table-responsive-wrap"><table>
+    <div class="table-responsive-wrap card-view-mobile"><table>
         <thead>
             <tr>
                 <th>File</th>

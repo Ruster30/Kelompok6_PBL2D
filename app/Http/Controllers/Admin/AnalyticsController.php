@@ -22,9 +22,15 @@ class AnalyticsController extends Controller
             'month' => $request->input('month'),
             'status_event' => $request->input('status_event'),
             'jenis_event' => $request->input('jenis_event'),
+            'period' => $request->input('period', 'all'),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
         ];
 
         $data = $this->analyticsService->getAnalyticsData($filters);
+        $data['activePeriod'] = $filters['period'];
+        $data['startDate'] = $filters['start_date'];
+        $data['endDate'] = $filters['end_date'];
         
         return view('admin.analytics.index', $data);
     }
@@ -36,14 +42,20 @@ class AnalyticsController extends Controller
             'month' => $request->input('month'),
             'status_event' => $request->input('status_event'),
             'jenis_event' => $request->input('jenis_event'),
+            'period' => $request->input('period', 'all'),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
         ];
 
         $data = $this->analyticsService->getAnalyticsData($filters);
+        $data['activePeriod'] = $filters['period'];
+        $data['startDate'] = $filters['start_date'];
+        $data['endDate'] = $filters['end_date'];
         
         // Add company information
-        $data['companyName'] = 'Your Company Name'; // You can fetch from settings
-        $data['companyLogo'] = public_path('images/logo.png'); // Adjust path as needed
-        $data['filters'] = $filters; // Add filters to data
+        $data['companyName'] = 'Your Company Name';
+        $data['companyLogo'] = public_path('images/logo.png');
+        $data['filters'] = $filters;
         
         $pdf = Pdf::loadView('admin.analytics.pdf', $data);
         $pdf->setPaper('A4', 'landscape'); // Changed from 'portrait' to 'landscape' to match CSS
@@ -62,6 +74,9 @@ class AnalyticsController extends Controller
             'month' => $request->input('month'),
             'status_event' => $request->input('status_event'),
             'jenis_event' => $request->input('jenis_event'),
+            'period' => $request->input('period', 'all'),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
         ];
 
         $filename = 'Laporan-Analitik-' . $filters['year'] . 

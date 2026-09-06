@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    VENDOR — vendor.css
    Responsive styles for Vendor dashboard
    ============================================================ */
@@ -6,9 +6,16 @@
 :root {
     --vendor-teal: #2DD4BF;
     --vendor-teal-hover: #1aaa99;
-    --vendor-body-bg: #f4f6f9;
-    --vendor-card-radius: 12px;
-    --vendor-text-muted: #8a9bb0;
+    --vendor-body-bg: #f5f6fa;
+    --vendor-card-radius: 16px;
+    --vendor-text-muted: #94a3b8;
+    /* Design system aliases for inline styles */
+    --teal: #2DD4BF;
+    --teal-light: rgba(45, 212, 191, 0.10);
+    --teal-hover: #1aaa99;
+    --card-radius: 16px;
+    --text-muted-custom: #94a3b8;
+    --body-bg: #f5f6fa;
 }
 
 .sidebar {
@@ -38,11 +45,11 @@ body {
 .stat-card {
     background: #fff;
     border: 1px solid #e8edf5;
-    border-radius: var(--vendor-card-radius);
+    border-radius: 16px;
     padding: 24px;
     display: flex;
-    align-items: center;
-    gap: 16px;
+    flex-direction: column;
+    gap: 14px;
     transition: box-shadow 0.2s;
 }
 
@@ -80,7 +87,7 @@ body {
 .section-card {
     background: #fff;
     border: 1px solid #e8edf5;
-    border-radius: var(--vendor-card-radius);
+    border-radius: 16px;
     overflow: hidden;
 }
 
@@ -310,4 +317,11 @@ body {
         padding: 8px 10px !important;
         white-space: nowrap;
     }
+}
+
+/* ---- Vendor Inline Style Fixes ---- */
+.vendor-event-title {
+    font-size: 15px;
+    color: #1a2332;
+    margin-bottom: 6px;
 }

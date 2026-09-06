@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Document Builder')
 @section('page-title', 'Document Builder')
@@ -19,7 +19,7 @@
 
 <div class="tab-content">
 
-    {{-- â”€â”€â”€ FORM GENERATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- FORM GENERATE--}}
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:28px 32px;margin-bottom:24px;">
         <h2 style="font-size:17px;font-weight:700;color:#0f172a;margin-bottom:6px;">
             <i class="fas fa-file-alt" style="color:#6366f1;margin-right:6px;"></i>
@@ -136,6 +136,57 @@
                 <input type="hidden" name="has_payment_scheme" id="has_payment_scheme" value="0">
             </div>
 
+            {{-- Upload Denah/Layout (khusus Surat Kontrak) --}}
+            <div id="denahSection" style="display:none; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:20px; margin-bottom:24px;">
+                <h3 style="font-size:15px; font-weight:700; color:#166534; margin-bottom:14px;">
+                    <i class="fas fa-map-marked-alt" style="margin-right:6px;"></i>
+                    Upload Denah / Layout Lokasi
+                </h3>
+                <p style="color:#475569; font-size:13px; margin-bottom:14px;">
+                    Unggah denah atau layout lokasi yang akan ditampilkan pada halaman terakhir PDF Surat Kontrak.
+                </p>
+                <div style="display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:200px;">
+                        <input type="file" id="denahFileInput" accept=".jpg,.jpeg,.png,.webp" class="form-input" style="padding:8px; font-size:13px;">
+                        <div style="margin-top:6px; font-size:11px; color:#94a3b8;">
+                            Format: JPG, JPEG, PNG, WEBP. Maks: 5 MB.
+                        </div>
+                    </div>
+                    <button type="button" id="btnUploadDenah"
+                        style="background:#16a34a; color:#fff; border:none; padding:10px 24px; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;"
+                        onclick="uploadDenah()">
+                        <i class="fas fa-upload"></i> Upload
+                    </button>
+                    <button type="button" id="btnHapusDenah"
+                        style="display:none; background:#dc2626; color:#fff; border:none; padding:10px 24px; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer;"
+                        onclick="hapusDenah()">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
+                </div>
+                <div id="denahPreview" style="display:none; margin-top:14px; padding:12px; background:#fff; border-radius:8px; border:1px solid #e2e8f0; text-align:center;">
+                    <img id="denahPreviewImg" src="" alt="Denah Preview" style="max-width:100%; max-height:240px; border-radius:6px;">
+                </div>
+                <div id="denahUploadStatus" style="display:none; margin-top:10px; font-size:13px;"></div>
+                <input type="hidden" id="denahFilePath" value="{{ $selectedEventId ? $events->firstWhere('id', $selectedEventId)?->layout_denah : '' }}">
+            </div>
+
+            {{-- Mode DDMS / Non-DDMS --}}
+            <div style="margin-bottom:24px;">
+                <label style="display:flex;align-items:flex-start;gap:10px;cursor:{{ $ddmsEnabled ? 'pointer' : 'not-allowed' }};">
+                    <input type="checkbox" id="uses_ddms" name="uses_ddms" value="1"
+                           style="margin-top:3px;"
+                           {{ $ddmsEnabled ? 'checked' : 'disabled' }}>
+                    <div>
+                        <div style="font-weight:600;font-size:13.5px;color:#0f172a;">Gunakan DDMS</div>
+                        @if($ddmsEnabled)
+                            <small style="color:#64748b;font-size:12px;">Dokumen ini akan melalui approval Director, PIN approval, QR, dan verifikasi publik.</small>
+                        @else
+                            <small style="color:#dc2626;font-size:12px;">DDMS sedang dinonaktifkan oleh administrator. Dokumen akan dibuat sebagai dokumen biasa.</small>
+                        @endif
+                    </div>
+                </label>
+            </div>
+
             {{-- Tombol Generate --}}
             <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
                 <button type="button" id="btnGenerate"
@@ -150,7 +201,7 @@
         </form>
     </div>
 
-    {{-- â”€â”€â”€ AREA HASIL / AKSI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
+    {{-- AREA HASIL / AKSI --}}
     <div id="resultPanel" style="display:none;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:28px 32px;">
         <h2 style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:18px;">
             <i class="fas fa-check-circle" style="color:#22c55e;margin-right:6px;"></i>
@@ -193,12 +244,19 @@
 
 </div>
 
+@include('admin.document_builder.partials.latest-documents')
+
 @push('scripts')
 <script>
-    const PREVIEW_URL  = '{{ route('admin.document_builder.preview') }}';
+    const PREVIEW_URL  = '{{ route('admin.document_builder.preview-pdf') }}';
+    const GENERATE_URL = '{{ route('admin.document_builder.generate') }}';
     const DOWNLOAD_URL = '{{ route('admin.document_builder.download') }}';
     const CSRF         = document.querySelector('meta[name="csrf-token"]')?.content
                          || '{{ csrf_token() }}';
+
+    // Default DDMS per jenis surat (hanya initial UI state).
+    const DDMS_DEFAULTS  = @json($ddmsDefaults);
+    const DDMS_ENABLED   = @json($ddmsEnabled);
 
     // â”€â”€â”€ Info event â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     document.getElementById('event_id').addEventListener('change', function () {
@@ -217,15 +275,23 @@
         if (docJenis === 'invoice') {
             fetchTotalDibayarKlien();
         }
+        // Muat status denah jika jenis = surat_kontrak
+        if (docJenis === 'surat_kontrak') {
+            loadDenahStatus();
+        }
     });
 
     // â”€â”€â”€ Info jenis dokumen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Sinkronisasi default DDMS per jenis (initial UI state only).
+    function syncDdmsDefault(jenis) {
+        if (!DDMS_ENABLED) return; // global OFF: checkbox disabled, jangan ubah.
+        const chk = document.getElementById('uses_ddms');
+        if (!chk || !DDMS_DEFAULTS.hasOwnProperty(jenis)) return;
+        // Set initial state dari default; admin tetap dapat mengubah manual.
+        chk.checked = !!DDMS_DEFAULTS[jenis];
+    }
+
     const JENIS_DESC = {
-        proposal: {
-            icon: 'ðŸ“„', label: 'Proposal Event',
-            desc: 'Dokumen proposal lengkap meliputi profil perusahaan, data client & event, konsep, layanan, timeline, vendor, RAB, dan syarat & ketentuan.',
-            color: '#6366f1'
-        },
         surat_kontrak: {
             icon: '📑', label: 'Surat Kontrak',
             desc: 'Kontrak resmi antara EO dan client mencakup nomor kontrak, nilai kontrak, hak & kewajiban, ketentuan pembayaran, masa berlaku, dan area tanda tangan.',
@@ -260,6 +326,19 @@
             schemeSection.style.display = 'none';
             document.getElementById('has_payment_scheme').value = '0';
         }
+        // Tampilkan upload denah hanya jika jenis = surat_kontrak
+        const denahSection = document.getElementById('denahSection');
+        if (this.value === 'surat_kontrak') {
+            denahSection.style.display = 'block';
+            loadDenahStatus();
+        } else {
+            denahSection.style.display = 'none';
+        }
+
+        // Sinkronkan checkbox "Gunakan DDMS" dengan default per jenis.
+        // HANYA initial state: admin tetap dapat mengubahnya secara manual.
+        // Jika global OFF, checkbox dinonaktifkan (forced Non-DDMS) — tidak diubah di sini.
+        syncDdmsDefault(this.value);
         const d = JENIS_DESC[this.value];
         document.getElementById('jenisInfoContent').innerHTML = `
             <div style="background:${d.color}10;border:1px solid ${d.color}30;border-radius:8px;padding:12px 16px;font-size:13px;">
@@ -272,6 +351,129 @@
     // â”€â”€â”€ State untuk tombol aksi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     let lastEventId = null;
     let lastJenis   = null;
+
+    // --- Denah Upload Functions -------------------------------------------------
+    const DENAH_UPLOAD_URL = '{{ route('admin.document_builder.upload_denah') }}';
+
+    function getEventIdForDenah() {
+        return document.getElementById('event_id').value;
+    }
+
+    function loadDenahStatus() {
+        const eventId = getEventIdForDenah();
+        if (!eventId) { resetDenahUI(); return; }
+        fetch('/admin/document-builder/denah-status/' + eventId)
+            .then(r => r.json())
+            .then(data => {
+                if (data.has_denah && data.url) {
+                    document.getElementById('denahPreviewImg').src = data.url;
+                    document.getElementById('denahPreview').style.display = 'block';
+                    document.getElementById('denahFilePath').value = data.file_path;
+                    document.getElementById('btnHapusDenah').style.display = 'inline-flex';
+                } else {
+                    resetDenahUI();
+                }
+            })
+            .catch(() => resetDenahUI());
+    }
+
+    function resetDenahUI() {
+        document.getElementById('denahPreview').style.display = 'none';
+        document.getElementById('denahFilePath').value = '';
+        document.getElementById('btnHapusDenah').style.display = 'none';
+        document.getElementById('denahUploadStatus').style.display = 'none';
+    }
+
+    function uploadDenah() {
+        const fileInput = document.getElementById('denahFileInput');
+        const eventId = getEventIdForDenah();
+        if (!eventId) { alert('Pilih event terlebih dahulu.'); return; }
+        if (!fileInput.files.length) { alert('Pilih file denah/layout terlebih dahulu.'); return; }
+
+        const formData = new FormData();
+        formData.append('event_id', eventId);
+        formData.append('layout_denah', fileInput.files[0]);
+
+        const btn = document.getElementById('btnUploadDenah');
+        const status = document.getElementById('denahUploadStatus');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        status.style.display = 'block';
+        status.style.color = '#6366f1';
+        status.innerHTML = 'Mengupload...';
+
+        fetch(DENAH_UPLOAD_URL, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF },
+            body: formData,
+        })
+        .then(r => {
+            console.log('[DEBUG] Response status:', r.status);
+            console.log('[DEBUG] Content-Type:', r.headers.get('content-type'));
+            const ct = r.headers.get('content-type') || '';
+            if (ct.includes('application/json')) {
+                return r.json().then(data => {
+                    console.log('[DEBUG] JSON response:', data);
+                    if (data.success) {
+                        status.style.color = '#16a34a';
+                        status.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
+                        document.getElementById('denahPreviewImg').src = data.url;
+                        document.getElementById('denahPreview').style.display = 'block';
+                        document.getElementById('denahFilePath').value = data.file_path;
+                        document.getElementById('btnHapusDenah').style.display = 'inline-flex';
+                        fileInput.value = '';
+                    } else {
+                        status.style.color = '#dc2626';
+                        status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal upload.';
+                    }
+                });
+            } else {
+                return r.text().then(text => {
+                    console.log('[DEBUG] HTML response (first 1000 chars):', text.substring(0, 1000));
+                    status.style.color = '#dc2626';
+                    status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Server error (status: ' + r.status + '). Cek console.';
+                });
+            }
+        })
+        .catch(err => {
+            console.error('[DEBUG] Fetch error:', err);
+            status.style.color = '#dc2626';
+            status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error: ' + err.message;
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-upload"></i> Upload';
+        });
+    }
+
+    function hapusDenah() {
+        const eventId = getEventIdForDenah();
+        if (!eventId || !confirm('Hapus denah/layout yang sudah diupload?')) return;
+
+        fetch('/admin/document-builder/hapus-denah/' + eventId, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': CSRF },
+        })
+        .then(r => r.json())
+        .then(data => {
+            const status = document.getElementById('denahUploadStatus');
+            status.style.display = 'block';
+            if (data.success) {
+                status.style.color = '#16a34a';
+                status.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
+                resetDenahUI();
+            } else {
+                status.style.color = '#dc2626';
+                status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal hapus.';
+            }
+        })
+        .catch(() => {
+            const status = document.getElementById('denahUploadStatus');
+            status.style.display = 'block';
+            status.style.color = '#dc2626';
+            status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Terjadi kesalahan.';
+        });
+    }
 
     // â”€â”€â”€ Generate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function doGenerate() {
@@ -291,14 +493,15 @@
         document.getElementById('generateLoading').style.display = 'inline-flex';
         document.getElementById('resultPanel').style.display = 'none';
 
-        try {
-            // POST ke preview endpoint, tampilkan di iframe
-            const form = document.createElement('form');
+        // POST ke generate endpoint, redirect ke halaman preview
+        const form = document.createElement('form');
             form.method = 'POST';
-            form.action = PREVIEW_URL;
-            form.target = 'pdfPreviewFrame';
+            form.action = GENERATE_URL;
 
-            [['_token', CSRF], ['event_id', eventId], ['jenis_dokumen', jenis]].forEach(([k, v]) => {
+            const ddmsCheck = document.getElementById('uses_ddms');
+            const usesDdms = ddmsCheck && !ddmsCheck.disabled && ddmsCheck.checked ? 1 : 0;
+
+            [['_token', CSRF], ['event_id', eventId], ['jenis_dokumen', jenis], ['uses_ddms', usesDdms]].forEach(([k, v]) => {
                 const i = document.createElement('input');
                 i.type = 'hidden'; i.name = k; i.value = v;
                 form.appendChild(i);
@@ -317,11 +520,6 @@
                 document.getElementById('resultPanel').style.display = 'block';
                 document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 800);
-
-        } finally {
-            document.getElementById('btnGenerate').disabled = false;
-            document.getElementById('generateLoading').style.display = 'none';
-        }
     }
 
     function openPreview() {
@@ -382,7 +580,7 @@
             document.getElementById('event_id').dispatchEvent(new Event('change'));
             document.getElementById('jenis_dokumen').dispatchEvent(new Event('change'));
         });
-ï»¿    @endif
+@endif
 
     // Payment Scheme Functions (khusus Invoice)
     let docTotalDibayarKlien = 0;
