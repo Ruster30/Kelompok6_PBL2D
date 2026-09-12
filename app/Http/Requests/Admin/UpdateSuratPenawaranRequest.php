@@ -29,7 +29,7 @@ class UpdateSuratPenawaranRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nomor_surat_override' => 'required|string|max:100',
+            'nomor_surat_override' => 'nullable|string|max:100',
             'perihal'              => 'nullable|string|max:255',
             'lokasi_event'         => 'nullable|string|max:255',
             'jenis_event'          => 'nullable|string|max:100',
