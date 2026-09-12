@@ -78,6 +78,7 @@
         <div class="ddms-default-list">
             @php
                 $ddmsDefaultItems = [
+                    'ddms_default_penawaran'      => ['label' => 'Surat Penawaran', 'key' => 'penawaran'],
                     'ddms_default_surat_kontrak'  => ['label' => 'Surat Kontrak',  'key' => 'surat_kontrak'],
                     'ddms_default_invoice'        => ['label' => 'Invoice',        'key' => 'invoice'],
                     'ddms_default_rab'            => ['label' => 'RAB',            'key' => 'rab'],
