@@ -115,9 +115,13 @@ test('getTotalDibayarKlien includes fee EO percentage', function () {
     expect($total)->toBe(11000000.0);
 });
 
-test('getTotalDibayarKlien calculates DPP + PPN - PPh correctly', function () {
+test('getTotalDibayarKlien calculates DPP + PPN + PPh correctly', function () {
     $event = Event::factory()->create();
-    Rab::factory()->create(['event_id' => $event->id, 'subtotal_biaya' => 10000000]);
+
+    Rab::factory()->create([
+        'event_id' => $event->id,
+        'subtotal_biaya' => 10000000,
+    ]);
 
     // Fee EO 10%, PPN 11%, PPh 2%
     RabAdditionalDetail::create([
@@ -133,9 +137,12 @@ test('getTotalDibayarKlien calculates DPP + PPN - PPh correctly', function () {
     $service = createRabService();
     $total   = $service->getTotalDibayarKlien($event->id);
 
-    // DPP = 10.000.000 + 1.000.000 = 11.000.000
+    // Total RAB = 10.000.000
+    // Fee EO = 10% = 1.000.000
+    // Subtotal = 11.000.000
     // PPN = 11.000.000 × 11% = 1.210.000
     // PPh = 11.000.000 × 2%  = 220.000
-    // Total = 11.000.000 + 1.210.000 - 220.000 = 11.990.000
-    expect($total)->toBe(11990000.0);
+    // Grandtotal = 11.000.000 + 1.210.000 + 220.000
+    //            = 12.430.000
+    expect($total)->toBe(12430000.0);
 });

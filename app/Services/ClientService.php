@@ -301,7 +301,9 @@ class ClientService
     {
         $eIds = $this->clientEventIds();
 
-        $proposal = Proposal::whereIn('event_id', $eIds)->findOrFail($id);
+        $proposal = Proposal::whereIn('event_id', $eIds)
+            ->with(['document', 'document.numbering', 'document.qrVerification'])
+            ->findOrFail($id);
 
         $latestProposal = Proposal::where('event_id', $proposal->event_id)
             ->where('is_active', true)
@@ -407,7 +409,6 @@ class ClientService
                 'judul'   => 'Negosiasi Selesai Penawaran Diterima',
                 'pesan'   => 'Client ' . Auth::user()->name . ' menerima penawaran revisi untuk event ' . $event->nama_event . '. Timeline otomatis telah diisi.',
                 'tipe'    => 'sukses',
-                'dibaca'  => false,
             ]);
         });
     }
@@ -457,5 +458,6 @@ class ClientService
             ->update(['dibaca' => true]);
     }
 }
+
 
 

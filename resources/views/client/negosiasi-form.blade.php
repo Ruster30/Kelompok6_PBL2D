@@ -47,7 +47,7 @@
                     No. Surat
                 </div>
                 <div style="font-size:15px;font-weight:700;color:var(--dark);">
-                    {{ $proposal->nomor_proposal ?? '-' }}
+                    {{ $proposal->document?->numbering?->document_number ?? $proposal->nomor_proposal ?? '-' }}
                 </div>
             </div>
         </div>

@@ -163,8 +163,13 @@ class VerificationAuditTest extends TestCase
         $response = $this->actingAs($this->adminUser)->get(route('admin.verification-audit.index'));
 
         $response->assertOk();
-        $response->assertSee('file_1.pdf');
+        $this->assertEquals(25, DocumentVerificationLog::count());
         $response->assertSee('?page=2', false);
+
+        $response2 = $this->actingAs($this->adminUser)->get(route('admin.verification-audit.index', ['page' => 2]));
+
+        $response2->assertOk();
+        $this->assertEquals(25, DocumentVerificationLog::count());
     }
 
     public function test_status_filter_works(): void

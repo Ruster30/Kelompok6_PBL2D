@@ -44,6 +44,10 @@ p {
     $nomorSurat   = $pdfData['nomor_surat']   ?? '-';
     $tanggalSurat = $pdfData['tanggal_surat'] ?? now()->format('Y-m-d');
     $perihal      = $pdfData['perihal']        ?? ($event->perihal ?? 'Surat Penawaran Pameran Otomotif');
+    $document     = $pdfData['document'] ?? null; // dari AdminProposalService::exportPdfData()
+    $usesDdms     = $document?->uses_ddms ?? false;
+    $statusPublished = $document ? ($document->status === \App\Enums\DocumentStatus::Published) : false;
+    $hasQrPath = $document?->qrVerification?->qr_path ?? false;
 @endphp
 
 @include('admin.pdf_templates.partials.header')
@@ -62,7 +66,13 @@ p {
     <tr>
         <td style="width:72px;">No. Surat</td>
         <td style="width:14px;">:</td>
-        <td>{{ $nomorSurat }}</td>
+        <td>
+    @if($usesDdms && $document?->numbering)
+        {{ $document->numbering->document_number }}
+    @else
+        {{ $nomorSurat }}
+    @endif
+</td>
     </tr>
     <tr>
         <td>Lampiran</td>
@@ -236,7 +246,12 @@ p {
     <tr>
         <td>
             Padang, {{ \Carbon\Carbon::parse($tanggalSurat)->translatedFormat('d F Y') }}<br>
-            Hormat kami,<br>
+            Hormat kami,
+            
+            @if($usesDdms && $statusPublished && $hasQrPath)
+            @include('admin.pdf_templates.partials.signature_qr')
+            @endif
+            
             <div class="ttd-space"></div>
             <span class="ttd-nama">Kurnia Fajar Viliano S.Tr.Kom</span><br>
             Direktur
