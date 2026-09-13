@@ -111,6 +111,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         [App\Http\Controllers\Admin\ProposalController::class, 'masukKeDdms'])
         ->name('admin.requests.masuk-ke-ddms');
 
+    // Buat Revisi Surat Penawaran DDMS (saat negosiasi aktif)
+    Route::post('/requests/{event}/buat-revisi-ddms',
+        [App\Http\Controllers\Admin\ProposalController::class, 'buatRevisiDdms'])
+        ->name('admin.requests.buat-revisi-ddms');
+
     // Export PDF langsung (download)
     Route::get('/requests/{event}/export-pdf',
         [App\Http\Controllers\Admin\ProposalController::class, 'exportPdf'])

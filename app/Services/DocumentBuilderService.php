@@ -487,7 +487,7 @@ private function generateRab(Event $event, ?Document $document = null): array
                 'nomor_surat' => $event->nomor_surat_override
                     ?? $ddmsNumber
                     ?? $document->proposal?->nomor_proposal
-                    ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), $this->proposalRepository->getEventCount($event->id)),
+                    ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), Proposal::where('event_id', $event->id)->count() + 1),
                 'tanggal_surat' => $document->tanggal_proposal?->format('Y-m-d')
                     ?? now()->format('Y-m-d'),
                 'perihal'      => $document->proposal?->perihal

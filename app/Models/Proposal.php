@@ -14,6 +14,7 @@ class Proposal extends Model
         'nomor_proposal',
         'file_proposal',
         'versi',
+        'revision_number',   // 0=original, 1=Revisi Ke-1, dst. (DDMS only)
         'status',
         'tanggal_proposal',
         'is_active',
@@ -52,6 +53,35 @@ class Proposal extends Model
     public function getUsesDdmsAttribute(): bool
     {
         return (bool) ($this->document?->uses_ddms);
+    }
+
+    // ─── Revision Helpers (DDMS only) ────────────────────────
+
+    /**
+     * Apakah ini proposal original (bukan revisi)?
+     * Non-DDMS proposals selalu true karena revision_number default 0.
+     */
+    public function isOriginal(): bool
+    {
+        return ($this->revision_number ?? 0) === 0;
+    }
+
+    /**
+     * Label revisi untuk ditampilkan ke Admin/Director/Client.
+     * "Original" jika revision_number = 0, "Revisi Ke-N" jika > 0.
+     */
+    public function getRevisionLabelAttribute(): string
+    {
+        $rev = $this->revision_number ?? 0;
+        return $rev === 0 ? 'Original' : 'Revisi Ke-' . $rev;
+    }
+
+    /**
+     * CSS badge class untuk label revisi.
+     */
+    public function getRevisionBadgeClassAttribute(): string
+    {
+        return ($this->revision_number ?? 0) === 0 ? 'badge-info' : 'badge-warning';
     }
 
     /** CSS class badge sesuai status proposal */

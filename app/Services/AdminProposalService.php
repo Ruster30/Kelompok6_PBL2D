@@ -90,26 +90,47 @@ class AdminProposalService
     public function checkProposalLocked(Event $event): bool
     {
         $event->load('activeProposal');
-        return $event->activeProposal && $event->activeProposal->status === 'diterima';
+        $proposal = $event->activeProposal ?? $event->latestProposal;
+
+        if (! $proposal) {
+            return false;
+        }
+
+        // DDMS: locked jika document status pending, approved, atau published.
+        // Dapat diedit (unlocked) jika document status draft atau rejected.
+        if ($proposal->document && $proposal->document->uses_ddms) {
+            $docStatus = $proposal->document->status->value;
+            return in_array($docStatus, [
+                Document::STATUS_PENDING,
+                Document::STATUS_APPROVED,
+                Document::STATUS_PUBLISHED,
+            ], true);
+        }
+
+        // NON-DDMS: locked jika Client sudah menerima penawaran.
+        return $proposal->status === 'diterima';
     }
 
     /**
      * Cek apakah Proposal DDMS dapat diedit (Edit Surat).
      *
-     * Aturan DDMS (Phase 11I.10L):
-     * - draft      -> TIDAK BOLEH (gunakan DDMS)
-     * - pending    -> TIDAK BOLEH
+     * Aturan DDMS:
+     * - draft      -> BOLEH (Admin dapat mengubah isi/harga sebelum diajukan approval)
      * - rejected   -> BOLEH (Director menolak, Admin perbaiki)
+     * - pending    -> TIDAK BOLEH (sedang menunggu approval Director)
      * - approved   -> TIDAK BOLEH
      * - published  -> TIDAK BOLEH
-     * - Non-DDMS   -> selalu BOLEH (behavior existing)
+     * - Non-DDMS   -> BOLEH (kecuali jika proposal status 'diterima', dicek terpisah oleh checkProposalLocked)
      */
     public function canEditDdmsProposal(Event $event): bool
     {
         $latest = $event->latestProposal;
         if ($latest && $latest->document && $latest->document->uses_ddms) {
             $status = $latest->document->status->value;
-            return $status === Document::STATUS_REJECTED;
+            return in_array($status, [
+                Document::STATUS_DRAFT,
+                Document::STATUS_REJECTED,
+            ], true);
         }
 
         return true;
@@ -129,7 +150,32 @@ class AdminProposalService
         }
     }
 
-    public function updateSuratPenawaran(Event $event, array $data): void { $event->update($data); }
+    public function updateSuratPenawaran(Event $event, array $data): void
+    {
+        $event->update($data);
+
+        // Jika Proposal DDMS aktif berada dalam status DRAFT atau REJECTED,
+        // render ulang PDF draft agar file PDF kanonis (file_proposal & document->file_path)
+        // ter-update dengan harga/data baru untuk Document Builder & PDF Export.
+        $latest = $event->latestProposal;
+        if ($latest && $latest->document && $latest->document->uses_ddms) {
+            $doc = $latest->document;
+            $status = $doc->status->value;
+            if (in_array($status, [Document::STATUS_DRAFT, Document::STATUS_REJECTED], true)) {
+                $exportData = $this->exportPdfData($event);
+                $pdf = Pdf::loadView('admin.requests.surat_penawaran_pdf', $exportData)
+                    ->setPaper('a4', 'portrait');
+                $pdfOutput = $pdf->output();
+
+                if ($doc->file_path) {
+                    Storage::disk('public')->put($doc->file_path, $pdfOutput);
+                }
+                if ($latest->file_proposal && $latest->file_proposal !== $doc->file_path) {
+                    Storage::disk('public')->put($latest->file_proposal, $pdfOutput);
+                }
+            }
+        }
+    }
 
     /**
      * Kirim Penawaran (tombol "Kirim ke Client") — Phase 11I.10F.
@@ -329,10 +375,13 @@ class AdminProposalService
                 // Masih dalam siklus DDMS yang belum selesai → jangan buat duplikat.
                 return $latest->document;
             }
-            // approved/published → lanjut buat revisi baru (v2, Document B, ...).
+            // approved/published → lanjut buat revisi baru.
         }
 
         $isRevision = (bool) $latest;
+        // revision_number = 0 untuk pertama kali (original), tidak bertambah di sini
+        // (incrementing terjadi di buatRevisiDdms untuk revisi negosiasi)
+        $revisionNumber = 0;
 
         $data['perihal'] = $event->perihal ?? 'Surat Penawaran Event';
         $pdf = Pdf::loadView('admin.requests.surat_penawaran_pdf', compact('event', 'data'));
@@ -342,7 +391,7 @@ class AdminProposalService
         Storage::disk('public')->put($path, $pdf->output());
 
         try {
-            $document = DB::transaction(function () use ($event, $data, $path, $version, $isRevision) {
+            $document = DB::transaction(function () use ($event, $data, $path, $version, $isRevision, $revisionNumber) {
                 $this->proposalRepository->deactivateActive($event->id);
 
                 $nomor = $isRevision
@@ -350,17 +399,104 @@ class AdminProposalService
                     : ($data['nomor_surat'] ?? sprintf('PEN-%s-%03d', now()->format('Ymd'), $this->proposalRepository->getTodayCount() + 1));
 
                 $proposal = $this->proposalRepository->create([
-                    'event_id' => $event->id,
-                    'nomor_proposal' => $nomor,
-                    'file_proposal' => $path,
-                    'versi' => $version,
-                    'status' => 'menunggu_konfirmasi',
-                    'is_active' => true,
+                    'event_id'        => $event->id,
+                    'nomor_proposal'  => $nomor,
+                    'file_proposal'   => $path,
+                    'versi'           => $version,
+                    'revision_number' => $revisionNumber,
+                    'status'          => 'menunggu_konfirmasi',
+                    'is_active'       => true,
                     'tanggal_proposal' => $data['tanggal_surat'] ?? now()->format('Y-m-d'),
                 ]);
 
                 // DDMS layer: link Document ke PDF kanonik yang SAMA.
-                // Tidak membuat PDF kedua.
+                $document = $this->createProposalDocument($event, $path, $version);
+                $proposal->update(['document_id' => $document->id]);
+
+                return $document;
+            });
+        } catch (\Throwable $e) {
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+            throw $e;
+        }
+
+        return $document;
+    }
+
+    /**
+     * Buat Revisi Surat Penawaran DDMS ketika Client mengajukan negosiasi.
+     *
+     * Berbeda dari masukKeDdms():
+     * - Hanya dipanggil saat Proposal aktif ber-status 'negosiasi'
+     * - SELALU membuat Proposal + Document baru (tidak idempoten)
+     * - Menaikkan revision_number dari proposal sebelumnya
+     * - Tidak diblokir oleh checkProposalLocked
+     *
+     * @throws \Illuminate\Validation\ValidationException jika kondisi belum terpenuhi
+     */
+    public function buatRevisiDdms(Event $event, array $data = []): Document
+    {
+        $event->load(['client', 'rabs', 'proposals.document']);
+
+        // Cari proposal DDMS sebelumnya
+        $prevDdmsProposal = $event->proposals()
+            ->whereHas('document', function ($q) {
+                $q->where('uses_ddms', true);
+            })
+            ->orderBy('versi', 'desc')
+            ->first();
+
+        // Validasi: harus ada proposal DDMS sebelumnya
+        if (! $prevDdmsProposal) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'revisi' => 'Revisi DDMS hanya dapat dilakukan pada Surat Penawaran yang menggunakan DDMS.',
+            ]);
+        }
+
+        // Validasi DDMS global masih aktif
+        if ($this->ddmsSettingService->getSettingValue('ddms_enabled', '1') !== '1') {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'revisi' => 'DDMS tidak aktif. Aktifkan DDMS terlebih dahulu.',
+            ]);
+        }
+
+        // Hitung revision_number baru (prev + 1)
+        $prevRevisionNumber = $prevDdmsProposal->revision_number ?? 0;
+        $newRevisionNumber  = $prevRevisionNumber + 1;
+        $version            = $this->proposalRepository->getNextVersion($event->id);
+
+        $data['perihal']        = $event->perihal ?? 'Surat Penawaran Event';
+        $data['revision_number'] = $newRevisionNumber;
+
+        // Generate PDF draft revisi
+        $exportData = $this->exportPdfData($event);
+        $exportData['data']['revision_number'] = $newRevisionNumber;
+        $pdf      = Pdf::loadView('admin.requests.surat_penawaran_pdf', $exportData)
+            ->setPaper('a4', 'portrait');
+        $filename = 'surat-penawaran-' . Str::slug($event->nama_event) . '-v' . $version . '-rev' . $newRevisionNumber . '.pdf';
+        $path     = 'proposals/' . $filename;
+        Storage::disk('public')->put($path, $pdf->output());
+
+        try {
+            $document = DB::transaction(function () use ($event, $data, $path, $version, $newRevisionNumber) {
+                // Deactivate semua Proposal aktif saat ini
+                $this->proposalRepository->deactivateActive($event->id);
+
+                // Proposal baru: status kembali ke 'menunggu_konfirmasi' (DDMS flow)
+                $proposal = $this->proposalRepository->create([
+                    'event_id'        => $event->id,
+                    'nomor_proposal'  => $data['nomor_surat'] ?? sprintf('REV-%s-%03d', now()->format('Ymd'), $version),
+                    'file_proposal'   => $path,
+                    'versi'           => $version,
+                    'revision_number' => $newRevisionNumber,
+                    'status'          => 'menunggu_konfirmasi',
+                    'is_active'       => true,
+                    'tanggal_proposal' => $data['tanggal_surat'] ?? now()->format('Y-m-d'),
+                ]);
+
+                // Buat Document DDMS baru (Draft) untuk revisi ini
                 $document = $this->createProposalDocument($event, $path, $version);
                 $proposal->update(['document_id' => $document->id]);
 
@@ -404,7 +540,11 @@ class AdminProposalService
      *   status          = draft
      *   file_path       = Proposal.file_proposal (same physical PDF)
      */
-    private function createProposalDocument(Event $event, string $filePath, int $version): Document
+    /**
+     * Buat Document DDMS untuk Proposal dari file PDF yang sudah ada.
+     * file_path boleh empty string jika file belum ada (akan di-overwrite saat Publish).
+     */
+    private function createProposalDocument(Event $event, string $filePath, int $version = 1): Document
     {
         return Document::create([
             'event_id'        => $event->id,
@@ -491,6 +631,10 @@ class AdminProposalService
     {
         $proposal = $event->activeProposal ?? $event->latestProposal;
 
+        // Tentukan apakah proposal lama menggunakan DDMS SEBELUM deactivation
+        $oldUsesDdms   = $proposal && $proposal->document && $proposal->document->uses_ddms;
+        $oldFilePath   = $oldUsesDdms ? ($proposal->document->file_path ?? null) : null;
+
         if ($proposal) {
             // 1. Deactivate the current active proposal (becomes historical)
             $this->proposalRepository->deactivateActive($event->id);
@@ -499,33 +643,23 @@ class AdminProposalService
             $this->proposalRepository->update($proposal, ['status' => 'diterima']);
         }
 
-        // --- DETERMINE IF OLD PROPOSAL USES DDMS (before deactivation) ---
-        $oldUsesDdms = false;
-        if ($proposal && $proposal->document && $proposal->document->uses_ddms) {
-            $oldUsesDdms = true;
-        }
-
-        // 3. Create a new proposal with the next version number
-        $version = $this->proposalRepository->getNextVersion($event->id);
+        // 3. Buat Proposal 'negosiasi' baru sebagai placeholder saat Admin menyiapkan revisi.
+        //    Proposal ini BELUM memiliki Document DDMS (Document dibuat saat Admin klik "Buat Revisi").
+        //    revision_number tetap 0 — revision_number baru diatur saat buatRevisiDdms() dipanggil.
+        $version     = $this->proposalRepository->getNextVersion($event->id);
         $newProposal = $this->proposalRepository->create([
-            'event_id' => $event->id,
-            'versi' => $version,
-            'status' => 'negosiasi',
-            'is_active' => true,
+            'event_id'        => $event->id,
+            'versi'           => $version,
+            'revision_number' => 0,
+            'status'          => 'negosiasi',
+            'is_active'       => true,
             'tanggal_proposal' => now()->format('Y-m-d'),
         ]);
 
-        // 4. If old proposal used DDMS, create NEW Document v2 for v2
-        if ($oldUsesDdms) {
-            // Get the old document file path to reuse as base for new document
-            $oldFilePath = $proposal->document ? $proposal->document->file_path : null;
-
-            // Create new Document v2 using existing helper createProposalDocument()
-            $document = $this->createProposalDocument($event, $oldFilePath);
-
-            // Link Document v2 to Proposal v2
-            $newProposal->update(['document_id' => $document->id]);
-        }
+        // NOTE: Untuk DDMS, Document baru TIDAK dibuat di sini.
+        // Document baru dibuat saat Admin klik "Buat Revisi Surat" (buatRevisiDdms).
+        // Proposal 'negosiasi' ini adalah sinyal bahwa negosiasi sedang berlangsung.
+        // Ini mencegah Client menerima penawaran lama saat negosiasi diproses.
 
         $event->update(['status_event' => 'diproses']);
         TimelineAutoFill::negosiasiSelesai($event, $this->proposalRepository->getLatestNegotiation($event->id));

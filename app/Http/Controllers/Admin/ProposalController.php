@@ -94,19 +94,26 @@ class ProposalController extends Controller
         $data['ddmsDefaultPenawaran'] = $this->ddmsSettingService->getSettingValue('ddms_default_penawaran', '0') === '1';
 
         $latest = $event->latestProposal;
-        $document = ($latest && $latest->document && $latest->document->uses_ddms) ? $latest->document : null;
+        $document = ($latest && $latest->document && $latest->document->uses_ddms)
+            ? $latest->document
+            : $event->proposals()->whereHas('document', function ($q) {
+                $q->where('uses_ddms', true);
+            })->orderBy('versi', 'desc')->first()?->document;
+
         $usesDdmsActive = (bool) $document;
         $docStatus = $usesDdmsActive ? $document->status->value : null;
         $ddmsApproved = in_array($docStatus, ['approved', 'published'], true);
 
-        $data['latestProposal'] = $latest;
-        $data['usesDdmsActive'] = $usesDdmsActive;
-        $data['ddmsDocument'] = $document;
-        $data['ddmsApproved'] = $ddmsApproved;
-        $data['canEditSurat'] = $this->proposalService->canEditDdmsProposal($event);
-        $data['ddmsStatusLabel'] = $document ? $document->status->label() : null;
-        $data['ddmsDocNumber'] = ($document && $document->numbering) ? $document->numbering->document_number : null;
-        $data['canSendProposal'] = $this->proposalService->canSendProposal($event);
+        $data['latestProposal']   = $latest;
+        $data['usesDdmsActive']   = $usesDdmsActive;
+        $data['ddmsDocument']     = $document;
+        $data['ddmsApproved']     = $ddmsApproved;
+        $data['canEditSurat']     = $this->proposalService->canEditDdmsProposal($event);
+        $data['ddmsStatusLabel']  = $document ? $document->status->label() : null;
+        $data['ddmsDocNumber']    = ($document && $document->numbering) ? $document->numbering->document_number : null;
+        $data['canSendProposal']  = $this->proposalService->canSendProposal($event);
+        $data['proposalHistory']  = $event->proposals()->with('document')->orderBy('versi', 'desc')->get();
+        $data['isLocked']         = $this->proposalService->checkProposalLocked($event);
 
         return view('admin.requests.surat_penawaran', $data);
     }
@@ -242,5 +249,20 @@ class ProposalController extends Controller
 
         return redirect()->route('admin.requests.index')
             ->with('success', 'Negosiasi berhasil ditolak.');
+    }
+
+    public function buatRevisiDdms(Event $event)
+    {
+        try {
+            $document = $this->proposalService->buatRevisiDdms($event);
+
+            return redirect()
+                ->route('admin.requests.surat-penawaran', $event->id)
+                ->with('success', 'Draft Revisi Ke-' . ($document->proposal?->revision_number ?? 1) . ' berhasil dibuat (Status: Draft). Silakan edit harga/isi surat penawaran di bawah ini, lalu ajukan approval via DDMS.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()
+                ->route('admin.requests.surat-penawaran', $event->id)
+                ->with('error', implode(' ', $e->validator->errors()->all()));
+        }
     }
 }

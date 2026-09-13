@@ -69,6 +69,12 @@ p {
         <td>
     @if($usesDdms && $document?->numbering)
         {{ $document->numbering->document_number }}
+        @php
+            $revNum = $document->proposal?->revision_number ?? $event->latestProposal?->revision_number ?? 0;
+        @endphp
+        @if($revNum > 0)
+            <br><span style="font-size:9.5px; color:#92400e; font-weight:bold;">(Revisi Ke-{{ $revNum }})</span>
+        @endif
     @else
         {{ $nomorSurat }}
     @endif
@@ -242,19 +248,19 @@ p {
 </p>
 
 {{-- ── TANDA TANGAN ────────────────────────────── --}}
-<table style="margin-top:12px; font-size:11px;">
+<table style="width:100%; margin-top:12px; font-size:11px;">
     <tr>
-        <td>
+        <td style="width:60%; vertical-align:bottom;">
             Padang, {{ \Carbon\Carbon::parse($tanggalSurat)->translatedFormat('d F Y') }}<br>
             Hormat kami,
-            
-            @if($usesDdms && $statusPublished && $hasQrPath)
-            @include('admin.pdf_templates.partials.signature_qr')
-            @endif
-            
-            <div class="ttd-space"></div>
+            <div style="height:35px;"></div>
             <span class="ttd-nama">Kurnia Fajar Viliano S.Tr.Kom</span><br>
             Direktur
+        </td>
+        <td style="width:40%; vertical-align:bottom; text-align:right;">
+            @if($usesDdms && $statusPublished && $hasQrPath)
+                @include('admin.pdf_templates.partials.signature_qr')
+            @endif
         </td>
     </tr>
 </table>
