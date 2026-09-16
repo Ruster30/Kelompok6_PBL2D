@@ -35,6 +35,7 @@ p {
 .divider-thin  { border-top: 1.5px solid #00b8b0; margin-top: 2px; }
 .ttd-space { padding-bottom: 50px; }
 .ttd-nama  { font-weight: bold; text-decoration: underline; }
+.proposal-qr-left img { margin-left: 0 !important; margin-right: 0 !important; }
 </style>
 </head>
 <body>
@@ -250,17 +251,19 @@ p {
 {{-- ── TANDA TANGAN ────────────────────────────── --}}
 <table style="width:100%; margin-top:12px; font-size:11px;">
     <tr>
-        <td style="width:60%; vertical-align:bottom;">
+        <td>
             Padang, {{ \Carbon\Carbon::parse($tanggalSurat)->translatedFormat('d F Y') }}<br>
             Hormat kami,
-            <div style="height:35px;"></div>
+
+            @if($usesDdms && $statusPublished && $hasQrPath)
+                <div class="proposal-qr-left">
+                    @include('admin.pdf_templates.partials.signature_qr')
+                </div>
+            @endif
+
+            <div class="ttd-space"></div>
             <span class="ttd-nama">Kurnia Fajar Viliano S.Tr.Kom</span><br>
             Direktur
-        </td>
-        <td style="width:40%; vertical-align:bottom; text-align:right;">
-            @if($usesDdms && $statusPublished && $hasQrPath)
-                @include('admin.pdf_templates.partials.signature_qr')
-            @endif
         </td>
     </tr>
 </table>
